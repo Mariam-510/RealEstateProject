@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\yusuf\\Documents\\RealEstateProject\\Back\\WebApplication1\\WebApplication1.csproj": {}
+    "C:\\Users\\yusuf\\Documents\\RealEstateProject\\Back\\RealEstate\\RealEstate.csproj": {}
   },
   "projects": {
-    "C:\\Users\\yusuf\\Documents\\RealEstateProject\\Back\\WebApplication1\\WebApplication1.csproj": {
+    "C:\\Users\\yusuf\\Documents\\RealEstateProject\\Back\\RealEstate\\RealEstate.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\yusuf\\Documents\\RealEstateProject\\Back\\WebApplication1\\WebApplication1.csproj",
-        "projectName": "WebApplication1",
-        "projectPath": "C:\\Users\\yusuf\\Documents\\RealEstateProject\\Back\\WebApplication1\\WebApplication1.csproj",
+        "projectUniqueName": "C:\\Users\\yusuf\\Documents\\RealEstateProject\\Back\\RealEstate\\RealEstate.csproj",
+        "projectName": "RealEstate",
+        "projectPath": "C:\\Users\\yusuf\\Documents\\RealEstateProject\\Back\\RealEstate\\RealEstate.csproj",
         "packagesPath": "C:\\Users\\yusuf\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\yusuf\\Documents\\RealEstateProject\\Back\\WebApplication1\\obj\\",
+        "outputPath": "C:\\Users\\yusuf\\Documents\\RealEstateProject\\Back\\RealEstate\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
