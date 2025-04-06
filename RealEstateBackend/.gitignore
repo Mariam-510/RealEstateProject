@@ -1,0 +1,19 @@
+# Visual Studio temporary files
+.vs/
+
+# Build outputs
+bin/
+obj/
+
+# NuGet packages directory
+.nuget/
+packages/
+
+# User-specific files
+*.user
+*.suo
+*.userprefs
+
+# IDE-specific files (e.g., Rider, VS Code)
+.idea/
+.vscode/
