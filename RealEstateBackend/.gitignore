@@ -13,6 +13,7 @@ packages/
 *.user
 *.suo
 *.userprefs
+*.csproj.user
 
 # IDE-specific files (e.g., Rider, VS Code)
 .idea/
