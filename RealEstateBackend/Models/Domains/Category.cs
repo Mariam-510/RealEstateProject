@@ -7,7 +7,6 @@ namespace RealEstate.Models.Domains
         [Key]
         public int Id { get; set; }
 
-        [Required]
         [Length(1,50)]
         public string Name { get; set; }
 

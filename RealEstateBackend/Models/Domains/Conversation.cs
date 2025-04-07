@@ -9,12 +9,7 @@ namespace RealEstate.Models.Domains
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("FirstAccount")]
-        public string? FirstAccountId { get; set; }
-
-        [ForeignKey("SecondAccount")]
-        public string? SecondAccountId { get; set; }
-
+        [EnumDataType(typeof(ConversationStatus))]
         public ConversationStatus Status { get; set; } = ConversationStatus.Pending;
         
         [DataType(DataType.DateTime)]
@@ -25,13 +20,16 @@ namespace RealEstate.Models.Domains
 
         public bool IsDeleted { get; set; } = false;
 
+        [ForeignKey("FirstAccount")]
+        public string? FirstAccountId { get; set; }
         public virtual Account? FirstAccount { get; set; }
 
+        [ForeignKey("SecondAccount")]
+        public string? SecondAccountId { get; set; }
         public virtual Account? SecondAccount { get; set; }
 
         public virtual ICollection<Message>? Messages { get; set; }
     }
-
     public enum ConversationStatus
     {
         Active,

@@ -5,7 +5,6 @@ namespace RealEstate.Models.Domains
 {
     public class Admin
     {
-
         [Key]
         public int Id { get; set; }
 

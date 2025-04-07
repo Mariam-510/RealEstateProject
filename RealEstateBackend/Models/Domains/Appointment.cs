@@ -1,16 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RealEstate.Models.Domains
 {
-    public class Wishlist
+    public class Appointment
     {
         [Key]
         public int Id { get; set; }
 
         [DataType(DataType.DateTime)]
-        public DateTime WishlistDateTime { get; set; }
+        public DateTime ScheduledTime { get; set; }
+
+        [EnumDataType(typeof(AppointmentType))]
+        public AppointmentType Type { get; set; } 
 
         public bool IsDeleted { get; set; } = false;
 
@@ -20,10 +23,11 @@ namespace RealEstate.Models.Domains
 
         [ForeignKey("Property")]
         public int? PropertyId { get; set; }
-        public virtual Property? Property { get; set; }
-
-        [ForeignKey("Product")]
-        public int? ProductId { get; set; }
-        public virtual Product? Product { get; set; }
+        public virtual Property? Property { get; set; }  
+    }
+    public enum AppointmentType
+    {
+        Virtual,
+        InPerson
     }
 }
