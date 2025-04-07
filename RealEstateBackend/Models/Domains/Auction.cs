@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using RealEstate.Models.Attributes;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RealEstate.Models.Domains
@@ -15,9 +16,11 @@ namespace RealEstate.Models.Domains
         public DateTime EndTime { get; set; }    
 
         [Column(TypeName = "decimal(18,2)")]
+        [NonNegative]
         public decimal StartPrice { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
+        [NonNegative]
         public decimal BuyNowPrice { get; set; }
 
         public bool IsDeleted { get; set; } = false;
