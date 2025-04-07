@@ -10,6 +10,9 @@ namespace RealEstate.Models.Domains
 
         public virtual ICollection<Message>? Messages { get; set; }
 
-        public virtual ICollection<Conversation>? Conversations { get; set; }
+        public virtual ICollection<Conversation>? FirstParticipantConversations { get; set; }
+
+        public virtual ICollection<Conversation>? SecondParticipantConversations { get; set; }
+
     }
 }
