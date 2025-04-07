@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using RealEstate.Models.Attributes;
 namespace RealEstate.Models.Domains
 {
     public class Property
@@ -16,6 +17,7 @@ namespace RealEstate.Models.Domains
         public PropertyType Type { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
+        [NonNegative]
         public decimal Price { get; set; }
 
         public bool IsAuction { get; set; } = false;
