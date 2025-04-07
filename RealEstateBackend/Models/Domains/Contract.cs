@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RealEstate.Models.Domains
@@ -19,7 +18,7 @@ namespace RealEstate.Models.Domains
 
         [ForeignKey("Property")]
         public int? PropertyId { get; set; }
-        public virtual Models.Domains.Property? Property { get; set; }
+        public virtual Property? Property { get; set; }
 
     }
 }

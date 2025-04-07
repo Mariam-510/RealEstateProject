@@ -20,5 +20,9 @@ namespace RealEstate.Models.Domains
         [ForeignKey("Account")]
         public string? AccountId { get; set; }
         public virtual Account? Account { get; set; }
+
+        public virtual ICollection<Property>? Properties { get; set; }
+
+
     }
 }
