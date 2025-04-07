@@ -6,8 +6,6 @@ namespace RealEstate.Data
 {
     public class AppDbContext : IdentityDbContext<Account>
     {
-<<<<<<< Updated upstream
-=======
         #region DBSETS
         public virtual DbSet<Admin> Admins { get; set; }
         public virtual DbSet<Agent> Agents { get; set; }
@@ -23,11 +21,19 @@ namespace RealEstate.Data
         public virtual DbSet<Conversation> Conversations { get; set; }
         public virtual DbSet<PropertyBid> PropertyBids { get; set; } 
         #endregion
-
->>>>>>> Stashed changes
+        
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            //----------------------------------------------------------------------------------
+            //SeedRoles
+            DbInitializer.SeedRoles(builder);
+
         }
 
     }

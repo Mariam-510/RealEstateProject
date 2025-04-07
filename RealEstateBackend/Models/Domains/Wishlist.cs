@@ -20,7 +20,6 @@ namespace RealEstate.Models.Domains
 
         public virtual Buyer? Buyer { get; set; }
 
-
         [ForeignKey("Property")]
         public int? PropertyId { get; set; }
 

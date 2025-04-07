@@ -38,6 +38,7 @@ namespace RealEstate.Models.Domains
         public virtual ICollection<OrderItem>? OrderItems { get; set; }
 
         public virtual ICollection<Wishlist>? Wishlist { get; set; }
+
     }
 
 }
