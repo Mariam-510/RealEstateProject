@@ -20,8 +20,11 @@ namespace RealEstate.Data
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Conversation> Conversations { get; set; }
         public virtual DbSet<PropertyBid> PropertyBids { get; set; } 
+        public virtual DbSet<Property> Properties { get; set; }
+        public virtual DbSet<Auction> Auctions { get; set; }
+        public virtual DbSet<Appointment> Appointments { get; set; }
         #endregion
-        
+
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
@@ -33,7 +36,6 @@ namespace RealEstate.Data
             //----------------------------------------------------------------------------------
             //SeedRoles
             DbInitializer.SeedRoles(builder);
-
         }
 
     }
