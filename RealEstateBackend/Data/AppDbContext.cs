@@ -23,6 +23,7 @@ namespace RealEstate.Data
         public virtual DbSet<Property> Properties { get; set; }
         public virtual DbSet<Auction> Auctions { get; set; }
         public virtual DbSet<Appointment> Appointments { get; set; }
+        public virtual DbSet<Payment> Payments { get; set; }
         #endregion
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)

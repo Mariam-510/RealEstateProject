@@ -1,4 +1,4 @@
-﻿namespace RealEstate.Models.DTOs.EmailDto
+﻿namespace RealEstate.Models.Dtos.EmailDto
 {
     public class EmailDto
     {

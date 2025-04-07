@@ -2,7 +2,7 @@
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
-using RealEstate.Models.DTOs.EmailDto;
+using RealEstate.Models.Dtos.EmailDto;
 
 namespace RealEstate.Services
 {
