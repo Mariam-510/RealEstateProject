@@ -8,6 +8,7 @@ using RealEstate.Data;
 using RealEstate.Models.Domains;
 using Microsoft.OpenApi.Models;
 using RealEstate.Models.Attributes;
+using RealEstate.Repositories;
 
 namespace RealEstate
 {
@@ -75,6 +76,7 @@ namespace RealEstate
                 options.Password.RequiredUniqueChars = 1;
             });
             builder.Services.AddScoped<IPasswordValidator<Account>, PasswordLengthValidator<Account>>();
+            builder.Services.AddScoped<IProduct, ProductRepository>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             options.TokenValidationParameters = new TokenValidationParameters
