@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RealEstate.Models.Domains
@@ -14,7 +15,7 @@ namespace RealEstate.Models.Domains
         [RegularExpression("^[a-zA-Z\\s]+$", ErrorMessage = "Name must contain only letters.")]
         public string Name { get; set; }
 
-        public string CommercialRegister { get; set; } //->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        public string CommercialRegister { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 
@@ -22,5 +23,8 @@ namespace RealEstate.Models.Domains
         [ForeignKey("Account")]
         public string? AccountId { get; set; }
         public virtual Account? Account { get; set; }
+
+        public virtual ICollection<Property>? Properties { get; set; }
+
     }
 }
