@@ -25,6 +25,8 @@ namespace RealEstate.Models.Domains
         public string Description { get; set; }
 
         public bool IsDeleted { get; set; } = false;
+
+        public ICollection<Subscription> Subscriptions { get; set; }
     }
 
     public enum BillingInterval
