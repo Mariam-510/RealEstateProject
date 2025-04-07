@@ -20,17 +20,15 @@ namespace RealEstate.Models.Domains
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         [NonNegative]
-        public decimal Totalamount { get; set; }
+        public decimal TotalAmount { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 
-     
-
         [ForeignKey("Buyer")]
-        public int BuyerId { get; set; }
-        public virtual Buyer Buyer { get; set; }
+        public int? BuyerId { get; set; }
+        public virtual Buyer? Buyer { get; set; }
 
-        public virtual ICollection<OrderItem> OrderItems { get; set; }
+        public virtual ICollection<OrderItem>? OrderItems { get; set; }
     }
 
     public enum OrderStatus

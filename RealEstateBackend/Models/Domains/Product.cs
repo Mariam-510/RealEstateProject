@@ -7,7 +7,6 @@ namespace RealEstate.Models.Domains
 {
     public class Product
     {
-
         [Key]
         public int Id { get; set; }
 
@@ -16,7 +15,6 @@ namespace RealEstate.Models.Domains
         public string Name { get; set; }
 
         [Length(1, 200)]
-        [Required]
         public string? Description { get; set; }
 
         [NonNegative]
@@ -27,17 +25,19 @@ namespace RealEstate.Models.Domains
         [NonNegative]
         [Required]
         public int Quantity { get; set; }
+
         public bool IsUsed { get; set; } = false;
 
         public bool IsDeleted { get; set; } = false;
 
         [ForeignKey("Category")]
         public int? CategoryID { get; set; }
+
         public virtual Category? Category { get; set; }
+
         public virtual ICollection<OrderItem>? OrderItems { get; set; }
+
         public virtual ICollection<Wishlist>? Wishlist { get; set; }
-
-
 
     }
 

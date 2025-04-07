@@ -15,16 +15,16 @@ namespace RealEstate.Models.Domains
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         [NonNegative]
-        public decimal Subtotal { get; set; }
+        public decimal Price { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 
         [ForeignKey("Order")]
-        public int OrderID { get; set; }
-        public virtual Order Order { get; set; }
+        public int? OrderID { get; set; }
+        public virtual Order? Order { get; set; }
 
         [ForeignKey("Product")]
-        public int ProductID { get; set; }
-        public virtual Product Product { get; set; }
+        public int? ProductID { get; set; }
+        public virtual Product? Product { get; set; }
     }
 }

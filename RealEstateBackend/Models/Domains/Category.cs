@@ -6,10 +6,13 @@ namespace RealEstate.Models.Domains
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         [Length(1,50)]
         public string Name { get; set; }
-        public virtual ICollection<Product>? ProductList { get; set; }
 
+        public bool IsDeleted { get; set; } = false;
+
+        public virtual ICollection<Product>? Products { get; set; }
     }
 }

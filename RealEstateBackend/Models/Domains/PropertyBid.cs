@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using RealEstate.Models.Attributes;
 
 namespace RealEstate.Models.Domains
 {
@@ -11,11 +12,13 @@ namespace RealEstate.Models.Domains
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
+        [NonNegative]
         public decimal BidAmount { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime Timestamp { get; set; } = DateTime.Now;
+
         public bool IsDeleted { get; set; } = false;
 
         [ForeignKey("Buyer")]
@@ -23,7 +26,9 @@ namespace RealEstate.Models.Domains
 
         [ForeignKey("Auction")]
         public int? AuctionId { get; set; }
+
         public Auction? Auction { get; set; }
+
         public Buyer? Buyer { get; set; }
     }
 }

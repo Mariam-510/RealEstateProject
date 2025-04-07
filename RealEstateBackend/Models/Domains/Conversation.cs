@@ -14,12 +14,21 @@ namespace RealEstate.Models.Domains
 
         [ForeignKey("SecondAccount")]
         public string? SecondAccountId { get; set; }
+
         public ConversationStatus Status { get; set; } = ConversationStatus.Pending;
+        
+        [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        [DataType(DataType.DateTime)]
         public DateTime? LastMessageAt { get; set; }
-        public bool IsDeleted { get; set; }
+
+        public bool IsDeleted { get; set; } = false;
+
         public virtual Account? FirstAccount { get; set; }
+
         public virtual Account? SecondAccount { get; set; }
+
         public virtual ICollection<Message>? Messages { get; set; }
     }
 
