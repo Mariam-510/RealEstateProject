@@ -8,11 +8,9 @@ namespace RealEstate.Models.Domains
         [Key]
         public int Id { get; set; }
 
-        [Required]
         [NonNegative]
         public int Quantity { get; set; }
 
-        [Required]
         [Column(TypeName = "decimal(18,2)")]
         [NonNegative]
         public decimal Price { get; set; }

@@ -11,8 +11,9 @@ namespace RealEstate.Models.Domains
 
         public string? Description { get; set; } 
 
-        public string Location { get; set; } 
+        public string Location { get; set; }
 
+        [EnumDataType(typeof(PropertyType))]
         public PropertyType Type { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
@@ -20,8 +21,10 @@ namespace RealEstate.Models.Domains
 
         public bool IsAuction { get; set; } = false;
 
+        [EnumDataType(typeof(PropertyStatus))]
         public PropertyStatus Status { get; set; }
 
+        [EnumDataType(typeof(PropertyCategory))]
         public PropertyCategory PropertyCategory { get; set; }
 
         public bool IsDeleted { get; set; } = false;
