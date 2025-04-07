@@ -30,5 +30,9 @@ namespace RealEstate.Data
             DbInitializer.SeedRoles(builder);
 
         }
+
+        public virtual DbSet<Message> Messages { get; set; }
+        public virtual DbSet<Conversation> Conversations { get; set; }
+        public virtual DbSet<PropertyBid> PropertyBids { get; set; }
     }
 }
