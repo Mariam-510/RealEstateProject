@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System.Reflection.Emit;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Models.Domains;
 
@@ -35,6 +36,18 @@ namespace RealEstate.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<Conversation>()
+                .HasOne(c => c.FirstAccount)
+                .WithMany(a => a.FirstParticipantConversations)
+                .HasForeignKey(c => c.FirstAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Conversation>()
+                .HasOne(c => c.SecondAccount)
+                .WithMany(a => a.SecondParticipantConversations)
+                .HasForeignKey(c => c.SecondAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             //----------------------------------------------------------------------------------
             //SeedRoles
