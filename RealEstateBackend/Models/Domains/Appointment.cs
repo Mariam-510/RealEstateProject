@@ -12,6 +12,7 @@ namespace RealEstate.Models.Domains
         [DataType(DataType.DateTime)]
         public DateTime ScheduledTime { get; set; }
 
+        [EnumDataType(typeof(AppointmentType))]
         public AppointmentType Type { get; set; } 
 
         public bool IsDeleted { get; set; } = false;

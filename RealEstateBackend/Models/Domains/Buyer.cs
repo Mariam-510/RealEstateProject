@@ -8,7 +8,6 @@ namespace RealEstate.Models.Domains
         [Key]
         public int Id { get; set; }
 
-        [Required]
         [MaxLength(50)]
         [MinLength(1)]
         [RegularExpression("^[a-zA-Z\\s]+$", ErrorMessage = "Name must contain only letters.")]
