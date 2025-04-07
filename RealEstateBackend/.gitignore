@@ -13,7 +13,9 @@ packages/
 *.user
 *.suo
 *.userprefs
-*.csproj.user
+
+# Project-specific user file
+RealEstate.csproj.user
 
 # IDE-specific files (e.g., Rider, VS Code)
 .idea/
