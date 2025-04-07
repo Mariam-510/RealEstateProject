@@ -7,5 +7,12 @@ namespace RealEstate.Models.Domains
     {
         [DataType(DataType.DateTime)]
         public DateTime CteatedAt { get; set; } = DateTime.Now;
+
+        public virtual ICollection<Message>? Messages { get; set; }
+
+        public virtual ICollection<Conversation>? FirstParticipantConversations { get; set; }
+
+        public virtual ICollection<Conversation>? SecondParticipantConversations { get; set; }
+
     }
 }

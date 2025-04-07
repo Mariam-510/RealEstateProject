@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System.Reflection.Emit;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Models.Domains;
 
 namespace RealEstate.Data
 {
-    public class AppDbContext : IdentityDbContext<Account>
+    public class RealEstateDbContext : IdentityDbContext<Account>
     {
         #region DBSETS
         public virtual DbSet<Admin> Admins { get; set; }
@@ -23,15 +24,28 @@ namespace RealEstate.Data
         public virtual DbSet<Property> Properties { get; set; }
         public virtual DbSet<Auction> Auctions { get; set; }
         public virtual DbSet<Appointment> Appointments { get; set; }
+        public virtual DbSet<Payment> Payments { get; set; }
         #endregion
 
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        public RealEstateDbContext(DbContextOptions<RealEstateDbContext> options) : base(options)
         {
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<Conversation>()
+                .HasOne(c => c.FirstAccount)
+                .WithMany(a => a.FirstParticipantConversations)
+                .HasForeignKey(c => c.FirstAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Conversation>()
+                .HasOne(c => c.SecondAccount)
+                .WithMany(a => a.SecondParticipantConversations)
+                .HasForeignKey(c => c.SecondAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             //----------------------------------------------------------------------------------
             //SeedRoles

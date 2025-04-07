@@ -54,15 +54,15 @@ namespace RealEstate
                 });
             });
 
-            builder.Services.AddDbContext<AppDbContext>(opt =>
-                opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+            builder.Services.AddDbContext<RealEstateDbContext>(opt =>
+                opt.UseSqlServer(builder.Configuration.GetConnectionString("RealEstateConnection"))
             );
 
 
             builder.Services.AddIdentityCore<Account>()
                 .AddRoles<IdentityRole>()
                 .AddTokenProvider<DataProtectorTokenProvider<Account>>("RealEstate")
-                .AddEntityFrameworkStores<AppDbContext>()
+                .AddEntityFrameworkStores<RealEstateDbContext>()
                 .AddDefaultTokenProviders();
 
 
