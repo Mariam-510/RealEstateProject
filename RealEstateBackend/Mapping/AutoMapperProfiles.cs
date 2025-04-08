@@ -18,6 +18,9 @@ namespace RealEstate.Mapping
 
             CreateMap<RegisterAgentDto, Agent>().ReverseMap();
 
+            CreateMap<Payment, Agent>().ReverseMap();
+
+
         }
     }
 }

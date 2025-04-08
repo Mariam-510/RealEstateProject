@@ -18,11 +18,15 @@ namespace RealEstate.Models.Domains
 
         [EnumDataType(typeof(PaymentMethod))]
         public PaymentMethod PaymentMethod { get; set; }
+
+        public string? StripePaymentIntentId { get; set; } 
+        public string? PayPalOrderId { get; set; }   
+
     }
 
     public enum PaymentMethod
     {
         PayPal,
-        Strip
+        Stripe
     }
 }
