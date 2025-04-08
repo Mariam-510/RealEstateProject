@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Data;
 using RealEstate.Models.Domains;
+using RealEstate.Models.Dtos;
 using RealEstate.Repositories;
 using RealEstate.Services;
 using Stripe;
@@ -64,33 +65,53 @@ namespace RealEstate.Controllers
         }
 
         [HttpPost("create-stripe-checkout-session")]
-        public IActionResult CreateStripeCheckoutSession([FromBody] decimal amount)
+        public async Task<IActionResult> CreateStripeCheckoutSessionAsync([FromQuery] decimal amount)
         {
-            var session = _stripeService.CreateCheckoutSession(
-                amount,
-                "https://localhost:4200/payment-success?sessionId={CHECKOUT_SESSION_ID}",
-                "https://localhost:4200/payment-cancelled"
-            );
 
-            return Ok(new { url = session.Url, sessionId = session.Id });
-        }
+            CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest
+            {
+                Amount = amount,
+                BuyerId = null, // Replace with actual buyer ID
+                OrderId = null // Replace with actual order ID
+            };
+            var metadata = new Dictionary<string, string>
+    {
+        { "OrderId", request.OrderId.ToString() },
+        { "BuyerId", request.BuyerId.ToString() }
+    };
 
-        [HttpGet("payment-success")]
-        public async Task<IActionResult> PaymentSuccess([FromQuery] string sessionId)
-        {
             try
             {
+                var session = _stripeService.CreateCheckoutSession(
+                    request.Amount,
+                    $"https://localhost:4200/payment-success?sessionId={{CHECKOUT_SESSION_ID}}",
+                    //"https://localhost:4200/payment-cancelled",
+                    "https://facebook.com",
+                    metadata
+                );
+
+                await PaymentSuccess(session.Id);
+                return Ok(new { url = session.Url, sessionId = session.Id });
+            }
+            catch
+            {
+                return BadRequest("Payment was unsuccessful");
+            }
+
+
+        }
+
+
+
+        [HttpGet("payment-success")]
+        public async Task PaymentSuccess([FromQuery] string sessionId)
+        {
+            
                 //Retrieve the session from Stripe
                 var sessionService = new SessionService();
 
                 var session = await sessionService.GetAsync(sessionId);
-
-
-                // Verify the payment was successful
-                if (session.PaymentStatus != "paid")
-                {
-                    return BadRequest("Payment was not successful");
-                }
+                                               
 
                 // Get the amount paid (convert back from cents to dollars)
                 var amount = session.AmountTotal / 100m;
@@ -109,13 +130,8 @@ namespace RealEstate.Controllers
                 await _paymentRepository.AddAsync(payment);
 
                 // Redirect to a success page in your Angular app
-                return Redirect("https://localhost:4200/payment-success-page");
-            }
-            catch (Exception ex)
-            {
-                
-                return StatusCode(500, "An error occurred while processing your payment");
-            }
+                return ;
+           
         }
 
 

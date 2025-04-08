@@ -53,7 +53,7 @@ namespace RealEstate.Services
         //    return session.Url;
         //}
 
-        public Session CreateCheckoutSession(decimal amount, string successUrl, string cancelUrl)
+        public Session CreateCheckoutSession(decimal amount, string successUrl, string cancelUrl, Dictionary<string, string> metadata = null)
         {
             var options = new SessionCreateOptions
             {
@@ -75,13 +75,13 @@ namespace RealEstate.Services
             },
         },
                 Mode = "payment",
-                SuccessUrl = successUrl,   // example: https://localhost:4200/payment-success?sessionId={CHECKOUT_SESSION_ID}
+                SuccessUrl = successUrl,
                 CancelUrl = cancelUrl,
+                Metadata = metadata 
             };
 
             var service = new SessionService();
-            var session = service.Create(options);
-            return session;
+            return service.Create(options);
         }
     }
 

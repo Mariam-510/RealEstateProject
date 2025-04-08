@@ -23,11 +23,11 @@ namespace RealEstate.Models.Domains
 
 
         [ForeignKey("Order")]
-        public int OrderId { get; set; }
+        public int? OrderId { get; set; }
         public virtual Order Order { get; set; } = null!;
 
         [ForeignKey("Buyer")]
-        public int BuyerId { get; set; }
+        public int? BuyerId { get; set; }
         public virtual Buyer Buyer { get; set; } = null!;
 
     }
