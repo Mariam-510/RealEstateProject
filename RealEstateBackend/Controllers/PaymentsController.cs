@@ -6,6 +6,7 @@ using RealEstate.Models.Domains;
 using RealEstate.Repositories;
 using RealEstate.Services;
 using Stripe;
+using Stripe.Checkout;
 
 namespace RealEstate.Controllers
 {
@@ -35,7 +36,7 @@ namespace RealEstate.Controllers
             {
                 Amount = amount,
                 PaymentMethod = Models.Domains.PaymentMethod.Stripe,
-                StripePaymentIntentId = paymentIntent.Id,
+                //StripePaymentIntentId = paymentIntent.Id,
                 PaidAt = DateTime.UtcNow,
             };
 
@@ -53,7 +54,7 @@ namespace RealEstate.Controllers
             {
                 Amount = amount,
                 PaymentMethod = Models.Domains.PaymentMethod.PayPal,
-                PayPalOrderId = orderId,
+                //PayPalOrderId = orderId,
                 PaidAt = DateTime.UtcNow
             };
 
@@ -61,6 +62,68 @@ namespace RealEstate.Controllers
 
             return Ok(new { orderId });
         }
+
+        [HttpPost("create-stripe-checkout-session")]
+        public IActionResult CreateStripeCheckoutSession([FromBody] decimal amount)
+        {
+            var session = _stripeService.CreateCheckoutSession(
+                amount,
+                "https://localhost:4200/payment-success?sessionId={CHECKOUT_SESSION_ID}",
+                "https://localhost:4200/payment-cancelled"
+            );
+
+            return Ok(new { url = session.Url, sessionId = session.Id });
+        }
+
+        [HttpGet("payment-success")]
+        public async Task<IActionResult> PaymentSuccess([FromQuery] string sessionId)
+        {
+            try
+            {
+                //Retrieve the session from Stripe
+                var sessionService = new SessionService();
+
+                var session = await sessionService.GetAsync(sessionId);
+
+
+                // Verify the payment was successful
+                if (session.PaymentStatus != "paid")
+                {
+                    return BadRequest("Payment was not successful");
+                }
+
+                // Get the amount paid (convert back from cents to dollars)
+                var amount = session.AmountTotal / 100m;
+
+                
+                var payment = new Payment
+                {
+                    Amount = (decimal)amount,
+                    PaidAt = DateTime.UtcNow,
+                    PaymentMethod = Models.Domains.PaymentMethod.Stripe,
+                    //OrderId = int.Parse(session.Metadata["OrderId"]), // if stored in metadata
+                    //BuyerId = int.Parse(session.Metadata["BuyerId"])   // if stored in metadata
+                };
+
+                // Save to database
+                await _paymentRepository.AddAsync(payment);
+
+                // Redirect to a success page in your Angular app
+                return Redirect("https://localhost:4200/payment-success-page");
+            }
+            catch (Exception ex)
+            {
+                
+                return StatusCode(500, "An error occurred while processing your payment");
+            }
+        }
+
+
+
+
+
+
+
 
     }
 }
