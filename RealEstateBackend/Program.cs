@@ -8,6 +8,9 @@ using RealEstate.Data;
 using RealEstate.Models.Domains;
 using Microsoft.OpenApi.Models;
 using RealEstate.Models.Attributes;
+using RealEstate.JWT;
+using RealEstate.Repositories;
+using RealEstate.Services;
 
 namespace RealEstate
 {
@@ -92,6 +95,12 @@ namespace RealEstate
             // Add Scoped for repositories
 
             builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddScoped<IBuyerRepository, BuyerRepository>();
+            builder.Services.AddScoped<ISellerRepository, SellerRepository>();
+            builder.Services.AddScoped<IAgentRepository, AgentRepository>();
+            builder.Services.AddScoped<JWTService>();
+            builder.Services.AddScoped<FileService>();
+            builder.Services.AddScoped<EmailService>();
 
             var app = builder.Build();
 
