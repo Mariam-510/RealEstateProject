@@ -11,6 +11,7 @@ using RealEstate.Models.Attributes;
 using RealEstate.JWT;
 using RealEstate.Repositories;
 using RealEstate.Services;
+using RealEstate.Models;
 
 namespace RealEstate
 {
@@ -105,6 +106,8 @@ namespace RealEstate
 
             // Register other services
             builder.Services.AddSingleton<StripeService>();
+            builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
+            builder.Services.AddHttpClient<PayPalService>();
 
 
             // string configurations
