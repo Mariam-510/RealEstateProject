@@ -28,41 +28,43 @@ namespace RealEstate.Controllers
 
         }
 
-        [HttpPost("create-payment-intent")]
-        public async Task<IActionResult> CreatePaymentIntent([FromBody] decimal amount)
-        {
-            var paymentIntent = await _stripeService.CreatePaymentIntentAsync(amount);
 
-            var payment = new Payment
-            {
-                Amount = amount,
-                PaymentMethod = Models.Domains.PaymentMethod.Stripe,
-                //StripePaymentIntentId = paymentIntent.Id,
-                PaidAt = DateTime.UtcNow,
-            };
+        //Old version
+        //[HttpPost("create-payment-intent")]
+        //public async Task<IActionResult> CreatePaymentIntent([FromBody] decimal amount)
+        //{
+        //    var paymentIntent = await _stripeService.CreatePaymentIntentAsync(amount);
 
-            await _paymentRepository.AddAsync(payment);
+        //    var payment = new Payment
+        //    {
+        //        Amount = amount,
+        //        PaymentMethod = Models.Domains.PaymentMethod.Stripe,
+        //        //StripePaymentIntentId = paymentIntent.Id,
+        //        PaidAt = DateTime.UtcNow,
+        //    };
 
-            return Ok(new { clientSecret = paymentIntent.ClientSecret });
-        }
+        //    await _paymentRepository.AddAsync(payment);
 
-        [HttpPost("create-paypal-order")]
-        public async Task<IActionResult> CreatePayPalOrder([FromBody] decimal amount)
-        {
-            var orderId = await _paypalService.CreateOrderAsync(amount);
+        //    return Ok(new { clientSecret = paymentIntent.ClientSecret });
+        //}
 
-            var payment = new Payment
-            {
-                Amount = amount,
-                PaymentMethod = Models.Domains.PaymentMethod.PayPal,
-                //PayPalOrderId = orderId,
-                PaidAt = DateTime.UtcNow
-            };
+        //[HttpPost("create-paypal-order")]
+        //public async Task<IActionResult> CreatePayPalOrder([FromBody] decimal amount)
+        //{
+        //    var orderId = await _paypalService.CreateOrderAsync(amount);
 
-            await _paymentRepository.AddAsync(payment);
+        //    var payment = new Payment
+        //    {
+        //        Amount = amount,
+        //        PaymentMethod = Models.Domains.PaymentMethod.PayPal,
+        //        //PayPalOrderId = orderId,
+        //        PaidAt = DateTime.UtcNow
+        //    };
 
-            return Ok(new { orderId });
-        }
+        //    await _paymentRepository.AddAsync(payment);
+
+        //    return Ok(new { orderId });
+        //}
 
         [HttpPost("create-stripe-checkout-session")]
         public async Task<IActionResult> CreateStripeCheckoutSessionAsync([FromQuery] decimal amount)
@@ -135,7 +137,49 @@ namespace RealEstate.Controllers
         }
 
 
+        [HttpPost("create-paypal-order")]
+        public async Task<IActionResult> CreatePayPalOrder([FromQuery] decimal amount)
+        {
+            try
+            {
+                var orderId = await _paypalService.CreateOrderAsync(amount);
 
+                // Assume PayPal will redirect to success URL with orderId
+                var redirectUrl = $"https://localhost:4200/paypal-success?orderId={orderId}";
+                return Ok(new { url = redirectUrl, orderId });
+            }
+            catch
+            {
+                return BadRequest("Failed to create PayPal order.");
+            }
+        }
+
+        [HttpGet("paypal-success")]
+        public async Task<IActionResult> PayPalSuccess([FromQuery] string orderId)
+        {
+            var result = await _paypalService.VerifyPaymentAsync(orderId);
+
+            if (result.IsSuccess)
+            {
+                var payment = new Payment
+                {
+                    Amount = result.Amount,
+                    PaymentMethod = Models.Domains.PaymentMethod.PayPal,
+                    PaidAt = DateTime.UtcNow,
+                    // Add orderId, buyerId, etc. if needed
+                };
+
+                await _paymentRepository.AddAsync(payment);
+            }
+
+
+            return Ok("Payment recorded.");
+        }
+
+
+
+
+        
 
 
 

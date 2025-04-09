@@ -106,7 +106,9 @@ namespace RealEstate
 
             // Register other services
             builder.Services.AddSingleton<StripeService>();
-            builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
+            // builder.Services.AddSingleton<PayPalService>();// Maybe review if it's better to use singleton or scoped here later
+            builder.Services.AddScoped<PayPalService>();
+            //builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
             builder.Services.AddHttpClient<PayPalService>();
 
 
