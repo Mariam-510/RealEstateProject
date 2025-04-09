@@ -1,0 +1,147 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RealEstate.Mapping;
+using RealEstate.Models.Domains;
+using RealEstate.Models.DTOs.Product;
+using RealEstate.Models.DTOs.Wishlist;
+using RealEstate.Repositories;
+using RealEstate.Services;
+
+namespace RealEstate.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class WishListController : ControllerBase
+    {
+        public IWishListRepository _WishlistRepository { get; }
+        public IProductRepository _productRepository { get; }
+
+        public WishListController(IWishListRepository W , IProductRepository P)
+        {
+            _WishlistRepository = W;
+            _productRepository = P;
+
+        }
+        [HttpPost("ToggleProductWishlist")]
+        public async Task<IActionResult> ToggleProductWishlist([FromForm] WishListProductDTO wishListProductDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var Wishlist = await _WishlistRepository.GettByBuyerAndProductIdAsync(wishListProductDTO.ProductId, wishListProductDTO.BuyerId);
+            if (Wishlist==null)
+            {
+                var ProductFound= await _productRepository.GetByIdAsync(wishListProductDTO.ProductId);
+                if(ProductFound==null)
+                {
+                    return NotFound("Product ID Not Found !");
+                }
+
+                Wishlist wislistModel = wishListProductDTO.ToWishListProductModel();
+                if (wislistModel != null && wislistModel.ProductId.HasValue && wislistModel.BuyerId.HasValue)
+                {
+                    await _WishlistRepository.CreateProductAsync(wislistModel);
+                    return Ok("Product WishList Created Successfully");
+                }
+                else
+                {
+                    return BadRequest("Invalid Wishlist data.");
+                }
+
+            }
+           
+            else
+            {
+                bool newStatus = !Wishlist.IsDeleted;
+                Wishlist Updatedwishlist= await _WishlistRepository.UpdateProductAsync(
+                    Wishlist.BuyerId.Value,
+                    Wishlist.ProductId.Value,
+                    newStatus
+                );
+                if( Updatedwishlist==null )
+                {
+                    return BadRequest("Sorry You Can`t Update because Product is Deleted !!");
+                }
+                return Ok("Product WishList Found and Updated Successfully");
+            }
+        }
+
+
+        [HttpPost("TogglePropertyWishlist")]
+        public async Task<IActionResult> TogglePropertyWishlist([FromForm] WishListPropertyDTO wishListPropertyDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var Wishlist = await _WishlistRepository.GettByBuyerAndpropertyIdAsync(wishListPropertyDTO.PropertyID, wishListPropertyDTO.BuyerId);
+            if (Wishlist == null)
+            {
+                Wishlist wislistModel = wishListPropertyDTO.ToWishListPropertyModel();
+                if (wislistModel != null && wislistModel.PropertyId.HasValue && wislistModel.BuyerId.HasValue)
+                {
+                    
+                    await _WishlistRepository.CreatePropertyAsync(wislistModel);
+                    return Ok("Property WishList Created Successfully");
+                }
+                else
+                {
+                    return BadRequest("Invalid Wishlist data.");
+                }
+
+            }
+
+            else
+            {
+                bool newStatus = !Wishlist.IsDeleted;
+                Wishlist Updatedwishlist = await _WishlistRepository.UpdatePropertyAsync(
+                    Wishlist.BuyerId.Value,
+                    Wishlist.PropertyId.Value,
+                    newStatus
+                );
+                if (Updatedwishlist == null)
+                {
+                    return BadRequest("Sorry You Can`t Update because Property is Deleted !!");
+                }
+                return Ok("Property WishList Found and Updated Successfully");
+            }
+        }
+
+
+        [HttpGet("GetAllproductByBuyerIDAsync/{BuyerID}")]
+        public async Task<IActionResult> GetAllPrductByBuyerIDAsync(int BuyerID)
+        {
+            List<Product>? productList = await _WishlistRepository.GetAllProductByBuyerIDAsync(BuyerID);
+
+            if (productList == null || !productList.Any())
+            {
+                return NotFound("Buyer ID not found or no product found!");
+            }
+
+            List<ProductDTOShow> productListDTO = productList.ToProductDTOShowList();
+            return Ok(productListDTO);
+
+        }
+
+        [HttpGet("GetAllPropertyByBuyerIDAsync/{BuyerID}")]
+        public async Task<IActionResult> GetAllPropertyByBuyerIDAsync(int BuyerID)
+        {
+            List<Property>? propertyList = await _WishlistRepository.GetAllPropertyByBuyerIDAsync(BuyerID);
+
+            if (propertyList == null )
+            {
+                return NotFound("Buyer ID not found!");
+            }
+            if (!propertyList.Any())
+            {
+                return Ok("No properties found for this buyer.");
+            }
+            return Ok(propertyList);
+        }
+
+
+
+    }
+}
