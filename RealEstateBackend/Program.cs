@@ -10,6 +10,8 @@ using Microsoft.OpenApi.Models;
 using RealEstate.Models.Attributes;
 using RealEstate.Repositories;
 using RealEstate.Services;
+using RealEstate.JWT;
+using RealEstate.Models;
 
 namespace RealEstate
 {
@@ -100,6 +102,22 @@ namespace RealEstate
             // Add Scoped for repositories
 
             builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddScoped<IBuyerRepository, BuyerRepository>();
+            builder.Services.AddScoped<ISellerRepository, SellerRepository>();
+            builder.Services.AddScoped<IAgentRepository, AgentRepository>();
+            builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+            builder.Services.AddScoped<JWTService>();
+            builder.Services.AddScoped<FileService>();
+            builder.Services.AddScoped<EmailService>();
+
+            // Register other services
+            builder.Services.AddSingleton<StripeService>();
+            builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
+            builder.Services.AddHttpClient<PayPalService>();
+
+
+            // string configurations
+            Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
             var app = builder.Build();
 

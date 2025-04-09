@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RealEstate.Data;
 
@@ -11,9 +12,11 @@ using RealEstate.Data;
 namespace RealEstate.Migrations
 {
     [DbContext(typeof(RealEstateDbContext))]
-    partial class RealEstateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250407230819_updateName")]
+    partial class updateName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -349,8 +352,8 @@ namespace RealEstate.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AgentId")
-                        .HasColumnType("int");
+                    b.Property<decimal>("BuyNowPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
@@ -358,10 +361,10 @@ namespace RealEstate.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("PropertyId")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsLive")
+                        .HasColumnType("bit");
 
-                    b.Property<int?>("SellerId")
+                    b.Property<int?>("PropertyId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("StartPrice")
@@ -370,16 +373,9 @@ namespace RealEstate.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("AgentId");
-
                     b.HasIndex("PropertyId");
-
-                    b.HasIndex("SellerId");
 
                     b.ToTable("Auctions");
                 });
@@ -421,9 +417,6 @@ namespace RealEstate.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -608,12 +601,6 @@ namespace RealEstate.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("BuyerId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("PaidAt")
                         .HasColumnType("datetime2");
 
@@ -621,12 +608,6 @@ namespace RealEstate.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BuyerId");
-
-                    b.HasIndex("OrderId")
-                        .IsUnique()
-                        .HasFilter("[OrderId] IS NOT NULL");
 
                     b.ToTable("Payments");
                 });
@@ -643,9 +624,6 @@ namespace RealEstate.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
@@ -987,23 +965,11 @@ namespace RealEstate.Migrations
 
             modelBuilder.Entity("RealEstate.Models.Domains.Auction", b =>
                 {
-                    b.HasOne("RealEstate.Models.Domains.Agent", "Agent")
-                        .WithMany()
-                        .HasForeignKey("AgentId");
-
                     b.HasOne("RealEstate.Models.Domains.Property", "Property")
                         .WithMany()
                         .HasForeignKey("PropertyId");
 
-                    b.HasOne("RealEstate.Models.Domains.Seller", "Seller")
-                        .WithMany()
-                        .HasForeignKey("SellerId");
-
-                    b.Navigation("Agent");
-
                     b.Navigation("Property");
-
-                    b.Navigation("Seller");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Domains.Buyer", b =>
@@ -1084,21 +1050,6 @@ namespace RealEstate.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("RealEstate.Models.Domains.Payment", b =>
-                {
-                    b.HasOne("RealEstate.Models.Domains.Buyer", "Buyer")
-                        .WithMany("Payments")
-                        .HasForeignKey("BuyerId");
-
-                    b.HasOne("RealEstate.Models.Domains.Order", "Order")
-                        .WithOne("Payment")
-                        .HasForeignKey("RealEstate.Models.Domains.Payment", "OrderId");
-
-                    b.Navigation("Buyer");
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Domains.Product", b =>
@@ -1222,8 +1173,6 @@ namespace RealEstate.Migrations
 
                     b.Navigation("Orders");
 
-                    b.Navigation("Payments");
-
                     b.Navigation("PropertyBids");
 
                     b.Navigation("Wishlists");
@@ -1242,8 +1191,6 @@ namespace RealEstate.Migrations
             modelBuilder.Entity("RealEstate.Models.Domains.Order", b =>
                 {
                     b.Navigation("OrderItems");
-
-                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Domains.Product", b =>

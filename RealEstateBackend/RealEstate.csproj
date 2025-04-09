@@ -17,11 +17,15 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MimeKit" Version="4.11.0" />
+    <PackageReference Include="Stripe.net" Version="48.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
+    <Folder Include="Models\Dtos\BuyerDto\" />
+    <Folder Include="Models\Dtos\AgentDto\" />
+    <Folder Include="Models\Dtos\SellerDto\" />
   </ItemGroup>
 
 </Project>
