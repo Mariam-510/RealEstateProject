@@ -100,6 +100,8 @@ namespace RealEstate
             builder.Services.AddScoped<ISellerRepository, SellerRepository>();
             builder.Services.AddScoped<IAgentRepository, AgentRepository>();
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+            builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             builder.Services.AddScoped<JWTService>();
             builder.Services.AddScoped<FileService>();
             builder.Services.AddScoped<EmailService>();
@@ -109,6 +111,8 @@ namespace RealEstate
             // builder.Services.AddSingleton<PayPalService>();// Maybe review if it's better to use singleton or scoped here later
             builder.Services.AddScoped<PayPalService>();
             //builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
+            builder.Services.AddScoped<RealEstate.Services.SubscriptionService>();
+
             builder.Services.AddHttpClient<PayPalService>();
 
 

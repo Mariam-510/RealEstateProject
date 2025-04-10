@@ -4,6 +4,7 @@ using RealEstate.Models.Domains;
 
 namespace RealEstate.Repositories
 {
+
     public class AgentRepository : IAgentRepository
     {
         private readonly RealEstateDbContext dbContext;

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos.AccountDto;
+using RealEstate.Models.Dtos.SubscriptionDto;
 
 namespace RealEstate.Mapping
 {
@@ -20,6 +21,11 @@ namespace RealEstate.Mapping
 
             CreateMap<Payment, Agent>().ReverseMap();
 
+            CreateMap<Subscription, SubscriptionDto>().ReverseMap();
+            CreateMap<CreateSubscriptionDto, Subscription>();
+
+            CreateMap<SubscriptionPlan, SubscriptionPlanDto>().ReverseMap();
+            CreateMap<CreateSubscriptionPlanDto, SubscriptionPlan>();
 
         }
     }
