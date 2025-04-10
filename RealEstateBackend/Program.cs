@@ -10,8 +10,10 @@ using Microsoft.OpenApi.Models;
 using RealEstate.Models.Attributes;
 using RealEstate.Repositories;
 using RealEstate.Services;
+
 using RealEstate.JWT;
 using RealEstate.Models;
+
 
 namespace RealEstate
 {
@@ -93,6 +95,12 @@ namespace RealEstate
                 options.Password.RequiredUniqueChars = 1;
             });
             builder.Services.AddScoped<IPasswordValidator<Account>, PasswordLengthValidator<Account>>();
+            builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+            builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            builder.Services.AddScoped<IPropertyBidRepository, PropertyBidRepository>();
+            builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+
+
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IWishListRepository, WishlistRepository>();
@@ -158,6 +166,7 @@ namespace RealEstate
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseStaticFiles();
+
             app.MapControllers();
 
             app.Run();

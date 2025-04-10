@@ -10,6 +10,7 @@ namespace RealEstate.Data
         #region DBSETS
         public virtual DbSet<Admin> Admins { get; set; }
         public virtual DbSet<Agent> Agents { get; set; }
+        public virtual DbSet<Address> Addresses { get; set; }
         public virtual DbSet<Buyer> Buyers { get; set; }
         public virtual DbSet<Seller> Sellers { get; set; }
         public virtual DbSet<Contract> Contracts { get; set; }
