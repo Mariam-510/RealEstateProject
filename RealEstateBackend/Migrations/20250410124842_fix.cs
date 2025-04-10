@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RealEstate.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class fix : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,6 +33,11 @@ namespace RealEstate.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CteatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    EmailConfirmationCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CodeGeneratedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PasswordResetCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ResetCodeGeneratedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -60,7 +65,8 @@ namespace RealEstate.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -68,18 +74,21 @@ namespace RealEstate.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Payments",
+                name: "SubscriptionPlans",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PaidAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PaymentMethod = table.Column<int>(type: "int", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MaxAllowedProperties = table.Column<int>(type: "int", nullable: false),
+                    BillingInterval = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Payments", x => x.Id);
+                    table.PrimaryKey("PK_SubscriptionPlans", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -286,7 +295,8 @@ namespace RealEstate.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     AccountId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
@@ -312,6 +322,7 @@ namespace RealEstate.Migrations
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     IsUsed = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CategoryID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -325,22 +336,25 @@ namespace RealEstate.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Orders",
+                name: "Addresses",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Street = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    BuildingNum = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Apartment = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Floor = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    PhoneNum = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     BuyerId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.PrimaryKey("PK_Addresses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Orders_Buyers_BuyerId",
+                        name: "FK_Addresses_Buyers_BuyerId",
                         column: x => x.BuyerId,
                         principalTable: "Buyers",
                         principalColumn: "Id");
@@ -375,6 +389,95 @@ namespace RealEstate.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Subscriptions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SubscriptionStatus = table.Column<int>(type: "int", nullable: false),
+                    AvailableProperties = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    SellerId = table.Column<int>(type: "int", nullable: true),
+                    AgentId = table.Column<int>(type: "int", nullable: true),
+                    SubscriptionPlanId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subscriptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Subscriptions_Agents_AgentId",
+                        column: x => x.AgentId,
+                        principalTable: "Agents",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Subscriptions_Sellers_SellerId",
+                        column: x => x.SellerId,
+                        principalTable: "Sellers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Subscriptions_SubscriptionPlans_SubscriptionPlanId",
+                        column: x => x.SubscriptionPlanId,
+                        principalTable: "SubscriptionPlans",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Carts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    BuyerId = table.Column<int>(type: "int", nullable: true),
+                    SelectedAddressId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Carts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Carts_Addresses_SelectedAddressId",
+                        column: x => x.SelectedAddressId,
+                        principalTable: "Addresses",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Carts_Buyers_BuyerId",
+                        column: x => x.BuyerId,
+                        principalTable: "Buyers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    BuyerId = table.Column<int>(type: "int", nullable: true),
+                    AddressId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_Addresses_AddressId",
+                        column: x => x.AddressId,
+                        principalTable: "Addresses",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Orders_Buyers_BuyerId",
+                        column: x => x.BuyerId,
+                        principalTable: "Buyers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OrderItems",
                 columns: table => new
                 {
@@ -383,21 +486,54 @@ namespace RealEstate.Migrations
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    OrderID = table.Column<int>(type: "int", nullable: true),
-                    ProductID = table.Column<int>(type: "int", nullable: true)
+                    CartId = table.Column<int>(type: "int", nullable: true),
+                    OrderId = table.Column<int>(type: "int", nullable: true),
+                    ProductId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OrderItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OrderItems_Orders_OrderID",
-                        column: x => x.OrderID,
+                        name: "FK_OrderItems_Carts_CartId",
+                        column: x => x.CartId,
+                        principalTable: "Carts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_OrderItems_Orders_OrderId",
+                        column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_OrderItems_Products_ProductID",
-                        column: x => x.ProductID,
+                        name: "FK_OrderItems_Products_ProductId",
+                        column: x => x.ProductId,
                         principalTable: "Products",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Payments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PaidAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentMethod = table.Column<int>(type: "int", nullable: false),
+                    OrderId = table.Column<int>(type: "int", nullable: true),
+                    BuyerId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payments_Buyers_BuyerId",
+                        column: x => x.BuyerId,
+                        principalTable: "Buyers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Payments_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
                         principalColumn: "Id");
                 });
 
@@ -409,6 +545,7 @@ namespace RealEstate.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ScheduledTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     BuyerId = table.Column<int>(type: "int", nullable: true),
                     PropertyId = table.Column<int>(type: "int", nullable: true)
@@ -432,14 +569,25 @@ namespace RealEstate.Migrations
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     StartPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    BuyNowPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    IsLive = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    AgentId = table.Column<int>(type: "int", nullable: true),
+                    SellerId = table.Column<int>(type: "int", nullable: true),
                     PropertyId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Auctions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Auctions_Agents_AgentId",
+                        column: x => x.AgentId,
+                        principalTable: "Agents",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Auctions_Sellers_SellerId",
+                        column: x => x.SellerId,
+                        principalTable: "Sellers",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -459,7 +607,8 @@ namespace RealEstate.Migrations
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     AgentId = table.Column<int>(type: "int", nullable: true),
                     SellerId = table.Column<int>(type: "int", nullable: true),
-                    AuctionId = table.Column<int>(type: "int", nullable: true)
+                    AuctionId = table.Column<int>(type: "int", nullable: true),
+                    Images = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -577,6 +726,11 @@ namespace RealEstate.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Addresses_BuyerId",
+                table: "Addresses",
+                column: "BuyerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Admins_AccountId",
                 table: "Admins",
                 column: "AccountId");
@@ -636,14 +790,34 @@ namespace RealEstate.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Auctions_AgentId",
+                table: "Auctions",
+                column: "AgentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Auctions_PropertyId",
                 table: "Auctions",
                 column: "PropertyId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Auctions_SellerId",
+                table: "Auctions",
+                column: "SellerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Buyers_AccountId",
                 table: "Buyers",
                 column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Carts_BuyerId",
+                table: "Carts",
+                column: "BuyerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Carts_SelectedAddressId",
+                table: "Carts",
+                column: "SelectedAddressId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Contracts_PropertyId",
@@ -676,19 +850,41 @@ namespace RealEstate.Migrations
                 column: "SenderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItems_OrderID",
+                name: "IX_OrderItems_CartId",
                 table: "OrderItems",
-                column: "OrderID");
+                column: "CartId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItems_ProductID",
+                name: "IX_OrderItems_OrderId",
                 table: "OrderItems",
-                column: "ProductID");
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItems_ProductId",
+                table: "OrderItems",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_AddressId",
+                table: "Orders",
+                column: "AddressId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_BuyerId",
                 table: "Orders",
                 column: "BuyerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payments_BuyerId",
+                table: "Payments",
+                column: "BuyerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payments_OrderId",
+                table: "Payments",
+                column: "OrderId",
+                unique: true,
+                filter: "[OrderId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_CategoryID",
@@ -724,6 +920,21 @@ namespace RealEstate.Migrations
                 name: "IX_Sellers_AccountId",
                 table: "Sellers",
                 column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_AgentId",
+                table: "Subscriptions",
+                column: "AgentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_SellerId",
+                table: "Subscriptions",
+                column: "SellerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_SubscriptionPlanId",
+                table: "Subscriptions",
+                column: "SubscriptionPlanId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Wishlists_BuyerId",
@@ -807,6 +1018,9 @@ namespace RealEstate.Migrations
                 name: "PropertyBids");
 
             migrationBuilder.DropTable(
+                name: "Subscriptions");
+
+            migrationBuilder.DropTable(
                 name: "Wishlists");
 
             migrationBuilder.DropTable(
@@ -816,16 +1030,25 @@ namespace RealEstate.Migrations
                 name: "Conversations");
 
             migrationBuilder.DropTable(
+                name: "Carts");
+
+            migrationBuilder.DropTable(
                 name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "SubscriptionPlans");
 
             migrationBuilder.DropTable(
                 name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Buyers");
+                name: "Addresses");
 
             migrationBuilder.DropTable(
                 name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "Buyers");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
@@ -834,10 +1057,10 @@ namespace RealEstate.Migrations
                 name: "Properties");
 
             migrationBuilder.DropTable(
-                name: "Agents");
+                name: "Auctions");
 
             migrationBuilder.DropTable(
-                name: "Auctions");
+                name: "Agents");
 
             migrationBuilder.DropTable(
                 name: "Sellers");
