@@ -27,6 +27,8 @@ namespace RealEstate.Data
         public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<Subscription> Subscriptions { get; set; }
         public virtual DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+        public virtual DbSet<Address> Addresses { get; set; }
+        public virtual DbSet<Cart> Carts { get; set; }
         #endregion
 
         public RealEstateDbContext(DbContextOptions<RealEstateDbContext> options) : base(options)

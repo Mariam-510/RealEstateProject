@@ -36,6 +36,11 @@ namespace RealEstate.Repositories
                 .FirstOrDefaultAsync(a => a.Account.Id == accountId);
         }
 
+        public async Task<bool> CommercialRegisterExistsAsync(string commercialRegister)
+        {
+            return await dbContext.Agents.AnyAsync(a => a.CommercialRegister == commercialRegister && !a.IsDeleted);
+        }
+
         public async Task<Agent> CreateAsync(Agent agent)
         {
             await dbContext.Agents.AddAsync(agent);
@@ -72,7 +77,7 @@ namespace RealEstate.Repositories
                 return null;
             }
             existingAgent.IsDeleted = true;
-            existingAgent.AccountId = null;
+            //existingAgent.AccountId = null;
 
             await dbContext.SaveChangesAsync();
             return existingAgent;

@@ -71,6 +71,20 @@ namespace RealEstate
 
             builder.Services.Configure<IdentityOptions>(options =>
             {
+                //options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedEmail = true;
+            });
+
+            //Google Authentication
+            builder.Services.AddAuthentication().AddGoogle(options =>
+            {
+                options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
+                options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
+            });
+
+
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = true;
                 options.Password.RequireNonAlphanumeric = true;
@@ -110,6 +124,16 @@ namespace RealEstate
             builder.Services.AddScoped<FileService>();
             builder.Services.AddScoped<EmailService>();
 
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngularApp",
+                    policy => policy
+                        .AllowAnyOrigin() // Or use .WithOrigins("http://localhost:4200") for tighter control
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+            });
+          
             // Register other services
             builder.Services.AddSingleton<StripeService>();
             builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
@@ -127,6 +151,8 @@ namespace RealEstate
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors("AllowAngularApp");
 
             app.UseHttpsRedirection();
             app.UseAuthentication();

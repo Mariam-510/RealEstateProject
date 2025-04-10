@@ -73,7 +73,7 @@ namespace RealEstate.Repositories
                 return null;
             }
             existingBuyer.IsDeleted = true;
-            existingBuyer.AccountId = null;
+            //existingBuyer.AccountId = null;
 
             await dbContext.SaveChangesAsync();
             return existingBuyer;

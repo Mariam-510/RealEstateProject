@@ -7,6 +7,7 @@ namespace RealEstate.Repositories
         Task<List<Agent>> GetAllAsync();
         Task<Agent?> GetByIdAsync(int id);
         Task<Agent?> GetByAccountIdAsync(string accountId);
+        Task<bool> CommercialRegisterExistsAsync(string commercialRegister);
         Task<Agent> CreateAsync(Agent agent);
         Task<Agent?> UpdateAsync(int id, Agent agent);
         Task<Agent?> DeleteAsync(int id);

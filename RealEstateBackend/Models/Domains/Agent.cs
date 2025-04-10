@@ -12,9 +12,9 @@ namespace RealEstate.Models.Domains
         [Required]
         [MaxLength(50)]
         [MinLength(1)]
-        [RegularExpression("^[a-zA-Z\\s]+$", ErrorMessage = "Name must contain only letters.")]
         public string Name { get; set; }
 
+        [RegularExpression(@"^\d{6,8}$", ErrorMessage = "Commercial Register must be between 6 and 8 digits.")]
         public string CommercialRegister { get; set; }
 
         public bool IsDeleted { get; set; } = false;
