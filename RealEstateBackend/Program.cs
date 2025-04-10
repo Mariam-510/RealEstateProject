@@ -151,6 +151,9 @@ namespace RealEstate
             // string configurations
             Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
+            builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+            builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

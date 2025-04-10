@@ -39,6 +39,7 @@
 
 
   <ItemGroup>
+    <Folder Include="Models\DTOs\OrderDto\" />
 
     <Folder Include="Repositories\" />
 

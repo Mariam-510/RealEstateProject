@@ -32,7 +32,8 @@ namespace RealEstate.Models.Domains
     }
     public enum ConversationStatus
     {
+        Pending,
         Active,
-        Pending
+        Closed
     }
 }
