@@ -17,12 +17,16 @@ namespace RealEstate.Models.Domains
 
         public bool IsDeleted { get; set; } = false;
 
+        [ForeignKey("Cart")]
+        public int? CartId { get; set; }
+        public virtual Cart? Cart { get; set; }
+
         [ForeignKey("Order")]
-        public int? OrderID { get; set; }
+        public int? OrderId { get; set; }
         public virtual Order? Order { get; set; }
 
         [ForeignKey("Product")]
-        public int? ProductID { get; set; }
+        public int? ProductId { get; set; }
         public virtual Product? Product { get; set; }
     }
 }
