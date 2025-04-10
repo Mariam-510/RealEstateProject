@@ -61,20 +61,20 @@ namespace RealEstate.Mapping
             CreateMap<RegisterAgentDto, Agent>().ReverseMap();
 
             CreateMap<Seller, SellerDto>()
-                .ForMember(dest => dest.CteatedAt, opt => opt.MapFrom(src => src.Account.CteatedAt))
+                .ForMember(dest => dest.CteatedAt, opt => opt.MapFrom(src => src.Account.CreatedAt))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email));
 
             CreateMap<SellerFormDto, Seller>().ReverseMap();
 
             CreateMap<Buyer, BuyerDto>()
-                .ForMember(dest => dest.CteatedAt, opt => opt.MapFrom(src => src.Account.CteatedAt))
+                .ForMember(dest => dest.CteatedAt, opt => opt.MapFrom(src => src.Account.CreatedAt))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email));
 
             CreateMap<BuyerFormDto, Buyer>().ReverseMap();
 
 
             CreateMap<Agent, AgentDto>()
-                .ForMember(dest => dest.CteatedAt, opt => opt.MapFrom(src => src.Account.CteatedAt))
+                .ForMember(dest => dest.CteatedAt, opt => opt.MapFrom(src => src.Account.CreatedAt))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email));
 
             CreateMap<AgentFormDto, Agent>().ReverseMap();
