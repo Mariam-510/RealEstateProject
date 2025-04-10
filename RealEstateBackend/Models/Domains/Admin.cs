@@ -5,13 +5,12 @@ namespace RealEstate.Models.Domains
 {
     public class Admin
     {
-
         [Key]
         public int Id { get; set; }
 
         [Required]
         [MaxLength(50)]
-        [MinLength(3)]
+        [MinLength(1)]
         [RegularExpression("^[a-zA-Z\\s]+$", ErrorMessage = "Name must contain only letters.")]
         public string Name { get; set; }
 

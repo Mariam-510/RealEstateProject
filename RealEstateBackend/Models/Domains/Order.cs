@@ -9,15 +9,12 @@ namespace RealEstate.Models.Domains
         [Key]
         public int Id { get; set; }
 
-        [Required]
         [DataType(DataType.DateTime)]
         public DateTime OrderDate { get; set; } = DateTime.Now;
 
-        [Required]
         [EnumDataType(typeof(OrderStatus))]
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
 
-        [Required]
         [Column(TypeName = "decimal(18,2)")]
         [NonNegative]
         public decimal TotalAmount { get; set; }
@@ -27,6 +24,8 @@ namespace RealEstate.Models.Domains
         [ForeignKey("Buyer")]
         public int? BuyerId { get; set; }
         public virtual Buyer? Buyer { get; set; }
+
+        public virtual Payment? Payment { get; set; }
 
         public virtual ICollection<OrderItem>? OrderItems { get; set; }
     }

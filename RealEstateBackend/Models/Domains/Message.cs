@@ -8,25 +8,23 @@ namespace RealEstate.Models.Domains
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("Sender")]
-        public string? SenderId { get; set; }
-
-        [Required]
         [MaxLength(300)]
         public string Content { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime SentAt { get; set; } = DateTime.Now;
 
+        [EnumDataType(typeof(MessageStatus))]
         public MessageStatus Status { get; set; } = MessageStatus.Pending;
 
         public bool IsDeleted { get; set; } = false;
+        
+        [ForeignKey("Sender")]
+        public string? SenderId { get; set; }
+        public virtual Account? Sender { get; set; }
 
         [ForeignKey("Conversation")]
         public int? ConversationId { get; set; }
-
-        public virtual Account? Sender { get; set; }
-
         public virtual Conversation? Conversation { get; set; }
     }
 

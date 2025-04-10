@@ -14,12 +14,8 @@ namespace RealEstate.Models.Domains
         [FutureDate] // Custom attribute
         public DateTime ScheduledTime { get; set; }
 
-<<<<<<< Updated upstream
-        public AppointmentType Type { get; set; } 
-=======
         [EnumDataType(typeof(AppointmentType))]
         public AppointmentType Type { get; set; }
->>>>>>> Stashed changes
 
         [EnumDataType(typeof(AppointmentStatus))]
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending; // default status

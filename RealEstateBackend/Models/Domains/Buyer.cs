@@ -8,7 +8,6 @@ namespace RealEstate.Models.Domains
         [Key]
         public int Id { get; set; }
 
-        [Required]
         [MaxLength(50)]
         [MinLength(1)]
         [RegularExpression("^[a-zA-Z\\s]+$", ErrorMessage = "Name must contain only letters.")]
@@ -35,6 +34,10 @@ namespace RealEstate.Models.Domains
         public virtual ICollection<PropertyBid>? PropertyBids { get; set; }
         
         public virtual ICollection<Appointment>? Appointments { get; set; }
+
+        public virtual ICollection<Address>? Addresses { get; set; }
     
+        public virtual ICollection<Payment>? Payments { get; set; }
+
     }
 }
