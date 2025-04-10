@@ -25,6 +25,8 @@ namespace RealEstate.Models.Domains
         public int? BuyerId { get; set; }
         public virtual Buyer? Buyer { get; set; }
 
+        public virtual Payment? Payment { get; set; }
+
         public virtual ICollection<OrderItem>? OrderItems { get; set; }
     }
 

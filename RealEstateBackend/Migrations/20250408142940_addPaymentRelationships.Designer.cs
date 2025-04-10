@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RealEstate.Data;
 
@@ -11,9 +12,11 @@ using RealEstate.Data;
 namespace RealEstate.Migrations
 {
     [DbContext(typeof(RealEstateDbContext))]
-    partial class RealEstateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250408142940_addPaymentRelationships")]
+    partial class addPaymentRelationships
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -193,9 +196,6 @@ namespace RealEstate.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("CodeGeneratedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -207,13 +207,7 @@ namespace RealEstate.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("EmailConfirmationCode")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
@@ -233,17 +227,11 @@ namespace RealEstate.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PasswordResetCode")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ResetCodeGeneratedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -266,57 +254,6 @@ namespace RealEstate.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("RealEstate.Models.Domains.Address", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Apartment")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("BuildingNum")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("BuyerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Floor")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PhoneNum")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<string>("Street")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BuyerId");
-
-                    b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Domains.Admin", b =>
@@ -415,8 +352,8 @@ namespace RealEstate.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AgentId")
-                        .HasColumnType("int");
+                    b.Property<decimal>("BuyNowPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
@@ -424,10 +361,10 @@ namespace RealEstate.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("PropertyId")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsLive")
+                        .HasColumnType("bit");
 
-                    b.Property<int?>("SellerId")
+                    b.Property<int?>("PropertyId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("StartPrice")
@@ -436,16 +373,9 @@ namespace RealEstate.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("AgentId");
-
                     b.HasIndex("PropertyId");
-
-                    b.HasIndex("SellerId");
 
                     b.ToTable("Auctions");
                 });
@@ -480,35 +410,6 @@ namespace RealEstate.Migrations
                     b.ToTable("Buyers");
                 });
 
-            modelBuilder.Entity("RealEstate.Models.Domains.Cart", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("BuyerId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("SelectedAddressId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BuyerId");
-
-                    b.HasIndex("SelectedAddressId");
-
-                    b.ToTable("Carts");
-                });
-
             modelBuilder.Entity("RealEstate.Models.Domains.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -516,9 +417,6 @@ namespace RealEstate.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -668,19 +566,16 @@ namespace RealEstate.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CartId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int?>("OrderID")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int?>("ProductID")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -688,11 +583,9 @@ namespace RealEstate.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CartId");
+                    b.HasIndex("OrderID");
 
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductID");
 
                     b.ToTable("OrderItems");
                 });
@@ -708,25 +601,30 @@ namespace RealEstate.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("BuyerId")
+                    b.Property<int>("BuyerId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("PaidAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("PayPalOrderId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("int");
+
+                    b.Property<string>("StripePaymentIntentId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BuyerId");
 
                     b.HasIndex("OrderId")
-                        .IsUnique()
-                        .HasFilter("[OrderId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Payments");
                 });
@@ -743,9 +641,6 @@ namespace RealEstate.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
@@ -1052,15 +947,6 @@ namespace RealEstate.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RealEstate.Models.Domains.Address", b =>
-                {
-                    b.HasOne("RealEstate.Models.Domains.Buyer", "Buyer")
-                        .WithMany("Addresses")
-                        .HasForeignKey("BuyerId");
-
-                    b.Navigation("Buyer");
-                });
-
             modelBuilder.Entity("RealEstate.Models.Domains.Admin", b =>
                 {
                     b.HasOne("RealEstate.Models.Domains.Account", "Account")
@@ -1096,23 +982,11 @@ namespace RealEstate.Migrations
 
             modelBuilder.Entity("RealEstate.Models.Domains.Auction", b =>
                 {
-                    b.HasOne("RealEstate.Models.Domains.Agent", "Agent")
-                        .WithMany()
-                        .HasForeignKey("AgentId");
-
                     b.HasOne("RealEstate.Models.Domains.Property", "Property")
                         .WithMany()
                         .HasForeignKey("PropertyId");
 
-                    b.HasOne("RealEstate.Models.Domains.Seller", "Seller")
-                        .WithMany()
-                        .HasForeignKey("SellerId");
-
-                    b.Navigation("Agent");
-
                     b.Navigation("Property");
-
-                    b.Navigation("Seller");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Domains.Buyer", b =>
@@ -1122,21 +996,6 @@ namespace RealEstate.Migrations
                         .HasForeignKey("AccountId");
 
                     b.Navigation("Account");
-                });
-
-            modelBuilder.Entity("RealEstate.Models.Domains.Cart", b =>
-                {
-                    b.HasOne("RealEstate.Models.Domains.Buyer", "Buyer")
-                        .WithMany()
-                        .HasForeignKey("BuyerId");
-
-                    b.HasOne("RealEstate.Models.Domains.Address", "SelectedAddress")
-                        .WithMany()
-                        .HasForeignKey("SelectedAddressId");
-
-                    b.Navigation("Buyer");
-
-                    b.Navigation("SelectedAddress");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Domains.Contract", b =>
@@ -1197,19 +1056,13 @@ namespace RealEstate.Migrations
 
             modelBuilder.Entity("RealEstate.Models.Domains.OrderItem", b =>
                 {
-                    b.HasOne("RealEstate.Models.Domains.Cart", "Cart")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("CartId");
-
                     b.HasOne("RealEstate.Models.Domains.Order", "Order")
                         .WithMany("OrderItems")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderID");
 
                     b.HasOne("RealEstate.Models.Domains.Product", "Product")
                         .WithMany("OrderItems")
-                        .HasForeignKey("ProductId");
-
-                    b.Navigation("Cart");
+                        .HasForeignKey("ProductID");
 
                     b.Navigation("Order");
 
@@ -1220,11 +1073,15 @@ namespace RealEstate.Migrations
                 {
                     b.HasOne("RealEstate.Models.Domains.Buyer", "Buyer")
                         .WithMany("Payments")
-                        .HasForeignKey("BuyerId");
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RealEstate.Models.Domains.Order", "Order")
                         .WithOne("Payment")
-                        .HasForeignKey("RealEstate.Models.Domains.Payment", "OrderId");
+                        .HasForeignKey("RealEstate.Models.Domains.Payment", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Buyer");
 
@@ -1348,8 +1205,6 @@ namespace RealEstate.Migrations
 
             modelBuilder.Entity("RealEstate.Models.Domains.Buyer", b =>
                 {
-                    b.Navigation("Addresses");
-
                     b.Navigation("Appointments");
 
                     b.Navigation("Orders");
@@ -1359,11 +1214,6 @@ namespace RealEstate.Migrations
                     b.Navigation("PropertyBids");
 
                     b.Navigation("Wishlists");
-                });
-
-            modelBuilder.Entity("RealEstate.Models.Domains.Cart", b =>
-                {
-                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Domains.Category", b =>
