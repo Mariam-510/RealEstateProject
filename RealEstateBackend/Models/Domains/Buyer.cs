@@ -36,5 +36,7 @@ namespace RealEstate.Models.Domains
         public virtual ICollection<Appointment>? Appointments { get; set; }
 
         public virtual ICollection<Address>? Addresses { get; set; }
+    
+        public virtual ICollection<Payment>? Payments { get; set; }
     }
 }

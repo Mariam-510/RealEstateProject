@@ -47,6 +47,9 @@ namespace RealEstate.Models.Domains
 
         public virtual ICollection<Appointment>? Appointments { get; set; }
 
+        // Store image URLs (e.g., "/images/file.jpg")
+        public List<string> Images { get; set; }
+
     }
     public enum PropertyCategory
     {

@@ -26,9 +26,10 @@ namespace RealEstate.Models.Domains
         public virtual Buyer? Buyer { get; set; }
 
         [ForeignKey("Address")]
-        [Display(Name = "Delivery Address")]
         public int? AddressId { get; set; }
         public virtual Address? Address { get; set; }
+      
+        public virtual Payment? Payment { get; set; }
 
         public virtual ICollection<OrderItem>? OrderItems { get; set; }
     }

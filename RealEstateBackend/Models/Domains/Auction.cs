@@ -19,18 +19,32 @@ namespace RealEstate.Models.Domains
         [NonNegative]
         public decimal StartPrice { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
-        [NonNegative]
-        public decimal BuyNowPrice { get; set; }
-
         public bool IsDeleted { get; set; } = false;
 
-        public bool IsLive { get; set; }
+
+        public Status Status { get; set; }
+
+        [ForeignKey("Agent")]
+        public int? AgentId { get; set; }
+        public virtual Agent? Agent { get; set; }
+
+
+        [ForeignKey("Seller")]
+        public int? SellerId { get; set; }
+        public virtual Seller? Seller { get; set; }
+
 
         [ForeignKey("Property")]
         public int? PropertyId { get; set; }
         public virtual Property? Property { get; set; }
 
         public virtual ICollection<PropertyBid>? PropertyBids { get; set; }  
+    }
+
+    public enum Status
+    {
+        Scheduled,
+        Active,
+        Finished
     }
 }

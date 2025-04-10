@@ -1,6 +1,10 @@
 ﻿using RealEstate.Models.Domains;
 using RealEstate.Models.DTOs.ConversationDto;
 using RealEstate.Models.DTOs.MessageDto;
+using RealEstate.Models.DTOs.Auction;
+using RealEstate.Models.DTOs.Category;
+using RealEstate.Models.DTOs.Product;
+using RealEstate.Models.DTOs.Wishlist;
 
 namespace RealEstate.Mapping
 {
@@ -40,6 +44,128 @@ namespace RealEstate.Mapping
 
         //----------------------------------------------------------------------------------------
         //Order
+        public static ProductDTOShow ToProductDTOShow( this Product product)
+        {
+            return new ProductDTOShow
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Quantity = product.Quantity,
+                IsUsed = product.IsUsed,
+                IsDeleted = product.IsDeleted,
+                CategoryID = product.CategoryID ?? 0,
+                CategoryName = product.Category?.Name ?? string.Empty,
+                Productimage=product.ImageUrl,
+            };
+        }
+        public static List<ProductDTOShow> ToProductDTOShowList(this List<Product> products)
+        {
+            return products.Select(ToProductDTOShow).ToList();
+        }
+        public static Product ToProductModel(this ProductDTO product)
+        {
+            return new Product
+            {
+              
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Quantity = product.Quantity,
+                IsUsed = product.IsUsed,
+                CategoryID = product.CategoryID 
+
+            };
+        }
+
+
+        public static CategoryDTOShowWithoutProduct ToCategoryWithoutProductListDTOShow(this Category Category)
+        {
+            return new CategoryDTOShowWithoutProduct
+            {
+                Id = Category.Id,
+                Name = Category.Name,
+                Categoryimage = Category.ImageUrl,
+            };
+        }
+
+
+        public static Category ToCategoryModel(this CategoryDTO category)
+        {
+            return new Category
+            {
+
+                Name = category.Name,
+
+
+            };
+        }
+
+
+        public static List<CategoryDTOShowWithoutProduct> ToCategoryDTOShowList(this List<Category> Categories)
+        {
+            return Categories.Select(ToCategoryWithoutProductListDTOShow).ToList();
+        }
+
+
+        public static Wishlist ToWishListProductModel(this WishListProductDTO wishlistproductDTO)
+        {
+            return new Wishlist
+            {
+
+                BuyerId = wishlistproductDTO.BuyerId,
+                ProductId = wishlistproductDTO.ProductId,
+            };
+        }
+        public static Wishlist ToWishListPropertyModel(this WishListPropertyDTO wishlistpropertyDTO)
+        {
+            return new Wishlist
+            {
+
+                BuyerId = wishlistpropertyDTO.BuyerId,
+                PropertyId = wishlistpropertyDTO.PropertyID,
+            };
+        }
+
+
+        public static Auction ToAuctionModel(this AuctionDTO AuctionDto)
+        {
+            return new Auction
+            {
+
+                StartTime= AuctionDto.StartTime,
+                EndTime= AuctionDto.EndTime,
+                StartPrice= AuctionDto.StartPrice,
+                Status= AuctionDto.Status,
+                PropertyId= AuctionDto.PropertyId,
+                SellerId= AuctionDto.SellerId,
+                AgentId= AuctionDto.AgentId,
+
+            };
+        }
+
+        public static AuctionDTOShow ToAuctionDTOShow(this Auction auction)
+        {
+            return new AuctionDTOShow
+            {
+                Id= auction.Id,
+                StartTime = auction.StartTime,
+                EndTime = auction.EndTime,
+                StartPrice = auction.StartPrice,
+                Status = auction.Status,
+                PropertyId = auction.PropertyId.Value,
+                SellerId = auction.SellerId,
+                AgentId = auction.AgentId,
+
+            };
+        }
+
+
+        public static List<AuctionDTOShow> ToAuctionDTOShowList(this List<Auction> Auctions)
+        {
+            return Auctions.Select(ToAuctionDTOShow).ToList();
+        }
 
         
     }

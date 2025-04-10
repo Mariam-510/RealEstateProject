@@ -27,6 +27,8 @@ namespace RealEstate.Models.Domains
 
         public bool IsDeleted { get; set; } = false;
 
+        public string? ImageUrl { get; set; }
+
         [ForeignKey("Category")]
         public int? CategoryID { get; set; }
         public virtual Category? Category { get; set; }
@@ -34,6 +36,7 @@ namespace RealEstate.Models.Domains
         public virtual ICollection<OrderItem>? OrderItems { get; set; }
 
         public virtual ICollection<Wishlist>? Wishlist { get; set; }
+
 
     }
 

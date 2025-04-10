@@ -10,7 +10,7 @@ namespace RealEstate.Models.Domains
         public int Id { get; set; }
 
         [MaxLength(50)]
-        [MinLength(3)]
+        [MinLength(1)]
         [RegularExpression("^[a-zA-Z\\s]+$", ErrorMessage = "Subscription name must contain only letters.")]
         public string Name { get; set; }
 
@@ -25,6 +25,8 @@ namespace RealEstate.Models.Domains
         public string Description { get; set; }
 
         public bool IsDeleted { get; set; } = false;
+
+        public ICollection<Subscription> Subscriptions { get; set; }
     }
 
     public enum BillingInterval
