@@ -10,9 +10,14 @@ namespace RealEstate.Models.Domains
 
         [Required]
         [MaxLength(50)]
-        [MinLength(3)]
+        [MinLength(1)]
         [RegularExpression("^[a-zA-Z\\s]+$", ErrorMessage = "Name must contain only letters.")]
-        public string Name { get; set; }
+        public string FirstName { get; set; }
+
+        [MaxLength(50)]
+        [MinLength(1)]
+        [RegularExpression("^[a-zA-Z\\s]+$", ErrorMessage = "Name must contain only letters.")]
+        public string? LastName { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 

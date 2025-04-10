@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using RealEstate.Models.Attributes;
 namespace RealEstate.Models.Domains
 {
     public class Property
@@ -16,6 +17,7 @@ namespace RealEstate.Models.Domains
         public PropertyType Type { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
+        [NonNegative]
         public decimal Price { get; set; }
 
         public bool IsAuction { get; set; } = false;
@@ -41,6 +43,9 @@ namespace RealEstate.Models.Domains
         public virtual ICollection<Wishlist>? WishlistItems { get; set; }
 
         public virtual ICollection<Appointment>? Appointments { get; set; }
+
+        // Store image URLs (e.g., "/images/file.jpg")
+        public List<string> Images { get; set; }
 
     }
     public enum PropertyCategory
