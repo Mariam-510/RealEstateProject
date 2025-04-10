@@ -7,5 +7,22 @@ namespace RealEstate.Models.Domains
     {
         [DataType(DataType.DateTime)]
         public DateTime CteatedAt { get; set; } = DateTime.Now;
+
+        public bool IsDeleted { get; set; } = false;
+
+        public string? EmailConfirmationCode { get; set; }
+
+        public DateTime? CodeGeneratedAt { get; set; }
+
+        public string? PasswordResetCode { get; set; }
+        
+        public DateTime? ResetCodeGeneratedAt { get; set; }
+
+        public virtual ICollection<Message>? Messages { get; set; }
+
+        public virtual ICollection<Conversation>? FirstParticipantConversations { get; set; }
+
+        public virtual ICollection<Conversation>? SecondParticipantConversations { get; set; }
+
     }
 }

@@ -8,6 +8,10 @@ using RealEstate.Data;
 using RealEstate.Models.Domains;
 using Microsoft.OpenApi.Models;
 using RealEstate.Models.Attributes;
+using RealEstate.Repositories;
+using RealEstate.Services;
+using RealEstate.JWT;
+using RealEstate.Models;
 
 namespace RealEstate
 {
@@ -53,16 +57,30 @@ namespace RealEstate
                 });
             });
 
-            builder.Services.AddDbContext<AppDbContext>(opt =>
-                opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+            builder.Services.AddDbContext<RealEstateDbContext>(opt =>
+                opt.UseSqlServer(builder.Configuration.GetConnectionString("RealEstateConnection"))
             );
 
 
             builder.Services.AddIdentityCore<Account>()
                 .AddRoles<IdentityRole>()
                 .AddTokenProvider<DataProtectorTokenProvider<Account>>("RealEstate")
-                .AddEntityFrameworkStores<AppDbContext>()
+                .AddEntityFrameworkStores<RealEstateDbContext>()
                 .AddDefaultTokenProviders();
+
+
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                //options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedEmail = true;
+            });
+
+            //Google Authentication
+            builder.Services.AddAuthentication().AddGoogle(options =>
+            {
+                options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
+                options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
+            });
 
 
             builder.Services.Configure<IdentityOptions>(options =>
@@ -75,7 +93,13 @@ namespace RealEstate
                 options.Password.RequiredUniqueChars = 1;
             });
             builder.Services.AddScoped<IPasswordValidator<Account>, PasswordLengthValidator<Account>>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IWishListRepository, WishlistRepository>();
+            builder.Services.AddScoped<IAuctionRepository, AuctioRepository>();
 
+
+            builder.Services.AddScoped<FileService>();
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -92,6 +116,32 @@ namespace RealEstate
             // Add Scoped for repositories
 
             builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddScoped<IBuyerRepository, BuyerRepository>();
+            builder.Services.AddScoped<ISellerRepository, SellerRepository>();
+            builder.Services.AddScoped<IAgentRepository, AgentRepository>();
+            builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+            builder.Services.AddScoped<JWTService>();
+            builder.Services.AddScoped<FileService>();
+            builder.Services.AddScoped<EmailService>();
+
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngularApp",
+                    policy => policy
+                        .AllowAnyOrigin() // Or use .WithOrigins("http://localhost:4200") for tighter control
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+            });
+          
+            // Register other services
+            builder.Services.AddSingleton<StripeService>();
+            builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
+            builder.Services.AddHttpClient<PayPalService>();
+
+
+            // string configurations
+            Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
             var app = builder.Build();
 
@@ -102,10 +152,12 @@ namespace RealEstate
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("AllowAngularApp");
+
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseStaticFiles();
             app.MapControllers();
 
             app.Run();
