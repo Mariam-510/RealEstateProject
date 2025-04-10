@@ -41,8 +41,6 @@
   <ItemGroup>
     <Folder Include="Models\DTOs\OrderDto\" />
 
-    <Folder Include="Repositories\" />
-
     <Folder Include="wwwroot\" />
     <Folder Include="Models\Dtos\BuyerDto\" />
     <Folder Include="Models\Dtos\AgentDto\" />
