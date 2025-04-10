@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RealEstate.Data;
 
@@ -11,9 +12,11 @@ using RealEstate.Data;
 namespace RealEstate.Migrations
 {
     [DbContext(typeof(RealEstateDbContext))]
-    partial class RealEstateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250409223410_addCartAddress")]
+    partial class addCartAddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -316,7 +319,7 @@ namespace RealEstate.Migrations
 
                     b.HasIndex("BuyerId");
 
-                    b.ToTable("Addresses");
+                    b.ToTable("Address");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Domains.Admin", b =>
@@ -499,7 +502,7 @@ namespace RealEstate.Migrations
 
                     b.HasIndex("SelectedAddressId");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Cart");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Domains.Category", b =>
@@ -664,13 +667,13 @@ namespace RealEstate.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int?>("OrderID")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int?>("ProductID")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -680,9 +683,9 @@ namespace RealEstate.Migrations
 
                     b.HasIndex("CartId");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderID");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductID");
 
                     b.ToTable("OrderItems");
                 });
@@ -1030,7 +1033,7 @@ namespace RealEstate.Migrations
             modelBuilder.Entity("RealEstate.Models.Domains.Address", b =>
                 {
                     b.HasOne("RealEstate.Models.Domains.Buyer", "Buyer")
-                        .WithMany("Addresses")
+                        .WithMany()
                         .HasForeignKey("BuyerId");
 
                     b.Navigation("Buyer");
@@ -1166,11 +1169,11 @@ namespace RealEstate.Migrations
 
                     b.HasOne("RealEstate.Models.Domains.Order", "Order")
                         .WithMany("OrderItems")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderID");
 
                     b.HasOne("RealEstate.Models.Domains.Product", "Product")
                         .WithMany("OrderItems")
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductID");
 
                     b.Navigation("Cart");
 
@@ -1296,8 +1299,6 @@ namespace RealEstate.Migrations
 
             modelBuilder.Entity("RealEstate.Models.Domains.Buyer", b =>
                 {
-                    b.Navigation("Addresses");
-
                     b.Navigation("Appointments");
 
                     b.Navigation("Orders");

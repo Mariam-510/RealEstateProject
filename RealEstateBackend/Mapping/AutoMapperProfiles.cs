@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos.AccountDto;
+using RealEstate.Models.Dtos.AgentDto;
+using RealEstate.Models.Dtos.BuyerDto;
+using RealEstate.Models.Dtos.SellerDto;
 
 namespace RealEstate.Mapping
 {
@@ -17,6 +20,25 @@ namespace RealEstate.Mapping
             CreateMap<RegisterAgentDto, Account>().ReverseMap();
 
             CreateMap<RegisterAgentDto, Agent>().ReverseMap();
+
+            CreateMap<Seller, SellerDto>()
+                .ForMember(dest => dest.CteatedAt, opt => opt.MapFrom(src => src.Account.CteatedAt))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email));
+
+            CreateMap<SellerFormDto, Seller>().ReverseMap();
+
+            CreateMap<Buyer, BuyerDto>()
+                .ForMember(dest => dest.CteatedAt, opt => opt.MapFrom(src => src.Account.CteatedAt))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email));
+
+            CreateMap<BuyerFormDto, Buyer>().ReverseMap();
+
+
+            CreateMap<Agent, AgentDto>()
+                .ForMember(dest => dest.CteatedAt, opt => opt.MapFrom(src => src.Account.CteatedAt))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email));
+
+            CreateMap<AgentFormDto, Agent>().ReverseMap();
 
         }
     }
