@@ -18,7 +18,9 @@ namespace RealEstate.Models.Domains
         [Column(TypeName = "decimal(18,2)")]
         [NonNegative]
         public decimal StartPrice { get; set; }
+
         public bool IsDeleted { get; set; } = false;
+
 
         public Status Status { get; set; }
 
@@ -26,9 +28,11 @@ namespace RealEstate.Models.Domains
         public int? AgentId { get; set; }
         public virtual Agent? Agent { get; set; }
 
+
         [ForeignKey("Seller")]
         public int? SellerId { get; set; }
         public virtual Seller? Seller { get; set; }
+
 
         [ForeignKey("Property")]
         public int? PropertyId { get; set; }
