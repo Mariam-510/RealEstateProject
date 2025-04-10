@@ -20,8 +20,6 @@ namespace RealEstate.Models.Domains
 
         public int MaxAllowedProperties { get; set; }
 
-        public BillingInterval BillingInterval { get; set; } = BillingInterval.Monthly;
-
         public string Description { get; set; }
 
         public bool IsDeleted { get; set; } = false;
@@ -29,9 +27,5 @@ namespace RealEstate.Models.Domains
         public ICollection<Subscription> Subscriptions { get; set; }
     }
 
-    public enum BillingInterval
-    {
-        Monthly,
-        Annual
-    }
+    
 }

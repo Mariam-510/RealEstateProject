@@ -8,9 +8,13 @@ using RealEstate.Models.DTOs.PropertyDto;
 
 using RealEstate.Models.DTOs.Product;
 using RealEstate.Models.Dtos.AccountDto;
+
 using RealEstate.Models.Dtos.AgentDto;
 using RealEstate.Models.Dtos.BuyerDto;
 using RealEstate.Models.Dtos.SellerDto;
+
+
+using RealEstate.Models.Dtos.SubscriptionDto;
 
 
 namespace RealEstate.Mapping
@@ -77,6 +81,11 @@ namespace RealEstate.Mapping
             
             CreateMap<Payment, Agent>().ReverseMap();
 
+            CreateMap<Subscription, SubscriptionDto>().ReverseMap();
+            CreateMap<CreateSubscriptionDto, Subscription>();
+
+            CreateMap<SubscriptionPlan, SubscriptionPlanDto>().ReverseMap();
+            CreateMap<CreateSubscriptionPlanDto, SubscriptionPlan>();
 
         }
     }

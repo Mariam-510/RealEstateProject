@@ -1,18 +1,16 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using RealEstate.Data;
 using RealEstate.Models.Domains;
 using Microsoft.OpenApi.Models;
 using RealEstate.Models.Attributes;
 using RealEstate.Repositories;
 using RealEstate.Services;
-
 using RealEstate.JWT;
 using RealEstate.Models;
+using RealEstate.Data;
 
 
 namespace RealEstate
@@ -64,8 +62,14 @@ namespace RealEstate
             );
 
 
-            builder.Services.AddIdentityCore<Account>()
-                .AddRoles<IdentityRole>()
+            //builder.Services.AddIdentityCore<Account>()
+            //    .AddRoles<IdentityRole>()
+            //    .AddTokenProvider<DataProtectorTokenProvider<Account>>("RealEstate")
+            //    .AddEntityFrameworkStores<RealEstateDbContext>()
+            //    .AddDefaultTokenProviders();
+
+
+            builder.Services.AddIdentity<Account, IdentityRole>()
                 .AddTokenProvider<DataProtectorTokenProvider<Account>>("RealEstate")
                 .AddEntityFrameworkStores<RealEstateDbContext>()
                 .AddDefaultTokenProviders();
@@ -94,6 +98,7 @@ namespace RealEstate
                 options.Password.RequiredLength = 6;
                 options.Password.RequiredUniqueChars = 1;
             });
+
             builder.Services.AddScoped<IPasswordValidator<Account>, PasswordLengthValidator<Account>>();
             builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
             builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
@@ -108,6 +113,7 @@ namespace RealEstate
 
 
             builder.Services.AddScoped<FileService>();
+
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -129,6 +135,8 @@ namespace RealEstate
             builder.Services.AddScoped<IAgentRepository, AgentRepository>();
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             builder.Services.AddScoped<JWTService>();
             builder.Services.AddScoped<FileService>();
             builder.Services.AddScoped<EmailService>();
@@ -145,7 +153,11 @@ namespace RealEstate
           
             // Register other services
             builder.Services.AddSingleton<StripeService>();
-            builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
+            // builder.Services.AddSingleton<PayPalService>();// Maybe review if it's better to use singleton or scoped here later
+            builder.Services.AddScoped<PayPalService>();
+            //builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
+            builder.Services.AddScoped<RealEstate.Services.SubscriptionService>();
+
             builder.Services.AddHttpClient<PayPalService>();
 
 
