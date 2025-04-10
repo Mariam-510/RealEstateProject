@@ -30,7 +30,7 @@ namespace RealEstate.Services
                 {
                     newFile.CopyTo(stream);
                 }
-                return Path.Combine(FolderName, fileName).Replace("\\", "/"); ;
+                return Path.Combine(FolderName, fileName).Replace("\\", "/");
             }
             return null;
 

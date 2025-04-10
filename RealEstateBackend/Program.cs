@@ -8,6 +8,8 @@ using RealEstate.Data;
 using RealEstate.Models.Domains;
 using Microsoft.OpenApi.Models;
 using RealEstate.Models.Attributes;
+using RealEstate.Repositories;
+using RealEstate.Services;
 
 namespace RealEstate
 {
@@ -75,7 +77,14 @@ namespace RealEstate
                 options.Password.RequiredUniqueChars = 1;
             });
             builder.Services.AddScoped<IPasswordValidator<Account>, PasswordLengthValidator<Account>>();
+            builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+            builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            builder.Services.AddScoped<IPropertyBidRepository, PropertyBidRepository>();
+            builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 
+
+
+            builder.Services.AddScoped<FileService>();
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -105,6 +114,7 @@ namespace RealEstate
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseStaticFiles();
 
             app.MapControllers();
 
