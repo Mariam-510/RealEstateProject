@@ -24,7 +24,7 @@ namespace RealEstate.Models.Domains
 
         public bool IsDeleted { get; set; } = false;
 
-        public ICollection<Subscription> Subscriptions { get; set; }
+        public ICollection<Subscription>? Subscriptions { get; set; }
     }
 
     
