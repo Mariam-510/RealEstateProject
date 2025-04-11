@@ -14,8 +14,9 @@
 
         public string? Email { get; set; }
 
-        public DateTime CteatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         public string? ImageUrl { get; set; }
+
     }
 }

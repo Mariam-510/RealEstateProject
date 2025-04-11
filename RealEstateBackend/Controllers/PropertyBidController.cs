@@ -13,16 +13,37 @@ namespace RealEstate.Controllers
     {
         private readonly IPropertyBidRepository _propertyBidRepo;
         private readonly IMapper _mapper;
-        public PropertyBidController(IPropertyBidRepository propertyBidRepo, IMapper mapper)
+        private readonly IAuctionRepository _auctionRepository;
+        private readonly IBuyerRepository _buyerRepository;
+        public PropertyBidController(IPropertyBidRepository propertyBidRepo, IAuctionRepository auctionRepository, IBuyerRepository buyerRepository, IMapper mapper)
         {
             _propertyBidRepo = propertyBidRepo;
             _mapper = mapper;
+            _auctionRepository= auctionRepository;
+            _buyerRepository= buyerRepository;
         }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePropertyBidDto createDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            // Check if the auction exists
+            var auction = await _auctionRepository.GetByIdAsync(createDto.AuctionId);
+            if (auction == null)
+            {
+                return NotFound($"Auction with ID {createDto.AuctionId} not found.");
+            }
+            // Check if the auction is active
+            if (auction.Status != Status.Active)
+            {
+                return BadRequest($"Bid cannot be placed as the auction is not active. Current status: {auction.Status}.");
+            }
+            // Check if the buyer exists
+            var buyer = await _buyerRepository.GetByIdAsync(createDto.BuyerId);
+            if (buyer == null)
+            {
+                return NotFound($"Buyer with ID {createDto.BuyerId} not found.");
+            }
 
             var propertyBid = _mapper.Map<PropertyBid>(createDto);
 

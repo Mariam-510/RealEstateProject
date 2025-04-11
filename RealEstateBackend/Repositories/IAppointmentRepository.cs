@@ -5,7 +5,6 @@ namespace RealEstate.Repositories
     public interface IAppointmentRepository
     {
         Task<List<Appointment>> GetAllAsync();
-        Task<Buyer?> GetByIdBuyerAsync(int id);
         Task<List<Appointment>> GetByBuyerAsync(int buyerId);
         Task<Appointment?> GetByIdAsync(int id);
         Task AddAsync(Appointment appointment);

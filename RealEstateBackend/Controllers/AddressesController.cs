@@ -12,10 +12,12 @@ namespace RealEstate.Controllers
     public class AddressesController : ControllerBase
     {
         public readonly IAddressRepository _addressRepository;
+        public readonly IBuyerRepository _buyerRepository;
         private readonly IMapper _mapper;
-        public AddressesController(IAddressRepository addressRepository, IMapper mapper)
+        public AddressesController(IAddressRepository addressRepository, IBuyerRepository buyerRepository, IMapper mapper)
         {
             _addressRepository = addressRepository;
+            _buyerRepository = buyerRepository;
             _mapper = mapper;
         }
 
@@ -47,6 +49,12 @@ namespace RealEstate.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            // Check if the buyer exists
+            var buyer = await _buyerRepository.GetByIdAsync(dto.BuyerId);
+            if (buyer == null)
+            {
+                return NotFound($"Buyer with ID {dto.BuyerId} not found.");
+            }
 
             var address = _mapper.Map<Address>(dto); // Address is your domain model
             await _addressRepository.CreateAsync(address);

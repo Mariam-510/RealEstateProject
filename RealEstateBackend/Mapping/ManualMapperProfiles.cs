@@ -148,13 +148,13 @@ namespace RealEstate.Mapping
 
         public static Auction ToAuctionModel(this AuctionDTO AuctionDto)
         {
+            TimeZoneInfo egyptTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             return new Auction
             {
 
-                StartTime= AuctionDto.StartTime,
-                EndTime= AuctionDto.EndTime,
-                StartPrice= AuctionDto.StartPrice,
-                Status= AuctionDto.Status,
+                StartTime = TimeZoneInfo.ConvertTime(AuctionDto.StartTime, egyptTimeZone),
+                EndTime = TimeZoneInfo.ConvertTime(AuctionDto.EndTime, egyptTimeZone),
+                StartPrice = AuctionDto.StartPrice,
                 PropertyId= AuctionDto.PropertyId,
                 SellerId= AuctionDto.SellerId,
                 AgentId= AuctionDto.AgentId,

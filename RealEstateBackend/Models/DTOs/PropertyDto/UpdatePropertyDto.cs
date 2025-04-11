@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RealEstate.Models.DTOs.PropertyDto
 {
-    public class UpdatePropertyDto 
+    public class UpdatePropertyDto : IValidatableObject
     {
         [Required]
         public string Title { get; set; }
@@ -30,8 +30,25 @@ namespace RealEstate.Models.DTOs.PropertyDto
         // Optional new images
         [Required]
         public ICollection<IFormFile> Images { get; set; }
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            // Enum validation
+            if (!Enum.TryParse(typeof(PropertyType), Type, true, out _))
+            {
+                yield return new ValidationResult("Invalid property Type. Allowed: Sell, Rent.", new[] { nameof(Type) });
+            }
+
+            if (!Enum.TryParse(typeof(PropertyStatus), Status, true, out _))
+            {
+                yield return new ValidationResult("Invalid property Status. Allowed: Available, Sold, Auctioned.", new[] { nameof(Status) });
+            }
+
+            if (!Enum.TryParse(typeof(PropertyCategory), PropertyCategory, true, out _))
+            {
+                yield return new ValidationResult("Invalid PropertyCategory. Allowed: Apartment, Villa, House, Studio, Penthouse, Duplex, Townhouse, Mansion.", new[] { nameof(PropertyCategory) });
+            }
+        }
 
 
-
-    }
+        }
 }

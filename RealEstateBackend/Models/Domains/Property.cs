@@ -38,7 +38,7 @@ namespace RealEstate.Models.Domains
         [ForeignKey("Seller")]
         public int? SellerId { get; set; }
         public virtual Seller? Seller { get; set; }
-
+      
         public virtual ICollection<Wishlist>? WishlistItems { get; set; }
 
         public virtual ICollection<Appointment>? Appointments { get; set; }

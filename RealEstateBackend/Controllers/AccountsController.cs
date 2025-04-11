@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
-using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.SqlServer.Server;
 using Newtonsoft.Json.Linq;
 using RealEstate.JWT;
 using RealEstate.Models.Domains;
@@ -14,8 +10,11 @@ using RealEstate.Models.Dtos.AccountDto;
 using RealEstate.Models.Dtos.EmailDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
+using Stripe;
 using System.Text;
 using System.Transactions;
+
+using Account = RealEstate.Models.Domains.Account;
 
 namespace RealEstate.Controllers
 {
@@ -31,9 +30,10 @@ namespace RealEstate.Controllers
         public ISellerRepository SellerRepository { get; }
         public IAgentRepository AgentRepository { get; }
         public FileService FileService { get; }
+        public ICartRepository CartRepository { get; }
 
         public AccountsController(UserManager<Account> userManager, JWTService tokenService, IMapper Mapper, EmailService emailService,
-            IBuyerRepository buyerRepository, ISellerRepository sellerRepository, IAgentRepository agentRepository, FileService fileService)
+            IBuyerRepository buyerRepository, ISellerRepository sellerRepository, IAgentRepository agentRepository, FileService fileService, ICartRepository cartRepository)
         {
             UserManager = userManager;
             TokenService = tokenService;
@@ -43,6 +43,7 @@ namespace RealEstate.Controllers
             SellerRepository = sellerRepository;
             AgentRepository = agentRepository;
             FileService = fileService;
+            CartRepository = cartRepository;
         }
 
 
@@ -104,6 +105,15 @@ namespace RealEstate.Controllers
                                 buyer.AccountId = account.Id;
 
                                 buyer = await BuyerRepository.CreateAsync(buyer);
+
+                                var cart = new Cart()
+                                {
+                                    TotalPrice = 0,
+                                    IsDeleted = false,
+                                    BuyerId = buyer.Id
+                                };
+
+                                cart = await CartRepository.CreateAsync(cart);
 
                                 if (buyer == null)
                                     return StatusCode(500, new { message = "An error occurred while creating" });

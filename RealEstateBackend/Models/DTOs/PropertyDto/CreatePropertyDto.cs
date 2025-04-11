@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using RealEstate.Models.Domains;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace RealEstate.Models.DTOs.PropertyDto
 {
@@ -45,6 +47,22 @@ namespace RealEstate.Models.DTOs.PropertyDto
                     "Exactly one of AgentId or SellerId must be provided (not both)."
                 );
             }
+            // Enum validation
+            if (!Enum.TryParse(typeof(PropertyType), Type, true, out _))
+            {
+                yield return new ValidationResult("Invalid property Type. Allowed: Sell, Rent.", new[] { nameof(Type) });
+            }
+
+            if (!Enum.TryParse(typeof(PropertyStatus), Status, true, out _))
+            {
+                yield return new ValidationResult("Invalid property Status. Allowed: Available, Sold, Auctioned.", new[] { nameof(Status) });
+            }
+
+            if (!Enum.TryParse(typeof(PropertyCategory), PropertyCategory, true, out _))
+            {
+                yield return new ValidationResult("Invalid PropertyCategory. Allowed: Apartment, Villa, House, Studio, Penthouse, Duplex, Townhouse, Mansion.", new[] { nameof(PropertyCategory) });
+            }
+
         }
     }
 }
