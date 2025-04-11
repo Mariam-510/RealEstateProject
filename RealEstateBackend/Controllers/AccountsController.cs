@@ -10,7 +10,7 @@ using RealEstate.Models.Dtos.AccountDto;
 using RealEstate.Models.Dtos.EmailDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
-using Stripe;
+//using Stripe;
 using System.Text;
 using System.Transactions;
 

@@ -92,21 +92,6 @@ namespace RealEstate
                 options.Password.RequiredUniqueChars = 1;
             });
 
-            builder.Services.AddScoped<IPasswordValidator<Account>, PasswordLengthValidator<Account>>();
-            builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
-            builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-            builder.Services.AddScoped<IPropertyBidRepository, PropertyBidRepository>();
-            builder.Services.AddScoped<IAddressRepository, AddressRepository>();
-
-
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<IWishListRepository, WishlistRepository>();
-            builder.Services.AddScoped<IAuctionRepository, AuctioRepository>();
-
-
-            builder.Services.AddScoped<FileService>();
-
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -133,10 +118,39 @@ namespace RealEstate
             builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+            builder.Services.AddScoped<IPasswordValidator<Account>, PasswordLengthValidator<Account>>();
+            builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+            builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            builder.Services.AddScoped<IPropertyBidRepository, PropertyBidRepository>();
+            builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IWishListRepository, WishlistRepository>();
+            builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
+            builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+            builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
             builder.Services.AddScoped<JWTService>();
             builder.Services.AddScoped<FileService>();
             builder.Services.AddScoped<EmailService>();
 
+            // builder.Services.AddSingleton<PayPalService>();// Maybe review if it's better to use singleton or scoped here later
+            builder.Services.AddScoped<PayPalService>();
+
+
+            //builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
+            builder.Services.AddScoped<RealEstate.Services.SubscriptionService>();
+          
+            // Register other services
+            builder.Services.AddSingleton<StripeService>();
+
+            builder.Services.AddHttpClient<PayPalService>();
+
+            // string configurations
+            Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
+            // IMPORTANTTTTT
+            //builder.Services.AddHostedService<AuctionStatusUpdater>();
 
             builder.Services.AddCors(options =>
             {
@@ -146,28 +160,6 @@ namespace RealEstate
                         .AllowAnyHeader()
                         .AllowAnyMethod());
             });
-          
-            // Register other services
-            builder.Services.AddSingleton<StripeService>();
-            // builder.Services.AddSingleton<PayPalService>();// Maybe review if it's better to use singleton or scoped here later
-            builder.Services.AddScoped<PayPalService>();
-            //builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
-            builder.Services.AddScoped<RealEstate.Services.SubscriptionService>();
-
-            builder.Services.AddHttpClient<PayPalService>();
-
-
-            // string configurations
-            Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
-
-
-            builder.Services.AddScoped<IMessageRepository, MessageRepository>();
-            builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
-            builder.Services.AddScoped<ICartRepository, CartRepository>();
-
-            // IMPORTANTTTTT
-            //builder.Services.AddHostedService<AuctionStatusUpdater>();
-
 
             var app = builder.Build();
 
