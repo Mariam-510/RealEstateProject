@@ -2,8 +2,9 @@
 
 namespace RealEstate.Repositories
 {
-    public class ShippingRepository : IShippingRepository
+    public class ShippingRepository
     {
+        //: IShippingRepository
         private readonly RealEstateDbContext dbContext;
         public ShippingRepository(RealEstateDbContext dbontext)
         {
