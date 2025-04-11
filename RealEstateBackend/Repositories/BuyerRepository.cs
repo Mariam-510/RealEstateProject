@@ -78,5 +78,11 @@ namespace RealEstate.Repositories
             await dbContext.SaveChangesAsync();
             return existingBuyer;
         }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await dbContext.Buyers.AnyAsync(b => b.Id == id && !b.IsDeleted);
+        }
+
     }
 }

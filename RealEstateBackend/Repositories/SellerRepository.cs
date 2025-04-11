@@ -7,9 +7,9 @@ namespace RealEstate.Repositories
     public class SellerRepository: ISellerRepository
     {
         private readonly RealEstateDbContext dbContext;
-        public SellerRepository(RealEstateDbContext dbontext)
+        public SellerRepository(RealEstateDbContext dbContext)
         {
-            this.dbContext = dbontext;
+            this.dbContext = dbContext;
         }
 
         public async Task<List<Seller>> GetAllAsync()
@@ -78,6 +78,12 @@ namespace RealEstate.Repositories
             await dbContext.SaveChangesAsync();
             return existingSeller;
         }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await dbContext.Sellers.AnyAsync(s => s.Id == id && !s.IsDeleted);
+        }
+
 
     }
 }

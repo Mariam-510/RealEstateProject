@@ -8,6 +8,7 @@ namespace RealEstate.Repositories
         Task<SubscriptionPlan> GetByIdAsync(int id);
         Task AddAsync(SubscriptionPlan plan);
         Task UpdateAsync(SubscriptionPlan plan);
+        Task<bool> ExistsAsync(int id);
         Task SaveAsync();
     }
 }

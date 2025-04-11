@@ -6,6 +6,7 @@ using RealEstate.Models.DTOs.Category;
 using RealEstate.Models.DTOs.Product;
 using RealEstate.Models.DTOs.Wishlist;
 using RealEstate.Models.DTOs.OrderDto;
+using RealEstate.Models.DTOs.ReviewDto;
 
 namespace RealEstate.Mapping
 {
@@ -61,6 +62,20 @@ namespace RealEstate.Mapping
             };
         }
 
+        //----------------------------------------------------------------------------------------
+        //Review
+
+        public static ReviewResponseDto ReviewResponseDto(this Review review)
+        {
+            return new ReviewResponseDto
+            {
+                Rating = review.Rating,
+                Comment = review.Comment,
+                ProductId = review.ProductId,
+                BuyerId = review.BuyerId
+            };
+        }
+
         public static ProductDTOShow ToProductDTOShow( this Product product)
         {
             return new ProductDTOShow
@@ -74,7 +89,7 @@ namespace RealEstate.Mapping
                 IsDeleted = product.IsDeleted,
                 CategoryID = product.CategoryID ?? 0,
                 CategoryName = product.Category?.Name ?? string.Empty,
-                Productimage=product.ImageUrl,
+                //Productimage=product.ImageUrl,
             };
         }
         public static List<ProductDTOShow> ToProductDTOShowList(this List<Product> products)
