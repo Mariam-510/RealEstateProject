@@ -25,6 +25,8 @@ namespace RealEstate.Models.Domains
         public virtual Account? Account { get; set; }
 
         public virtual ICollection<Property>? Properties { get; set; }
+       
+        public virtual ICollection<Auction>? Auctions { get; set; }
 
     }
 }
