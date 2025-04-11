@@ -16,5 +16,9 @@ namespace RealEstate.Models.Dtos.AgentDto
 
         [Compare("NewPassword")]
         public string? ConfirmNewPassword { get; set; }
+
+        public IFormFile? Image { get; set; }
+
+        public bool RemoveImage { get; set; }
     }
 }

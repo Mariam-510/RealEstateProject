@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
-using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.SqlServer.Server;
 using Newtonsoft.Json.Linq;
 using RealEstate.JWT;
 using RealEstate.Models.Domains;
@@ -14,8 +10,11 @@ using RealEstate.Models.Dtos.AccountDto;
 using RealEstate.Models.Dtos.EmailDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
+//using Stripe;
 using System.Text;
 using System.Transactions;
+
+using Account = RealEstate.Models.Domains.Account;
 
 namespace RealEstate.Controllers
 {
@@ -30,9 +29,11 @@ namespace RealEstate.Controllers
         public IBuyerRepository BuyerRepository { get; }
         public ISellerRepository SellerRepository { get; }
         public IAgentRepository AgentRepository { get; }
+        public FileService FileService { get; }
+        public ICartRepository CartRepository { get; }
 
         public AccountsController(UserManager<Account> userManager, JWTService tokenService, IMapper Mapper, EmailService emailService,
-            IBuyerRepository buyerRepository, ISellerRepository sellerRepository, IAgentRepository agentRepository)
+            IBuyerRepository buyerRepository, ISellerRepository sellerRepository, IAgentRepository agentRepository, FileService fileService, ICartRepository cartRepository)
         {
             UserManager = userManager;
             TokenService = tokenService;
@@ -41,6 +42,8 @@ namespace RealEstate.Controllers
             BuyerRepository = buyerRepository;
             SellerRepository = sellerRepository;
             AgentRepository = agentRepository;
+            FileService = fileService;
+            CartRepository = cartRepository;
         }
 
 
@@ -54,7 +57,7 @@ namespace RealEstate.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register([FromBody] RegisterSellerOrBuyerDto registerSellerOrBuyerDto)
+        public async Task<IActionResult> Register([FromForm] RegisterSellerOrBuyerDto registerSellerOrBuyerDto)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -88,6 +91,9 @@ namespace RealEstate.Controllers
 
                     if (registerResult.Succeeded)
                     {
+                        account.ImageUrl = FileService.UploadFile("UserImages", registerSellerOrBuyerDto.Image);
+                        await UserManager.UpdateAsync(account);
+
                         if (registerSellerOrBuyerDto.IsBuyer)
                         {
                             registerResult = await UserManager.AddToRoleAsync(account, "Buyer");
@@ -99,6 +105,15 @@ namespace RealEstate.Controllers
                                 buyer.AccountId = account.Id;
 
                                 buyer = await BuyerRepository.CreateAsync(buyer);
+
+                                var cart = new Cart()
+                                {
+                                    TotalPrice = 0,
+                                    IsDeleted = false,
+                                    BuyerId = buyer.Id
+                                };
+
+                                cart = await CartRepository.CreateAsync(cart);
 
                                 if (buyer == null)
                                     return StatusCode(500, new { message = "An error occurred while creating" });
@@ -182,7 +197,7 @@ namespace RealEstate.Controllers
 
         [HttpPost]
         [Route("RegisterAgent")]
-        public async Task<IActionResult> RegisterAgent([FromBody] RegisterAgentDto registerAgentDto)
+        public async Task<IActionResult> RegisterAgent([FromForm] RegisterAgentDto registerAgentDto)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -211,7 +226,7 @@ namespace RealEstate.Controllers
                     }
 
                     var account = Mapper.Map<Account>(registerAgentDto);
-                    account.CreatedAt = DateTime.UtcNow;
+                    account.CreatedAt = DateTime.Now;
                     account.UserName = registerAgentDto.Email;
                     account.EmailConfirmationCode = null;
                     account.CodeGeneratedAt = null;
@@ -222,6 +237,9 @@ namespace RealEstate.Controllers
 
                     if (registerResult.Succeeded)
                     {
+                        account.ImageUrl = FileService.UploadFile("UserImages", registerAgentDto.Image);
+                        await UserManager.UpdateAsync(account);
+
                         registerResult = await UserManager.AddToRoleAsync(account, "Agent");
 
                         if (registerResult.Succeeded)

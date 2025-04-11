@@ -6,9 +6,6 @@ namespace RealEstate.Models.Dtos.OrderItemDto
 {
     public class CreateOrderItemDto
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         [NonNegative]
         public int Quantity { get; set; }

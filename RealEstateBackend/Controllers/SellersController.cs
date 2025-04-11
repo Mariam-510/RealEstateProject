@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using RealEstate.JWT;
 using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos.AccountDto;
+using RealEstate.Models.Dtos.BuyerDto;
 using RealEstate.Models.Dtos.SellerDto;
 using RealEstate.Repositories;
+using RealEstate.Services;
 using System.Security.Claims;
 using System.Transactions;
 
@@ -20,14 +22,16 @@ namespace RealEstate.Controllers
         public IMapper Mapper { get; }
         public UserManager<Account> UserManager { get; }
         public JWTService TokenService { get; }
+        public FileService FileService { get; }
 
         public SellersController(ISellerRepository sellerRepository, IMapper mapper,
-            UserManager<Account> userManager, JWTService tokenService)
+            UserManager<Account> userManager, JWTService tokenService, FileService fileService)
         {
             SellerRepository = sellerRepository;
             Mapper = mapper;
             UserManager = userManager;
             TokenService = tokenService;
+            FileService = fileService;
         }
 
         [HttpGet]
@@ -73,7 +77,7 @@ namespace RealEstate.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] SellerFormDto sellerFormDto)
+        public async Task<IActionResult> Update(int id, [FromForm] SellerFormDto sellerFormDto)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -127,6 +131,23 @@ namespace RealEstate.Controllers
                             transactionScope.Dispose();
                             return StatusCode(500, passwordResult.Errors);
                         }
+                    }
+
+                    // Handle image - if no image was provided in the DTO, keep the existing one
+                    if (sellerFormDto.Image == null)
+                    {
+                        // No image was provided in the request
+                        if (sellerFormDto.RemoveImage) // Add a bool RemoveImage property to your DTO
+                        {
+                            // User explicitly wants to remove the image
+                            FileService.DeleteFile(existingAccount.ImageUrl);
+                            existingAccount.ImageUrl = null;
+                        }
+                    }
+                    else
+                    {
+                        // New image was provided - handle the upload
+                        existingAccount.ImageUrl = FileService.UpdateFile("UserImages", sellerFormDto.Image, existingAccount.ImageUrl);
                     }
 
                     var updateResult = await UserManager.UpdateAsync(existingAccount);

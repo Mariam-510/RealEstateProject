@@ -20,3 +20,6 @@ RealEstate.csproj.user
 # IDE-specific files (e.g., Rider, VS Code)
 .idea/
 .vscode/
+
+# Entity Framework Migrations
+**/Migrations/

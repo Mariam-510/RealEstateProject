@@ -28,6 +28,12 @@ namespace RealEstate.Repositories
 
         }
 
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.SubscriptionPlans.AnyAsync(p => p.Id == id && !p.IsDeleted);
+        }
+
+
         public async Task SaveAsync() => await _context.SaveChangesAsync();
     }
 

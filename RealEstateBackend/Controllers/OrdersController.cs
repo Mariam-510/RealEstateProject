@@ -1,11 +1,13 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RealEstate.Mapping;
 using RealEstate.Models.Domains;
 using RealEstate.Models.DTOs.OrderDto;
 using RealEstate.Repositories;
-using Stripe;
-using PaymentMethod = RealEstate.Models.Domains.PaymentMethod;
+using Account = RealEstate.Models.Domains.Account;
 
 namespace RealEstate.Controllers
 {
@@ -16,12 +18,14 @@ namespace RealEstate.Controllers
         public IOrderRepository _orderRepository { get; }
         public ICartRepository _cartRepository { get; }
         public IOrderItemRepository _orderItemRepository { get; }
+        public IBuyerRepository _buyerRepository { get; }
 
-        public OrdersController(IOrderRepository orderRepository, ICartRepository cartRepository, IOrderItemRepository orderItemRepository) 
+        public OrdersController(IOrderRepository orderRepository, ICartRepository cartRepository, IOrderItemRepository orderItemRepository, IBuyerRepository buyerRepository) 
         {
             _orderRepository = orderRepository;
             _cartRepository = cartRepository;
             _orderItemRepository = orderItemRepository;
+            _buyerRepository = buyerRepository;
         }
 
         [HttpGet]
@@ -29,24 +33,35 @@ namespace RealEstate.Controllers
         public async Task<IActionResult> GetAll()
         {
             var orders = await _orderRepository.GetAllAsync();
-            return Ok(orders);
+
+            var response = orders.Select(o => o.OrderResponseDto());
+            return Ok(response);
         }
 
         [HttpGet]
         [Route("buyer/{buyerId}")]
         public async Task<IActionResult> GetAllByBuyer(int buyerId)
         {
+            var existingBuyer = await _buyerRepository.GetByIdAsync(buyerId);
+            if (existingBuyer == null)
+                return NotFound("Buyer not found!");
+
             var orders = await _orderRepository.GetAllByBuyerAsync(buyerId);
-            return Ok(orders);
+
+            var response = orders.Select(o => o.OrderResponseDto());
+            return Ok(response);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
+        [Route("getById/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var order = await _orderRepository.GetByIdAsync(id);
             if (order == null)
                 return NotFound();
-            return Ok(order);
+
+            var response = order.OrderResponseDto();
+            return Ok(response);
         }
 
         [HttpPost]
@@ -87,7 +102,13 @@ namespace RealEstate.Controllers
                         await _orderItemRepository.UpdateAsync(orderItem);
                     }
                 }
-                return Ok(order);
+
+                cart.SelectedAddressId = null;
+                await _cartRepository.UpdateAsync(cart);
+
+                var response = order.OrderResponseDto();
+
+                return Ok(response);
             }
             return BadRequest("Cart not found!");
 
@@ -97,25 +118,23 @@ namespace RealEstate.Controllers
             //return CreatedAtAction(nameof(GetById), new { id = createdOrder.Id }, createdOrder);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody]Order order)
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody]UpdateOrderDto updateOrderDto)
         {
-            if (id != order.Id)
-                return BadRequest("Order ID mismatch");
-            var updatedOrder = await _orderRepository.UpdateAsync(order);
-            if (updatedOrder == null)
-                return NotFound();
-            return Ok(updatedOrder);
-        }
+            var existingOrder = await _orderRepository.GetByIdAsync(updateOrderDto.Id);
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var order = await _orderRepository.GetByIdAsync(id);
-            if (order == null)
-                return NotFound();
-            await _orderRepository.DeleteAsync(id);
-            return NoContent();
+            if (existingOrder == null)
+            {
+                return NotFound("Order not found!");
+            }
+
+            existingOrder.Status = updateOrderDto.Status;
+
+            await _orderRepository.UpdateAsync(existingOrder);
+
+            var response = existingOrder.OrderResponseDto();
+
+            return Ok(response);
         }
     }
 }

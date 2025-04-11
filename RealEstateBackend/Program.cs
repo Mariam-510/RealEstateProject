@@ -62,13 +62,6 @@ namespace RealEstate
             );
 
 
-            //builder.Services.AddIdentityCore<Account>()
-            //    .AddRoles<IdentityRole>()
-            //    .AddTokenProvider<DataProtectorTokenProvider<Account>>("RealEstate")
-            //    .AddEntityFrameworkStores<RealEstateDbContext>()
-            //    .AddDefaultTokenProviders();
-
-
             builder.Services.AddIdentity<Account, IdentityRole>()
                 .AddTokenProvider<DataProtectorTokenProvider<Account>>("RealEstate")
                 .AddEntityFrameworkStores<RealEstateDbContext>()
@@ -95,24 +88,9 @@ namespace RealEstate
                 options.Password.RequireLowercase = true;
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequireUppercase = true;
-                options.Password.RequiredLength = 6;
+                options.Password.RequiredLength = 8;
                 options.Password.RequiredUniqueChars = 1;
             });
-
-            builder.Services.AddScoped<IPasswordValidator<Account>, PasswordLengthValidator<Account>>();
-            builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
-            builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-            builder.Services.AddScoped<IPropertyBidRepository, PropertyBidRepository>();
-            builder.Services.AddScoped<IAddressRepository, AddressRepository>();
-
-
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<IWishListRepository, WishlistRepository>();
-            builder.Services.AddScoped<IAuctionRepository, AuctioRepository>();
-
-
-            builder.Services.AddScoped<FileService>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             options.TokenValidationParameters = new TokenValidationParameters
@@ -128,19 +106,18 @@ namespace RealEstate
             });
 
             // Add Scoped for repositories
-
             builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddScoped<IPasswordValidator<Account>, PasswordLengthValidator<Account>>();
             builder.Services.AddScoped<IBuyerRepository, BuyerRepository>();
             builder.Services.AddScoped<ISellerRepository, SellerRepository>();
             builder.Services.AddScoped<IAgentRepository, AgentRepository>();
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
-<<<<<<< Updated upstream
-=======
             builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
-            builder.Services.AddScoped<IPasswordValidator<Account>, PasswordLengthValidator<Account>>();
             builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
             builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             builder.Services.AddScoped<IPropertyBidRepository, PropertyBidRepository>();
@@ -155,12 +132,29 @@ namespace RealEstate
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<IAdminRepository, AdminRepository>();
             builder.Services.AddScoped<IContractRepository, ContractRepository>();
->>>>>>> Stashed changes
+            builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
             builder.Services.AddScoped<JWTService>();
             builder.Services.AddScoped<FileService>();
             builder.Services.AddScoped<EmailService>();
             
 
+            // builder.Services.AddSingleton<PayPalService>();// Maybe review if it's better to use singleton or scoped here later
+            builder.Services.AddScoped<PayPalService>();
+
+
+            //builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
+            builder.Services.AddScoped<RealEstate.Services.SubscriptionService>();
+          
+            // Register other services
+            builder.Services.AddSingleton<StripeService>();
+
+            builder.Services.AddHttpClient<PayPalService>();
+
+            // string configurations
+            Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
+            // IMPORTANTTTTT
+            //builder.Services.AddHostedService<AuctionStatusUpdater>();
 
             builder.Services.AddCors(options =>
             {
@@ -170,25 +164,6 @@ namespace RealEstate
                         .AllowAnyHeader()
                         .AllowAnyMethod());
             });
-          
-            // Register other services
-            builder.Services.AddSingleton<StripeService>();
-            // builder.Services.AddSingleton<PayPalService>();// Maybe review if it's better to use singleton or scoped here later
-            builder.Services.AddScoped<PayPalService>();
-            //builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
-            builder.Services.AddScoped<RealEstate.Services.SubscriptionService>();
-
-            builder.Services.AddHttpClient<PayPalService>();
-
-
-            // string configurations
-            Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
-
-
-            builder.Services.AddScoped<IMessageRepository, MessageRepository>();
-            builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
-            // IMPORTANTTTTT
-            //builder.Services.AddHostedService<AuctionStatusUpdater>();
 
             var app = builder.Build();
 

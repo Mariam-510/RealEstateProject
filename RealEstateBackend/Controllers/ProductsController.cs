@@ -46,9 +46,7 @@ namespace RealEstate.Controllers
             else
             {
                 Product ProductModel = ProductDTO.ToProductModel();
-<<<<<<< Updated upstream
-                ProductModel.ImageUrl = _fileService.UploadFile("ProductImages", ProductDTO.Productimage);
-=======
+
                 ProductModel.Images = new List<string>();
                 //ProductModel.ImageUrl = _fileService.UploadFile("ProductImages", ProductDTO.Productimage);
                 // Handle image uploads
@@ -60,7 +58,7 @@ namespace RealEstate.Controllers
                         ProductModel.Images.Add(imageUrl);
                     }
                 }
->>>>>>> Stashed changes
+
                 Product? CreatedProduct = await _ProductRepository.CreateAsync(ProductModel);
                 if (CreatedProduct == null)
                 {
@@ -163,9 +161,7 @@ namespace RealEstate.Controllers
                 {
                     return NotFound("Product Not found!");
                 }
-<<<<<<< Updated upstream
-                ProductModel.ImageUrl = _fileService.UpdateFile("ProductImages", ProductDTO.Productimage, oldProduct.ImageUrl);
-=======
+
                 //ProductModel.ImageUrl = _fileService.UpdateFile("ProductImages", ProductDTO.Productimage, oldProduct.ImageUrl);
 
 
@@ -191,7 +187,7 @@ namespace RealEstate.Controllers
                         }
                     }
                 }
->>>>>>> Stashed changes
+
                 Product? UpdatedProduct = await _ProductRepository.UpdateAsync(id, ProductModel);
                 if (UpdatedProduct == null)
                 {

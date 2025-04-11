@@ -5,6 +5,8 @@ using RealEstate.Models.DTOs.Auction;
 using RealEstate.Models.DTOs.Category;
 using RealEstate.Models.DTOs.Product;
 using RealEstate.Models.DTOs.Wishlist;
+using RealEstate.Models.DTOs.OrderDto;
+using RealEstate.Models.DTOs.ReviewDto;
 
 namespace RealEstate.Mapping
 {
@@ -44,6 +46,36 @@ namespace RealEstate.Mapping
 
         //----------------------------------------------------------------------------------------
         //Order
+
+        public static OrderResponseDto OrderResponseDto(this Order order)
+        {
+            return new OrderResponseDto
+            {
+                Id = order.Id,
+                OrderDate = order.OrderDate,
+                Status = order.Status,
+                TotalAmount = order.TotalAmount,
+                IsDeleted = order.IsDeleted,
+                BuyerId = order.BuyerId,
+                AddressId = order.AddressId,
+                PaymentId = order.PaymentId
+            };
+        }
+
+        //----------------------------------------------------------------------------------------
+        //Review
+
+        public static ReviewResponseDto ReviewResponseDto(this Review review)
+        {
+            return new ReviewResponseDto
+            {
+                Rating = review.Rating,
+                Comment = review.Comment,
+                ProductId = review.ProductId,
+                BuyerId = review.BuyerId
+            };
+        }
+
         public static ProductDTOShow ToProductDTOShow( this Product product)
         {
             return new ProductDTOShow
@@ -57,12 +89,8 @@ namespace RealEstate.Mapping
                 IsDeleted = product.IsDeleted,
                 CategoryID = product.CategoryID ?? 0,
                 CategoryName = product.Category?.Name ?? string.Empty,
-<<<<<<< Updated upstream
-                Productimage=product.ImageUrl,
-=======
                 Productimage=product.Images
-                //Productimage=product.ImageUrl,
->>>>>>> Stashed changes
+
             };
         }
         public static List<ProductDTOShow> ToProductDTOShowList(this List<Product> products)
