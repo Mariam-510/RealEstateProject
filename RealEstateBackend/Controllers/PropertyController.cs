@@ -7,6 +7,7 @@ using RealEstate.Models.Domains;
 using RealEstate.Models.DTOs.PropertyDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
+using System.Transactions;
 
 namespace RealEstate.Controllers
 {
@@ -20,9 +21,9 @@ namespace RealEstate.Controllers
         private readonly IAgentRepository _agentRepo;
         private readonly ISellerRepository _sellerRepo;
         private readonly IAuctionRepository _auctionRepo;
-
+        private readonly IContractRepository _contractRepo;
         public PropertyController(IPropertyRepository propertyRepo, IMapper mapper, FileService fileService,
-            IAgentRepository agentRepo,ISellerRepository sellerRepo, IAuctionRepository auctionRepo)
+            IAgentRepository agentRepo,ISellerRepository sellerRepo, IAuctionRepository auctionRepo, IContractRepository contractRepo)
         {
             _propertyRepo = propertyRepo;
             _mapper = mapper;
@@ -30,6 +31,7 @@ namespace RealEstate.Controllers
             _agentRepo = agentRepo;
             _sellerRepo = sellerRepo;
             _auctionRepo = auctionRepo;
+            _contractRepo = contractRepo;
         }
         // GET: api/Property
         [HttpGet]
@@ -51,17 +53,53 @@ namespace RealEstate.Controllers
         }
 
 
+        [HttpGet("not-approved")]
+        public async Task<IActionResult> GetNotApprovedProperties()
+        {
+            try
+            {
+                var notApprovedProperties = await _propertyRepo.GetAllNotApproved();
+                if (notApprovedProperties == null )
+                    return NotFound("There are no properties that are not approved.");
+                var notApprovedPropertyDtos = _mapper.Map<List<PropertyDto>>(notApprovedProperties);
+                return Ok(notApprovedPropertyDtos); 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error while fetching not approved properties: {ex.Message}");
+            }
+        }
+
         [HttpGet("seller/{sellerId}")]
-        public async Task<IActionResult> GetAllBySellerId(int sellerId)
+        public async Task<IActionResult> GetAllBySellerId(int sellerId,  bool? approved = null)
         {
             var seller = await _sellerRepo.GetByIdAsync(sellerId);
             if (seller == null || seller.IsDeleted)
                 return NotFound($"Seller with ID {sellerId} does not exist.");
-            var properties = await _propertyRepo.GetAllBySellerIdAsync(sellerId);
-            if (properties == null || !properties.Any())
-                return NotFound($"No properties found for seller with ID {sellerId}");
+            // Fetch properties based on approval status
+            List<Property> filteredProperties;
 
-            var propertyDtos = _mapper.Map<List<PropertyDto>>(properties);
+            if (approved.HasValue)
+            {
+                if (approved.Value)
+                {
+                    filteredProperties = await _propertyRepo.GetApprovedBySellerIdAsync(sellerId);
+                }
+                else
+                {
+                    filteredProperties = await _propertyRepo.GetNotApprovedBySellerIdAsync(sellerId);
+                }
+            }
+            else
+            {
+                filteredProperties = await _propertyRepo.GetAllBySellerIdAsync(sellerId);
+            }
+            // Check if no properties match the filter
+            if (!filteredProperties.Any())
+            {
+                return NotFound("No properties found matching the specified criteria.");
+            }
+            var propertyDtos = _mapper.Map<List<PropertyDto>>(filteredProperties);
             return Ok(propertyDtos);
         }
 
@@ -100,44 +138,77 @@ namespace RealEstate.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreatePropertyDto createDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            // Validate Agent or Seller existence
-            if (createDto.AgentId != null)
+            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                var agent = await _agentRepo.GetByIdAsync(createDto.AgentId.Value);
-                if (agent == null || agent.IsDeleted)
-                    return NotFound($"Agent with ID {createDto.AgentId} does not exist or is deleted.");
-            }
-            else if (createDto.SellerId != null)
-            {
-                var seller = await _sellerRepo.GetByIdAsync(createDto.SellerId.Value);
-                if (seller == null || seller.IsDeleted)
-                    return NotFound($"Seller with ID {createDto.SellerId} does not exist or is deleted.");
-            }
-
-            var property = _mapper.Map<Property>(createDto);
-            property.Type = Enum.Parse<PropertyType>(createDto.Type, true);
-            property.Status = Enum.Parse<PropertyStatus>(createDto.Status, true);
-            property.PropertyCategory = Enum.Parse<PropertyCategory>(createDto.PropertyCategory, true);
-
-            property.Images = new List<string>();
-
-            // Handle image uploads
-            foreach (var imageFile in createDto.Images)
-            {
-                var imageUrl = _fileService.UploadFile("PropertyImages", imageFile);
-                if (!string.IsNullOrEmpty(imageUrl))
+                try
                 {
-                    property.Images.Add(imageUrl); 
+
+                    if (!ModelState.IsValid)
+                        return BadRequest(ModelState);
+                    // Validate Agent or Seller existence
+                    if (createDto.AgentId != null)
+                    {
+                        var agent = await _agentRepo.GetByIdAsync(createDto.AgentId.Value);
+                        if (agent == null || agent.IsDeleted)
+                            return NotFound($"Agent with ID {createDto.AgentId} does not exist or is deleted.");
+                    }
+                    else if (createDto.SellerId != null)
+                    {
+                        var seller = await _sellerRepo.GetByIdAsync(createDto.SellerId.Value);
+                        if (seller == null || seller.IsDeleted)
+                            return NotFound($"Seller with ID {createDto.SellerId} does not exist or is deleted.");
+                    }
+
+                    var property = _mapper.Map<Property>(createDto);
+                    property.Type = Enum.Parse<PropertyType>(createDto.Type, true);
+                    property.Status = Enum.Parse<PropertyStatus>(createDto.Status, true);
+                    property.PropertyCategory = Enum.Parse<PropertyCategory>(createDto.PropertyCategory, true);
+                    property.Images = new List<string>();
+                    property.IsApproved = createDto.SellerId != null ? false : true;
+
+                    // Handle image uploads
+                    foreach (var imageFile in createDto.Images)
+                    {
+                        var imageUrl = _fileService.UploadFile("PropertyImages", imageFile);
+                        if (!string.IsNullOrEmpty(imageUrl))
+                        {
+                            property.Images.Add(imageUrl);
+                        }
+                    }
+
+                    await _propertyRepo.AddAsync(property);
+                    //  If created by seller, create contract
+                    if (createDto.SellerId != null)
+                    {
+                        var seller = await _sellerRepo.GetByIdAsync(createDto.SellerId.Value);
+                        if (seller == null || seller.IsDeleted)
+                            return NotFound("Seller not found.");
+
+                        if (createDto.ContractFile == null)
+                            return BadRequest("Contract file is required when a seller creates a property.");
+                        var contractUrl = _fileService.UploadFile("PropertyContracts", createDto.ContractFile);
+                        if (string.IsNullOrEmpty(contractUrl))
+                            return StatusCode(500, "Failed to upload contract file.");
+
+                        var contract = new Contract
+                        {
+                            PropertyId = property.Id,
+                            SellerId = createDto.SellerId.Value,
+                            ImageUrl = contractUrl
+                        };
+                        await _contractRepo.CreateAsync(contract);
+                    }
+
+                    var propertyDto = _mapper.Map<PropertyDto>(property);
+                    transactionScope.Complete();
+                    return CreatedAtAction(nameof(GetAll), new { id = property.Id }, propertyDto);
+                }
+                catch (Exception ex)
+                {
+                    // Transaction will rollback automatically if Complete() isn't called
+                    return StatusCode(500, $"Error while creating property and contract: {ex.Message}");
                 }
             }
-
-            await _propertyRepo.AddAsync(property);
-
-            var propertyDto = _mapper.Map<PropertyDto>(property);
-            return CreatedAtAction(nameof(GetAll), new { id = property.Id }, propertyDto);
-
         }
 
         // PUT: api/Property/5
@@ -186,6 +257,27 @@ namespace RealEstate.Controllers
             return Ok(updatedDto);
 
            
+        }
+
+        [HttpPatch("properties/{id}/approve")]
+        public async Task<IActionResult> ApproveProperty(int id)
+        {
+            try
+            {
+                var property = await _propertyRepo.GetByIdAsync(id);
+                if (property == null)
+                {
+                    return NotFound($"Property with ID {id} not found.");
+                }
+                property.IsApproved = true;
+                await _propertyRepo.UpdateAsync(property);
+                var propertyDto = _mapper.Map<PropertyDto>(property);
+                return Ok(propertyDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error while approving the property: {ex.Message}");
+            }
         }
 
         // DELETE: api/Property/5

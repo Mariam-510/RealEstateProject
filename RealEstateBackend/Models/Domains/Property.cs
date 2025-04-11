@@ -47,6 +47,7 @@ namespace RealEstate.Models.Domains
         public List<string> Images { get; set; }
 
         public bool IsApproved { get; set; } = true;
+
     }
     public enum PropertyCategory
     {
