@@ -1,11 +1,16 @@
 ﻿using RealEstate.Models.Attributes;
 <<<<<<< HEAD
+<<<<<<< HEAD
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 =======
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 >>>>>>> 79f45706c735042f1fab996ea1658e930a8e0871
+=======
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+>>>>>>> 13d4413e4091c01666463e02b6a91e4228ffe959
 
 namespace RealEstate.Models.Domains
 {
