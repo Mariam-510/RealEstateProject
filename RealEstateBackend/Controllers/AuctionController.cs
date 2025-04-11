@@ -34,10 +34,10 @@ namespace RealEstate.Controllers
           
             DateTime now = DateTime.Now;
 
-            if (AuctionDtO.StartTime < now || AuctionDtO.EndTime <= now)
-            {
-                return BadRequest("Start time and end time must both be in the future.");
-            }
+            //if (AuctionDtO.StartTime < now || AuctionDtO.EndTime <= now)
+            //{
+            //    return BadRequest("Start time and end time must both be in the future.");
+            //}
 
             if (AuctionDtO.StartTime >= AuctionDtO.EndTime)
             {

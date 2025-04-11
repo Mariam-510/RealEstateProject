@@ -30,12 +30,7 @@ namespace RealEstate.Repositories
                 .FirstOrDefaultAsync(a => a.Id == id && !a.IsDeleted);
         }
 
-        //get buyer by its id
-        public async Task<Buyer?> GetByIdBuyerAsync(int id)
-        {
-            return await _context.Buyers
-                .FirstOrDefaultAsync(a => a.Id == id && !a.IsDeleted);
-        }
+      
 
         //get appointments of specific buyer
         public async Task<List<Appointment>> GetByBuyerAsync(int buyerId)

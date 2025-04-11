@@ -7,17 +7,17 @@ namespace RealEstate.Models.DTOs.Auction
     public class AuctionDTO : IValidatableObject
     {
         [Required]
+        [FutureDate]
         public DateTime StartTime { get; set; }
 
         [Required]
+        [FutureDate]
         public DateTime EndTime { get; set; }
 
         [Required]
         [NonNegative]
         public decimal StartPrice { get; set; }
 
-        [Required]
-        public Status Status { get; set; }
 
         [Required]
         public int PropertyId { get; set; }

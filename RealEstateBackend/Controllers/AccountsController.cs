@@ -77,7 +77,7 @@ namespace RealEstate.Controllers
                     }
 
                     var account = Mapper.Map<Account>(registerSellerOrBuyerDto);
-                    account.CteatedAt = DateTime.Now;
+                    account.CreatedAt = DateTime.Now;
                     account.UserName = registerSellerOrBuyerDto.Email;
                     account.EmailConfirmationCode = null;
                     account.CodeGeneratedAt = null;
@@ -211,7 +211,7 @@ namespace RealEstate.Controllers
                     }
 
                     var account = Mapper.Map<Account>(registerAgentDto);
-                    account.CteatedAt = DateTime.UtcNow;
+                    account.CreatedAt = DateTime.UtcNow;
                     account.UserName = registerAgentDto.Email;
                     account.EmailConfirmationCode = null;
                     account.CodeGeneratedAt = null;

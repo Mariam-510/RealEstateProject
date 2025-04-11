@@ -125,5 +125,7 @@ namespace RealEstate.Repositories
         {
             return await dbcontext.Auctions.Where(A => A.PropertyBids.Any(P => P.BuyerId == BuyerID)).ToListAsync();
         }
+       
+
     }
 }
