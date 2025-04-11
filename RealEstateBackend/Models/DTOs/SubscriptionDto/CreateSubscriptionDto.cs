@@ -6,7 +6,7 @@ namespace RealEstate.Models.Dtos.SubscriptionDto
     {
         public UserType userType { get; set; }
         public int UserId { get; set; }
-        public int? SubscriptionPlanId { get; set; }
+        public int SubscriptionPlanId { get; set; }
         public int? PaymentId { get; set; }
     }
 

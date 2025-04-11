@@ -10,5 +10,7 @@ namespace RealEstate.Repositories
         Task<Seller> CreateAsync(Seller seller);
         Task<Seller?> UpdateAsync(int id, Seller seller);
         Task<Seller?> DeleteAsync(int id);
+        Task<bool> ExistsAsync(int id);
+
     }
 }
