@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RealEstate.Data;
 using RealEstate.Models.Domains;
 
@@ -24,15 +24,16 @@ namespace RealEstate.Repositories
             return carts;
         }
 
-        public async Task<Cart?> GetByIdAsync(int id)
+        public async Task<Cart> CreateAsync(Cart cart)
         {
-            var cart = await _context.Carts
-                .Include(c => c.SelectedAddress)
-                .Include(c => c.OrderItems.Where(o => !o.IsDeleted))
-                .ThenInclude(o => o.Product)
-                 .Where(c => !c.IsDeleted)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            await _context.Carts.AddAsync(cart);
+            await _context.SaveChangesAsync();
 
+            return cart;
+        }
+
+        private async Task<Cart?> updateTotal(Cart? cart)
+        {
             if (cart != null)
             {
                 if (cart.OrderItems == null || cart.OrderItems.Count() == 0)
@@ -50,6 +51,19 @@ namespace RealEstate.Repositories
 
             await _context.SaveChangesAsync();
 
+            return cart;
+        }
+
+        public async Task<Cart?> GetByIdAsync(int id)
+        {
+            var cart = await _context.Carts
+                .Include(c => c.SelectedAddress)
+                .Include(c => c.OrderItems.Where(o => !o.IsDeleted))
+                .ThenInclude(o => o.Product)
+                 .Where(c => !c.IsDeleted)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+           cart = await updateTotal(cart);
 
             return cart;
         }
@@ -62,43 +76,8 @@ namespace RealEstate.Repositories
                  .Where(c => !c.IsDeleted)
                 .FirstOrDefaultAsync(c => c.BuyerId == buyerId);
 
-            if (cart != null)
-            {
-                if (cart.OrderItems == null || cart.OrderItems.Count() == 0)
-                {
-                    cart.TotalPrice = 0;
-                }
-                else
-                {
-                    cart.TotalPrice = cart.OrderItems
-                      .Where(oi => !oi.IsDeleted)
-                      .Sum(oi => oi.Price);
-                }
+            cart = await updateTotal(cart);
 
-            }
-
-            await _context.SaveChangesAsync();
-
-
-            return cart;
-        }
-
-        public async Task<Cart> CreateAsync(Cart cart)
-        {
-            await _context.Carts.AddAsync(cart);
-            await _context.SaveChangesAsync();
-
-            return cart;
-        }
-
-        public async Task<Cart?> DeleteAsync(int id)
-        {
-            var cart = await GetByIdAsync(id);
-            if (cart != null)
-            {
-                cart.IsDeleted = true;
-                await _context.SaveChangesAsync();
-            }
             return cart;
         }
 
@@ -116,21 +95,24 @@ namespace RealEstate.Repositories
                 existingcart.SelectedAddressId = cart.SelectedAddressId;
                 existingcart.OrderItems = cart.OrderItems;
 
-                if (existingcart.OrderItems == null || existingcart.OrderItems.Count() == 0)
-                {
-                    existingcart.TotalPrice = 0;
-                }
-                else
-                {
-                    existingcart.TotalPrice = cart.OrderItems
-                        .Where(oi => !oi.IsDeleted)
-                        .Sum(oi => oi.Price);
-                }
-
+                existingcart = await updateTotal(existingcart); 
 
             }
             await _context.SaveChangesAsync();
+
             return existingcart;
         }
+
+        public async Task<Cart?> DeleteAsync(int id)
+        {
+            var cart = await GetByIdAsync(id);
+            if (cart != null)
+            {
+                cart.IsDeleted = true;
+                await _context.SaveChangesAsync();
+            }
+            return cart;
+        }
+
     }
 }

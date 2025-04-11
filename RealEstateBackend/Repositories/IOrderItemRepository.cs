@@ -5,6 +5,8 @@ namespace RealEstate.Repositories
     public interface IOrderItemRepository
     {
         Task<List<OrderItem>> GetAllAsync();
+        Task<List<OrderItem>> GetAllByCartAsync(int cartId);
+        Task<List<OrderItem>> GetAllByOrderAsync(int orderId);
         Task<OrderItem?> GetByIdAsync(int id);
         Task<OrderItem> CreateAsync(OrderItem orderItem);
         Task<OrderItem?> UpdateOrderItemQuantityAsync(OrderItem orderItem);

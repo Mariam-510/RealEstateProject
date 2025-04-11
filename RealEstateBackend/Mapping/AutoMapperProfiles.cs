@@ -12,6 +12,8 @@ using RealEstate.Models.Dtos.AccountDto;
 using RealEstate.Models.Dtos.AgentDto;
 using RealEstate.Models.Dtos.BuyerDto;
 using RealEstate.Models.Dtos.SellerDto;
+using RealEstate.Models.Dtos.OrderItemDto;
+using RealEstate.Models.Dtos.CartDto;
 
 
 using RealEstate.Models.Dtos.SubscriptionDto;
@@ -61,14 +63,12 @@ namespace RealEstate.Mapping
             CreateMap<RegisterAgentDto, Agent>().ReverseMap();
 
             CreateMap<Seller, SellerDto>()
-
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.Account.CreatedAt))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email));
 
             CreateMap<SellerFormDto, Seller>().ReverseMap();
 
             CreateMap<Buyer, BuyerDto>()
-
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.Account.CreatedAt))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email));
 
@@ -80,7 +80,14 @@ namespace RealEstate.Mapping
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email));
 
             CreateMap<AgentFormDto, Agent>().ReverseMap();
-            
+
+            CreateMap<Cart, CartDto>()
+                .ForMember(dest => dest.OrderItemDtos, opt => opt.MapFrom(src => src.OrderItems));
+
+            CreateMap<CreateOrderItemDto, OrderItem>().ReverseMap();
+
+            CreateMap<OrderItemDto, OrderItem>().ReverseMap();
+
             CreateMap<Payment, Agent>().ReverseMap();
 
             CreateMap<Subscription, SubscriptionDto>().ReverseMap();

@@ -62,13 +62,6 @@ namespace RealEstate
             );
 
 
-            //builder.Services.AddIdentityCore<Account>()
-            //    .AddRoles<IdentityRole>()
-            //    .AddTokenProvider<DataProtectorTokenProvider<Account>>("RealEstate")
-            //    .AddEntityFrameworkStores<RealEstateDbContext>()
-            //    .AddDefaultTokenProviders();
-
-
             builder.Services.AddIdentity<Account, IdentityRole>()
                 .AddTokenProvider<DataProtectorTokenProvider<Account>>("RealEstate")
                 .AddEntityFrameworkStores<RealEstateDbContext>()
@@ -134,6 +127,8 @@ namespace RealEstate
             builder.Services.AddScoped<ISellerRepository, SellerRepository>();
             builder.Services.AddScoped<IAgentRepository, AgentRepository>();
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
