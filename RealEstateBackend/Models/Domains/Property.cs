@@ -39,8 +39,7 @@ namespace RealEstate.Models.Domains
         public int? SellerId { get; set; }
         public virtual Seller? Seller { get; set; }
 
-
-        public virtual ICollection<Wishlist>? WishlistItems { get; set; }
+       public virtual ICollection<Wishlist>? WishlistItems { get; set; }
 
         public virtual ICollection<Appointment>? Appointments { get; set; }
 

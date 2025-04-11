@@ -1,4 +1,6 @@
 ﻿using RealEstate.Models.Domains;
+using RealEstate.Models.DTOs.ConversationDto;
+using RealEstate.Models.DTOs.MessageDto;
 using RealEstate.Models.DTOs.Auction;
 using RealEstate.Models.DTOs.Category;
 using RealEstate.Models.DTOs.Product;
@@ -8,6 +10,40 @@ namespace RealEstate.Mapping
 {
     public static class ManualMapperProfiles
     {
+        //----------------------------------------------------------------------------------------
+        // Conversation
+
+        public static ConversationResponseDto ConversationResponseDto(this Conversation conversation)
+        {
+            return new ConversationResponseDto
+            {
+                Id = conversation.Id,
+                Status = conversation.Status,
+                CreatedAt = conversation.CreatedAt,
+                LastMessageAt = conversation.LastMessageAt,
+                FirstAccountId = conversation.FirstAccountId,
+                SecondAccountId = conversation.SecondAccountId
+            };
+        }
+
+        //----------------------------------------------------------------------------------------
+        // Messages
+
+        public static MessageResponseDto MessageResponseDto(this Message message)
+        {
+            return new MessageResponseDto
+            {
+                Id = message.Id,
+                Content = message.Content,
+                SenderId = message.SenderId,
+                ConversationId = message.ConversationId,
+                Status = message.Status,
+                SentAt = message.SentAt
+            };
+        }
+
+        //----------------------------------------------------------------------------------------
+        //Order
         public static ProductDTOShow ToProductDTOShow( this Product product)
         {
             return new ProductDTOShow
@@ -131,5 +167,6 @@ namespace RealEstate.Mapping
             return Auctions.Select(ToAuctionDTOShow).ToList();
         }
 
+        
     }
 }

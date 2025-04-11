@@ -1,5 +1,4 @@
-﻿using System.Reflection.Emit;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Models.Domains;
 
@@ -20,7 +19,7 @@ namespace RealEstate.Data
         public virtual DbSet<Wishlist> Wishlists { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Conversation> Conversations { get; set; }
-        public virtual DbSet<PropertyBid> PropertyBids { get; set; } 
+        public virtual DbSet<PropertyBid> PropertyBids { get; set; }
         public virtual DbSet<Property> Properties { get; set; }
         public virtual DbSet<Auction> Auctions { get; set; }
         public virtual DbSet<Appointment> Appointments { get; set; }
@@ -31,7 +30,8 @@ namespace RealEstate.Data
         public virtual DbSet<Cart> Carts { get; set; }
         #endregion
 
-        public RealEstateDbContext(DbContextOptions<RealEstateDbContext> options) : base(options)
+        public RealEstateDbContext(DbContextOptions<RealEstateDbContext> options)
+            : base(options) // Pass options to base class
         {
         }
 

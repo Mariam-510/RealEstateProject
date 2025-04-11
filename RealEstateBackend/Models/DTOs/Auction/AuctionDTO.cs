@@ -18,7 +18,6 @@ namespace RealEstate.Models.DTOs.Auction
         [NonNegative]
         public decimal StartPrice { get; set; }
 
-
         [Required]
         public int PropertyId { get; set; }
 

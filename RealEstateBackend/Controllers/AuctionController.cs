@@ -16,13 +16,20 @@ namespace RealEstate.Controllers
     public class AuctionController : ControllerBase
     {
         public IAuctionRepository _AuctionRepository { get; }
+        public IPropertyRepository _propertyRepository { get; }
+        public IAgentRepository _AgentRepository { get; }
+        public ISellerRepository _SellerRepository { get; }
+
+
+
         public FileService _fileService { get; }
 
-        public AuctionController(IAuctionRepository A)
+        public AuctionController(IAuctionRepository A , IPropertyRepository P , IAgentRepository Ag , ISellerRepository S )
         {
-
             _AuctionRepository = A;
-
+            _propertyRepository = P;
+            _AgentRepository = Ag;
+            _SellerRepository = S;
         }
         [HttpPost("CreateAuction")]
         public async Task<IActionResult> CreateAuction([FromForm] AuctionDTO AuctionDtO)
@@ -34,16 +41,43 @@ namespace RealEstate.Controllers
           
             DateTime now = DateTime.Now;
 
-            //if (AuctionDtO.StartTime < now || AuctionDtO.EndTime <= now)
-            //{
-            //    return BadRequest("Start time and end time must both be in the future.");
-            //}
 
             if (AuctionDtO.StartTime >= AuctionDtO.EndTime)
             {
                 return BadRequest("Start time must be earlier than End time.");
             }
-             
+            var property = await _propertyRepository.GetByIdAsync(AuctionDtO.PropertyId);
+            if (property == null) 
+            {
+                return NotFound("Property ID Not Found");
+            }
+            if (AuctionDtO.AgentId != null)
+            {
+                var Agent = await _AgentRepository.GetByIdAsync(AuctionDtO.AgentId.Value);
+                if (Agent == null)
+                {
+                    return NotFound("Agent ID Not Found");
+                }
+                if(property.AgentId!= Agent.Id)
+                {
+                    return Unauthorized("You Not allowed To Add Auction ");
+                }
+            }
+            if (AuctionDtO.SellerId != null)
+            {
+                var seller = await _SellerRepository.GetByIdAsync(AuctionDtO.SellerId.Value);
+
+                if (seller == null)
+                {
+                    return NotFound("Seller ID not Found");
+                }
+                if (property.AgentId != seller.Id)
+                {
+                    return Unauthorized("You Not allowed To Add Auction ");
+                }
+            }
+
+          
             Auction AuctionModel = AuctionDtO.ToAuctionModel();
             Auction ActionCreated = await _AuctionRepository.CreateAsync(AuctionModel);
             AuctionDTOShow ActionShow= ActionCreated.ToAuctionDTOShow();
@@ -58,7 +92,7 @@ namespace RealEstate.Controllers
             Auction GetAction = await _AuctionRepository.GetByIdAsync(id);
             if(GetAction==null)
             {
-                return NotFound("Auction Not found !");
+                return NotFound("Auction ID Not found !");
             }
             if(GetAction.Status==Status.Scheduled)
             {
@@ -89,9 +123,30 @@ namespace RealEstate.Controllers
         [HttpGet("GetAuctionByUserID")]
         public async Task<IActionResult> GetAuctionByUserID(int? AgentID = null, int? SellerID = null)
         {
+            if (AgentID.HasValue && SellerID.HasValue)
+            {
+                return BadRequest("Please provide at least one field.");
+            }
             if (!AgentID.HasValue && !SellerID.HasValue)
             {
                 return BadRequest("Please provide at least one field.");
+            }
+            if (AgentID != null)
+            {
+                var Agent = await _AgentRepository.GetByIdAsync(AgentID.Value);
+                if (Agent == null)
+                {
+                    return NotFound("Agent ID Not Found");
+                }
+            }
+            if (SellerID != null)
+            {
+                var seller = await _SellerRepository.GetByIdAsync(SellerID.Value);
+
+                if (seller == null)
+                {
+                    return NotFound("Seller ID not Found");
+                }
             }
 
             List<Auction> ActionData = await _AuctionRepository.GetByUserID(AgentID, SellerID);
@@ -139,7 +194,7 @@ namespace RealEstate.Controllers
         {
 
             List<Auction>  AuctionModel = await _AuctionRepository.GetByBuyerID(id);
-            if (AuctionModel == null)
+            if (AuctionModel == null||!AuctionModel.Any())
             {
 
                 return NotFound("BuyerID dont have Auction!");
