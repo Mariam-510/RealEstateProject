@@ -29,10 +29,11 @@ namespace RealEstate.Controllers
         public IBuyerRepository BuyerRepository { get; }
         public ISellerRepository SellerRepository { get; }
         public IAgentRepository AgentRepository { get; }
+        public FileService FileService { get; }
         public ICartRepository CartRepository { get; }
 
         public AccountsController(UserManager<Account> userManager, JWTService tokenService, IMapper Mapper, EmailService emailService,
-            IBuyerRepository buyerRepository, ISellerRepository sellerRepository, IAgentRepository agentRepository, ICartRepository cartRepository)
+            IBuyerRepository buyerRepository, ISellerRepository sellerRepository, IAgentRepository agentRepository, FileService fileService, ICartRepository cartRepository)
         {
             UserManager = userManager;
             TokenService = tokenService;
@@ -41,6 +42,7 @@ namespace RealEstate.Controllers
             BuyerRepository = buyerRepository;
             SellerRepository = sellerRepository;
             AgentRepository = agentRepository;
+            FileService = fileService;
             CartRepository = cartRepository;
         }
 
@@ -55,7 +57,7 @@ namespace RealEstate.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register([FromBody] RegisterSellerOrBuyerDto registerSellerOrBuyerDto)
+        public async Task<IActionResult> Register([FromForm] RegisterSellerOrBuyerDto registerSellerOrBuyerDto)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -89,6 +91,9 @@ namespace RealEstate.Controllers
 
                     if (registerResult.Succeeded)
                     {
+                        account.ImageUrl = FileService.UploadFile("UserImages", registerSellerOrBuyerDto.Image);
+                        await UserManager.UpdateAsync(account);
+
                         if (registerSellerOrBuyerDto.IsBuyer)
                         {
                             registerResult = await UserManager.AddToRoleAsync(account, "Buyer");
@@ -232,6 +237,9 @@ namespace RealEstate.Controllers
 
                     if (registerResult.Succeeded)
                     {
+                        account.ImageUrl = FileService.UploadFile("UserImages", registerAgentDto.Image);
+                        await UserManager.UpdateAsync(account);
+
                         registerResult = await UserManager.AddToRoleAsync(account, "Agent");
 
                         if (registerResult.Succeeded)

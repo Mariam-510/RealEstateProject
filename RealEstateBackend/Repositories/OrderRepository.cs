@@ -28,6 +28,8 @@ namespace RealEstate.Repositories
                 .Include(o => o.Buyer)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                .Include(o => o.Payment)
+                .Include(o => o.Address)
                 .Where(o => !o.IsDeleted && o.BuyerId == buyerId)
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();

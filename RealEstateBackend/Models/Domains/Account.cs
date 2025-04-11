@@ -18,6 +18,8 @@ namespace RealEstate.Models.Domains
         
         public DateTime? ResetCodeGeneratedAt { get; set; }
 
+        public string? ImageUrl { get; set; }
+
         public virtual ICollection<Message>? Messages { get; set; }
 
         public virtual ICollection<Conversation>? FirstParticipantConversations { get; set; }

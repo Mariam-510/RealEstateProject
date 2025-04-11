@@ -5,6 +5,7 @@ using RealEstate.Models.DTOs.Auction;
 using RealEstate.Models.DTOs.Category;
 using RealEstate.Models.DTOs.Product;
 using RealEstate.Models.DTOs.Wishlist;
+using RealEstate.Models.DTOs.OrderDto;
 
 namespace RealEstate.Mapping
 {
@@ -44,6 +45,22 @@ namespace RealEstate.Mapping
 
         //----------------------------------------------------------------------------------------
         //Order
+
+        public static OrderResponseDto OrderResponseDto(this Order order)
+        {
+            return new OrderResponseDto
+            {
+                Id = order.Id,
+                OrderDate = order.OrderDate,
+                Status = order.Status,
+                TotalAmount = order.TotalAmount,
+                IsDeleted = order.IsDeleted,
+                BuyerId = order.BuyerId,
+                AddressId = order.AddressId,
+                PaymentId = order.PaymentId
+            };
+        }
+
         public static ProductDTOShow ToProductDTOShow( this Product product)
         {
             return new ProductDTOShow

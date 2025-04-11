@@ -13,7 +13,10 @@
         public string? AccountId { get; set; }
 
         public string? Email { get; set; }
-
+      
         public DateTime CreatedAt { get; set; }
+
+        public string? ImageUrl { get; set; }
+
     }
 }

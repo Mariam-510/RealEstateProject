@@ -132,6 +132,7 @@ namespace RealEstate
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
+            builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
             builder.Services.AddScoped<JWTService>();
             builder.Services.AddScoped<FileService>();
             builder.Services.AddScoped<EmailService>();
@@ -162,8 +163,11 @@ namespace RealEstate
 
             builder.Services.AddScoped<IMessageRepository, MessageRepository>();
             builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
+
             // IMPORTANTTTTT
             //builder.Services.AddHostedService<AuctionStatusUpdater>();
+
 
             var app = builder.Build();
 
