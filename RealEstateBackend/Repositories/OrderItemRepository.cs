@@ -15,7 +15,29 @@ namespace RealEstate.Repositories
         public async Task<List<OrderItem>> GetAllAsync()
         {
             var orderItems = await dbContext.OrderItems
-                .Where(o => o.IsDeleted == false)
+                .Where(o => !o.IsDeleted)
+                .Include(o => o.Product).ToListAsync();
+
+            await dbContext.SaveChangesAsync();
+            return orderItems;
+
+        }
+
+        public async Task<List<OrderItem>> GetAllByCartAsync(int cartId)
+        {
+            var orderItems = await dbContext.OrderItems
+                .Where(o => !o.IsDeleted && o.CartId == cartId)
+                .Include(o => o.Product).ToListAsync();
+
+            await dbContext.SaveChangesAsync();
+            return orderItems;
+
+        }
+
+        public async Task<List<OrderItem>> GetAllByOrderAsync(int orderId)
+        {
+            var orderItems = await dbContext.OrderItems
+                .Where(o => !o.IsDeleted && o.OrderId == orderId)
                 .Include(o => o.Product).ToListAsync();
 
             await dbContext.SaveChangesAsync();
@@ -26,6 +48,7 @@ namespace RealEstate.Repositories
         public async Task<OrderItem?> GetByIdAsync(int id)
         {
             var orderItem = await dbContext.OrderItems
+                .Where(o => !o.IsDeleted)
                 .Include(o => o.Product)
                 .FirstOrDefaultAsync(orderItem => orderItem.Id == id);
 
@@ -34,32 +57,16 @@ namespace RealEstate.Repositories
 
         public async Task<OrderItem> CreateAsync(OrderItem orderItem)
         {
-            if (orderItem.Product != null)
+
+            var product = dbContext.Products.FirstOrDefault(p => p.Id == orderItem.ProductId);
+            if (product != null)
             {
-                var product = dbContext.Products.FirstOrDefault(p => p.Id == orderItem.ProductId);
-                if (product != null)
-                {
-                    orderItem.Price = orderItem.Quantity * product.Price;
-                }
+                orderItem.Price = orderItem.Quantity * product.Price;
             }
             await dbContext.OrderItems.AddAsync(orderItem);
 
             await dbContext.SaveChangesAsync();
 
-            return orderItem;
-        }
-
-        public async Task<OrderItem?> DeleteAsync(int id)
-        {
-            var orderItem = await dbContext.OrderItems
-               .Include(o => o.Product)
-               .FirstOrDefaultAsync(o => o.Id == id);
-
-            if (orderItem != null)
-            {
-                orderItem.IsDeleted = true;
-                await dbContext.SaveChangesAsync();
-            }
             return orderItem;
         }
 
@@ -76,8 +83,9 @@ namespace RealEstate.Repositories
             }
             existingOrderItem.Quantity = orderItem.Quantity;
 
-            if (orderItem.Quantity == 0)
+            if (existingOrderItem.Quantity == 0)
             {
+                existingOrderItem.Price = 0;
                 existingOrderItem.IsDeleted = true;
             }
             else
@@ -113,6 +121,22 @@ namespace RealEstate.Repositories
 
             return existingOrderItem;
         }
+
+        public async Task<OrderItem?> DeleteAsync(int id)
+        {
+            var orderItem = await dbContext.OrderItems
+                .Where(o=>!o.IsDeleted)
+               .Include(o => o.Product)
+               .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (orderItem != null)
+            {
+                orderItem.IsDeleted = true;
+                await dbContext.SaveChangesAsync();
+            }
+            return orderItem;
+        }
+
 
         public async Task<OrderItem?> Exists(int cartId, int productId)
         {
