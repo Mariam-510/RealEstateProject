@@ -14,6 +14,7 @@ using RealEstate.Models.Dtos.CartDto;
 using RealEstate.Models.Dtos.SubscriptionDto;
 using RealEstate.Models.Dtos.AdminDto;
 using RealEstate.Models.Dtos.ContractDto;
+using RealEstate.Models.Dtos.ShippingDto;
 
 
 namespace RealEstate.Mapping
@@ -110,9 +111,13 @@ namespace RealEstate.Mapping
 
             CreateMap<SubscriptionPlan, SubscriptionPlanDto>().ReverseMap();
             
-            CreateMap<CreateSubscriptionPlanDto, SubscriptionPlan>();
+            CreateMap<CreateSubscriptionPlanDto, SubscriptionPlan>().ReverseMap();
 
-            CreateMap<ContractDto, Contract>();
+            CreateMap<ContractDto, Contract>().ReverseMap();
+
+            CreateMap<ShippingDto, Shipping>().ReverseMap();
+
+            CreateMap<ShippingFormDto, Shipping>().ReverseMap();
 
         }
     }

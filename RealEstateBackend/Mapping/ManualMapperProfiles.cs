@@ -89,7 +89,7 @@ namespace RealEstate.Mapping
                 IsDeleted = product.IsDeleted,
                 CategoryID = product.CategoryID ?? 0,
                 CategoryName = product.Category?.Name ?? string.Empty,
-                Productimage=product.ImageUrl,
+                //Productimage=product.ImageUrl,
             };
         }
         public static List<ProductDTOShow> ToProductDTOShowList(this List<Product> products)

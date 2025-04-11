@@ -79,7 +79,6 @@ namespace RealEstate.Repositories
                 return null;
             }
             existingContract.IsDeleted = true;
-            //existingAgent.AccountId = null;
 
             await dbContext.SaveChangesAsync();
 

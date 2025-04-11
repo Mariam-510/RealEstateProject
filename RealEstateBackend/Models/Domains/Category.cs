@@ -11,7 +11,7 @@ namespace RealEstate.Models.Domains
         public string Name { get; set; }
 
         public bool IsDeleted { get; set; } = false;
-        public string? ImageUrl { get; set; }
+        public string ImageUrl { get; set; }
         public virtual ICollection<Product>? Products { get; set; }
     }
 }

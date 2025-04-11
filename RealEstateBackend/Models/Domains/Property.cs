@@ -46,6 +46,7 @@ namespace RealEstate.Models.Domains
         // Store image URLs (e.g., "/images/file.jpg")
         public List<string> Images { get; set; }
 
+        public bool IsApproved { get; set; } = true;
     }
     public enum PropertyCategory
     {
