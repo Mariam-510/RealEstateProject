@@ -10,6 +10,8 @@ namespace RealEstate.Models.Domains
 
         public bool IsDeleted { get; set; } = false;
 
+        public string ImageUrl { get; set; }
+
 
         [ForeignKey("Seller")]
         public int? SellerId { get; set; }

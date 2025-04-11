@@ -197,7 +197,7 @@ namespace RealEstate.Controllers
 
         [HttpPost]
         [Route("RegisterAgent")]
-        public async Task<IActionResult> RegisterAgent([FromBody] RegisterAgentDto registerAgentDto)
+        public async Task<IActionResult> RegisterAgent([FromForm] RegisterAgentDto registerAgentDto)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -226,7 +226,7 @@ namespace RealEstate.Controllers
                     }
 
                     var account = Mapper.Map<Account>(registerAgentDto);
-                    account.CreatedAt = DateTime.UtcNow;
+                    account.CreatedAt = DateTime.Now;
                     account.UserName = registerAgentDto.Email;
                     account.EmailConfirmationCode = null;
                     account.CodeGeneratedAt = null;
