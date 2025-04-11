@@ -14,18 +14,22 @@ namespace RealEstate.Controllers
     {
         private readonly ISubscriptionRepository _subscriptionRepository;
         private readonly ISubscriptionPlanRepository _subscriptionPlanRepository;
-        private readonly SubscriptionService _subscriptionService;
         private readonly IPaymentRepository _paymentRepository;
+        private readonly ISellerRepository _sellerRepository;
+        private readonly IAgentRepository _agentRepository;
         private readonly IMapper _mapper;
 
-        public SubscriptionsController(ISubscriptionRepository subscriptionRepository, IMapper mapper, ISubscriptionPlanRepository subscriptionPlanRepository, SubscriptionService subscriptionService, IPaymentRepository paymentRepository)
+        public SubscriptionsController(ISubscriptionRepository subscriptionRepository, ISubscriptionPlanRepository subscriptionPlanRepository, SubscriptionService subscriptionService, IPaymentRepository paymentRepository, ISellerRepository sellerRepository, IAgentRepository agentRepository, IMapper mapper)
         {
             _subscriptionRepository = subscriptionRepository;
             _subscriptionPlanRepository = subscriptionPlanRepository;
-            _mapper = mapper;
-            _subscriptionService = subscriptionService;
             _paymentRepository = paymentRepository;
+            _sellerRepository = sellerRepository;
+            _agentRepository = agentRepository;
+            _mapper = mapper;
         }
+
+
 
         //Authorize admin
 
@@ -56,19 +60,39 @@ namespace RealEstate.Controllers
             switch (dto.userType)
             {
                 case UserType.Seller:
-                    sub.SellerId = dto.UserId;
+                    if (await _sellerRepository.ExistsAsync(dto.UserId))
+                    {
+                        sub.SellerId = dto.UserId;
+                    }
+                    else
+                    {
+                        return BadRequest("Invalid seller id.");
+                    }
                     break;
                 case UserType.Agent:
-                    sub.AgentId = dto.UserId;
+
+                    if (await _agentRepository.ExistsAsync(dto.UserId))
+                    {
+                        sub.AgentId = dto.UserId;
+                    }
+                    else
+                    {
+                        return BadRequest("Invalid agent id.");
+                    }
                     break;
             }
 
-            var suggestedSubPlan = await _subscriptionPlanRepository.GetByIdAsync((int)dto.SubscriptionPlanId);
+            if (!(await _subscriptionPlanRepository.ExistsAsync((dto.SubscriptionPlanId))))
+            {
+                return BadRequest("Invalid subscription plan.");
+            }
+
+            var suggestedSubPlan = await _subscriptionPlanRepository.GetByIdAsync(dto.SubscriptionPlanId);
             if (suggestedSubPlan.Price > 0)
             {
                 Payment subscriptionPayment = null!;
 
-                if (dto.PaymentId.HasValue) 
+                if (dto.PaymentId.HasValue)
                 {
                     subscriptionPayment = await _paymentRepository.GetByIdAsync(dto.PaymentId.Value);
                 }
@@ -98,6 +122,30 @@ namespace RealEstate.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateSubscription(CreateSubscriptionDto dto)
         {
+
+            switch (dto.userType)
+            {
+                case UserType.Seller:
+
+                    if (!(await _sellerRepository.ExistsAsync(dto.UserId)))
+                    {
+                        return BadRequest("Invalid seller id.");
+                    }
+                    break;
+                case UserType.Agent:
+                    if(!(await _agentRepository.ExistsAsync(dto.UserId)))
+                    {
+                        return BadRequest("Invalid agent id.");
+                    }
+                    break;
+            }
+
+            if (!(await _subscriptionPlanRepository.ExistsAsync((dto.SubscriptionPlanId))))
+            {
+                return BadRequest("Invalid subscription plan.");
+            }
+
+
             Payment subscriptionPayment = await _paymentRepository.GetByIdAsync(dto.PaymentId ?? 0);
 
             if (subscriptionPayment != null)

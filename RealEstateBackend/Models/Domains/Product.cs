@@ -27,17 +27,20 @@ namespace RealEstate.Models.Domains
 
         public bool IsDeleted { get; set; } = false;
 
-        public string? ImageUrl { get; set; }
+        public List<string> Images { get; set; }
 
         [ForeignKey("Category")]
         public int? CategoryID { get; set; }
+
         public virtual Category? Category { get; set; }
+
+        public double AverageRating { get; set; } = 0;
 
         public virtual ICollection<OrderItem>? OrderItems { get; set; }
 
         public virtual ICollection<Wishlist>? Wishlist { get; set; }
 
-
+        public virtual ICollection<Review>? Reviews { get; set; }
     }
 
 }
