@@ -31,13 +31,16 @@ namespace RealEstate.Models.Domains
 
         [ForeignKey("Category")]
         public int? CategoryID { get; set; }
+
         public virtual Category? Category { get; set; }
+
+        public double AverageRating { get; set; } = 0;
 
         public virtual ICollection<OrderItem>? OrderItems { get; set; }
 
         public virtual ICollection<Wishlist>? Wishlist { get; set; }
 
-
+        public virtual ICollection<Review>? Reviews { get; set; }
     }
 
 }

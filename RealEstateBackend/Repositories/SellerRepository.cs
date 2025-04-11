@@ -7,9 +7,9 @@ namespace RealEstate.Repositories
     public class SellerRepository: ISellerRepository
     {
         private readonly RealEstateDbContext dbContext;
-        public SellerRepository(RealEstateDbContext dbontext)
+        public SellerRepository(RealEstateDbContext dbContext)
         {
-            this.dbContext = dbontext;
+            this.dbContext = dbContext;
         }
 
         public async Task<List<Seller>> GetAllAsync()

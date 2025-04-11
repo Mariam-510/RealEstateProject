@@ -6,6 +6,7 @@ using RealEstate.Models.DTOs.Category;
 using RealEstate.Models.DTOs.Product;
 using RealEstate.Models.DTOs.Wishlist;
 using RealEstate.Models.DTOs.OrderDto;
+using RealEstate.Models.DTOs.ReviewDto;
 
 namespace RealEstate.Mapping
 {
@@ -58,6 +59,20 @@ namespace RealEstate.Mapping
                 BuyerId = order.BuyerId,
                 AddressId = order.AddressId,
                 PaymentId = order.PaymentId
+            };
+        }
+
+        //----------------------------------------------------------------------------------------
+        //Review
+
+        public static ReviewResponseDto ReviewResponseDto(this Review review)
+        {
+            return new ReviewResponseDto
+            {
+                Rating = review.Rating,
+                Comment = review.Comment,
+                ProductId = review.ProductId,
+                BuyerId = review.BuyerId
             };
         }
 
