@@ -45,9 +45,17 @@ namespace RealEstate.Repositories
 
         public async Task<Auction?> GetByIdAsync(int id)
         {
-           return await dbcontext.Auctions.Where(A=>A.Id == id && A.IsDeleted == false).FirstOrDefaultAsync();  
+            return await dbcontext.Auctions
+                .Include(A=>A.Agent)
+                .Include(A=>A.Seller)
+                .Where(a =>
+                    a.Id == id &&
+                    !a.IsDeleted &&
+                    ((a.AgentId == null) || !a.Agent.IsDeleted) &&
+                    ((a.SellerId == null) || !a.Seller.IsDeleted)
+                )
+                .FirstOrDefaultAsync();
         }
-
         public async Task<Auction?> GetByProprtyIdAsync(int id)
         {
             return await dbcontext.Auctions.Where(A => A.PropertyId == id && A.IsDeleted == false).FirstOrDefaultAsync();
@@ -58,10 +66,10 @@ namespace RealEstate.Repositories
             var query = dbcontext.Auctions.AsQueryable();
 
             if (AgentID.HasValue)
-                query = query.Where(a => a.AgentId == AgentID);
+                query = query.Include(A => A.Agent).Where(a => a.AgentId == AgentID &&a.Agent.IsDeleted==false);
 
             if (SellerID.HasValue)
-                query = query.Where(a => a.SellerId == SellerID);
+                query = query.Include(A => A.Seller).Where(a => a.SellerId == SellerID && a.Seller.IsDeleted == false);
 
             query = query.Where(a => a.IsDeleted == false);
 
@@ -125,5 +133,7 @@ namespace RealEstate.Repositories
         {
             return await dbcontext.Auctions.Where(A => A.PropertyBids.Any(P => P.BuyerId == BuyerID)).ToListAsync();
         }
+       
+
     }
 }

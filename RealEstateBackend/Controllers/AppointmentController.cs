@@ -15,11 +15,13 @@ namespace RealEstate.Controllers
         private readonly IAppointmentRepository _appointmentRepo;
         private readonly IMapper _mapper;
         private readonly IPropertyRepository _propertyRepo;
-        public AppointmentController(IAppointmentRepository appointmentRepo, IPropertyRepository propertyRepo, IMapper mapper)
+        private readonly IBuyerRepository _buyerRepo;
+        public AppointmentController(IAppointmentRepository appointmentRepo, IPropertyRepository propertyRepo, IBuyerRepository buyerRepo, IMapper mapper)
         {
             _appointmentRepo = appointmentRepo;
             _mapper = mapper;
             _propertyRepo= propertyRepo;
+            _buyerRepo= buyerRepo;
         }
 
 
@@ -78,11 +80,14 @@ namespace RealEstate.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var property = await _propertyRepo.GetByIdAsync(createDto.PropertyId);  // Assuming a repository for Property
-            var Buyer = await _appointmentRepo.GetByIdBuyerAsync(createDto.BuyerId);  // Assuming a repository for Property
+            var property = await _propertyRepo.GetByIdAsync(createDto.PropertyId);
+            if (property == null)
+                return NotFound("Property not found.");
 
-            if ( property == null|| Buyer==null)
-                return NotFound("Buyer or Property not found.");
+            // Check if the buyer exists
+            var buyer = await _buyerRepo.GetByIdAsync(createDto.BuyerId);
+            if (buyer == null)
+                return NotFound("Buyer not found.");
 
             // Create appointment
             var appointment = _mapper.Map<Appointment>(createDto);

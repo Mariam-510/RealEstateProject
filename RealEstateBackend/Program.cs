@@ -129,6 +129,9 @@ namespace RealEstate
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
             builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             builder.Services.AddScoped<JWTService>();
             builder.Services.AddScoped<FileService>();
             builder.Services.AddScoped<EmailService>();
@@ -145,15 +148,22 @@ namespace RealEstate
           
             // Register other services
             builder.Services.AddSingleton<StripeService>();
-            builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
+            // builder.Services.AddSingleton<PayPalService>();// Maybe review if it's better to use singleton or scoped here later
+            builder.Services.AddScoped<PayPalService>();
+            //builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
+            builder.Services.AddScoped<RealEstate.Services.SubscriptionService>();
+
             builder.Services.AddHttpClient<PayPalService>();
 
 
             // string configurations
             Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
+
             builder.Services.AddScoped<IMessageRepository, MessageRepository>();
             builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+            // IMPORTANTTTTT
+            //builder.Services.AddHostedService<AuctionStatusUpdater>();
 
             var app = builder.Build();
 

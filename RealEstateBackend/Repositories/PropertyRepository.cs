@@ -17,7 +17,6 @@ namespace RealEstate.Repositories
         public async Task<List<Property>> GetAllAsync()
         {
             return await _context.Properties.Where(p=>!p.IsDeleted)
-                                  .Include(p => p.Auction)
                                   .Include(p=>p.Seller)
                                   .Include(p=>p.Agent)
                                   .ToListAsync();
@@ -26,7 +25,6 @@ namespace RealEstate.Repositories
         {
             return await _context.Properties
                 .Where(p => p.SellerId == sellerId && !p.IsDeleted)
-                .Include(p => p.Auction)
                 .Include (p => p.Seller)
                 .Include(p => p.Agent)
                 .ToListAsync();
@@ -36,7 +34,6 @@ namespace RealEstate.Repositories
         {
             return await _context.Properties
                 .Where(p => p.AgentId == agentId && !p.IsDeleted)
-                .Include(p => p.Auction)
                 .Include(p => p.Seller)
                 .Include(p => p.Agent)
                 .ToListAsync();
@@ -45,7 +42,6 @@ namespace RealEstate.Repositories
         {
             return await _context.Properties
                                  .Where(p => !p.IsDeleted)
-                                  .Include(p => p.Auction)
                                   .Include(p => p.Seller)
                                   .Include(p => p.Agent)
                                  .FirstOrDefaultAsync(p => p.Id == id);
@@ -106,7 +102,7 @@ namespace RealEstate.Repositories
                     .ThenByDescending(p => p.Location.ToLower().Contains(searchByLocation.ToLower())); // contains
             }
 
-            return await query.Include(p => p.Auction).ToListAsync();
+            return await query.ToListAsync();
         }
     }
 }

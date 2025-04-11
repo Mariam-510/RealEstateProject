@@ -10,6 +10,5 @@ namespace RealEstate.Repositories
         Task<Cart> CreateAsync(Cart cart);
         Task<Cart?> UpdateAsync(Cart cart);
         Task<Cart?> DeleteAsync(int id);
-
     }
 }
