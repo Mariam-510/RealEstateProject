@@ -137,7 +137,6 @@ namespace RealEstate.Mapping
                 StartTime= AuctionDto.StartTime,
                 EndTime= AuctionDto.EndTime,
                 StartPrice= AuctionDto.StartPrice,
-                Status= AuctionDto.Status,
                 PropertyId= AuctionDto.PropertyId,
                 SellerId= AuctionDto.SellerId,
                 AgentId= AuctionDto.AgentId,
