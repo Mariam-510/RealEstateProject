@@ -128,7 +128,7 @@ namespace RealEstate.Repositories
                 updatedProduct.IsUsed=product.IsUsed;
                 updatedProduct.CategoryID = product.CategoryID;
                 updatedProduct.Quantity = product.Quantity;
-                updatedProduct.ImageUrl = product.ImageUrl;
+                //updatedProduct.ImageUrl = product.ImageUrl;
                 await dbcontext.SaveChangesAsync();
                 return updatedProduct;
             }

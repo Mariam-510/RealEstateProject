@@ -27,7 +27,7 @@ namespace RealEstate.Models.Domains
 
         public bool IsDeleted { get; set; } = false;
 
-        public string? ImageUrl { get; set; }
+        public List<string> Images { get; set; }
 
         [ForeignKey("Category")]
         public int? CategoryID { get; set; }
