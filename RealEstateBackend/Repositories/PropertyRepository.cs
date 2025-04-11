@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RealEstate.Data;
 using RealEstate.Models.Domains;
 using System;
@@ -16,16 +17,40 @@ namespace RealEstate.Repositories
 
         public async Task<List<Property>> GetAllAsync()
         {
-            return await _context.Properties.Where(p=>!p.IsDeleted)
+            return await _context.Properties.Where(p=>!p.IsDeleted && p.IsApproved)
                                   .Include(p=>p.Seller)
                                   .Include(p=>p.Agent)
+                                  .ToListAsync();
+        }
+        public async Task<List<Property>> GetAllNotApproved()
+        {
+            return await _context.Properties.Where(p => !p.IsDeleted && !p.IsApproved)
+                                  .Include(p => p.Seller)
+                                  .Include(p => p.Agent)
                                   .ToListAsync();
         }
         public async Task<List<Property>> GetAllBySellerIdAsync(int sellerId)
         {
             return await _context.Properties
-                .Where(p => p.SellerId == sellerId && !p.IsDeleted)
+                .Where(p => p.SellerId == sellerId && !p.IsDeleted )
                 .Include (p => p.Seller)
+                .Include(p => p.Agent)
+                .ToListAsync();
+        }
+
+        public async Task<List<Property>> GetApprovedBySellerIdAsync(int sellerId)
+        {
+            return await _context.Properties
+                .Where(p => p.SellerId == sellerId && !p.IsDeleted && p.IsApproved)
+                .Include(p => p.Seller)
+                .Include(p => p.Agent)
+                .ToListAsync();
+        }
+        public async Task<List<Property>> GetNotApprovedBySellerIdAsync(int sellerId)
+        {
+            return await _context.Properties
+                .Where(p => p.SellerId == sellerId && !p.IsDeleted &&!p.IsApproved)
+                .Include(p => p.Seller)
                 .Include(p => p.Agent)
                 .ToListAsync();
         }

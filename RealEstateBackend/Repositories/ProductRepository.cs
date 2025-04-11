@@ -128,7 +128,11 @@ namespace RealEstate.Repositories
                 updatedProduct.IsUsed=product.IsUsed;
                 updatedProduct.CategoryID = product.CategoryID;
                 updatedProduct.Quantity = product.Quantity;
+<<<<<<< Updated upstream
                 updatedProduct.ImageUrl = product.ImageUrl;
+=======
+                updatedProduct.Images = product.Images;
+>>>>>>> Stashed changes
                 await dbcontext.SaveChangesAsync();
                 return updatedProduct;
             }

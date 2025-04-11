@@ -7,6 +7,7 @@ using RealEstate.Models.DTOs.Product;
 using RealEstate.Repositories;
 using RealEstate.Services;
 using RealEstate.Mapping;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -45,7 +46,21 @@ namespace RealEstate.Controllers
             else
             {
                 Product ProductModel = ProductDTO.ToProductModel();
+<<<<<<< Updated upstream
                 ProductModel.ImageUrl = _fileService.UploadFile("ProductImages", ProductDTO.Productimage);
+=======
+                ProductModel.Images = new List<string>();
+                //ProductModel.ImageUrl = _fileService.UploadFile("ProductImages", ProductDTO.Productimage);
+                // Handle image uploads
+                foreach (var imageFile in ProductDTO.Productimage)
+                {
+                    var imageUrl = _fileService.UploadFile("ProductImages", imageFile);
+                    if (!string.IsNullOrEmpty(imageUrl))
+                    {
+                        ProductModel.Images.Add(imageUrl);
+                    }
+                }
+>>>>>>> Stashed changes
                 Product? CreatedProduct = await _ProductRepository.CreateAsync(ProductModel);
                 if (CreatedProduct == null)
                 {
@@ -129,7 +144,7 @@ namespace RealEstate.Controllers
 
         [HttpPost("UpdateProduct/{id}")]
 
-        public async Task<IActionResult> UpdateProduct(int id,[FromForm] ProductDTO ProductDTO)
+        public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductDTO ProductDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -148,7 +163,35 @@ namespace RealEstate.Controllers
                 {
                     return NotFound("Product Not found!");
                 }
+<<<<<<< Updated upstream
                 ProductModel.ImageUrl = _fileService.UpdateFile("ProductImages", ProductDTO.Productimage, oldProduct.ImageUrl);
+=======
+                //ProductModel.ImageUrl = _fileService.UpdateFile("ProductImages", ProductDTO.Productimage, oldProduct.ImageUrl);
+
+
+                // Replace existing images with new ones
+                if (ProductDTO.Productimage != null && ProductDTO.Productimage.Any())
+                {
+                    // Delete all existing images
+                    foreach (var oldImagePath in oldProduct.Images.ToList())
+                    {
+                        _fileService.DeleteFile(oldImagePath);
+                    }
+
+                    oldProduct.Images.Clear();
+                    ProductModel.Images = new List<string>();
+
+                    // Upload and add new images
+                    foreach (var imageFile in ProductDTO.Productimage)
+                    {
+                        var imageUrl = _fileService.UploadFile("ProductImages", imageFile);
+                        if (!string.IsNullOrEmpty(imageUrl))
+                        {
+                            ProductModel.Images.Add(imageUrl);
+                        }
+                    }
+                }
+>>>>>>> Stashed changes
                 Product? UpdatedProduct = await _ProductRepository.UpdateAsync(id, ProductModel);
                 if (UpdatedProduct == null)
                 {
@@ -162,6 +205,8 @@ namespace RealEstate.Controllers
                 return BadRequest("Product Update failed.");
             }
         }
+
+
 
 
 

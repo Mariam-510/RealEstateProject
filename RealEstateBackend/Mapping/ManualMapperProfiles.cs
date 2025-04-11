@@ -57,7 +57,12 @@ namespace RealEstate.Mapping
                 IsDeleted = product.IsDeleted,
                 CategoryID = product.CategoryID ?? 0,
                 CategoryName = product.Category?.Name ?? string.Empty,
+<<<<<<< Updated upstream
                 Productimage=product.ImageUrl,
+=======
+                Productimage=product.Images
+                //Productimage=product.ImageUrl,
+>>>>>>> Stashed changes
             };
         }
         public static List<ProductDTOShow> ToProductDTOShowList(this List<Product> products)
@@ -74,7 +79,7 @@ namespace RealEstate.Mapping
                 Price = product.Price,
                 Quantity = product.Quantity,
                 IsUsed = product.IsUsed,
-                CategoryID = product.CategoryID 
+                CategoryID = product.CategoryID ,
 
             };
         }

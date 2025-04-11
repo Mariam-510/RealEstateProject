@@ -137,9 +137,29 @@ namespace RealEstate
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
+<<<<<<< Updated upstream
+=======
+            builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+            builder.Services.AddScoped<IPasswordValidator<Account>, PasswordLengthValidator<Account>>();
+            builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+            builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            builder.Services.AddScoped<IPropertyBidRepository, PropertyBidRepository>();
+            builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IWishListRepository, WishlistRepository>();
+            builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
+            builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+            builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+            builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+            builder.Services.AddScoped<IContractRepository, ContractRepository>();
+>>>>>>> Stashed changes
             builder.Services.AddScoped<JWTService>();
             builder.Services.AddScoped<FileService>();
             builder.Services.AddScoped<EmailService>();
+            
 
 
             builder.Services.AddCors(options =>
