@@ -5,10 +5,10 @@ using RealEstate.Models.Domains;
 
 namespace RealEstate.Repositories
 {
-    public class AuctioRepository : IAuctionRepository
+    public class AuctionRepository : IAuctionRepository
     {
         public RealEstateDbContext dbcontext { get; }
-        public AuctioRepository(RealEstateDbContext context)
+        public AuctionRepository(RealEstateDbContext context)
         {
             dbcontext = context;
         }
