@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using RealEstate.Models.Domains;
 using RealEstate.Models.DTOs.PropertyDto;
 using RealEstate.Repositories;
@@ -16,12 +17,19 @@ namespace RealEstate.Controllers
         private readonly IPropertyRepository _propertyRepo;
         private readonly IMapper _mapper;
         private readonly FileService _fileService;
+        private readonly IAgentRepository _agentRepo;
+        private readonly ISellerRepository _sellerRepo;
+        private readonly IAuctionRepository _auctionRepo;
 
-        public PropertyController(IPropertyRepository propertyRepo, IMapper mapper, FileService fileService)
+        public PropertyController(IPropertyRepository propertyRepo, IMapper mapper, FileService fileService,
+            IAgentRepository agentRepo,ISellerRepository sellerRepo, IAuctionRepository auctionRepo)
         {
             _propertyRepo = propertyRepo;
             _mapper = mapper;
             _fileService = fileService;
+            _agentRepo = agentRepo;
+            _sellerRepo = sellerRepo;
+            _auctionRepo = auctionRepo;
         }
         // GET: api/Property
         [HttpGet]
@@ -29,7 +37,7 @@ namespace RealEstate.Controllers
             [FromQuery] string category = null,
             [FromQuery] string status = null,
             [FromQuery] string type = null,
-            [FromQuery] string searchByLocation = null) // New search parameter
+            [FromQuery] string searchByLocation = null) 
 
         {
             // Convert strings to enums (if valid)
@@ -46,6 +54,9 @@ namespace RealEstate.Controllers
         [HttpGet("seller/{sellerId}")]
         public async Task<IActionResult> GetAllBySellerId(int sellerId)
         {
+            var seller = await _sellerRepo.GetByIdAsync(sellerId);
+            if (seller == null || seller.IsDeleted)
+                return NotFound($"Seller with ID {sellerId} does not exist.");
             var properties = await _propertyRepo.GetAllBySellerIdAsync(sellerId);
             if (properties == null || !properties.Any())
                 return NotFound($"No properties found for seller with ID {sellerId}");
@@ -58,6 +69,11 @@ namespace RealEstate.Controllers
         [HttpGet("agent/{agentId}")]
         public async Task<IActionResult> GetAllByAgentId(int agentId)
         {
+           
+         var agent = await _agentRepo.GetByIdAsync(agentId);
+         if (agent == null || agent.IsDeleted)
+                return NotFound($"Agent with ID {agentId} does not exist.");
+
             var properties = await _propertyRepo.GetAllByAgentIdAsync(agentId);
             if (properties == null || !properties.Any())
                 return NotFound($"No properties found for Agent with ID {agentId}");
@@ -86,7 +102,25 @@ namespace RealEstate.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            // Validate Agent or Seller existence
+            if (createDto.AgentId != null)
+            {
+                var agent = await _agentRepo.GetByIdAsync(createDto.AgentId.Value);
+                if (agent == null || agent.IsDeleted)
+                    return NotFound($"Agent with ID {createDto.AgentId} does not exist or is deleted.");
+            }
+            else if (createDto.SellerId != null)
+            {
+                var seller = await _sellerRepo.GetByIdAsync(createDto.SellerId.Value);
+                if (seller == null || seller.IsDeleted)
+                    return NotFound($"Seller with ID {createDto.SellerId} does not exist or is deleted.");
+            }
+
             var property = _mapper.Map<Property>(createDto);
+            property.Type = Enum.Parse<PropertyType>(createDto.Type, true);
+            property.Status = Enum.Parse<PropertyStatus>(createDto.Status, true);
+            property.PropertyCategory = Enum.Parse<PropertyCategory>(createDto.PropertyCategory, true);
+
             property.Images = new List<string>();
 
             // Handle image uploads
@@ -95,7 +129,7 @@ namespace RealEstate.Controllers
                 var imageUrl = _fileService.UploadFile("PropertyImages", imageFile);
                 if (!string.IsNullOrEmpty(imageUrl))
                 {
-                    property.Images.Add(imageUrl); // Store only the relative path
+                    property.Images.Add(imageUrl); 
                 }
             }
 
@@ -114,10 +148,15 @@ namespace RealEstate.Controllers
                 return BadRequest("The dto field is required.");
 
             var property = await _propertyRepo.GetByIdAsync(id);
+           
             if (property == null || property.IsDeleted)
                 return NotFound();
 
             _mapper.Map(dto, property);
+            // Manually set enums (DTO is string; domain is enum)
+            property.Type = Enum.Parse<PropertyType>(dto.Type, true);
+            property.Status = Enum.Parse<PropertyStatus>(dto.Status, true);
+            property.PropertyCategory = Enum.Parse<PropertyCategory>(dto.PropertyCategory, true);
 
             // Replace existing images with new ones
             if (dto.Images != null && dto.Images.Any())
@@ -142,10 +181,11 @@ namespace RealEstate.Controllers
             }
 
             await _propertyRepo.UpdateAsync(property);
-
             // Return updated property
             var updatedDto = _mapper.Map<PropertyDto>(property);
-            return Ok(updatedDto); 
+            return Ok(updatedDto);
+
+           
         }
 
         // DELETE: api/Property/5
@@ -155,7 +195,10 @@ namespace RealEstate.Controllers
             var property = await _propertyRepo.GetByIdAsync(id);
             if (property == null || property.IsDeleted)
                 return NotFound();
-
+            // Check if an active auction is associated with this property
+            var auction = await _auctionRepo.GetByProprtyIdAsync(id);
+            if (auction != null && auction.Status == Status.Active && !auction.IsDeleted)
+                return BadRequest("Cannot delete the property because it has an active auction.");
             property.IsDeleted = true;
             await _propertyRepo.UpdateAsync(property);
             return Ok(new { message = "Property soft-deleted successfully." }); 

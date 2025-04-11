@@ -41,6 +41,7 @@ namespace RealEstate.Controllers
           
             DateTime now = DateTime.Now;
 
+
             if (AuctionDtO.StartTime >= AuctionDtO.EndTime)
             {
                 return BadRequest("Start time must be earlier than End time.");

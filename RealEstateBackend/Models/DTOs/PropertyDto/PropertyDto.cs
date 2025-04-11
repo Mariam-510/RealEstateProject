@@ -14,6 +14,10 @@
     public string Status { get; set; } // Available, Sold, Auctioned
     public List<string> Images { get; set; }
 
+    public int? AgentId { get; set; }
+
+    public int? SellerId { get; set; }
+
 
     }
 }
