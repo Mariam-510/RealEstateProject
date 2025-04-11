@@ -19,5 +19,7 @@ namespace RealEstate.Models.Dtos.SellerDto
         
         public DateTime CteatedAt { get; set; }
 
+        public string? ImageUrl { get; set; }
+
     }
 }
