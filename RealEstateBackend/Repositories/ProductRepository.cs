@@ -134,5 +134,28 @@ namespace RealEstate.Repositories
             }
             return null;
         }
+
+        public async Task CalculateAverageRating(int? id)
+        {
+            var product = await dbcontext.Products
+                .Include(r => r.Reviews)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (product != null)
+            {
+                if (product.Reviews != null)
+                {
+                    var activeReviews = product.Reviews.Where(p => p.IsDeleted == false).ToList();
+                    if (activeReviews.Any())
+                        product.AverageRating = Math.Round(activeReviews.Average(r => r.Rating), 1);
+                    else
+                        product.AverageRating = 0;
+                }
+                else
+                    product.AverageRating = 0;
+
+                await dbcontext.SaveChangesAsync();
+            }
+        }
     }
 }

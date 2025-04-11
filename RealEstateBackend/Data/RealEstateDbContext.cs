@@ -28,6 +28,8 @@ namespace RealEstate.Data
         public virtual DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
         public virtual DbSet<Address> Addresses { get; set; }
         public virtual DbSet<Cart> Carts { get; set; }
+        public virtual DbSet<Review> Reviews { get; set; }
+        public virtual DbSet<Shipping> Shippings { get; set; }
         #endregion
 
         public RealEstateDbContext(DbContextOptions<RealEstateDbContext> options)

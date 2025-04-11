@@ -22,5 +22,6 @@ namespace RealEstate.Models.Domains
         public int? PropertyId { get; set; }
         public virtual Property? Property { get; set; }
 
+        public string ImageUrl { get; set; }
     }
 }
