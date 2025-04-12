@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos.EmailDto;
+using RealEstate.Models.Dtos.SubscriptionDto;
 using RealEstate.Models.DTOs.PropertyDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
@@ -23,9 +24,11 @@ namespace RealEstate.Controllers
         private readonly ISellerRepository _sellerRepo;
         private readonly IAuctionRepository _auctionRepo;
         private readonly IContractRepository _contractRepo;
+        private readonly ISubscriptionRepository _subscriptionRepo;
         private readonly EmailService _emailService;
         public PropertyController(IPropertyRepository propertyRepo, IMapper mapper, FileService fileService, EmailService emailService,
-            IAgentRepository agentRepo,ISellerRepository sellerRepo, IAuctionRepository auctionRepo, IContractRepository contractRepo)
+            IAgentRepository agentRepo, ISellerRepository sellerRepo, IAuctionRepository auctionRepo, IContractRepository contractRepo,
+            ISubscriptionRepository subscriptionRepo)
         {
             _propertyRepo = propertyRepo;
             _mapper = mapper;
@@ -34,6 +37,7 @@ namespace RealEstate.Controllers
             _sellerRepo = sellerRepo;
             _auctionRepo = auctionRepo;
             _contractRepo = contractRepo;
+            _subscriptionRepo = subscriptionRepo;
             _emailService = emailService;
         }
         // GET: api/Property
@@ -42,7 +46,7 @@ namespace RealEstate.Controllers
             [FromQuery] string category = null,
             [FromQuery] string status = null,
             [FromQuery] string type = null,
-            [FromQuery] string searchByLocation = null) 
+            [FromQuery] string searchByLocation = null)
 
         {
             // Convert strings to enums (if valid)
@@ -62,10 +66,10 @@ namespace RealEstate.Controllers
             try
             {
                 var notApprovedProperties = await _propertyRepo.GetAllPending();
-                if (notApprovedProperties == null )
+                if (notApprovedProperties == null)
                     return NotFound("There are no properties that are not approved.");
                 var notApprovedPropertyDtos = _mapper.Map<List<PropertyDto>>(notApprovedProperties);
-                return Ok(notApprovedPropertyDtos); 
+                return Ok(notApprovedPropertyDtos);
             }
             catch (Exception ex)
             {
@@ -74,21 +78,21 @@ namespace RealEstate.Controllers
         }
 
         [HttpGet("seller/{sellerId}")]
-        public async Task<IActionResult> GetAllBySellerId(int sellerId,  [FromQuery] PropertyApprovalStatus? Status=null)
+        public async Task<IActionResult> GetAllBySellerId(int sellerId, [FromQuery] PropertyApprovalStatus? Status = null)
         {
             var seller = await _sellerRepo.GetByIdAsync(sellerId);
             if (seller == null || seller.IsDeleted)
                 return NotFound($"Seller with ID {sellerId} does not exist.");
             // Fetch properties based on approval status
-            List<Property> filteredProperties=new List<Property>();
+            List<Property> filteredProperties = new List<Property>();
 
             if (Status.HasValue)
             {
-                if (Status==PropertyApprovalStatus.Approved)
+                if (Status == PropertyApprovalStatus.Approved)
                 {
                     filteredProperties = await _propertyRepo.GetApprovedBySellerIdAsync(sellerId);
                 }
-                else if(Status == PropertyApprovalStatus.Pending)
+                else if (Status == PropertyApprovalStatus.Pending)
                 {
                     filteredProperties = await _propertyRepo.GetPendingBySellerIdAsync(sellerId);
                 }
@@ -114,9 +118,9 @@ namespace RealEstate.Controllers
         [HttpGet("agent/{agentId}")]
         public async Task<IActionResult> GetAllByAgentId(int agentId)
         {
-           
-         var agent = await _agentRepo.GetByIdAsync(agentId);
-         if (agent == null || agent.IsDeleted)
+
+            var agent = await _agentRepo.GetByIdAsync(agentId);
+            if (agent == null || agent.IsDeleted)
                 return NotFound($"Agent with ID {agentId} does not exist.");
 
             var properties = await _propertyRepo.GetAllByAgentIdAsync(agentId);
@@ -136,7 +140,7 @@ namespace RealEstate.Controllers
             if (property == null || property.IsDeleted)
                 return NotFound();
 
-            var propertyDto = _mapper.Map<PropertyDto>(property); 
+            var propertyDto = _mapper.Map<PropertyDto>(property);
 
             return Ok(propertyDto);
         }
@@ -152,12 +156,22 @@ namespace RealEstate.Controllers
 
                     if (!ModelState.IsValid)
                         return BadRequest(ModelState);
+
+                    Subscription subscription;
+
                     // Validate Agent or Seller existence
                     if (createDto.AgentId != null)
                     {
                         var agent = await _agentRepo.GetByIdAsync(createDto.AgentId.Value);
                         if (agent == null || agent.IsDeleted)
                             return NotFound($"Agent with ID {createDto.AgentId} does not exist or is deleted.");
+
+                        bool availablePropertiesFlag = await _subscriptionRepo.DecreaseAvailablePropertiesByOne((int)createDto.AgentId, UserType.Agent);
+                        if (!availablePropertiesFlag)
+                        {
+                            return StatusCode(403, "Subscription limit reached. Please upgrade your plan.");
+                        }
+
                     }
                     else if (createDto.SellerId != null)
                     {
@@ -184,6 +198,7 @@ namespace RealEstate.Controllers
                     }
 
                     await _propertyRepo.AddAsync(property);
+
                     //  If created by seller, create contract
                     if (createDto.SellerId != null)
                     {
@@ -226,7 +241,7 @@ namespace RealEstate.Controllers
                 return BadRequest("The dto field is required.");
 
             var property = await _propertyRepo.GetByIdAsync(id);
-           
+
             if (property == null || property.IsDeleted)
                 return NotFound();
 
@@ -240,12 +255,12 @@ namespace RealEstate.Controllers
             if (dto.Images != null && dto.Images.Any())
             {
                 // Delete all existing images
-                foreach (var oldImagePath in property.Images.ToList()) 
+                foreach (var oldImagePath in property.Images.ToList())
                 {
                     _fileService.DeleteFile(oldImagePath);
                 }
 
-                property.Images.Clear(); 
+                property.Images.Clear();
 
                 // Upload and add new images
                 foreach (var imageFile in dto.Images)
@@ -253,7 +268,7 @@ namespace RealEstate.Controllers
                     var imageUrl = _fileService.UploadFile("PropertyImages", imageFile);
                     if (!string.IsNullOrEmpty(imageUrl))
                     {
-                        property.Images.Add(imageUrl); 
+                        property.Images.Add(imageUrl);
                     }
                 }
             }
@@ -263,19 +278,20 @@ namespace RealEstate.Controllers
             var updatedDto = _mapper.Map<PropertyDto>(property);
             return Ok(updatedDto);
 
-           
+
         }
+
 
         [HttpPatch("properties/{id}/UpdateApprovalProperty")]
         public async Task<IActionResult> UpdateApprovalProperty(int id, [FromQuery] PropertyApprovalStatus Status)
         {
-                var property = await _propertyRepo.GetByIdAsync(id);
-                if (property == null)
-                {
-                    return NotFound($"Property with ID {id} not found.");
-                }
-                  var seller = await _sellerRepo.GetByIdAsync(property.SellerId.Value);
-                 if (seller == null)
+            var property = await _propertyRepo.GetByIdAsync(id);
+            if (property == null)
+            {
+                return NotFound($"Property with ID {id} not found.");
+            }
+            var seller = await _sellerRepo.GetByIdAsync(property.SellerId.Value);
+            if (seller == null)
             {
                 return NotFound();
             }
@@ -283,9 +299,18 @@ namespace RealEstate.Controllers
             string statusText = Status.ToString();
 
             await _propertyRepo.UpdateAsync(property);
-            
 
-             string subject = "Property Approval Status Update";
+            if (property.ApprovalStatus == PropertyApprovalStatus.Approved)
+            {
+                bool availablePropertiesFlag = await _subscriptionRepo.DecreaseAvailablePropertiesByOne(seller.Id, UserType.Seller);
+                if (!availablePropertiesFlag)
+                {
+                    return StatusCode(403, "Subscription limit reached. Please upgrade your plan.");
+                }
+            }
+
+
+            string subject = "Property Approval Status Update";
             string body = $@"
                 Dear {seller.FirstName} {seller.LastName},<br/><br/>
                 Your property titled <strong>{property.Title}</strong> has been 
@@ -300,22 +325,22 @@ namespace RealEstate.Controllers
                 Real Estate Team";
 
             EmailDto emailDto = new EmailDto
-                    {
-                        To = seller.Account.Email,
-                        Subject = subject,
-                        Body = body
-                    };
+            {
+                To = seller.Account.Email,
+                Subject = subject,
+                Body = body
+            };
 
-                    bool isEmailSent = _emailService.SendEmail(emailDto);
-                    if (!isEmailSent)
-                    {
-                        return StatusCode(500, "Property updated, but failed to send confirmation email.");
-                    }
-                
-                var propertyDto = _mapper.Map<PropertyDto>(property);
-                return Ok(propertyDto);
-            
-         
+            bool isEmailSent = _emailService.SendEmail(emailDto);
+            if (!isEmailSent)
+            {
+                return StatusCode(500, "Property updated, but failed to send confirmation email.");
+            }
+
+            var propertyDto = _mapper.Map<PropertyDto>(property);
+            return Ok(propertyDto);
+
+
         }
 
         // DELETE: api/Property/5
@@ -331,9 +356,9 @@ namespace RealEstate.Controllers
                 return BadRequest("Cannot delete the property because it has an active auction.");
             property.IsDeleted = true;
             await _propertyRepo.UpdateAsync(property);
-            return Ok(new { message = "Property soft-deleted successfully." }); 
+            return Ok(new { message = "Property soft-deleted successfully." });
         }
 
-    
-}
+
+    }
 }

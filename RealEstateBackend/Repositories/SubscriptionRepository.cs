@@ -88,8 +88,10 @@ namespace RealEstate.Repositories
                 subscription.AvailableProperties--;
 
                 _context.Subscriptions.Update(subscription);
+                await SaveAsync();
+                return true;
             }
-            return true;
+            return false;
         }
 
         public async Task SaveAsync() => await _context.SaveChangesAsync();

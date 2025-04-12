@@ -22,16 +22,14 @@ namespace RealEstate.Controllers
 
         public FileService _fileService { get; }
 
-        public ProductsController(IProductRepository P , ICategoryRepository C, FileService fileService )
+        public ProductsController(IProductRepository productRepository , ICategoryRepository categoryRepository, FileService fileService )
         {
-            _ProductRepository = P;
+            _ProductRepository = productRepository;
             _fileService = fileService;
-            _CategoryRepository =C;
-
-
+            _CategoryRepository = categoryRepository;
         }
+        
         [HttpPost("CreateProduct")]
-
         public async Task<IActionResult> CreateProduct([FromForm]ProductDTO ProductDTO)
         {
             if (!ModelState.IsValid)
@@ -74,7 +72,7 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("DeleteProduct/{id}")]
+        [HttpDelete("DeleteProduct/{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
 
@@ -93,6 +91,7 @@ namespace RealEstate.Controllers
 
             }
         }
+
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll(string? Name = null, string? SortPrice = null, string? Category = null, string? SortQuantity = null)
@@ -140,8 +139,7 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpPost("UpdateProduct/{id}")]
-
+        [HttpPut("UpdateProduct/{id}")]
         public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductDTO ProductDTO)
         {
             if (!ModelState.IsValid)
@@ -201,10 +199,6 @@ namespace RealEstate.Controllers
                 return BadRequest("Product Update failed.");
             }
         }
-
-
-
-
 
 
     }

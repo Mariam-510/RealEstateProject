@@ -21,13 +21,14 @@ namespace RealEstate.Controllers
         public IProductRepository _productRepository { get; }
         private readonly IMapper _mapper;
 
-        public WishListController(IWishListRepository W , IProductRepository P, IBuyerRepository buyerRepository,IMapper mapper)
+        public WishListController(IWishListRepository wishListRepository , IProductRepository productRepository, IBuyerRepository buyerRepository,IMapper mapper)
         {
-            _WishlistRepository = W;
-            _productRepository = P;
+            _WishlistRepository = wishListRepository;
+            _productRepository = productRepository;
             _BuyerRepository = buyerRepository;
             _mapper = mapper;
         }
+
         [HttpPost("ToggleProductWishlist")]
         public async Task<IActionResult> ToggleProductWishlist([FromForm] WishListProductDTO wishListProductDTO)
         {
@@ -145,6 +146,7 @@ namespace RealEstate.Controllers
 
         }
 
+
         [HttpGet("GetAllPropertyByBuyerIDAsync/{BuyerID}")]
         public async Task<IActionResult> GetAllPropertyByBuyerIDAsync(int BuyerID)
         {
@@ -162,8 +164,6 @@ namespace RealEstate.Controllers
 
             return Ok(propertyDtos);
         }
-
-
 
     }
 }

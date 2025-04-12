@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Transactions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,13 +20,16 @@ namespace RealEstate.Controllers
         public ICartRepository _cartRepository { get; }
         public IOrderItemRepository _orderItemRepository { get; }
         public IBuyerRepository _buyerRepository { get; }
+        public IProductRepository _productRepository { get; }
 
-        public OrdersController(IOrderRepository orderRepository, ICartRepository cartRepository, IOrderItemRepository orderItemRepository, IBuyerRepository buyerRepository) 
+        public OrdersController(IOrderRepository orderRepository, ICartRepository cartRepository, IOrderItemRepository orderItemRepository,
+            IBuyerRepository buyerRepository, IProductRepository productRepository)
         {
             _orderRepository = orderRepository;
             _cartRepository = cartRepository;
             _orderItemRepository = orderItemRepository;
             _buyerRepository = buyerRepository;
+            _productRepository = productRepository;
         }
 
         [HttpGet]
@@ -66,60 +70,84 @@ namespace RealEstate.Controllers
 
         [HttpPost]
         [Route("placeOrder")]
-        public async Task<IActionResult> PlaceOrder([FromBody]CreateOrderDto createOrderDto)
+        public async Task<IActionResult> PlaceOrder([FromBody] CreateOrderDto createOrderDto)
         {
-            //int buyerId = 0;
-            ////int.TryParse(User.FindFirst("UserId")?.Value, out cusId);
-            //int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out buyerId);
-
-            if (createOrderDto == null)
-                return BadRequest("Order cannot be null");
-
-            //cart
-            var cart = await _cartRepository.GetByBuyerIdAsync(createOrderDto.BuyerId);
-            if (cart != null)
+            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                var order = new Order()
+                try
                 {
-                    OrderDate = DateTime.Now,
-                    Status = OrderStatus.Pending,
-                    TotalAmount = cart.TotalPrice,
-                    IsDeleted = false,
-                    BuyerId = createOrderDto.BuyerId,
-                    AddressId = createOrderDto.AddressId,
-                    PaymentId = createOrderDto.PaymentId,
-                };
+                    //int buyerId = 0;
+                    ////int.TryParse(User.FindFirst("UserId")?.Value, out cusId);
+                    //int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out buyerId);
 
-                order = await _orderRepository.CreateAsync(order);
+                    if (createOrderDto == null)
+                        return BadRequest("Order cannot be null");
 
-                if (cart.OrderItems != null)
-                {
-                    foreach (var orderItem in cart.OrderItems)
+                    //cart
+                    var cart = await _cartRepository.GetByBuyerIdAsync(createOrderDto.BuyerId);
+                    if (cart != null)
                     {
-                        orderItem.CartId = null;
-                        orderItem.OrderId = order.Id;
+                        var order = new Order()
+                        {
+                            OrderDate = DateTime.Now,
+                            Status = OrderStatus.Pending,
+                            TotalAmount = cart.TotalPrice,
+                            IsDeleted = false,
+                            BuyerId = createOrderDto.BuyerId,
+                            AddressId = createOrderDto.AddressId,
+                            PaymentId = createOrderDto.PaymentId,
+                        };
 
-                        await _orderItemRepository.UpdateAsync(orderItem);
+                        order = await _orderRepository.CreateAsync(order);
+
+                        if (cart.OrderItems != null)
+                        {
+                            foreach (var orderItem in cart.OrderItems)
+                            {
+                                var product = await _productRepository.GetByIdAsync((int) orderItem.ProductId);
+
+                                if (product == null)
+                                {
+                                    return NotFound($"Product with ID {orderItem.ProductId} not found.");
+                                }
+
+                                if (product.Quantity < orderItem.Quantity)
+                                {
+                                    return StatusCode(409, $"Insufficient quantity for product '{product.Name}'. Available: {product.Quantity}, Requested: {orderItem.Quantity}");
+                                }
+
+                                product.Quantity -= orderItem.Quantity;
+                                await _productRepository.UpdateAsync(product.Id, product);
+
+                                orderItem.CartId = null;
+                                orderItem.OrderId = order.Id;
+
+                                await _orderItemRepository.UpdateAsync(orderItem);
+                            }
+
+                        }
+
+                        cart.SelectedAddressId = null;
+                        await _cartRepository.UpdateAsync(cart);
+
+                        var response = order.OrderResponseDto();
+
+                        transactionScope.Complete();
+                        return Ok(response);
                     }
+                    return BadRequest("Cart not found!");
+
                 }
-
-                cart.SelectedAddressId = null;
-                await _cartRepository.UpdateAsync(cart);
-
-                var response = order.OrderResponseDto();
-
-                return Ok(response);
+                catch (Exception)
+                {
+                    transactionScope.Dispose();
+                    return StatusCode(500, new { message = "An unexpected error occurred." });
+                }
             }
-            return BadRequest("Cart not found!");
-
-            //if (order == null)
-            //    return BadRequest("Order cannot be null");
-            //var createdOrder = await _orderRepository.CreateAsync(order);
-            //return CreatedAtAction(nameof(GetById), new { id = createdOrder.Id }, createdOrder);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody]UpdateOrderDto updateOrderDto)
+        public async Task<IActionResult> Update([FromBody] UpdateOrderDto updateOrderDto)
         {
             var existingOrder = await _orderRepository.GetByIdAsync(updateOrderDto.Id);
 
@@ -136,5 +164,6 @@ namespace RealEstate.Controllers
 
             return Ok(response);
         }
+
     }
 }

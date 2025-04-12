@@ -12,6 +12,7 @@ namespace RealEstate.Repositories
         {
             dbcontext = context;
         }
+        
         public async Task<Product?> CreateAsync(Product product)
         {
             if (product != null)
@@ -28,33 +29,32 @@ namespace RealEstate.Repositories
                 return product;
             }
 
-         
+
             return null;
         }
 
-       public async Task<Product?> DeleteAsync(int id)
+        public async Task<Product?> DeleteAsync(int id)
         {
-            Product? Product = await dbcontext.Products.Include(C=>C.Category).Where(P => P.IsDeleted == false& P.Category.IsDeleted == false).FirstOrDefaultAsync(t => t.Id == id);
+            Product? Product = await dbcontext.Products.Include(C => C.Category).Where(P => P.IsDeleted == false & P.Category.IsDeleted == false).FirstOrDefaultAsync(t => t.Id == id);
             if (Product == null)
             {
-               return null;
+                return null;
             }
 
             Product.IsDeleted = true;
             await dbcontext.SaveChangesAsync();
             return Product;
         }
-        public async Task<List<Product?>> GetAllProductByCategoryID(int CategoryID)
+       
+        public async Task<List<Product>> GetAllProductByCategoryID(int CategoryID)
         {
-            return await dbcontext.Products.Where(P => P.IsDeleted == false & P.Category.IsDeleted == false & P.CategoryID== CategoryID).ToListAsync();
+            return await dbcontext.Products.Where(P => P.IsDeleted == false & P.Category.IsDeleted == false & P.CategoryID == CategoryID).ToListAsync();
         }
-        public async Task<List<Product?>> GetAllAsync(string? Name = null, string? SortPrice = null, string? Category = null, string? SortQuantity = null)
+        
+        public async Task<List<Product>> GetAllAsync(string? Name = null, string? SortPrice = null, string? Category = null, string? SortRate = null)
         {
-            var Product = dbcontext.Products.Include(p => p.Category).Where(P=>P.IsDeleted==false & P.Category.IsDeleted==false).AsQueryable();
-            if (Product == null)
-            {
-                return null;
-            }
+            var Product = dbcontext.Products.Include(p => p.Category).Where(P => P.IsDeleted == false & P.Category.IsDeleted == false).AsQueryable();
+
             if (!String.IsNullOrEmpty(Name))
             {
                 Product = Product.Where(p => p.Name.ToLower().Contains(Name.ToLower()));
@@ -64,24 +64,24 @@ namespace RealEstate.Repositories
                 Product = Product.Where(p => p.Category.Name.ToLower() == Category.ToLower());
             }
 
-            if (!string.IsNullOrEmpty(SortQuantity))
+            if (!string.IsNullOrEmpty(SortRate))
             {
-                switch (SortQuantity.ToLower())
+                switch (SortRate.ToLower())
                 {
                     case "a":
-                        Product = Product.OrderBy(p => p.Quantity);
+                        Product = Product.OrderBy(p => p.AverageRating);
                         break;
                     case "d":
-                        Product = Product.OrderByDescending(p => p.Quantity);
+                        Product = Product.OrderByDescending(p => p.AverageRating);
                         break;
                     default:
-                        Product = Product.OrderByDescending(p => p.Quantity);
+                        Product = Product.OrderByDescending(p => p.AverageRating);
                         break;
                 }
             }
             else
             {
-                Product = Product.OrderBy(p => p.Quantity);
+                Product = Product.OrderByDescending(p => p.AverageRating);
             }
 
             if (!string.IsNullOrEmpty(SortPrice))
@@ -99,16 +99,18 @@ namespace RealEstate.Repositories
                         break;
                 }
             }
-         
-            List<Product?> result = await Product.ToListAsync();
+            else
+            {
+                Product = Product.OrderByDescending(p => p.Price);
+            }
 
-            return result.Any() ? result : null;
+            return await Product.ToListAsync();
 
         }
 
         public async Task<Product?> GetByIdAsync(int id)
         {
-           Product product= await dbcontext.Products.Include(C => C.Category).Where(P => P.IsDeleted == false & P.Category.IsDeleted == false).FirstOrDefaultAsync(t => t.Id == id);
+            Product product = await dbcontext.Products.Include(C => C.Category).Where(P => P.IsDeleted == false & P.Category.IsDeleted == false).FirstOrDefaultAsync(t => t.Id == id);
             if (product == null)
             {
                 return null;
@@ -119,13 +121,13 @@ namespace RealEstate.Repositories
 
         public async Task<Product?> UpdateAsync(int id, Product product)
         {
-            Product? updatedProduct =await dbcontext.Products.Include(C => C.Category).Where(P => P.IsDeleted == false).FirstOrDefaultAsync(p => p.Id == id);
+            Product? updatedProduct = await dbcontext.Products.Include(C => C.Category).Where(P => P.IsDeleted == false).FirstOrDefaultAsync(p => p.Id == id);
             if (updatedProduct != null)
             {
                 updatedProduct.Name = product.Name;
                 updatedProduct.Description = product.Description;
                 updatedProduct.Price = product.Price;
-                updatedProduct.IsUsed=product.IsUsed;
+                updatedProduct.IsUsed = product.IsUsed;
                 updatedProduct.CategoryID = product.CategoryID;
                 updatedProduct.Quantity = product.Quantity;
                 updatedProduct.Images = product.Images;
