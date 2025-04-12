@@ -54,7 +54,7 @@ namespace RealEstate.Controllers
             return BadRequest("Category creation failed.");
         }
 
-        [HttpGet("DeleteCategory/{id}")]
+        [HttpDelete("DeleteCategory/{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -134,7 +134,7 @@ namespace RealEstate.Controllers
 
         }
 
-        [HttpPost("UpdateCategory/{id}")]
+        [HttpPut("UpdateCategory/{id}")]
 
         public async Task<IActionResult> UpdateCategory(int id, [FromForm] CategoryDTO CategoryDTO)
         {

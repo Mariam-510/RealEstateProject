@@ -15,6 +15,7 @@ using RealEstate.Models.Dtos.SubscriptionDto;
 using RealEstate.Models.Dtos.AdminDto;
 using RealEstate.Models.Dtos.ContractDto;
 using RealEstate.Models.Dtos.ShippingDto;
+using RealEstate.Models.Dtos.SubscriptionPlanDto;
 
 
 namespace RealEstate.Mapping
