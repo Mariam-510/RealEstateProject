@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ProductDto } from '../../Services/product.service';
 import { CommonModule } from '@angular/common';
-
+import { ProductService } from '../../Services/product.service';
 @Component({
   selector: 'app-product-card',
   templateUrl: './product-card.component.html',
@@ -12,6 +12,8 @@ import { CommonModule } from '@angular/common';
 export class ProductCardComponent {
   @Input() product!: ProductDto;
   isHovered = false;
+  
+  constructor(public productService: ProductService) {}
 
   inWishlist: boolean = false;
   inCart: boolean = false;
@@ -23,4 +25,10 @@ export class ProductCardComponent {
   toggleCart(): void {
     this.inCart = !this.inCart;
   }
+
+  setFallbackImage(event: Event) {
+    const imgElement = event.target as HTMLImageElement;
+    imgElement.src = 'assets/images/fallback.jpg';
+  }
+  
 }

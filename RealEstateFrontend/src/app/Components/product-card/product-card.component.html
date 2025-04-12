@@ -3,10 +3,11 @@
   <div class="card-image-container position-relative">
     <img
       [src]="
-        'https://img.freepik.com/free-photo/mid-century-modern-living-room-interior-design-with-monstera-tree_53876-129805.jpg'
+        'https://st3.depositphotos.com/1177973/12669/i/450/depositphotos_126693854-stock-photo-set-of-body-care-products.jpg'
       "
       class="card-img w-100"
-      alt="{{ product.name }}"
+      alt="https://i.quotev.com/b2gtjqawaaaa.jpg"
+      (error)="productService.setFallbackImageForCard($event)"
     />
 
     <!-- Action buttons -->

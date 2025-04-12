@@ -25,6 +25,7 @@ export interface ApiResponse {
 })
 export class ProductService {
   private apiUrl = 'https://localhost:7184/api/Products';
+  fallbackImageUrl = '/Images/ErrorImage.jpg';
 
   constructor(private http: HttpClient) {}
 
@@ -41,5 +42,10 @@ export class ProductService {
 
   getProductById(id: number): Observable<ProductDto> {
     return this.http.get<ProductDto>(`${this.apiUrl}/${id}`);
+  }
+
+  setFallbackImageForCard(event: Event) {
+    const imgElement = event.target as HTMLImageElement;
+    imgElement.src = this.fallbackImageUrl; // Use the stored fallback image
   }
 }
