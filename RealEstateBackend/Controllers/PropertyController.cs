@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RealEstate.Models.Domains;
+using RealEstate.Models.Dtos.EmailDto;
 using RealEstate.Models.DTOs.PropertyDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
@@ -22,7 +23,8 @@ namespace RealEstate.Controllers
         private readonly ISellerRepository _sellerRepo;
         private readonly IAuctionRepository _auctionRepo;
         private readonly IContractRepository _contractRepo;
-        public PropertyController(IPropertyRepository propertyRepo, IMapper mapper, FileService fileService,
+        private readonly EmailService _emailService;
+        public PropertyController(IPropertyRepository propertyRepo, IMapper mapper, FileService fileService, EmailService emailService,
             IAgentRepository agentRepo,ISellerRepository sellerRepo, IAuctionRepository auctionRepo, IContractRepository contractRepo)
         {
             _propertyRepo = propertyRepo;
@@ -32,6 +34,7 @@ namespace RealEstate.Controllers
             _sellerRepo = sellerRepo;
             _auctionRepo = auctionRepo;
             _contractRepo = contractRepo;
+            _emailService = emailService;
         }
         // GET: api/Property
         [HttpGet]
@@ -53,12 +56,12 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("not-approved")]
-        public async Task<IActionResult> GetNotApprovedProperties()
+        [HttpGet("Pending")]
+        public async Task<IActionResult> GetcProperties()
         {
             try
             {
-                var notApprovedProperties = await _propertyRepo.GetAllNotApproved();
+                var notApprovedProperties = await _propertyRepo.GetAllPending();
                 if (notApprovedProperties == null )
                     return NotFound("There are no properties that are not approved.");
                 var notApprovedPropertyDtos = _mapper.Map<List<PropertyDto>>(notApprovedProperties);
@@ -71,23 +74,27 @@ namespace RealEstate.Controllers
         }
 
         [HttpGet("seller/{sellerId}")]
-        public async Task<IActionResult> GetAllBySellerId(int sellerId,  bool? approved = null)
+        public async Task<IActionResult> GetAllBySellerId(int sellerId,  [FromQuery] PropertyApprovalStatus? Status=null)
         {
             var seller = await _sellerRepo.GetByIdAsync(sellerId);
             if (seller == null || seller.IsDeleted)
                 return NotFound($"Seller with ID {sellerId} does not exist.");
             // Fetch properties based on approval status
-            List<Property> filteredProperties;
+            List<Property> filteredProperties=new List<Property>();
 
-            if (approved.HasValue)
+            if (Status.HasValue)
             {
-                if (approved.Value)
+                if (Status==PropertyApprovalStatus.Approved)
                 {
                     filteredProperties = await _propertyRepo.GetApprovedBySellerIdAsync(sellerId);
                 }
-                else
+                else if(Status == PropertyApprovalStatus.Pending)
                 {
-                    filteredProperties = await _propertyRepo.GetNotApprovedBySellerIdAsync(sellerId);
+                    filteredProperties = await _propertyRepo.GetPendingBySellerIdAsync(sellerId);
+                }
+                else if (Status == PropertyApprovalStatus.Rejected)
+                {
+                    filteredProperties = await _propertyRepo.GetRejectedBySellerIdAsync(sellerId);
                 }
             }
             else
@@ -164,7 +171,7 @@ namespace RealEstate.Controllers
                     property.Status = Enum.Parse<PropertyStatus>(createDto.Status, true);
                     property.PropertyCategory = Enum.Parse<PropertyCategory>(createDto.PropertyCategory, true);
                     property.Images = new List<string>();
-                    property.IsApproved = createDto.SellerId != null ? false : true;
+                    property.ApprovalStatus = createDto.SellerId != null ? PropertyApprovalStatus.Pending : PropertyApprovalStatus.Approved;
 
                     // Handle image uploads
                     foreach (var imageFile in createDto.Images)
@@ -259,25 +266,56 @@ namespace RealEstate.Controllers
            
         }
 
-        [HttpPatch("properties/{id}/approve")]
-        public async Task<IActionResult> ApproveProperty(int id)
+        [HttpPatch("properties/{id}/UpdateApprovalProperty")]
+        public async Task<IActionResult> UpdateApprovalProperty(int id, [FromQuery] PropertyApprovalStatus Status)
         {
-            try
-            {
                 var property = await _propertyRepo.GetByIdAsync(id);
                 if (property == null)
                 {
                     return NotFound($"Property with ID {id} not found.");
                 }
-                property.IsApproved = true;
-                await _propertyRepo.UpdateAsync(property);
+                  var seller = await _sellerRepo.GetByIdAsync(property.SellerId.Value);
+                 if (seller == null)
+            {
+                return NotFound();
+            }
+            property.ApprovalStatus = Status;
+            string statusText = Status.ToString();
+
+            await _propertyRepo.UpdateAsync(property);
+            
+
+             string subject = "Property Approval Status Update";
+            string body = $@"
+                Dear {seller.FirstName} {seller.LastName},<br/><br/>
+                Your property titled <strong>{property.Title}</strong> has been 
+                <strong>{statusText}</strong>.<br/><br/>" +
+          (Status == PropertyApprovalStatus.Approved
+              ? "It is now live on the platform."
+              : Status == PropertyApprovalStatus.Rejected
+                  ? "Please review the guidelines or contact support."
+                  : "It is currently under review.") + @"
+                <br/><br/>
+                Best regards,<br/>
+                Real Estate Team";
+
+            EmailDto emailDto = new EmailDto
+                    {
+                        To = seller.Account.Email,
+                        Subject = subject,
+                        Body = body
+                    };
+
+                    bool isEmailSent = _emailService.SendEmail(emailDto);
+                    if (!isEmailSent)
+                    {
+                        return StatusCode(500, "Property updated, but failed to send confirmation email.");
+                    }
+                
                 var propertyDto = _mapper.Map<PropertyDto>(property);
                 return Ok(propertyDto);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error while approving the property: {ex.Message}");
-            }
+            
+         
         }
 
         // DELETE: api/Property/5

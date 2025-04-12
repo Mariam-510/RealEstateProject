@@ -6,10 +6,11 @@ namespace RealEstate.Repositories
     {
         Task<List<Property>> GetAllAsync();
         Task<List<Property>> GetFilteredAsync(PropertyCategory? category, PropertyStatus? status, PropertyType? type, string searchByLocation);
-        Task<List<Property>> GetAllNotApproved();
+        Task<List<Property>> GetAllPending();
         Task<List<Property>> GetAllBySellerIdAsync(int sellerId);
+        Task<List<Property>> GetPendingBySellerIdAsync(int sellerId);
         Task<List<Property>> GetApprovedBySellerIdAsync(int sellerId);
-        Task<List<Property>> GetNotApprovedBySellerIdAsync(int sellerId);
+        Task<List<Property>> GetRejectedBySellerIdAsync(int sellerId);
         Task<List<Property>> GetAllByAgentIdAsync(int agentId);
         Task<Property> GetByIdAsync(int id);
         Task AddAsync(Property property);
