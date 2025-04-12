@@ -114,6 +114,7 @@ namespace RealEstate.Controllers
                 // Update available properties based on the new plan
                 sub.AvailableProperties += newPlan.MaxAllowedProperties;
                 sub.SubscriptionPlanId = newPlan.Id;
+                sub.SubscriptionDate = DateTime.Now;
 
                 await _subscriptionRepository.UpdateAsync(sub);
 

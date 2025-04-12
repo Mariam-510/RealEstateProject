@@ -14,9 +14,15 @@ namespace RealEstate.Repositories
             return await _context.Subscriptions
                 .Where(s => (s.SellerId == userId || s.AgentId == userId) && !s.IsDeleted)
                 .Include(s => s.SubscriptionPlan)
+<<<<<<< Updated upstream
                 .OrderByDescending(s => s.Id) 
                 .FirstOrDefaultAsync();
         }
+=======
+                //.OrderByDescending(s => s.Id)
+                .OrderByDescending(s => s.SubscriptionDate)
+                .AsQueryable();
+>>>>>>> Stashed changes
 
         public async Task<Subscription?> GetCurrentActiveByUserIdAsync(int userId)
         {
