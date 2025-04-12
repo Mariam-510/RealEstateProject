@@ -1,0 +1,42 @@
+<!-- product-card.component.html -->
+<div class="product-card p-2">
+  <div class="card-image-container position-relative">
+    <img
+      [src]="
+        'https://img.freepik.com/free-photo/mid-century-modern-living-room-interior-design-with-monstera-tree_53876-129805.jpg'
+      "
+      class="card-img w-100"
+      alt="{{ product.name }}"
+    />
+
+    <!-- Action buttons -->
+    <div class="action-buttons">
+      <button
+        class="action-btn cart-btn d-none"
+        [ngClass]="{ active: inCart }"
+        (click)="toggleCart()"
+      >
+        <i class="bi" [ngClass]="inCart ? 'bi-cart-fill' : 'bi-cart'"></i>
+      </button>
+      <button
+        class="action-btn wishlist-btn d-none"
+        [ngClass]="{ active: inWishlist }"
+        (click)="toggleWishlist()"
+      >
+        <i class="bi" [ngClass]="inWishlist ? 'bi-heart-fill' : 'bi-heart'"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body py-3 px-1">
+    <div
+      class="title-price-section d-flex justify-content-between align-items-center"
+    >
+      <h3 class="card-title fs-4">{{ product.name }}</h3>
+      <h3 class="price-section fs-4" style="color: #c38e79">
+        ${{ product.price | number }}
+      </h3>
+    </div>
+    <p class="card-text">{{ product.description }}</p>
+  </div>
+</div>
