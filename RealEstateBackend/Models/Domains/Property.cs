@@ -21,8 +21,6 @@ namespace RealEstate.Models.Domains
         [NonNegative]
         public decimal Price { get; set; }
 
-        public bool IsAuction { get; set; } = false;
-
         [EnumDataType(typeof(PropertyStatus))]
         public PropertyStatus Status { get; set; }
 
