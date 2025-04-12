@@ -31,9 +31,12 @@ namespace RealEstate.Controllers
         public IAgentRepository AgentRepository { get; }
         public FileService FileService { get; }
         public ICartRepository CartRepository { get; }
+        public ISubscriptionRepository SubscriptionRepository { get; }
+        public ISubscriptionPlanRepository SubscriptionPlanRepository { get; }
 
         public AccountsController(UserManager<Account> userManager, JWTService tokenService, IMapper Mapper, EmailService emailService,
-            IBuyerRepository buyerRepository, ISellerRepository sellerRepository, IAgentRepository agentRepository, FileService fileService, ICartRepository cartRepository)
+            IBuyerRepository buyerRepository, ISellerRepository sellerRepository, IAgentRepository agentRepository, FileService fileService,
+            ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, ISubscriptionPlanRepository subscriptionPlanRepository)
         {
             UserManager = userManager;
             TokenService = tokenService;
@@ -44,6 +47,8 @@ namespace RealEstate.Controllers
             AgentRepository = agentRepository;
             FileService = fileService;
             CartRepository = cartRepository;
+            SubscriptionRepository = subscriptionRepository;
+            SubscriptionPlanRepository = subscriptionPlanRepository;
         }
 
 
@@ -67,8 +72,6 @@ namespace RealEstate.Controllers
                     {
                         return BadRequest(ModelState);
                     }
-
-                    //var existingUser = await UserManager.FindByEmailAsync(registerSellerOrBuyerDto.Email);
 
                     var existingUser = await UserManager.Users
                         .Where(u => u.Email.ToLower() == registerSellerOrBuyerDto.Email.ToLower() && !u.IsDeleted)
@@ -140,6 +143,21 @@ namespace RealEstate.Controllers
                                 if (seller == null)
                                     return StatusCode(500, new { message = "An error occurred while creating" });
 
+                                var subscriptionPlan = await SubscriptionPlanRepository.GetByNameAsync("Free");
+                                if(subscriptionPlan == null)
+                                {
+                                    return StatusCode(500, new { message = "An error occurred while creating subscription plan" });
+                                }
+                                Subscription subscription = new Subscription()
+                                {
+                                    SubscriptionPlanId = subscriptionPlan.Id,
+                                    AvailableProperties = subscriptionPlan.MaxAllowedProperties,
+                                    SellerId = seller.Id,
+                                    IsDeleted = false
+                                };
+
+                                await SubscriptionRepository.AddAsync(subscription);
+
                             }
                             else
                             {
@@ -208,8 +226,6 @@ namespace RealEstate.Controllers
                         return BadRequest(ModelState);
                     }
 
-                    //var existingUser = await UserManager.FindByEmailAsync(registerAgentDto.Email);
-
                     var existingUser = await UserManager.Users
                         .Where(u => u.Email.ToLower() == registerAgentDto.Email.ToLower() && !u.IsDeleted)
                         .FirstOrDefaultAsync();
@@ -246,12 +262,29 @@ namespace RealEstate.Controllers
                         {
                             var agent = Mapper.Map<Agent>(registerAgentDto);
                             agent.IsDeleted = false;
+                            agent.ApprovalStatus = ApprovalStatus.Pending;
                             agent.AccountId = account.Id;
 
                             agent = await AgentRepository.CreateAsync(agent);
 
                             if (agent == null)
                                 return StatusCode(500, new { message = "An error occurred while creating" });
+
+                            var subscriptionPlan = await SubscriptionPlanRepository.GetByNameAsync("Free");
+                            if (subscriptionPlan == null)
+                            {
+                                return StatusCode(500, new { message = "An error occurred while creating subscription plan" });
+                            }
+
+                            Subscription subscription = new Subscription()
+                            {
+                                SubscriptionPlanId = subscriptionPlan.Id,
+                                AvailableProperties = subscriptionPlan.MaxAllowedProperties,
+                                AgentId = agent.Id,
+                                IsDeleted = false
+                            };
+
+                            await SubscriptionRepository.AddAsync(subscription);
 
                             // Generate a random 6-digit confirmation code
                             var confirmationCode = new Random().Next(100000, 999999).ToString();
@@ -315,7 +348,6 @@ namespace RealEstate.Controllers
             {
                 return BadRequest(ModelState);
             }
-            //var account = await UserManager.FindByEmailAsync(loginDto.Email);
 
             var account = await UserManager.Users
                 .Where(u => u.Email.ToLower() == loginDto.Email.ToLower() && !u.IsDeleted)
@@ -333,6 +365,24 @@ namespace RealEstate.Controllers
                 if (checkPasswordResult)
                 {
                     var roles = await UserManager.GetRolesAsync(account);
+
+                    if (roles.Contains("Agent"))
+                    {
+                        var agent = await AgentRepository.GetByAccountIdAsync(account.Id);
+                        if (agent != null)
+                        {
+                            if (agent.ApprovalStatus == ApprovalStatus.Pending)
+                            {
+                                return BadRequest(new { message = "You can't log in until your account is approved." });
+                            }
+                            if (agent.ApprovalStatus == ApprovalStatus.Rejected)
+                            {
+                                return BadRequest(new{message = "Your account has been rejected. Please contact support for further details."});
+                            }
+
+                        }
+                    }
+
                     //create token
                     var jwtToken = TokenService.CreateJWTToken(account, roles.ToList());
 
@@ -464,6 +514,25 @@ namespace RealEstate.Controllers
 
             if (!user.EmailConfirmed)
                 return BadRequest(new { message = "Please confirm your email first." });
+
+            var roles = await UserManager.GetRolesAsync(user);
+
+            if (roles.Contains("Agent"))
+            {
+                var agent = await AgentRepository.GetByAccountIdAsync(user.Id);
+                if (agent != null)
+                {
+                    if (agent.ApprovalStatus == ApprovalStatus.Pending)
+                    {
+                        return BadRequest(new { message = "You can't reset password until your account is approved." });
+                    }
+                    if (agent.ApprovalStatus == ApprovalStatus.Rejected)
+                    {
+                        return BadRequest(new { message = "Your account has been rejected. Please contact support for further details." });
+                    }
+
+                }
+            }
 
             // Generate a 6-digit reset code
             var resetCode = new Random().Next(100000, 999999).ToString();

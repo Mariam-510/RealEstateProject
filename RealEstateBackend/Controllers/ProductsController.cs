@@ -7,6 +7,7 @@ using RealEstate.Models.DTOs.Product;
 using RealEstate.Repositories;
 using RealEstate.Services;
 using RealEstate.Mapping;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,16 +22,14 @@ namespace RealEstate.Controllers
 
         public FileService _fileService { get; }
 
-        public ProductsController(IProductRepository P , ICategoryRepository C, FileService fileService )
+        public ProductsController(IProductRepository productRepository , ICategoryRepository categoryRepository, FileService fileService )
         {
-            _ProductRepository = P;
+            _ProductRepository = productRepository;
             _fileService = fileService;
-            _CategoryRepository =C;
-
-
+            _CategoryRepository = categoryRepository;
         }
+        
         [HttpPost("CreateProduct")]
-
         public async Task<IActionResult> CreateProduct([FromForm]ProductDTO ProductDTO)
         {
             if (!ModelState.IsValid)
@@ -45,7 +44,19 @@ namespace RealEstate.Controllers
             else
             {
                 Product ProductModel = ProductDTO.ToProductModel();
+
+                ProductModel.Images = new List<string>();
                 //ProductModel.ImageUrl = _fileService.UploadFile("ProductImages", ProductDTO.Productimage);
+                // Handle image uploads
+                foreach (var imageFile in ProductDTO.Productimage)
+                {
+                    var imageUrl = _fileService.UploadFile("ProductImages", imageFile);
+                    if (!string.IsNullOrEmpty(imageUrl))
+                    {
+                        ProductModel.Images.Add(imageUrl);
+                    }
+                }
+
                 Product? CreatedProduct = await _ProductRepository.CreateAsync(ProductModel);
                 if (CreatedProduct == null)
                 {
@@ -61,7 +72,7 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("DeleteProduct/{id}")]
+        [HttpDelete("DeleteProduct/{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
 
@@ -80,6 +91,7 @@ namespace RealEstate.Controllers
 
             }
         }
+
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll(string? Name = null, string? SortPrice = null, string? Category = null, string? SortQuantity = null)
@@ -127,9 +139,8 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpPost("UpdateProduct/{id}")]
-
-        public async Task<IActionResult> UpdateProduct(int id,[FromForm] ProductDTO ProductDTO)
+        [HttpPut("UpdateProduct/{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductDTO ProductDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -148,7 +159,33 @@ namespace RealEstate.Controllers
                 {
                     return NotFound("Product Not found!");
                 }
+
                 //ProductModel.ImageUrl = _fileService.UpdateFile("ProductImages", ProductDTO.Productimage, oldProduct.ImageUrl);
+
+
+                // Replace existing images with new ones
+                if (ProductDTO.Productimage != null && ProductDTO.Productimage.Any())
+                {
+                    // Delete all existing images
+                    foreach (var oldImagePath in oldProduct.Images.ToList())
+                    {
+                        _fileService.DeleteFile(oldImagePath);
+                    }
+
+                    oldProduct.Images.Clear();
+                    ProductModel.Images = new List<string>();
+
+                    // Upload and add new images
+                    foreach (var imageFile in ProductDTO.Productimage)
+                    {
+                        var imageUrl = _fileService.UploadFile("ProductImages", imageFile);
+                        if (!string.IsNullOrEmpty(imageUrl))
+                        {
+                            ProductModel.Images.Add(imageUrl);
+                        }
+                    }
+                }
+
                 Product? UpdatedProduct = await _ProductRepository.UpdateAsync(id, ProductModel);
                 if (UpdatedProduct == null)
                 {
@@ -162,8 +199,6 @@ namespace RealEstate.Controllers
                 return BadRequest("Product Update failed.");
             }
         }
-
-
 
 
     }

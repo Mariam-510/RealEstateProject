@@ -88,7 +88,7 @@ namespace RealEstate
                 options.Password.RequireLowercase = true;
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequireUppercase = true;
-                options.Password.RequiredLength = 6;
+                options.Password.RequiredLength = 8;
                 options.Password.RequiredUniqueChars = 1;
             });
 
@@ -106,8 +106,8 @@ namespace RealEstate
             });
 
             // Add Scoped for repositories
-
             builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddScoped<IPasswordValidator<Account>, PasswordLengthValidator<Account>>();
             builder.Services.AddScoped<IBuyerRepository, BuyerRepository>();
             builder.Services.AddScoped<ISellerRepository, SellerRepository>();
             builder.Services.AddScoped<IAgentRepository, AgentRepository>();
@@ -118,7 +118,6 @@ namespace RealEstate
             builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
-            builder.Services.AddScoped<IPasswordValidator<Account>, PasswordLengthValidator<Account>>();
             builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
             builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             builder.Services.AddScoped<IPropertyBidRepository, PropertyBidRepository>();
@@ -132,16 +131,17 @@ namespace RealEstate
             builder.Services.AddScoped<ICartRepository, CartRepository>();
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+            builder.Services.AddScoped<IContractRepository, ContractRepository>();
+            builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
             builder.Services.AddScoped<JWTService>();
             builder.Services.AddScoped<FileService>();
             builder.Services.AddScoped<EmailService>();
+            
 
             // builder.Services.AddSingleton<PayPalService>();// Maybe review if it's better to use singleton or scoped here later
             builder.Services.AddScoped<PayPalService>();
 
-
             //builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("PayPal"));
-            builder.Services.AddScoped<RealEstate.Services.SubscriptionService>();
           
             // Register other services
             builder.Services.AddSingleton<StripeService>();

@@ -13,12 +13,18 @@ namespace RealEstate.Repositories
             this.dbContext = dbontext;
         }
 
-        public async Task<List<Agent>> GetAllAsync()
+        public async Task<List<Agent>> GetAllAsync(ApprovalStatus? approvalStatus = null)
         {
-            return await dbContext.Agents
+            var query = dbContext.Agents
                 .Include(a => a.Account)
-                .Where(a => !a.IsDeleted)
-                .ToListAsync();
+                .Where(a => !a.IsDeleted);
+
+            if (approvalStatus.HasValue)
+            {
+                query = query.Where(a => a.ApprovalStatus == approvalStatus.Value);
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<Agent?> GetByIdAsync(int id)
@@ -66,6 +72,23 @@ namespace RealEstate.Repositories
             return existingAgent;
         }
 
+        public async Task<Agent?> UpdateIsApprovedAsync(int id, ApprovalStatus approvalStatus)
+        {
+            var existingAgent = await dbContext.Agents
+                .Include(a => a.Account)
+                .Where(a => !a.IsDeleted)
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (existingAgent == null)
+            {
+                return null;
+            }
+            existingAgent.ApprovalStatus = approvalStatus;
+
+            await dbContext.SaveChangesAsync();
+            return existingAgent;
+        }
+
         public async Task<Agent?> DeleteAsync(int id)
         {
             var existingAgent = await dbContext.Agents
@@ -83,6 +106,12 @@ namespace RealEstate.Repositories
             await dbContext.SaveChangesAsync();
             return existingAgent;
         }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await dbContext.Agents.AnyAsync(a => a.Id == id && !a.IsDeleted);
+        }
+
     }
 }
 

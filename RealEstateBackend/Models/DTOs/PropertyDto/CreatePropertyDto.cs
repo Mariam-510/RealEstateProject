@@ -25,9 +25,6 @@ namespace RealEstate.Models.DTOs.PropertyDto
         public string PropertyCategory { get; set; }
 
         [Required]
-        public bool IsAuction { get; set; }
-
-        [Required]
         public string Status { get; set; }
 
         public int? AgentId { get; set; }
@@ -37,7 +34,7 @@ namespace RealEstate.Models.DTOs.PropertyDto
         // Upload files from form
         [Required]
         public ICollection<IFormFile> Images { get; set; }
-
+        public IFormFile? ContractFile { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             // XOR logic: Exactly one must be provided

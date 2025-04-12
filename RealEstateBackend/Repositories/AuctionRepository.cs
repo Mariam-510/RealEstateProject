@@ -42,7 +42,6 @@ namespace RealEstate.Repositories
             return AuctionToUpdate;
         }
 
-
         public async Task<Auction?> GetByIdAsync(int id)
         {
             return await dbcontext.Auctions
@@ -56,6 +55,7 @@ namespace RealEstate.Repositories
                 )
                 .FirstOrDefaultAsync();
         }
+        
         public async Task<Auction?> GetByProprtyIdAsync(int id)
         {
             return await dbcontext.Auctions.Where(A => A.PropertyId == id && A.IsDeleted == false).FirstOrDefaultAsync();
@@ -66,7 +66,7 @@ namespace RealEstate.Repositories
             var query = dbcontext.Auctions.AsQueryable();
 
             if (AgentID.HasValue)
-                query = query.Include(A => A.Agent).Where(a => a.AgentId == AgentID &&a.Agent.IsDeleted==false);
+                query = query.Include(A => A.Agent).Where(a => a.AgentId == AgentID && a.Agent.IsDeleted==false);
 
             if (SellerID.HasValue)
                 query = query.Include(A => A.Seller).Where(a => a.SellerId == SellerID && a.Seller.IsDeleted == false);

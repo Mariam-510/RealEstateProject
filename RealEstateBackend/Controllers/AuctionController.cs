@@ -19,18 +19,18 @@ namespace RealEstate.Controllers
         public IPropertyRepository _propertyRepository { get; }
         public IAgentRepository _AgentRepository { get; }
         public ISellerRepository _SellerRepository { get; }
-
-
-
         public FileService _fileService { get; }
 
-        public AuctionController(IAuctionRepository A , IPropertyRepository P , IAgentRepository Ag , ISellerRepository S )
+        public AuctionController(IAuctionRepository auctionRepository, IPropertyRepository propertyRepository,
+            IAgentRepository agentRepository , ISellerRepository sellerRepository)
         {
-            _AuctionRepository = A;
-            _propertyRepository = P;
-            _AgentRepository = Ag;
-            _SellerRepository = S;
+            _AuctionRepository = auctionRepository;
+            _propertyRepository = propertyRepository;
+            _AgentRepository = agentRepository;
+            _SellerRepository = sellerRepository;
         }
+        
+
         [HttpPost("CreateAuction")]
         public async Task<IActionResult> CreateAuction([FromForm] AuctionDTO AuctionDtO)
         {
@@ -86,7 +86,7 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("DeleteAuction/{id}")]
+        [HttpDelete("DeleteAuction/{id}")]
         public async Task<IActionResult> DeleteAuction(int id)
         {
             Auction GetAction = await _AuctionRepository.GetByIdAsync(id);
@@ -105,6 +105,7 @@ namespace RealEstate.Controllers
 
         }
 
+
         [HttpGet("GetAuctionByID/{id}")]
         public async Task<IActionResult> GetAuctionByid(int id)
         {
@@ -119,6 +120,7 @@ namespace RealEstate.Controllers
             return Ok(new { message = "Auction is", ActionShow });
 
         }
+
 
         [HttpGet("GetAuctionByUserID")]
         public async Task<IActionResult> GetAuctionByUserID(int? AgentID = null, int? SellerID = null)
@@ -166,7 +168,6 @@ namespace RealEstate.Controllers
         }
 
 
-
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll(string? sortByPrice = null, string? sortByTime = null, Status? ISLivestatus = null)
         {
@@ -211,8 +212,7 @@ namespace RealEstate.Controllers
         }
 
 
-
-        [HttpPost("UpdateAuction/{id}")]
+        [HttpPut("UpdateAuction/{id}")]
         public async Task<IActionResult> UpdateAuction(int id, [FromForm] DateTime StartTime, [FromForm] DateTime EndTime, [FromForm] decimal StartPrice, [FromForm] Status isLive)
         {
             if (!ModelState.IsValid)

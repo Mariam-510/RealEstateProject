@@ -24,11 +24,19 @@ namespace RealEstate.Models.Domains
         public string? AccountId { get; set; }
         public virtual Account? Account { get; set; }
 
-        public bool IsApproved { get; set; } = false;
+        public ApprovalStatus ApprovalStatus { get; set; } = ApprovalStatus.Pending;
 
         public virtual ICollection<Property>? Properties { get; set; }
-       
+
         public virtual ICollection<Auction>? Auctions { get; set; }
 
     }
+
+    public enum ApprovalStatus
+    {
+        Pending,
+        Approved,
+        Rejected
+    }
+
 }

@@ -18,6 +18,7 @@
 
     public int? SellerId { get; set; }
 
+    public string? ContractImgUrl { get; set; }
 
     }
 }

@@ -26,7 +26,6 @@ namespace RealEstate.Models.Domains
         public virtual Payment? Payment { get; set; }
 
 
-
         [ForeignKey("SubscriptionPlan")]
         public int? SubscriptionPlanId { get; set; }
         public virtual SubscriptionPlan? SubscriptionPlan { get; set; }

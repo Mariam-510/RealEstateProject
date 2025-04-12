@@ -26,7 +26,7 @@ namespace RealEstate.Models.DTOs.Product
         [Required]
         public int CategoryID { get; set; }
         [Required]
-        public IFormFile Productimage { get; set; }
+        public ICollection<IFormFile> Productimage { get; set; }
 
     }
 }

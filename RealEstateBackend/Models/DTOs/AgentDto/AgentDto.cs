@@ -1,4 +1,6 @@
-﻿namespace RealEstate.Models.Dtos.AgentDto
+﻿using RealEstate.Models.Domains;
+
+namespace RealEstate.Models.Dtos.AgentDto
 {
     public class AgentDto
     {
@@ -17,6 +19,8 @@
         public DateTime CreatedAt { get; set; }
 
         public string? ImageUrl { get; set; }
+
+        public ApprovalStatus ApprovalStatus { get; set; }
 
     }
 }
