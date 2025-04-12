@@ -15,6 +15,10 @@ namespace RealEstate.Repositories
         public async Task<SubscriptionPlan?> GetByIdAsync(int id) =>
             await _context.SubscriptionPlans.FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
 
+        public async Task<SubscriptionPlan?> GetByNameAsync(string name) =>
+            await _context.SubscriptionPlans
+                .FirstOrDefaultAsync(p => p.Name.ToLower().Contains(name.ToLower()) && !p.IsDeleted);
+
         public async Task AddAsync(SubscriptionPlan plan)
         {
             await _context.SubscriptionPlans.AddAsync(plan);

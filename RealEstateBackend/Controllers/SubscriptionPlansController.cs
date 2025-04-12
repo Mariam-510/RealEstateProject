@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Models.Domains;
-using RealEstate.Models.Dtos.SubscriptionDto;
+using RealEstate.Models.Dtos.SubscriptionPlanDto;
 using RealEstate.Repositories;
 
 namespace RealEstate.Controllers
@@ -37,7 +37,6 @@ namespace RealEstate.Controllers
         }
 
 
-
         [HttpPost]
         public async Task<IActionResult> Create(CreateSubscriptionPlanDto dto)
         {
@@ -53,6 +52,19 @@ namespace RealEstate.Controllers
             if (plan == null) return NotFound();
 
             _mapper.Map(dto, plan);
+            await _repository.UpdateAsync(plan);
+            return NoContent();
+        }
+
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var plan = await _repository.GetByIdAsync(id);
+            if (plan == null) return NotFound();
+
+            plan.IsDeleted = true;
+
             await _repository.UpdateAsync(plan);
             return NoContent();
         }

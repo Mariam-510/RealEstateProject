@@ -6,6 +6,8 @@ using RealEstate.JWT;
 using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos.AccountDto;
 using RealEstate.Models.Dtos.AgentDto;
+using RealEstate.Models.Dtos.EmailDto;
+using RealEstate.Models.Dtos.ShippingDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
 using System.Transactions;
@@ -21,26 +23,31 @@ namespace RealEstate.Controllers
         public UserManager<Account> UserManager { get; }
         public JWTService TokenService { get; }
         public FileService FileService { get; }
+        public EmailService EmailService { get; }
 
         public AgentsController(IAgentRepository agentRepository, IMapper mapper,
-            UserManager<Account> userManager, JWTService tokenService, FileService fileService)
+            UserManager<Account> userManager, JWTService tokenService, FileService fileService,
+            EmailService emailService)
         {
             AgentRepository = agentRepository;
             Mapper = mapper;
             UserManager = userManager;
             TokenService = tokenService;
             FileService = fileService;
+            EmailService = emailService;
         }
 
+
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] ApprovalStatus? approvalStatus)
         {
-            var agents = await AgentRepository.GetAllAsync();
+            var agents = await AgentRepository.GetAllAsync(approvalStatus);
 
             var agentsDto = Mapper.Map<List<AgentDto>>(agents);
 
             return Ok(agentsDto);
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
@@ -56,6 +63,7 @@ namespace RealEstate.Controllers
 
             return Ok(agentDto);
         }
+
 
         [HttpGet]
         [Route("account/{accountId}")]
@@ -177,6 +185,62 @@ namespace RealEstate.Controllers
                     return StatusCode(500, new { message = "An unexpected error occurred." });
                 }
             }
+        }
+
+
+        [HttpPut]
+        [Route("Approve/{id}")]
+        public async Task<IActionResult> UpdateApprovalStatus(int id, [FromForm] ApproveAgentDto approveAgentDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var existingAgent = await AgentRepository.GetByIdAsync(id);
+
+            if (existingAgent == null)
+            {
+                return NotFound();
+            }
+
+            ApprovalStatus approvalStatus = approveAgentDto.IsApproved ? ApprovalStatus.Approved : ApprovalStatus.Rejected;
+
+            var agent = await AgentRepository.UpdateIsApprovedAsync(id, approvalStatus);
+
+            if (agent == null)
+            {
+                return NotFound();
+            }
+
+            string emailBody = $@"
+                Dear {agent.Name},<br/><br/>
+                We are pleased to inform you that your agent account has been <strong>{(approveAgentDto.IsApproved ? "approved" : "rejected")}</strong>.<br/><br/>
+                {(approveAgentDto.IsApproved
+                                ? "You can now log in and start using your account."
+                                : "Unfortunately, your application has been rejected at this time.")}<br/><br/>
+                If you have any questions, feel free to contact us.<br/><br/>
+                Best regards,<br/>
+                Real Estate Team";
+
+
+            EmailDto emailDto = new EmailDto
+            {
+                To = agent.Account.Email,
+                Subject = "Agent Approval Status",
+                Body = emailBody
+            };
+
+            bool isEmailSent = EmailService.SendEmail(emailDto);
+
+            if (!isEmailSent)
+            {
+                return StatusCode(500, new { message = "Failed to send confirmation email. Please try again." });
+            }
+
+            var agentDto = Mapper.Map<AgentDto>(agent);
+
+            return Ok(new { message = "Updated Successfully!", agentDto });
         }
 
 
