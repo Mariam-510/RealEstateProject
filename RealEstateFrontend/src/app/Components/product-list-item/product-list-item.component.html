@@ -1,0 +1,75 @@
+<div class="product-list-item p-3">
+  <div class="row">
+    <!-- Image on the right -->
+    <div class="col-md-4 order-md-2">
+      <div class="position-relative">
+        <img
+          [src]="
+            'https://st3.depositphotos.com/1177973/12669/i/450/depositphotos_126693854-stock-photo-set-of-body-care-products.jpg'
+          "
+          class="card-img"
+          alt="Product image"
+          (error)="productService.setFallbackImageForCard($event)"
+        />
+
+        <!-- Action buttons -->
+        <div class="action-buttons">
+          <button
+            class="action-btn cart-btn"
+            [ngClass]="{ active: inCart }"
+            (click)="toggleCart()"
+          >
+            <i class="bi" [ngClass]="inCart ? 'bi-cart-fill' : 'bi-cart'"></i>
+          </button>
+          <button
+            class="action-btn wishlist-btn"
+            [ngClass]="{ active: inWishlist }"
+            (click)="toggleWishlist()"
+          >
+            <i
+              class="bi"
+              [ngClass]="inWishlist ? 'bi-heart-fill' : 'bi-heart'"
+            ></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content on the left -->
+    <div class="col-md-8 order-md-1">
+      <div class="card-body h-100">
+        <div class="row h-100">
+          <div
+            class="title-price-section d-flex flex-column justify-content-start align-items-start col-8 h-100"
+          >
+            <h3 class="card-title fs-4">{{ product.name }}</h3>
+            <br />
+            <p class="card-text">{{ product.description }}</p>
+            <br />
+            <br />
+            <br />
+
+            <!-- Rating section -->
+            <div
+              class="rating-section d-flex align-items-center gap-1 mt-2"
+              title="Average rating: {{ product.averageRating }}"
+            >
+              <ng-container *ngFor="let star of fullStars">
+                <i class="bi bi-star-fill fs-3" style="color: #c38e79"></i>
+              </ng-container>
+              <ng-container *ngIf="hasHalfStar">
+                <i class="bi bi-star-half fs-3" style="color: #c38e79"></i>
+              </ng-container>
+            </div>
+          </div>
+
+          <div
+            class="price-section fs-4 col-4 d-flex justify-content-end align-items-sm-end"
+          >
+            <h3 style="color: #c38e79">${{ product.price | number }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

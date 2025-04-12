@@ -9,11 +9,12 @@ import { ProductDto } from '../../Services/product.service';
 import { ProductService } from '../../Services/product.service';
 import { CommonModule } from '@angular/common';
 import { ProductCardComponent } from '../product-card/product-card.component';
+import { ProductListItemComponent } from '../product-list-item/product-list-item.component';
 
 @Component({
   selector: 'app-category',
   standalone: true,
-  imports: [CommonModule, ProductCardComponent],
+  imports: [CommonModule, ProductCardComponent, ProductListItemComponent],
   templateUrl: './category.component.html',
   styleUrl: './category.component.css',
 })
@@ -75,8 +76,11 @@ export class CategoryComponent implements OnInit {
           a.name.localeCompare(b.name)
         );
         break;
-     
     }
+  }
+
+  toggleViewMode(mode: 'grid' | 'list') {
+    this.viewMode = mode;
   }
 
   // Close dropdown when clicking outside

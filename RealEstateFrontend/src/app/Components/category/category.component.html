@@ -31,6 +31,8 @@
               type="button"
               class="btn btn-light"
               [class.active]="viewMode === 'grid'"
+              (click)="toggleViewMode('grid')"
+              title="Grid view"
             >
               <i class="bi bi-grid-3x3-gap-fill"></i>
             </button>
@@ -38,6 +40,8 @@
               type="button"
               class="btn btn-light"
               [class.active]="viewMode === 'list'"
+              (click)="toggleViewMode('list')"
+              title="List view"
             >
               <i class="bi bi-list"></i>
             </button>
@@ -159,11 +163,21 @@
       <!-- Yellow Horizontal Line -->
       <hr style="color: #c38e79; margin: 0%" />
 
-      <div
-        class="col-12 col-md-6 col-lg-4 col-xl-4"
-        *ngFor="let product of products"
-      >
-        <app-product-card [product]="product"></app-product-card>
+      <!-- Grid View -->
+      <div *ngIf="viewMode === 'grid'" class="row g-4">
+        <div
+          class="col-12 col-md-6 col-lg-4 col-xl-4"
+          *ngFor="let product of products"
+        >
+          <app-product-card [product]="product"></app-product-card>
+        </div>
+      </div>
+
+      <!-- List View -->
+      <div *ngIf="viewMode === 'list'" class="row g-4">
+        <div class="col-12" *ngFor="let product of products">
+          <app-product-list-item [product]="product"></app-product-list-item>
+        </div>
       </div>
     </div>
   </div>
