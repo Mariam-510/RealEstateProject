@@ -11,7 +11,7 @@
         public bool IsDeleted { get; set; }
         public int CategoryID { get; set; }
         public string CategoryName { get; set; }
-        public string Productimage { get; set; }
+        public List<string> Productimage { get; set; }
 
     }
 }

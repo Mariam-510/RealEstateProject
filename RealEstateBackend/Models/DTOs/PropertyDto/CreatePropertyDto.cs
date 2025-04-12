@@ -37,7 +37,7 @@ namespace RealEstate.Models.DTOs.PropertyDto
         // Upload files from form
         [Required]
         public ICollection<IFormFile> Images { get; set; }
-
+        public IFormFile? ContractFile { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             // XOR logic: Exactly one must be provided

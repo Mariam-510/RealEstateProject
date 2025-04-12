@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RealEstate.Data;
 using RealEstate.Models.Domains;
 using System;
@@ -16,16 +17,48 @@ namespace RealEstate.Repositories
 
         public async Task<List<Property>> GetAllAsync()
         {
-            return await _context.Properties.Where(p=>!p.IsDeleted)
+            return await _context.Properties.Where(p=>!p.IsDeleted && p.ApprovalStatus==PropertyApprovalStatus.Approved)
                                   .Include(p=>p.Seller)
                                   .Include(p=>p.Agent)
+                                  .ToListAsync();
+        }
+        public async Task<List<Property>> GetAllPending()
+        {
+            return await _context.Properties.Where(p => !p.IsDeleted && p.ApprovalStatus == PropertyApprovalStatus.Pending)
+                                  .Include(p => p.Seller)
+                                  .Include(p => p.Agent)
                                   .ToListAsync();
         }
         public async Task<List<Property>> GetAllBySellerIdAsync(int sellerId)
         {
             return await _context.Properties
-                .Where(p => p.SellerId == sellerId && !p.IsDeleted)
+                .Where(p => p.SellerId == sellerId && !p.IsDeleted )
                 .Include (p => p.Seller)
+                .Include(p => p.Agent)
+                .ToListAsync();
+        }
+
+        public async Task<List<Property>> GetApprovedBySellerIdAsync(int sellerId)
+        {
+            return await _context.Properties
+                .Where(p => p.SellerId == sellerId && !p.IsDeleted && p.ApprovalStatus == PropertyApprovalStatus.Approved)
+                .Include(p => p.Seller)
+                .Include(p => p.Agent)
+                .ToListAsync();
+        }
+        public async Task<List<Property>> GetPendingBySellerIdAsync(int sellerId)
+        {
+            return await _context.Properties
+                .Where(p => p.SellerId == sellerId && !p.IsDeleted && p.ApprovalStatus == PropertyApprovalStatus.Pending)
+                .Include(p => p.Seller)
+                .Include(p => p.Agent)
+                .ToListAsync();
+        }
+        public async Task<List<Property>> GetRejectedBySellerIdAsync(int sellerId)
+        {
+            return await _context.Properties
+                .Where(p => p.SellerId == sellerId && !p.IsDeleted && p.ApprovalStatus == PropertyApprovalStatus.Rejected)
+                .Include(p => p.Seller)
                 .Include(p => p.Agent)
                 .ToListAsync();
         }
@@ -72,7 +105,7 @@ namespace RealEstate.Repositories
 
         public async Task<List<Property>> GetFilteredAsync(PropertyCategory? category, PropertyStatus? status, PropertyType? type, string searchByLocation)
         {
-            var query = _context.Properties.Where(p => !p.IsDeleted); 
+            var query = _context.Properties.Where(p => !p.IsDeleted && p.ApprovalStatus==PropertyApprovalStatus.Approved); 
 
             if (!string.IsNullOrWhiteSpace(category?.ToString())) 
             {

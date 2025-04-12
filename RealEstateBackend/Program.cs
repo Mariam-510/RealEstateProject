@@ -131,10 +131,12 @@ namespace RealEstate
             builder.Services.AddScoped<ICartRepository, CartRepository>();
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+            builder.Services.AddScoped<IContractRepository, ContractRepository>();
             builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
             builder.Services.AddScoped<JWTService>();
             builder.Services.AddScoped<FileService>();
             builder.Services.AddScoped<EmailService>();
+            
 
             // builder.Services.AddSingleton<PayPalService>();// Maybe review if it's better to use singleton or scoped here later
             builder.Services.AddScoped<PayPalService>();

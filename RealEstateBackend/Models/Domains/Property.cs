@@ -46,7 +46,8 @@ namespace RealEstate.Models.Domains
         // Store image URLs (e.g., "/images/file.jpg")
         public List<string> Images { get; set; }
 
-        public bool IsApproved { get; set; } = true;
+        public PropertyApprovalStatus ApprovalStatus { get; set; } = PropertyApprovalStatus.Pending;
+
     }
     public enum PropertyCategory
     {
@@ -69,5 +70,11 @@ namespace RealEstate.Models.Domains
     {
         Sell,
         Rent
+    }
+    public enum PropertyApprovalStatus
+    {
+        Pending,
+        Approved,
+        Rejected
     }
 }

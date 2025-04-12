@@ -27,7 +27,7 @@ namespace RealEstate.Models.Domains
         public ApprovalStatus ApprovalStatus { get; set; } = ApprovalStatus.Pending;
 
         public virtual ICollection<Property>? Properties { get; set; }
-       
+
         public virtual ICollection<Auction>? Auctions { get; set; }
 
     }
