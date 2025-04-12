@@ -42,3 +42,44 @@
   margin-left: 0.3rem;
   margin-right: 0.4rem;
 }
+
+
+/*pagination styles */
+.pagination-container {
+    user-select: none;
+  }
+  
+  .page-link {
+    color: #666;
+    border: 1px solid #ddd;
+    margin: 0 4px;
+    border-radius: 4px;
+    min-width: 36px;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  
+  .page-link:hover {
+    background-color: #f8f9fa;
+    border-color: #ddd;
+    color: #444;
+  }
+  
+  .page-item.active .page-link {
+    background-color: #c38e79;
+    border-color: #c38e79;
+    color: white;
+  }
+  
+  .page-item.disabled .page-link {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: transparent;
+  }
+  
+  .bi-chevron-left,
+  .bi-chevron-right {
+    font-size: 0.8rem;
+    vertical-align: middle;
+  }

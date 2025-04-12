@@ -28,6 +28,11 @@ export class CategoryComponent implements OnInit {
   sortOption = 'recommended';
   viewMode = 'grid';
 
+  currentPage = 1;
+  itemsPerPage = 9;
+  totalPages = 0;
+  visiblePages: (number | string)[] = [];
+
   constructor(
     private productService: ProductService,
     private elementRef: ElementRef
@@ -42,6 +47,8 @@ export class CategoryComponent implements OnInit {
     this.productService.getProductsByCategory(category).subscribe({
       next: (response) => {
         this.products = response.productDto;
+        this.totalPages = Math.ceil(this.products.length / this.itemsPerPage);
+        this.updateVisiblePages();
         this.loading = false;
       },
       error: (err) => {
@@ -77,6 +84,8 @@ export class CategoryComponent implements OnInit {
         );
         break;
     }
+    this.currentPage = 1;
+    this.updateVisiblePages();
   }
 
   toggleViewMode(mode: 'grid' | 'list') {
@@ -92,5 +101,40 @@ export class CategoryComponent implements OnInit {
     ) {
       this.sortDropdownOpen = false;
     }
+  }
+
+  // Add these new methods
+  goToPage(page: number | string): void {
+    if (typeof page === 'string' || page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updateVisiblePages();
+  }
+
+  updateVisiblePages() {
+    const pages: (number | string)[] = [];
+    const total = this.totalPages;
+    const current = this.currentPage;
+
+    if (total <= 5) {
+      for (let i = 1; i <= total; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (current > 3) pages.push('...');
+      if (current === total) pages.push(current - 2);
+      if (current > 2) pages.push(current - 1);
+      if (current !== 1 && current !== total) pages.push(current);
+      if (current < total - 1) pages.push(current + 1);
+      if (current === 1) pages.push(current + 2);
+      if (current < total - 2) pages.push('...');
+      pages.push(total);
+    }
+
+    this.visiblePages = [...new Set(pages)];
+  }
+
+  get paginatedProducts(): ProductDto[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.products.slice(start, end);
   }
 }
