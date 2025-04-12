@@ -52,24 +52,41 @@ namespace RealEstate.Controllers
 
             var properties = await _propertyRepo.GetFilteredAsync(propertyCategory, propertyStatus, propertyType, searchByLocation);
             var propertyDtos = _mapper.Map<List<PropertyDto>>(properties);
+            foreach (var dto in propertyDtos)
+            {
+                var contract = await _contractRepo.GetByPropertyIdAsync(dto.Id);
+                if (contract != null)
+                {
+                    dto.ContractImgUrl = contract.ImageUrl;
+                }
+            }
             return Ok(propertyDtos);
         }
 
 
         [HttpGet("Pending")]
-        public async Task<IActionResult> GetcProperties()
+        public async Task<IActionResult> GetPendingProperties()
         {
             try
             {
-                var notApprovedProperties = await _propertyRepo.GetAllPending();
-                if (notApprovedProperties == null )
-                    return NotFound("There are no properties that are not approved.");
-                var notApprovedPropertyDtos = _mapper.Map<List<PropertyDto>>(notApprovedProperties);
-                return Ok(notApprovedPropertyDtos); 
+
+                var PendingProperties = await _propertyRepo.GetAllPending();
+                if (PendingProperties == null )
+                    return NotFound("There are no properties that are Pending.");
+                var PendingPropertyDto = _mapper.Map<List<PropertyDto>>(PendingProperties);
+                foreach (var dto in PendingPropertyDto)
+                {
+                    var contract = await _contractRepo.GetByPropertyIdAsync(dto.Id);
+                    if (contract != null)
+                    {
+                        dto.ContractImgUrl = contract.ImageUrl;
+                    }
+                }
+                return Ok(PendingPropertyDto); 
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Error while fetching not approved properties: {ex.Message}");
+                return StatusCode(500, $"Error while fetching Pending properties: {ex.Message}");
             }
         }
 

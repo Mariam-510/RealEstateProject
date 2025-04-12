@@ -25,9 +25,6 @@ namespace RealEstate.Models.DTOs.PropertyDto
         public string PropertyCategory { get; set; }
 
         [Required]
-        public bool IsAuction { get; set; }
-
-        [Required]
         public string Status { get; set; }
 
         public int? AgentId { get; set; }
