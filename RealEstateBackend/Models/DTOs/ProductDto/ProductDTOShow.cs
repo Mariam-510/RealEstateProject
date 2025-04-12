@@ -8,6 +8,7 @@
         public decimal Price { get; set; }
         public int Quantity { get; set; }
         public bool IsUsed { get; set; }
+        public double AverageRating { get; set; }
         public bool IsDeleted { get; set; }
         public int CategoryID { get; set; }
         public string CategoryName { get; set; }

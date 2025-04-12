@@ -12,8 +12,6 @@ using RealEstate.Services;
 
 namespace RealEstate.Controllers
 {
-
-   
     [Route("api/[controller]")]
     [ApiController]
     public class CategoryController : ControllerBase
@@ -22,16 +20,15 @@ namespace RealEstate.Controllers
         public IProductRepository _ProductRepository { get; }
         public FileService _fileService { get; }
 
-        public CategoryController(ICategoryRepository C,IProductRepository P, FileService fileService)
+        public CategoryController(ICategoryRepository categoryRepository,IProductRepository productRepository, FileService fileService)
         {
-            _CategoryRepository = C;
+            _CategoryRepository = categoryRepository;
             _fileService = fileService;
-            _ProductRepository = P;
+            _ProductRepository = productRepository;
 
         }
 
         [HttpPost("CreateCategory")]
-
         public async Task<IActionResult> CreateCategory([FromForm] CategoryDTO CategoryDTO)
         {
             if (!ModelState.IsValid)
@@ -54,7 +51,8 @@ namespace RealEstate.Controllers
             return BadRequest("Category creation failed.");
         }
 
-        [HttpGet("DeleteCategory/{id}")]
+
+        [HttpDelete("DeleteCategory/{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -93,6 +91,7 @@ namespace RealEstate.Controllers
             }
         }
 
+
         [HttpGet("GetbyId/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -114,6 +113,8 @@ namespace RealEstate.Controllers
 
 
         }
+        
+        
         [HttpGet("GetAllCategory")]
         public async Task<IActionResult> GetAllCategory()
         {
@@ -134,8 +135,8 @@ namespace RealEstate.Controllers
 
         }
 
-        [HttpPost("UpdateCategory/{id}")]
-
+        
+        [HttpPut("UpdateCategory/{id}")]
         public async Task<IActionResult> UpdateCategory(int id, [FromForm] CategoryDTO CategoryDTO)
         {
             if (!ModelState.IsValid)

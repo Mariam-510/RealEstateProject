@@ -1,12 +1,10 @@
 ﻿using RealEstate.Models.Domains;
 
-namespace RealEstate.Models.Dtos.SubscriptionDto
+namespace RealEstate.Models.Dtos.SubscriptionPlanDto
 {
-
-  
-
-    public class CreateSubscriptionPlanDto
+    public class SubscriptionPlanDto
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
         public int MaxAllowedProperties { get; set; }
