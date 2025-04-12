@@ -76,6 +76,9 @@ namespace RealEstate.Mapping
             };
         }
 
+        //----------------------------------------------------------------------------------------
+        // Product
+       
         public static ProductDTOShow ToProductDTOShow( this Product product)
         {
             return new ProductDTOShow
@@ -86,6 +89,7 @@ namespace RealEstate.Mapping
                 Price = product.Price,
                 Quantity = product.Quantity,
                 IsUsed = product.IsUsed,
+                AverageRating = product.AverageRating,
                 IsDeleted = product.IsDeleted,
                 CategoryID = product.CategoryID ?? 0,
                 CategoryName = product.Category?.Name ?? string.Empty,
@@ -93,26 +97,28 @@ namespace RealEstate.Mapping
 
             };
         }
+        
         public static List<ProductDTOShow> ToProductDTOShowList(this List<Product> products)
         {
             return products.Select(ToProductDTOShow).ToList();
         }
+        
         public static Product ToProductModel(this ProductDTO product)
         {
             return new Product
             {
-              
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
                 Quantity = product.Quantity,
                 IsUsed = product.IsUsed,
-                CategoryID = product.CategoryID ,
-
+                CategoryID = product.CategoryID
             };
         }
 
-
+        //----------------------------------------------------------------------------------------
+        // Category
+        
         public static CategoryDTOShowWithoutProduct ToCategoryWithoutProductListDTOShow(this Category Category)
         {
             return new CategoryDTOShowWithoutProduct
@@ -122,7 +128,6 @@ namespace RealEstate.Mapping
                 Categoryimage = Category.ImageUrl,
             };
         }
-
 
         public static Category ToCategoryModel(this CategoryDTO category)
         {
@@ -135,13 +140,14 @@ namespace RealEstate.Mapping
             };
         }
 
-
         public static List<CategoryDTOShowWithoutProduct> ToCategoryDTOShowList(this List<Category> Categories)
         {
             return Categories.Select(ToCategoryWithoutProductListDTOShow).ToList();
         }
 
-
+        //----------------------------------------------------------------------------------------
+        // Wishlist
+        
         public static Wishlist ToWishListProductModel(this WishListProductDTO wishlistproductDTO)
         {
             return new Wishlist
@@ -151,6 +157,7 @@ namespace RealEstate.Mapping
                 ProductId = wishlistproductDTO.ProductId,
             };
         }
+        
         public static Wishlist ToWishListPropertyModel(this WishListPropertyDTO wishlistpropertyDTO)
         {
             return new Wishlist
@@ -161,7 +168,9 @@ namespace RealEstate.Mapping
             };
         }
 
-
+        //----------------------------------------------------------------------------------------
+        // Auction
+        
         public static Auction ToAuctionModel(this AuctionDTO AuctionDto)
         {
             TimeZoneInfo egyptTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -193,7 +202,6 @@ namespace RealEstate.Mapping
 
             };
         }
-
 
         public static List<AuctionDTOShow> ToAuctionDTOShowList(this List<Auction> Auctions)
         {
