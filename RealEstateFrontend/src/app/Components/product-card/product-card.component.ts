@@ -30,5 +30,18 @@ export class ProductCardComponent {
     const imgElement = event.target as HTMLImageElement;
     imgElement.src = 'assets/images/fallback.jpg';
   }
+
+  get fullStars(): number[] {
+    return Array(Math.floor(this.product.averageRating)).fill(0);
+  }
+  
+  get hasHalfStar(): boolean {
+    return this.product.averageRating % 1 >= 0.5;
+  }
+  
+  get emptyStars(): number[] {
+    const totalDisplayed = Math.floor(this.product.averageRating) + (this.hasHalfStar ? 1 : 0);
+    return Array(5 - totalDisplayed).fill(0);
+  }
   
 }

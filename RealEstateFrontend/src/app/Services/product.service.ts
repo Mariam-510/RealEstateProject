@@ -13,6 +13,7 @@ export interface ProductDto {
   categoryID: number;
   categoryName: string;
   productImage: string | null;
+  averageRating: number;
 }
 
 export interface ApiResponse {

@@ -39,5 +39,19 @@
       </h3>
     </div>
     <p class="card-text">{{ product.description }}</p>
+    <!-- Rating section -->
+    <div
+      class="rating-section d-flex align-items-center gap-1 mt-2"
+      title="Average rating: {{ product.averageRating }}"
+    >
+      <ng-container *ngFor="let star of fullStars">
+        <i class="bi bi-star-fill" style="color: #c38e79"></i>
+      </ng-container>
+      <ng-container *ngIf="hasHalfStar">
+        <i class="bi bi-star-half" style="color: #c38e79"></i>
+      </ng-container>
+
+      <!-- <span class="text-muted small ms-1">{{ product.reviewCount }} Reviews</span> -->
+    </div>
   </div>
 </div>
