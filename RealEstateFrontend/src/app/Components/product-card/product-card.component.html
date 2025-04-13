@@ -13,14 +13,14 @@
     <!-- Action buttons -->
     <div class="action-buttons">
       <button
-        class="action-btn cart-btn d-none"
+        class="action-btn cart-btn"
         [ngClass]="{ active: inCart }"
         (click)="toggleCart()"
       >
         <i class="bi" [ngClass]="inCart ? 'bi-cart-fill' : 'bi-cart'"></i>
       </button>
       <button
-        class="action-btn wishlist-btn d-none"
+        class="action-btn wishlist-btn"
         [ngClass]="{ active: inWishlist }"
         (click)="toggleWishlist()"
       >
@@ -39,19 +39,21 @@
       </h3>
     </div>
     <p class="card-text">{{ product.description }}</p>
-    <!-- Rating section -->
+
+    <!-- Modified rating section -->
     <div
       class="rating-section d-flex align-items-center gap-1 mt-2"
       title="Average rating: {{ product.averageRating }}"
     >
       <ng-container *ngFor="let star of fullStars">
-        <i class="bi bi-star-fill" style="color: #c38e79"></i>
+        <i class="bi bi-star-fill rating-star"></i>
       </ng-container>
       <ng-container *ngIf="hasHalfStar">
-        <i class="bi bi-star-half" style="color: #c38e79"></i>
+        <i class="bi bi-star-half rating-star"></i>
       </ng-container>
-
-      <!-- <span class="text-muted small ms-1">{{ product.reviewCount }} Reviews</span> -->
+      <ng-container *ngFor="let star of emptyStars">
+        <i class="bi bi-star rating-star"></i>
+      </ng-container>
     </div>
   </div>
 </div>

@@ -33,49 +33,56 @@
   margin-bottom: 0.75rem;
 }
 
-.action-buttons {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  display: flex;
-  gap: 0.5rem;
+/* Buttons version 2 styling */
+
+.buttons-container {
+  width: 100%;
 }
 
-.action-btn {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background-color: white;
-  border: none;
+.btn-wishlist {
+  color: #d63384;
+  border-color: #d63384;
+  background-color: rgba(214, 51, 132, 0.05);
+  padding: 0.5rem 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
-  cursor: pointer;
 }
 
-.action-btn i {
+.btn-wishlist:hover {
+  background-color: #d63384;
+  color: white;
+}
+
+.btn-cart {
+  color: #20c997;
+  border-color: #20c997;
+  background-color: rgba(32, 201, 151, 0.05);
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-cart:hover {
+  background-color: #20c997;
+  color: white;
+}
+
+.btn-wishlist:focus,
+.btn-cart:focus {
+  box-shadow: 0 0 0 0.25rem rgba(0, 0, 0, 0.1);
+}
+
+.bi {
   font-size: 1.25rem;
+  vertical-align: middle;
+}
+
+.rating-star {
+  color: #c38e79;
+  /* Optional: Add transition for hover effects */
   transition: all 0.2s ease;
-}
-
-.action-btn:hover i {
-  transform: scale(1.2);
-}
-
-.wishlist-btn.active {
-  background-color: rgba(255, 239, 239, 1);
-}
-
-.wishlist-btn.active i {
-  color: #ff4d4d;
-}
-
-.cart-btn.active {
-  background-color: rgba(239, 246, 255, 1);
-}
-
-.cart-btn.active i {
-  color: #2563eb;
 }

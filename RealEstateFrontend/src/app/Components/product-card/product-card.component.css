@@ -58,6 +58,7 @@
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
   cursor: pointer;
+  display: flex;
 }
 
 .action-btn i {
@@ -85,6 +86,9 @@
   color: #2563eb;
 }
 
-.product-card:hover .action-btn {
-  display: flex !important;
+/* Add to your CSS */
+.rating-star {
+  color: #c38e79;
+  /* Optional: Add transition for hover effects */
+  transition: all 0.2s ease;
 }
