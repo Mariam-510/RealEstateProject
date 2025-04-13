@@ -14,11 +14,12 @@ export interface ProductDto {
   categoryName: string;
   productImage: string | null;
   averageRating: number;
+  numberOfReviews: number;
 }
 
 export interface ApiResponse {
   message: string;
-  productDto: ProductDto[];
+  productDtoList: ProductDto[];
 }
 
 @Injectable({

@@ -46,7 +46,7 @@ export class CategoryComponent implements OnInit {
     this.loading = true;
     this.productService.getProductsByCategory(category).subscribe({
       next: (response) => {
-        this.products = response.productDto;
+        this.products = response.productDtoList;
         this.totalPages = Math.ceil(this.products.length / this.itemsPerPage);
         this.updateVisiblePages();
         this.loading = false;
