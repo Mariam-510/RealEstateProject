@@ -10,6 +10,7 @@
         public bool IsUsed { get; set; }
         public double AverageRating { get; set; }
         public bool IsDeleted { get; set; }
+        public DateTime? DateAdded { get; set; }
         public int CategoryID { get; set; }
         public string CategoryName { get; set; }
         public List<string> Productimage { get; set; }
