@@ -124,7 +124,9 @@ namespace RealEstate.Controllers
                     IsDeleted = product.IsDeleted,
                     CategoryID = product.CategoryID ?? 0,
                     CategoryName = product.Category?.Name ?? string.Empty,
-                    Productimage = product.Images ?? new List<string>()
+                    Productimage = product.Images ?? new List<string>(),
+                    DateAdded= product.DateAdded
+                   
                 };
 
                 ProductDtoList.Add(productDto);

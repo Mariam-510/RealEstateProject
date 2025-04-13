@@ -3,6 +3,23 @@
     <!-- Image on the right -->
     <div class="col-md-4 order-md-2">
       <div class="position-relative">
+        <div class="badge-container top-right-badges">
+          <div
+            *ngIf="isNewArrival()"
+            class="badge px-2 py-1 rounded fw-bold d-flex justify-content-center align-items-center"
+            style="height: 4vh"
+          >
+            New Arrival
+          </div>
+          <div
+            *ngIf="isLowStock()"
+            class="badge px-2 py-1 rounded fw-bold text-muted d-flex justify-content-center align-items-center"
+            style="height: 4vh"
+          >
+            {{ isSingleLeft() ? "Only 1 left !!" : "Limited stock!" }}
+          </div>
+        </div>
+
         <img
           [src]="
             'https://st3.depositphotos.com/1177973/12669/i/450/depositphotos_126693854-stock-photo-set-of-body-care-products.jpg'
@@ -74,18 +91,33 @@
           >
             <!-- Rating section -->
             <div
-              class="rating-section d-flex align-items-center gap-1 mt-2"
+              class="rating-section d-flex flex-column gap-1 mt-2"
               title="Average rating: {{ product.averageRating }}"
             >
-              <ng-container *ngFor="let star of fullStars">
-                <i class="bi bi-star-fill fs-3 rating-star"></i>
+              <div
+                class="stars d-flex align-items-end justify-content-end gap-1 mt-2"
+              >
+                <ng-container *ngFor="let star of fullStars">
+                  <i class="bi bi-star-fill fs-3 rating-star"></i>
+                </ng-container>
+                <ng-container *ngIf="hasHalfStar">
+                  <i class="bi bi-star-half fs-3 rating-star"></i>
+                </ng-container>
+                <ng-container *ngFor="let star of emptyStars">
+                  <i class="bi bi-star fs-3 rating-star"></i>
+                </ng-container>
+              </div>
+
+              <ng-container *ngIf="product.numberOfReviews > 0; else elseBlock">
+                <span class="text-muted text-end" style="font-size: small"
+                  >({{ product.numberOfReviews }} reviews)</span
+                >
               </ng-container>
-              <ng-container *ngIf="hasHalfStar">
-                <i class="bi bi-star-half fs-3 rating-star"></i>
-              </ng-container>
-              <ng-container *ngFor="let star of emptyStars">
-                <i class="bi bi-star fs-3 rating-star"></i>
-              </ng-container>
+              <ng-template #elseBlock>
+                <span class="text-muted" style="font-size: small"
+                  >(Be the first one to add a review !)</span
+                >
+              </ng-template>
             </div>
 
             <!-- Price -->

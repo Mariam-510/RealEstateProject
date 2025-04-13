@@ -83,6 +83,12 @@ export class CategoryComponent implements OnInit {
           a.name.localeCompare(b.name)
         );
         break;
+      case 'newArrival':
+        this.products = [...this.products].sort(
+          (a, b) =>
+            new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()
+        );
+        break;
     }
     this.currentPage = 1;
     this.updateVisiblePages();

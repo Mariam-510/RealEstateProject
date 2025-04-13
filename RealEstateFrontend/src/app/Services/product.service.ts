@@ -15,6 +15,7 @@ export interface ProductDto {
   productImage: string | null;
   averageRating: number;
   numberOfReviews: number;
+  dateAdded: Date;
 }
 
 export interface ApiResponse {
