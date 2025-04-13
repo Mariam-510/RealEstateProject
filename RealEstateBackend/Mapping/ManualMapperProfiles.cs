@@ -89,11 +89,9 @@ namespace RealEstate.Mapping
                 Price = product.Price,
                 Quantity = product.Quantity,
                 IsUsed = product.IsUsed,
-<<<<<<< HEAD
-                AverageRating = product.AverageRating,
+
                 DateAdded = product.DateAdded,
-=======
->>>>>>> IbrahimFront3
+
                 IsDeleted = product.IsDeleted,
                 CategoryID = product.CategoryID ?? 0,
                 CategoryName = product.Category?.Name ?? string.Empty,
