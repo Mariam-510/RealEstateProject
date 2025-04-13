@@ -90,6 +90,7 @@ namespace RealEstate.Mapping
                 Quantity = product.Quantity,
                 IsUsed = product.IsUsed,
                 AverageRating = product.AverageRating,
+                DateAdded = product.DateAdded,
                 IsDeleted = product.IsDeleted,
                 CategoryID = product.CategoryID ?? 0,
                 CategoryName = product.Category?.Name ?? string.Empty,
