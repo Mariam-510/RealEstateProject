@@ -89,9 +89,6 @@ namespace RealEstate.Mapping
                 Price = product.Price,
                 Quantity = product.Quantity,
                 IsUsed = product.IsUsed,
-
-                DateAdded = product.DateAdded,
-
                 IsDeleted = product.IsDeleted,
                 CategoryID = product.CategoryID ?? 0,
                 CategoryName = product.Category?.Name ?? string.Empty,

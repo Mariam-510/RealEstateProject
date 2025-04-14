@@ -1,0 +1,142 @@
+<!-- cart.component.html -->
+<div class="cart-page">
+  <div class="container py-4">
+    <div class="row g-4">
+      <!-- Cart Items Section -->
+      <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0">Shopping Cart</h4>
+          <span class="text-muted">
+            <!-- {{ cartService.cartItems$ | async | cartItemCount }} items -->
+            <br />
+            <a
+              href="javascript:void(0)"
+              (click)="cartService.clearCart()"
+              class="text-danger"
+            >
+              Clear All
+            </a>
+          </span>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+          <ng-container
+            *ngIf="(cartService.cartItems$ | async)?.length; else emptyCart"
+          >
+            <div
+              class="product-card p-3 shadow-sm"
+              *ngFor="let item of cartService.cartItems$ | async"
+            >
+              <div class="row align-items-center">
+                <div class="col-md-2">
+                  <img
+                    [src]="
+                      item.product.productImage || 'assets/images/fallback.jpg'
+                    "
+                    alt="Product"
+                    class="product-image img-fluid rounded"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <h6 class="mb-1">{{ item.product.name }}</h6>
+                </div>
+                <div class="col-md-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <button
+                      class="quantity-btn"
+                      (click)="decrementQuantity(item)"
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      class="quantity-input"
+                      [value]="item.quantity"
+                      min="1"
+                      readonly
+                    />
+                    <button
+                      class="quantity-btn"
+                      (click)="incrementQuantity(item)"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <span class="fw-bold">{{
+                    item.product.price * item.quantity | currency : "EGP"
+                  }}</span>
+                </div>
+                <div class="col-md-1">
+                  <i
+                    class="bi bi-trash text-danger"
+                    (click)="cartService.removeItem(item.product.id)"
+                    style="cursor: pointer; font-size: 1.5rem"
+                  ></i>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #emptyCart>
+            <div class="alert alert-info">
+              Your cart is empty.
+              <a routerLink="/products" class="alert-link">Continue shopping</a>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Summary Section -->
+      <div class="col-lg-4">
+        <div class="summary-card p-4 shadow-sm">
+          <h5 class="mb-4 text-center">Order Summary</h5>
+
+          <div class="d-flex justify-content-between mb-3">
+            <span class="text-muted">Subtotal</span>
+            <span>{{ cartService.getSubtotal() | currency : "EGP" }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
+            <span class="text-muted">Shipping</span>
+            <span>50.00 EGP</span>
+            <!-- Fixed shipping for demo -->
+          </div>
+          <hr />
+          <div class="d-flex justify-content-between mb-4">
+            <span class="fw-bold">Total</span>
+            <span class="fw-bold">{{
+              cartService.getSubtotal() + 50 | currency : "EGP"
+            }}</span>
+          </div>
+
+          <div class="mb-4">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Promo code"
+              />
+              <button class="btn btn-outline-secondary" type="button">
+                Apply
+              </button>
+            </div>
+          </div>
+
+          <a
+            routerLink="/checkout/address"
+            class="btn btn-primary w-100 mb-3"
+            [class.disabled]="!(cartService.cartItems$ | async)?.length"
+          >
+            Proceed to Checkout
+          </a>
+
+          <div class="d-flex justify-content-center gap-2">
+            <i class="bi bi-shield-check text-success"></i>
+            <small class="text-muted">Secure checkout</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
