@@ -1,54 +1,89 @@
 /* cart.component.css */
 .cart-page {
-    background-color: #f8f9fa;
-    min-height: calc(100vh - 140px);
-    padding-top: 20px;
-  }
-  
-  .product-card {
-    background-color: white;
-    border-radius: 10px;
-    transition: all 0.2s ease;
-  }
-  
-  .product-card:hover {
-    box-shadow: 0 0.5rem 1rem rgba(195, 142, 121, 0.15);
-  }
-  
-  .product-image {
-    max-height: 80px;
-    object-fit: contain;
-  }
-  
-  .summary-card {
-    background-color: white;
-    border-radius: 10px;
-    position: sticky;
-    top: 20px;
-  }
-  
-  .quantity-btn {
-    width: 30px;
-    height: 30px;
-    border: 1px solid #ddd;
-    background-color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-  }
-  
-  .quantity-btn:hover {
-    background-color: #f8f9fa;
-  }
-  
-  .quantity-input {
-    width: 40px;
-    text-align: center;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 5px;
-  }
-  
- 
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 140px);
+  padding-top: 20px;
+}
+
+.product-card {
+  background-color: white;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(195, 142, 121, 0.15);
+}
+
+.product-image {
+  max-height: 80px;
+  object-fit: contain;
+}
+
+.summary-card {
+  background-color: white;
+  border-radius: 10px;
+  position: sticky;
+  top: 20px;
+}
+
+.quantity-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ddd;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.quantity-btn:hover {
+  background-color: #f8f9fa;
+}
+
+.quantity-input {
+  width: 40px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.cart-container {
+  background-color: white;
+  border-radius: 10px;
+}
+
+.cart-header {
+  padding: 0 0.5rem;
+}
+
+.header-divider {
+  border-top: 1px solid #e0e0e0;
+}
+
+.cart-item {
+  padding: 1rem 0;
+}
+
+.item-divider {
+  border-top: 1px solid #e0e0e0;
+}
+
+.quantity-btn {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.quantity-value {
+  min-width: 20px;
+  text-align: center;
+}

@@ -1,7 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ProductDto } from '../../Services/product.service';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../Services/product.service';
+import { CartService } from '../../Services/cart.service';
 @Component({
   selector: 'app-product-card',
   templateUrl: './product-card.component.html',
@@ -9,11 +10,19 @@ import { ProductService } from '../../Services/product.service';
   standalone: true,
   imports: [CommonModule],
 })
-export class ProductCardComponent {
+export class ProductCardComponent implements OnInit {
   @Input() product!: ProductDto;
   isHovered = false;
 
-  constructor(public productService: ProductService) {}
+  constructor(
+    public productService: ProductService,
+    private cartService: CartService
+  ) {}
+  ngOnInit() {
+    this.cartService.cartItems$.subscribe((items) => {
+      this.inCart = items.some((item) => item.product.id === this.product.id);
+    });
+  }
 
   inWishlist: boolean = false;
   inCart: boolean = false;
@@ -23,6 +32,11 @@ export class ProductCardComponent {
   }
 
   toggleCart(): void {
+    if (this.inCart) {
+      this.cartService.removeItem(this.product.id);
+    } else {
+      this.cartService.addToCart(this.product);
+    }
     this.inCart = !this.inCart;
   }
 
@@ -56,11 +70,8 @@ export class ProductCardComponent {
   isLowStock(): boolean {
     return this.product.quantity <= 5;
   }
-  
+
   isSingleLeft(): boolean {
     return this.product.quantity === 1;
   }
-  
-
-
 }

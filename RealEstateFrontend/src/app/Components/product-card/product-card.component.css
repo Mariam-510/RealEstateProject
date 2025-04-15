@@ -45,6 +45,7 @@
   right: 0.75rem;
   display: flex;
   gap: 0.5rem;
+  z-index: 100;
 }
 
 .action-btn {
