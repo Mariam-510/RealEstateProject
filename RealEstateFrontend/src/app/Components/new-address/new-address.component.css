@@ -1,0 +1,21 @@
+/* new-address.component.css */
+.new-address-page {
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 140px);
+  padding-top: 20px;
+}
+
+.form-control:focus {
+  border-color: #c38e79;
+  box-shadow: 0 0 0 0.25rem rgba(195, 142, 121, 0.25);
+}
+
+.btn-primary {
+  background-color: #c38e79;
+  border-color: #c38e79;
+}
+
+.btn-primary:hover {
+  background-color: #b07d6a;
+  border-color: #b07d6a;
+}

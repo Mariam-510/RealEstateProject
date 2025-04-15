@@ -1,0 +1,66 @@
+/* order-confirmation.component.css */
+.confirmation-page {
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 140px);
+  padding-top: 20px;
+}
+
+.order-details {
+  background-color: #f9f9f9;
+}
+
+.tracking-progress {
+  padding: 20px 0;
+}
+
+.steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.steps::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #e0e0e0;
+  z-index: 1;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  color: #666;
+}
+
+.step.active .step-icon {
+  background-color: #c38e79;
+  color: white;
+}
+
+.step-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.step.active .step-label {
+  color: #333;
+  font-weight: 500;
+}

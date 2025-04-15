@@ -1,0 +1,47 @@
+/* payment.component.css */
+.payment-page {
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 140px);
+  padding-top: 20px;
+}
+
+.list-group-item {
+  border-left: none;
+  border-right: none;
+  border-radius: 8px !important;
+  margin-bottom: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.list-group-item.active {
+  background-color: rgba(195, 142, 121, 0.1);
+  border-color: #c38e79;
+  color: #333;
+}
+
+.list-group-item.active .bi-check-circle-fill {
+  color: #c38e79;
+}
+
+.order-summary {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+#card-element {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  background: white;
+}
+
+.card-icons i {
+  color: #555;
+}
+
+.fab {
+  font-family: "Font Awesome 6 Brands";
+}
+
+/* Add this to your styles.css or global styles */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css");
