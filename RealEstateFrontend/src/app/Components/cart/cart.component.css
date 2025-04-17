@@ -91,7 +91,7 @@
 /* Add these styles to your existing CSS */
 .clear-cart-btn {
   background-color: transparent;
-  border: 2px solid black;
+  border: 0px solid black;
   color: black;
   padding: 0.35rem 0.35rem;
   border-radius: 8px;
@@ -102,7 +102,7 @@
 }
 
 .clear-cart-btn:hover:not(:disabled) {
-  background-color: #ffece5;
+  background-color: rgba(255, 0, 0, 0.15);
   transform: translateY(-1px);
 }
 
