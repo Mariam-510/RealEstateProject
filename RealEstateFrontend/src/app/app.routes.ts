@@ -5,9 +5,11 @@ import { AddressSelectionComponent } from './Components/address-selection/addres
 import { NewAddressComponent } from './Components/new-address/new-address.component';
 import { PaymentComponent } from './Components/payment/payment.component';
 import { OrderConfirmationComponent } from './Components/order-confirmation/order-confirmation.component';
+import { AddPropertyComponent } from './Components/add-property/add-property.component';
+import { AddAuctionComponent } from './Components/add-auction/add-auction.component';
 
 export const routes: Routes = [
-  { path: '', component: CategoryComponent, pathMatch: 'full' },
+  { path: '', component: AddAuctionComponent, pathMatch: 'full' },
   {
     path: 'products/category/:id',
     component: CategoryComponent,
