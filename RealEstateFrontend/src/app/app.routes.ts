@@ -7,12 +7,18 @@ import { PaymentComponent } from './Components/payment/payment.component';
 import { OrderConfirmationComponent } from './Components/order-confirmation/order-confirmation.component';
 
 export const routes: Routes = [
+  { path: '', component: CategoryComponent, pathMatch: 'full' },
   {
     path: 'products/category/:id',
     component: CategoryComponent,
     pathMatch: 'full',
   },
   { path: 'cart', component: CartComponent, pathMatch: 'full' },
+  {
+    path: 'addressSelection',
+    component: AddressSelectionComponent,
+    pathMatch: 'full',
+  },
   {
     path: 'checkout',
     children: [

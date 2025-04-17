@@ -37,10 +37,12 @@ export class PaymentComponent implements AfterViewInit {
   stripe: any;
   cardElement: any;
   stripeElements: any;
+  isProcessing = false;
+  paypalButtonRendered = false;
 
   constructor(public cartService: CartService) {}
 
-  ngAfterViewInit(): void {
+  async ngAfterViewInit(): Promise<void> {
     this.loadStripe();
   }
 
@@ -59,10 +61,20 @@ export class PaymentComponent implements AfterViewInit {
   }
 
   async handlePayment(): Promise<void> {
-    if (this.selectedMethod === 'stripe') {
-      await this.processStripePayment();
-    } else {
-      this.completeOrder();
+    if (this.isProcessing) return;
+
+    this.isProcessing = true;
+
+    try {
+      if (this.selectedMethod === 'stripe') {
+        await this.processStripePayment();
+      } else if (this.selectedMethod === 'cash') {
+        this.completeOrder();
+      }
+      // PayPal is handled by their button directly
+    } catch (error) {
+      console.error('Payment error:', error);
+      this.isProcessing = false;
     }
   }
 
@@ -93,6 +105,51 @@ export class PaymentComponent implements AfterViewInit {
     } catch (err) {
       console.error('Stripe error:', err);
       alert('An error occurred during payment processing');
+    }
+  }
+
+  private renderPayPalButton(): void {
+    if (this.paypalButtonRendered) return;
+
+    // This would be your actual PayPal button implementation
+    // For demonstration, we'll just set the flag
+    this.paypalButtonRendered = true;
+
+    // In a real implementation, you would:
+    // 1. Load PayPal script if not already loaded
+    // 2. Render the button
+    // Example:
+    /*
+    paypal.Buttons({
+      createOrder: (data, actions) => {
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: (this.cartService.getSubtotal() + 50).toFixed(2)
+            }
+          }]
+        });
+      },
+      onApprove: (data, actions) => {
+        return actions.order.capture().then(details => {
+          this.completeOrder();
+        });
+      },
+      onError: (err) => {
+        console.error('PayPal error:', err);
+      }
+    }).render('#paypal-button-container');
+    */
+  }
+
+  get selectedPaymentMethod(): string {
+    return this.selectedMethod;
+  }
+
+  set selectedPaymentMethod(value: string) {
+    this.selectedMethod = value;
+    if (value === 'paypal') {
+      setTimeout(() => this.renderPayPalButton(), 0);
     }
   }
 

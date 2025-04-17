@@ -10,11 +10,17 @@ import { ProductService } from '../../Services/product.service';
 import { CommonModule } from '@angular/common';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { ProductListItemComponent } from '../product-list-item/product-list-item.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-category',
   standalone: true,
-  imports: [CommonModule, ProductCardComponent, ProductListItemComponent],
+  imports: [
+    CommonModule,
+    ProductCardComponent,
+    ProductListItemComponent,
+    RouterModule,
+  ],
   templateUrl: './category.component.html',
   styleUrl: './category.component.css',
 })

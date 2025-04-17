@@ -87,3 +87,42 @@
   min-width: 20px;
   text-align: center;
 }
+
+/* Add these styles to your existing CSS */
+.clear-cart-btn {
+  background-color: transparent;
+  border: 2px solid black;
+  color: black;
+  padding: 0.35rem 0.35rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.clear-cart-btn:hover:not(:disabled) {
+  background-color: #ffece5;
+  transform: translateY(-1px);
+}
+
+.clear-cart-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.clear-cart-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #ccc;
+  color: #ccc;
+}
+
+.clear-cart-btn i {
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.clear-cart-btn:hover:not(:disabled) i {
+  color: #ff4d4d;
+  transform: scale(1.1);
+}

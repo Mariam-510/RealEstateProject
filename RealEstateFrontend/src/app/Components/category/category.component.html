@@ -24,6 +24,16 @@
           <p class="product-count">({{ products.length }} products)</p>
         </div>
 
+        <!-- Cart Button -->
+        <button
+          type="button"
+          class="btn btn-warning me-3"
+          [routerLink]="'/cart'"
+          title="Go to Cart"
+        >
+          <i class="bi bi-cart-fill"></i> Cart
+        </button>
+
         <div class="d-flex">
           <!-- View Toggle -->
           <div class="btn-group me-3">
