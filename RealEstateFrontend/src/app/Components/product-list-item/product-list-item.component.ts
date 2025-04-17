@@ -38,7 +38,6 @@ export class ProductListItemComponent implements OnInit {
     } else {
       this.cartService.addToCart(this.product);
     }
-    this.inCart = !this.inCart;
   }
 
   get fullStars(): number[] {

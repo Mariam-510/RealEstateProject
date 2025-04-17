@@ -13,6 +13,8 @@ import { CartService } from '../../Services/cart.service';
 export class ProductCardComponent implements OnInit {
   @Input() product!: ProductDto;
   isHovered = false;
+  inWishlist: boolean = false;
+  inCart: boolean = false;
 
   constructor(
     public productService: ProductService,
@@ -24,9 +26,6 @@ export class ProductCardComponent implements OnInit {
     });
   }
 
-  inWishlist: boolean = false;
-  inCart: boolean = false;
-
   toggleWishlist(): void {
     this.inWishlist = !this.inWishlist;
   }
@@ -37,7 +36,6 @@ export class ProductCardComponent implements OnInit {
     } else {
       this.cartService.addToCart(this.product);
     }
-    this.inCart = !this.inCart;
   }
 
   setFallbackImage(event: Event) {
