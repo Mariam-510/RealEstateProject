@@ -1,92 +1,104 @@
-<div class="new-category-page">
-    <div class="container py-4">
-      <div class="row justify-content-center">
-        <div class="col-lg-8">
-          <div class="bg-white p-4 rounded shadow-sm">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-              <h3 class="mb-0">Add New Category</h3>
-              <a routerLink="/categories" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left me-2"></i>Back
-              </a>
-            </div>
-  
-            <hr style="border: 2px solid #c38e79" />
-  
-            <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
-              <!-- Category Name -->
-              <div class="mb-4">
-                <h5 class="mb-3">Category Information</h5>
-                
-                <div class="row g-3">
-                  <div class="col-md-12">
-                    <label for="name" class="form-label">Category Name</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="name"
-                      formControlName="name"
-                      maxlength="50"
-                    />
-                    <small class="text-muted">{{ categoryForm.get('name')?.value?.length || 0 }}/50 characters</small>
-                    <div
-                      *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched"
-                      class="text-danger"
-                    >
-                      Category name is required (1-50 characters)
-                    </div>
-                  </div>
-                </div>
-              </div>
-  
-              <hr style="border: 2px solid #c38e79" />
-  
-              <!-- Category Image -->
-              <div class="mb-4">
-                <h5 class="mb-3">Category Image</h5>
-                
-                <div class="mb-3">
-                  <label for="categoryImage" class="form-label">Upload Image</label>
+<div class="new-category-page d-flex align-items-center">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <div class="bg-white p-4 rounded shadow-sm">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0">Add New Category</h3>
+            <a routerLink="/categories" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-2"></i>Back
+            </a>
+          </div>
+
+          <hr style="border: 2px solid #c38e79" />
+
+          <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+            <!-- Category Name -->
+            <div class="mb-4">
+              <h5 class="mb-3">Category Information</h5>
+
+              <div class="row g-3">
+                <div class="col-md-12">
+                  <label for="name" class="form-label">Category Name</label>
                   <input
-                    type="file"
+                    type="text"
                     class="form-control"
-                    id="categoryImage"
-                    accept="image/*"
-                    (change)="onFileChange($event)"
+                    id="name"
+                    formControlName="name"
+                    maxlength="50"
                   />
+                  <small class="text-muted"
+                    >{{ categoryForm.get("name")?.value?.length || 0 }}/50
+                    characters</small
+                  >
                   <div
-                    *ngIf="!imagePreview && categoryForm.get('image')?.touched"
+                    *ngIf="
+                      categoryForm.get('name')?.invalid &&
+                      categoryForm.get('name')?.touched
+                    "
                     class="text-danger"
                   >
-                    Category image is required
-                  </div>
-                </div>
-  
-                <div class="image-preview-container" *ngIf="imagePreview">
-                  <div class="position-relative" style="max-width: 300px;">
-                    <img [src]="imagePreview" class="img-thumbnail" alt="Category preview">
-                    <button 
-                      type="button" 
-                      class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
-                      (click)="removeImage()"
-                    >
-                      <i class="bi bi-x"></i>
-                    </button>
+                    Category name is required (1-50 characters)
                   </div>
                 </div>
               </div>
-  
-              <div class="d-grid mt-4">
-                <button
-                  type="submit"
-                  class="btn btn-primary"
-                  [disabled]="categoryForm.invalid || !imagePreview"
+            </div>
+
+            <hr style="border: 2px solid #c38e79" />
+
+            <!-- Category Image -->
+            <div class="mb-4">
+              <h5 class="mb-3">Category Image</h5>
+
+              <div class="mb-3">
+                <label for="categoryImage" class="form-label"
+                  >Upload Image</label
                 >
-                  Add Category
-                </button>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="categoryImage"
+                  accept="image/*"
+                  (change)="onFileChange($event)"
+                />
+                <div
+                  *ngIf="!imagePreview && categoryForm.get('image')?.touched"
+                  class="text-danger"
+                >
+                  Category image is required
+                </div>
               </div>
-            </form>
-          </div>
+
+              <div class="image-preview-container" *ngIf="imagePreview">
+                <div class="position-relative" style="max-width: 300px">
+                  <img
+                    [src]="imagePreview"
+                    class="img-thumbnail"
+                    alt="Category preview"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                    (click)="removeImage()"
+                  >
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-grid mt-4">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="categoryForm.invalid || !imagePreview"
+              >
+                Add Category
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
+</div>

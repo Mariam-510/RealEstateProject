@@ -8,9 +8,10 @@ import { OrderConfirmationComponent } from './Components/order-confirmation/orde
 import { AddPropertyComponent } from './Components/add-property/add-property.component';
 import { AddAuctionComponent } from './Components/add-auction/add-auction.component';
 import { AddCategoryComponent } from './Components/add-category/add-category.component';
+import { AddProductComponent } from './Components/add-product/add-product.component';
 
 export const routes: Routes = [
-  { path: '', component: AddCategoryComponent, pathMatch: 'full' },
+  { path: '', component: AddressSelectionComponent, pathMatch: 'full' },
   {
     path: 'products/category/:id',
     component: CategoryComponent,
