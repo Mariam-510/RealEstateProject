@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CatSliderComponent } from "../Sliders/cat-slider/cat-slider.component";
 import { interval, Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
 import { Product, SharedService } from '../../../Services/shared.service';
+import { CatSliderComponent } from '../Sliders/cat-slider/cat-slider.component';
 
 @Component({
   selector: 'app-p-home',
@@ -48,42 +48,42 @@ export class PHomeComponent implements OnInit {
   }
 
   sliderOptions: Options = {
-      floor: 0,
-      ceil: 1000000,
-      translate: () => '',          // Remove value labels
-      hideLimitLabels: true,        // Hide default min/max labels (0 and 1,000,000)
-      hidePointerLabels: true,      // Hide handle labels
-      showTicks: false,             // Remove tick marks
-      showTicksValues: false        // Remove numbers under ticks
-    };
+    floor: 0,
+    ceil: 1000000,
+    translate: () => '',          // Remove value labels
+    hideLimitLabels: true,        // Hide default min/max labels (0 and 1,000,000)
+    hidePointerLabels: true,      // Hide handle labels
+    showTicks: false,             // Remove tick marks
+    showTicksValues: false        // Remove numbers under ticks
+  };
 
 
-    
+
   Math = Math;
   activeSlide = 0;
   private sliderAutoScrollSubscription: Subscription | null = null;
   private sliderAutoScrollInterval = 3000;
-  
+
   slides = [
-      {
-        imageUrl: 'https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg',
-        alt: 'Cairo cityscape',
-        title: 'ROI1 for property in Cairo reaches 10%-15%',
-        subtitle: 'Buy property and gain profit'
-      },
-      {
-        imageUrl: 'https://www.atlys.com/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FW3Iz4WACAy2J0qT0cCT3xA%2Fdidi%2Farticles%2Fl6ozcxn3e3a6lzrs6n6pg9lq%2Fpublic&w=1920&q=75',
-        alt: 'Cairo street view',
-        title: 'ROI2 for property in Cairo reaches 10%-15%',
-        subtitle: 'Buy property and gain profit'
-      },
-      {
-        imageUrl: 'https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1',
-        alt: 'Cairo hotel',
-        title: 'ROI3 for property in Cairo reaches 10%-15%',
-        subtitle: 'Buy property and gain profit'
-      }
-    ];
+    {
+      imageUrl: 'https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg',
+      alt: 'Cairo cityscape',
+      title: 'ROI1 for property in Cairo reaches 10%-15%',
+      subtitle: 'Buy property and gain profit'
+    },
+    {
+      imageUrl: 'https://www.atlys.com/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FW3Iz4WACAy2J0qT0cCT3xA%2Fdidi%2Farticles%2Fl6ozcxn3e3a6lzrs6n6pg9lq%2Fpublic&w=1920&q=75',
+      alt: 'Cairo street view',
+      title: 'ROI2 for property in Cairo reaches 10%-15%',
+      subtitle: 'Buy property and gain profit'
+    },
+    {
+      imageUrl: 'https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1',
+      alt: 'Cairo hotel',
+      title: 'ROI3 for property in Cairo reaches 10%-15%',
+      subtitle: 'Buy property and gain profit'
+    }
+  ];
 
 
   categories = [
@@ -152,43 +152,43 @@ export class PHomeComponent implements OnInit {
   toggleCategory(category: string): void {
     this.selectedCategory = category === 'All Categories' ? '' : category;
     this.applyFilters();
-}
+  }
 
   toggleState(state: string): void {
-      this.selectedState = state === 'All Conditions' ? '' : state;
-      this.applyFilters();
+    this.selectedState = state === 'All Conditions' ? '' : state;
+    this.applyFilters();
   }
 
   toggleRating(rating: number): void {
-      this.selectedRating = this.selectedRating === rating ? 0 : rating;
-      this.applyFilters();
+    this.selectedRating = this.selectedRating === rating ? 0 : rating;
+    this.applyFilters();
   }
 
   applyFilters(): void {
-      this.filteredProducts = this.products.filter(product => {
-          const matchesCategory = !this.selectedCategory || 
-              this.categories.some(cat => cat.name === this.selectedCategory);
-          
-          const matchesState = !this.selectedState || 
-              (this.selectedState === 'New' && !product.isUsed) ||
-              (this.selectedState === 'Used' && product.isUsed);
-          
-          const matchesPrice = product.price >= this.minPrice && 
-              product.price <= this.maxPrice;
-          
-          const matchesRating = product.averageRating >= this.selectedRating;
+    this.filteredProducts = this.products.filter(product => {
+      const matchesCategory = !this.selectedCategory ||
+        this.categories.some(cat => cat.name === this.selectedCategory);
 
-          return matchesCategory && matchesState && matchesPrice && matchesRating;
-      });
+      const matchesState = !this.selectedState ||
+        (this.selectedState === 'New' && !product.isUsed) ||
+        (this.selectedState === 'Used' && product.isUsed);
+
+      const matchesPrice = product.price >= this.minPrice &&
+        product.price <= this.maxPrice;
+
+      const matchesRating = product.averageRating >= this.selectedRating;
+
+      return matchesCategory && matchesState && matchesPrice && matchesRating;
+    });
   }
 
   clearFilters(): void {
-      this.selectedCategory = '';
-      this.selectedState = '';
-      this.selectedRating = 0;
-      this.minPrice = 0;
-      this.maxPrice = Number.MAX_SAFE_INTEGER;
-      this.applyFilters();
+    this.selectedCategory = '';
+    this.selectedState = '';
+    this.selectedRating = 0;
+    this.minPrice = 0;
+    this.maxPrice = Number.MAX_SAFE_INTEGER;
+    this.applyFilters();
   }
 
   scrollLeft() {
@@ -226,7 +226,7 @@ export class PHomeComponent implements OnInit {
   nextImage(productId: number) {
     const product = this.products.find(p => p.id === productId);
     if (product) {
-      this.currentImageIndices[productId] = 
+      this.currentImageIndices[productId] =
         (this.currentImageIndices[productId] + 1) % product.images.length;
     }
   }
@@ -234,7 +234,7 @@ export class PHomeComponent implements OnInit {
   prevImage(productId: number) {
     const product = this.products.find(p => p.id === productId);
     if (product) {
-      this.currentImageIndices[productId] = 
+      this.currentImageIndices[productId] =
         (this.currentImageIndices[productId] - 1 + product.images.length) % product.images.length;
     }
   }
@@ -242,7 +242,7 @@ export class PHomeComponent implements OnInit {
   nextImageTopRated(productId: number) {
     const product = this.products.find(p => p.id === productId);
     if (product) {
-      this.currentImageIndicesTopRated[productId] = 
+      this.currentImageIndicesTopRated[productId] =
         (this.currentImageIndicesTopRated[productId] + 1) % product.images.length;
     }
   }
@@ -250,7 +250,7 @@ export class PHomeComponent implements OnInit {
   prevImageTopRated(productId: number) {
     const product = this.products.find(p => p.id === productId);
     if (product) {
-      this.currentImageIndicesTopRated[productId] = 
+      this.currentImageIndicesTopRated[productId] =
         (this.currentImageIndicesTopRated[productId] - 1 + product.images.length) % product.images.length;
     }
   }

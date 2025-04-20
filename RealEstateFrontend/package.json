@@ -25,6 +25,7 @@
     "bootstrap": "^5.3.5",
     "bootstrap-icons": "^1.11.3",
     "leaflet": "^1.9.4",
+    "leaflet-geosearch": "^4.2.0",
     "ngx-image-zoom": "^3.0.0",
     "ngx-toastr": "^19.0.0",
     "toastr": "^2.1.4",
