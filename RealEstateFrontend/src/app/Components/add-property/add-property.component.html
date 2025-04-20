@@ -452,6 +452,44 @@
               </div>
             </div>
 
+            <!-- Section 4: Contract (Agent Only) -->
+            <div *ngIf="userType === 'agent'" class="mb-4">
+              <hr style="border: 2px solid #c38e79" />
+
+              <h5 class="mb-3">Property Contract</h5>
+
+              <div class="mb-3">
+                <label for="propertyContract" class="form-label"
+                  >Upload Contract Document</label
+                >
+                <input
+                  type="file"
+                  class="form-control"
+                  id="propertyContract"
+                  accept=".pdf,.doc,.docx"
+                  (change)="onContractChange($event)"
+                />
+                <small class="text-muted">PDF or Word documents only</small>
+
+                <div *ngIf="contractPreview" class="mt-3">
+                  <div class="alert alert-success d-flex align-items-center">
+                    <i class="bi bi-file-earmark-check fs-4 me-2"></i>
+                    <span>Contract document ready for upload</span>
+                  </div>
+                </div>
+
+                <div
+                  *ngIf="
+                    propertyForm.get('contract')?.invalid &&
+                    propertyForm.get('contract')?.touched
+                  "
+                  class="text-danger mt-2"
+                >
+                  Contract document is required for agent listings
+                </div>
+              </div>
+            </div>
+
             <div class="d-grid mt-4">
               <button
                 type="submit"

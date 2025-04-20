@@ -4,6 +4,7 @@ import {
   FormGroup,
   Validators,
   ReactiveFormsModule,
+  FormArray,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -25,6 +26,7 @@ export class AddProductComponent {
     { id: 4, name: 'Books' },
     { id: 5, name: 'Toys' },
   ];
+  colorQuantities: { color: string; quantity: number }[] = [];
 
   constructor(private fb: FormBuilder, private router: Router) {
     this.productForm = this.fb.group({
@@ -38,13 +40,40 @@ export class AddProductComponent {
       ],
       description: ['', [Validators.maxLength(200)]],
       price: ['', [Validators.required, Validators.min(0)]],
-      quantity: ['', [Validators.required, Validators.min(0)]],
       isUsed: [false, Validators.required],
       categoryID: ['', Validators.required],
       images: [[], Validators.required],
+      color: ['#000000'],
+      quantity: [1, [Validators.min(1)]],
     });
   }
 
+  addColorQuantity(): void {
+    const color = this.productForm.get('color')?.value;
+    const quantity = this.productForm.get('quantity')?.value;
+    
+    if (color && quantity > 0) {
+      // Check if color already exists
+      const existingIndex = this.colorQuantities.findIndex(
+        item => item.color.toLowerCase() === color.toLowerCase()
+      );
+      
+      if (existingIndex >= 0) {
+        // Update existing color quantity
+        this.colorQuantities[existingIndex].quantity += quantity;
+      } else {
+        // Add new color-quantity pair
+        this.colorQuantities.push({ color, quantity });
+      }
+      
+      // Reset the quantity input
+      this.productForm.get('quantity')?.setValue(1);
+    }
+  }
+
+  removeColor(index: number): void {
+    this.colorQuantities.splice(index, 1);
+  }
   onFileChange(event: any): void {
     const files = event.target.files;
     if (files) {
@@ -71,18 +100,21 @@ export class AddProductComponent {
   }
 
   onSubmit(): void {
-    if (this.productForm.valid && this.images.length > 0) {
+    if (this.productForm.valid && this.images.length > 0 && this.colorQuantities.length > 0) {
       const formData = new FormData();
 
       // Append all form values
       Object.keys(this.productForm.value).forEach((key) => {
-        if (key !== 'images') {
+        if (key !== 'images' && key !== 'color' && key !== 'quantity') {
           formData.append(
             key.charAt(0).toUpperCase() + key.slice(1),
             this.productForm.value[key]
           );
         }
       });
+
+      // Append color quantities
+      formData.append('ColorQuantities', JSON.stringify(this.colorQuantities));
 
       // Append images
       this.images.forEach((image) => {
@@ -98,3 +130,16 @@ export class AddProductComponent {
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

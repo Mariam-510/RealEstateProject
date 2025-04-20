@@ -91,26 +91,6 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label for="quantity" class="form-label">Quantity</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="quantity"
-                    formControlName="quantity"
-                    min="0"
-                  />
-                  <div
-                    *ngIf="
-                      productForm.get('quantity')?.invalid &&
-                      productForm.get('quantity')?.touched
-                    "
-                    class="text-danger"
-                  >
-                    Valid quantity is required (minimum 0)
-                  </div>
-                </div>
-
-                <div class="col-md-6">
                   <label for="categoryID" class="form-label">Category</label>
                   <select
                     class="form-select"
@@ -155,6 +135,87 @@
                     class="text-danger"
                   >
                     Condition is required
+                  </div>
+                </div>
+
+                <hr style="border: 2px solid #c38e79; margin-top: 30px" />
+
+                <!-- Quantity-color section -->
+                <div class="col-md-12">
+                  <div class="mb-4">
+                    <h5 class="mb-3">Product Quantity by Color</h5>
+
+                    <div class="row g-3 align-items-end mb-3">
+                      <div class="col-md-4">
+                        <label for="color" class="form-label">Color</label>
+                        <input
+                          type="color"
+                          class="form-control form-control-color"
+                          id="color"
+                          formControlName="color"
+                          title="Choose color"
+                        />
+                      </div>
+
+                      <div class="col-md-4">
+                        <label for="quantity" class="form-label"
+                          >Quantity</label
+                        >
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="quantity"
+                          formControlName="quantity"
+                          min="1"
+                        />
+                      </div>
+
+                      <div class="col-md-4">
+                        <button
+                          type="button"
+                          class="btn btn-primary w-100"
+                          (click)="addColorQuantity()"
+                        >
+                          <i class="bi bi-plus-circle me-2"></i>Add Color
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Display added color quantities -->
+                    <div
+                      *ngIf="colorQuantities.length > 0"
+                      class="color-quantities-container"
+                    >
+                      <h6>Added Color Quantities:</h6>
+                      <div class="d-flex flex-wrap gap-2">
+                        <div
+                          *ngFor="let item of colorQuantities; let i = index"
+                          class="color-quantity-badge"
+                        >
+                          <span
+                            class="color-preview"
+                            [style.background-color]="item.color"
+                          ></span>
+                          <span>{{ item.color }}: {{ item.quantity }}</span>
+                          <button
+                            type="button"
+                            class="btn-close btn-close-white"
+                            (click)="removeColor(i)"
+                            aria-label="Remove"
+                          ></button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      *ngIf="
+                        colorQuantities.length === 0 &&
+                        productForm.get('quantity')?.touched
+                      "
+                      class="text-danger"
+                    >
+                      Please add at least one color with quantity
+                    </div>
                   </div>
                 </div>
               </div>
