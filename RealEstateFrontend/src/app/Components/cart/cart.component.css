@@ -126,3 +126,37 @@
   color: #ff4d4d;
   transform: scale(1.1);
 }
+
+/* Column Headers */
+.cart-column-headers {
+  margin: 0 -15px;
+  padding: 0 15px;
+}
+
+/* Color Circle */
+.color-circle {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Adjust quantity wrapper */
+.quantity-wrapper {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+/* Make product name text smaller */
+.cart-item h6 {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Style for product style text */
+.cart-item small.text-muted {
+  font-size: 0.75rem;
+  display: block;
+}

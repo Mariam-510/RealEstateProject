@@ -2,15 +2,33 @@
 <div class="payment-page">
   <div class="container py-4">
     <div class="row justify-content-center">
-      <div class="col-lg-8">
+      <div class="col-lg-6">
         <div class="bg-white p-4 rounded shadow-sm">
+          <!-- Rest of your order summary content remains the same -->
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <h3><i class="bi bi-geo-alt"></i> Delivery Address</h3>
+
+              <a href="#" class="btn btn-outline-secondary">Change address</a>
+            </div>
+            <hr
+              style="
+                border: 2px solid #c38e79;
+                margin-bottom: -5;
+                margin-top: -5;
+              "
+            />
+
+            <p class="text-muted mb-1">123 Main Street</p>
+            <p class="text-muted mb-1">Cairo, Egypt</p>
+            <p class="text-muted mb-0">+20 123 456 7890</p>
+          </div>
+
+          <hr style="border-color: #e0e0e0" />
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="mb-0">
               &nbsp;<i class="bi bi-credit-card"></i> Payment Method
             </h3>
-            <a routerLink="/checkout/address" class="btn btn-outline-secondary">
-              <i class="bi bi-arrow-left me-2"></i>Back
-            </a>
           </div>
 
           <hr style="border: 2px solid #c38e79" />
@@ -167,60 +185,31 @@
           <div class="order-items">
             <div
               *ngFor="let item of cartService.cartItems$ | async"
-              class="d-flex justify-content-between py-2 align-items-center"
-              style="border-bottom: 1px solid #f0f0f0"
+              class="order-item"
             >
-              <div class="d-flex align-items-center">
-                <img
-                  [src]="
-                    'https://st3.depositphotos.com/1177973/12669/i/450/depositphotos_126693854-stock-photo-set-of-body-care-products.jpg'
-                  "
-                  alt="Product image"
-                  class="me-2"
-                  style="
-                    width: 40px;
-                    height: 40px;
-                    object-fit: cover;
-                    border-radius: 4px;
-                  "
-                />
-                <span class="item-description" title="{{ item.product.name }}"
-                  >{{ item.quantity }} × {{ item.product.name }}</span
-                >
+              <div class="d-flex justify-content-between">
+                <div class="d-flex">
+                  <img
+                    [src]="
+                      'https://st3.depositphotos.com/1177973/12669/i/450/depositphotos_126693854-stock-photo-set-of-body-care-products.jpg'
+                    "
+                    alt="Product image"
+                    class="me-2 product-image"
+                  />
+                  <div>
+                    <div class="item-name">
+                      {{ item.quantity }} × {{ item.product.name }}
+                    </div>
+                    <div
+                      class="color-circle"
+                      style="background-color: aqua"
+                    ></div>
+                  </div>
+                </div>
+                <div class="price-text d-flex align-items-end mb-1">
+                  {{ item.product.price * item.quantity | currency : "$" }}
+                </div>
               </div>
-              <span class="fw-bold">{{
-                item.product.price * item.quantity | currency : "$"
-              }}</span>
-            </div>
-          </div>
-
-          <!-- Rest of your order summary content remains the same -->
-          <div class="mb-3">
-            <div class="d-flex justify-content-between align-items-center pb-3">
-              <h5 class="fw-bold mt-1">Delivery Address</h5>
-              <a href="#" class="btn btn-primary btn-sm">Change address</a>
-            </div>
-            <p class="text-muted mb-1">123 Main Street</p>
-            <p class="text-muted mb-1">Cairo, Egypt</p>
-            <p class="text-muted mb-0">+20 123 456 7890</p>
-          </div>
-
-          <hr style="border-color: #e0e0e0" />
-
-          <!-- Totals -->
-          <div class="order-totals">
-            <div class="d-flex justify-content-between mb-2">
-              <span>Items subtotal:</span>
-              <span>{{ cartService.getSubtotal() | currency : "$" }}</span>
-            </div>
-            <div class="d-flex justify-content-between mb-2">
-              <span>Delivery fee:</span>
-              <span>{{ 50 | currency : "$" }}</span>
-            </div>
-            <hr />
-            <div class="d-flex justify-content-between fw-bold fs-5">
-              <span>Total:</span>
-              <span>{{ cartService.getSubtotal() + 50 | currency : "$" }}</span>
             </div>
           </div>
 
