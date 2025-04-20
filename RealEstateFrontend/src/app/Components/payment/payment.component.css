@@ -62,7 +62,10 @@
 }
 
 .order-items {
+  max-height: 113px; /* Adjust this value as needed */
+  overflow-y: auto;
   border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 15px;
 }
 
 .order-items div:last-child {
@@ -91,4 +94,11 @@
 
 .col-lg-4 {
   min-height: 100%;
+}
+
+.item-description {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 165px;
 }

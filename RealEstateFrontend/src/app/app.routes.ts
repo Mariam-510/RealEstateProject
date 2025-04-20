@@ -11,7 +11,7 @@ import { AddCategoryComponent } from './Components/add-category/add-category.com
 import { AddProductComponent } from './Components/add-product/add-product.component';
 
 export const routes: Routes = [
-  { path: '', component: AddAuctionComponent, pathMatch: 'full' },
+  { path: '', component: PaymentComponent, pathMatch: 'full' },
   {
     path: 'products/category/:id',
     component: CategoryComponent,
