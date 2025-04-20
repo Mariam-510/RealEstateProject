@@ -32,6 +32,9 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
   ];
   propertyStatuses = ['Available', 'Sold', 'Auctioned'];
   propertyTypes = ['Sell', 'Rent'];
+  userType: 'agent' | 'seller' = 'agent';
+  contractFile: File | null = null;
+  contractPreview: string | null = null;
 
   private map!: L.Map;
   private marker: L.Marker | null = null;
@@ -54,6 +57,7 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
       bedrooms: [3, [Validators.required, Validators.min(1)]],
       bathrooms: [2, [Validators.required, Validators.min(1)]],
       space: [100, [Validators.required, Validators.min(20)]],
+      contract: [null, this.userType === 'agent' ? Validators.required : null],
     });
 
     // Set default marker icon
@@ -198,13 +202,34 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
       ?.setValue(this.images.length > 0 ? this.images : null);
   }
 
+  onContractChange(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      // Check file type
+      const validTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      ];
+      if (!validTypes.includes(file.type)) {
+        alert('Please upload a PDF or Word document');
+        return;
+      }
+
+      this.contractFile = file;
+      this.contractPreview = file.name;
+      this.propertyForm.get('contract')?.setValue(file);
+      this.propertyForm.get('contract')?.markAsTouched();
+    }
+  }
+
   onSubmit(): void {
     if (this.propertyForm.valid && this.images.length > 0) {
       const formData = new FormData();
 
       // Append all form values
       Object.keys(this.propertyForm.value).forEach((key) => {
-        if (key !== 'images') {
+        if (key !== 'images' && key !== 'contract') {
           formData.append(key, this.propertyForm.value[key]);
         }
       });
@@ -213,6 +238,11 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
       this.images.forEach((image) => {
         formData.append('images', image.file);
       });
+
+      // Append contract if agent
+      if (this.userType === 'agent' && this.contractFile) {
+        formData.append('contract', this.contractFile);
+      }
 
       // Here you would typically send formData to your backend
       console.log('Property data:', formData);

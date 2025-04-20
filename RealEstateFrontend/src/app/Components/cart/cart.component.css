@@ -1,128 +1,215 @@
-/* cart.component.css */
+/* Main Cart Page Styles */
 .cart-page {
   background-color: #f8f9fa;
   min-height: calc(100vh - 140px);
-  padding-top: 20px;
+  padding-top: 30px;
+  padding-bottom: 50px;
 }
 
-.product-card {
-  background-color: white;
-  border-radius: 10px;
-  transition: all 0.2s ease;
+/* Cart Container */
+.cart-container {
+  border: 1px solid rgba(195, 142, 121, 0.2);
+  transition: all 0.3s ease;
 }
 
-.product-card:hover {
-  box-shadow: 0 0.5rem 1rem rgba(195, 142, 121, 0.15);
+.cart-container:hover {
+  box-shadow: 0 0.5rem 1.5rem rgba(195, 142, 121, 0.1);
 }
 
+/* Product Image */
 .product-image {
-  max-height: 80px;
+  max-height: 100px;
+  width: auto;
   object-fit: contain;
+  transition: transform 0.3s ease;
 }
 
+.product-image:hover {
+  transform: scale(1.05);
+}
+
+/* Summary Card */
 .summary-card {
-  background-color: white;
-  border-radius: 10px;
+  border: 1px solid rgba(195, 142, 121, 0.2);
   position: sticky;
   top: 20px;
 }
 
-.quantity-btn {
-  width: 30px;
-  height: 30px;
-  border: 1px solid #ddd;
-  background-color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-}
-
-.quantity-btn:hover {
-  background-color: #f8f9fa;
-}
-
-.quantity-input {
-  width: 40px;
-  text-align: center;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+/* Quantity Controls */
+.quantity-wrapper {
+  border-radius: 50px;
   padding: 5px;
 }
 
-.cart-container {
-  background-color: white;
-  border-radius: 10px;
-}
-
-.cart-header {
-  padding: 0 0.5rem;
-}
-
-.header-divider {
-  border-top: 1px solid #e0e0e0;
-}
-
-.cart-item {
-  padding: 1rem 0;
-}
-
-.item-divider {
-  border-top: 1px solid #e0e0e0;
-}
-
 .quantity-btn {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-  font-size: 1.2rem;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quantity-btn:hover {
+  transform: scale(1.1);
 }
 
 .quantity-value {
-  min-width: 20px;
+  min-width: 24px;
   text-align: center;
 }
 
-/* Add these styles to your existing CSS */
-.clear-cart-btn {
-  background-color: transparent;
-  border: 0px solid black;
-  color: black;
-  padding: 0.35rem 0.35rem;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
+/* Color Circle */
+.color-circle {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
 }
 
-.clear-cart-btn:hover:not(:disabled) {
-  background-color: rgba(255, 0, 0, 0.15);
-  transform: translateY(-1px);
+.color-circle:hover {
+  transform: scale(1.2);
 }
 
-.clear-cart-btn:active:not(:disabled) {
-  transform: translateY(0);
+/* Item Divider */
+.item-divider {
+  border-top: 1px dashed rgba(195, 142, 121, 0.3);
 }
 
-.clear-cart-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  border-color: #ccc;
-  color: #ccc;
+/* Empty Cart Message */
+.alert-info {
+  background-color: rgba(195, 142, 121, 0.1);
+  border-color: rgba(195, 142, 121, 0.3);
 }
 
-.clear-cart-btn i {
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .cart-column-headers {
+    display: none;
+  }
+
+  .cart-item .row > div {
+    margin-bottom: 10px;
+  }
+
+  .cart-item .row > div:before {
+    content: attr(data-label);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #6c757d;
+    font-size: 0.8rem;
+  }
+
+  .col-md-2 {
+    data-label: "Image";
+  }
+  .col-md-4 {
+    data-label: "Product";
+  }
+  .col-md-1 {
+    data-label: "Color";
+  }
+  .col-md-2[style*="margin-left"] {
+    data-label: "Quantity";
+  }
+  .col-md-2:not([style*="margin-left"]) {
+    data-label: "Price";
+  }
+  .col-md-1:last-child {
+    data-label: "Action";
+  }
+}
+
+/* Animation for cart actions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cart-item {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Hover effects for buttons */
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-outline-secondary:hover {
+  color: white;
+}
+
+/* Custom identity color styles */
+.btn-identity {
+  background-color: #c38e79;
+  color: white;
+  border-color: #c38e79;
+}
+
+.btn-identity:hover {
+  background-color: #b07d68;
+  border-color: #b07d68;
+  color: white;
+}
+
+.text-identity {
+  color: #c38e79;
+}
+
+.bg-identity {
+  background-color: #c38e79;
+}
+
+.btn-danger-custom {
+  background-color: transparent; /* Keeps the outline effect */
+  color: #dc3545; /* Bootstrap danger red */
+  padding: 0.375rem 0.75rem;
   font-size: 1rem;
-  transition: all 0.2s ease;
+  border: none; /* Removes the border */
+  outline: none; /* Removes outline on focus */
 }
 
-.clear-cart-btn:hover:not(:disabled) i {
-  color: #ff4d4d;
-  transform: scale(1.1);
+.btn-danger-custom:hover {
+  background-color: #dc3545; /* Solid red on hover */
+  color: white; /* Changes text color on hover */
 }
+
+.btn-secondary-custom {
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+}
+
+/* Remove focus outline from all buttons */
+.btn:focus,
+.btn:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Specific styles for quantity buttons */
+.quantity-btn {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.btn-secondary-custom:focus,
+.btn-secondary-custom:active,
+.btn-danger-custom:focus,
+.btn-danger-custom:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
