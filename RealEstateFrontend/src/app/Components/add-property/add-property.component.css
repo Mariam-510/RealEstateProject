@@ -1,0 +1,155 @@
+.new-property-page {
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 140px);
+  padding-top: 20px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #c38e79;
+  box-shadow: 0 0 0 0.25rem rgba(195, 142, 121, 0.25);
+}
+
+.btn-primary {
+  background-color: #c38e79;
+  border-color: #c38e79;
+}
+
+.btn-primary:hover {
+  background-color: #b07d6a;
+  border-color: #b07d6a;
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Map container */
+#property-map {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* Image previews */
+.image-preview-container {
+  height: 120px;
+}
+
+.image-preview-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Radio button styling */
+.form-check-input:checked {
+  background-color: #c38e79;
+  border-color: #c38e79;
+}
+
+/* Character counter */
+.text-muted {
+  font-size: 0.8rem;
+}
+
+/* Section headers */
+h5 {
+  color: #c38e79;
+  font-weight: 600;
+}
+
+/* Remove image button */
+.btn-danger {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* Enhanced custom number input styles */
+.custom-number-input {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+  transition: all 0.2s ease;
+}
+
+.custom-number-input:hover {
+  border-color: #c38e79;
+}
+
+.input-display {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-display i {
+  color: #c38e79;
+  font-size: 1.1rem;
+}
+
+.input-display span {
+  font-weight: 600;
+  margin: 0 0.25rem;
+  min-width: 20px;
+  display: inline-block;
+  text-align: center;
+}
+
+.decrement-btn,
+.increment-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.decrement-btn {
+  border-right: 1px solid #eee;
+}
+
+.increment-btn {
+  border-left: 1px solid #eee;
+}
+
+.decrement-btn:hover,
+.increment-btn:hover {
+  background-color: #e9ecef;
+}
+
+.decrement-btn:active,
+.increment-btn:active {
+  background-color: #dee2e6;
+}
+
+.decrement-btn i,
+.increment-btn i {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .custom-number-input {
+    height: 45px;
+  }
+
+  .decrement-btn,
+  .increment-btn {
+    width: 35px;
+    height: 35px;
+  }
+}

@@ -129,6 +129,7 @@ namespace RealEstate.Repositories
                 updatedProduct.Price = product.Price;
                 updatedProduct.IsUsed = product.IsUsed;
                 updatedProduct.CategoryID = product.CategoryID;
+                updatedProduct.DateAdded = DateTime.Now;
                 updatedProduct.Quantity = product.Quantity;
                 updatedProduct.Images = product.Images;
 

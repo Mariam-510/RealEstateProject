@@ -1,0 +1,125 @@
+.modal-header .nav-tabs {
+    display: flex;
+    justify-content: flex-start; /* Align tabs to the left */
+    padding-left: 0; /* Remove extra padding if needed */
+  }
+  .modal-header .nav-item {
+    margin-right: 15px; /* Add some spacing between the tabs */
+  }
+  .carousel-inner {
+    height: 65vh;
+  }
+
+  .carousel-inner .carousel-item img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+  .carousel-control-prev,
+.carousel-control-next {
+  position: relative;
+  bottom: auto;
+  top: auto;
+  transform: translateY(0);
+  padding: 1rem; /* Adjust padding as needed */
+}
+
+.carousel-control-prev {
+  left: 0;
+  bottom:200px
+}
+
+.carousel-control-next {
+  right: 0;
+  bottom:200px
+
+}
+
+.carousel-control-next-icon {
+  margin-left: auto;
+}
+.carousel-control-prev-icon {
+  margin-right: auto;
+}
+
+.bold { font-weight: bold; }
+.profile-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+.modal {
+    z-index: 100000 !important;
+  }
+  @media (min-width: 1200px) {
+    .modal-xxl {
+      max-width: 90vw; 
+    }
+  }
+  .carousel-item img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover; /* or 'contain' depending on the effect you want */
+  }
+  
+
+  .custom-scrollbar {
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE and Edge */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    display: none !important; /* Chrome, Safari, Opera */
+  }
+  .custom-tabs {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+    gap: 2rem;
+    bottom:0;
+  }
+  
+    /* Remove default Bootstrap nav-tab borders */
+.custom-tabs .nav-link {
+  border: none !important; /* Remove all borders */
+  color: #c38e79;
+  position: relative;
+  background-color: transparent;
+}
+
+/* Add custom underline ONLY to active tab */
+.custom-tabs .nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #c38e79;
+}
+
+/* Optional: Add a smooth transition */
+.custom-tabs .nav-link::after {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Prevent background or outline on active tab */
+.custom-tabs .nav-link.active {
+  color: #c38e79;
+  font-weight: bold;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+
+/* Optional: Style the control icons */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  border-radius: 50%;
+  padding: 1.5rem;
+  background-size: 60%;
+  background-color: rgba(0, 0, 0, 0.329);
+}
+
+.heading-line {
+  /* border-bottom: 3px solid #dc3545; */
+  border-bottom: 3px solid #c38e79;
+  padding-bottom: 5px;
+  display: inline-block;
+}

@@ -1,0 +1,826 @@
+/* auction.component.css */
+.main-title {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #4a2c2a;
+}
+
+.highlight {
+  color: #c38e79;
+}
+
+.subtitle {
+  font-size: 1.8rem;
+  color: #4a2c2a;
+}
+
+.hero-section {
+  background-color: #6a483a;
+  padding: 2rem 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-image: url('/Auction/houseimage15.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.timer-box {
+  background-color: #f0e7e368;
+  color: #4a2c2a;
+  border-radius: 8px;
+  padding: 15px;
+  font-size: 3rem;
+  font-weight: bold;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 5px;
+}
+
+.timer-label {
+  font-size: 1rem;
+  margin-top: 5px;
+  font-weight: normal;
+}
+
+.search-bar {
+  margin: 2rem 0;
+}
+
+.search-input {
+  padding: 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px 0 0 4px;
+}
+
+.search-button {
+  background-color: #c38e79;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
+
+.register-btn {
+  color: #4a3127;
+  font-weight: bold;
+  text-decoration: none;
+  margin-left: 1rem;
+  font-size: 1.1rem;
+}
+
+.steps-container {
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.view-lots-btn {
+  background-color: #c38e79;
+  color: white;
+  border: none;
+}
+
+.description {
+  color: #251914;
+}
+
+.category-item {
+  cursor: pointer;
+  min-width: 80px;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.category-item.active {
+  border-bottom: 3px solid #c38e79;
+}
+
+.category-item:hover {
+  background-color: #f8f9fa;
+}
+
+.text-caffe-dark {
+  color: #4a2c2a;
+}
+.bg-caffe-dark{
+  background-color: #4a2c2a;
+
+}
+.btn-caffe-primary {
+  background-color: #c38e79;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-caffe-primary:hover {
+  background-color: #a8735f;
+  transform: translateY(-2px);
+}
+
+.btn-caffe-secondary {
+  background-color: #e0bfa5;
+  color: #4a2c2a;
+  border: none;
+  border-radius: 24px;
+  padding: 8px 20px;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-caffe-secondary:hover {
+  background-color: #d1a891;
+  transform: translateY(-2px);
+}
+
+.btn-caffe-tertiary {
+  background-color: transparent;
+  border: 2px solid #4a2c2a;
+  color: #4a2c2a;
+  padding: 8px 20px;
+  font-weight: 600;
+  transition: transform 0.3s ease-in-out;
+  &:hover {
+    /* background-color: #e6c9b4; */
+    transform: scale(1.03);   
+    /* border-color: #bb9778; */
+  }
+}
+
+.btn-caffe-primary .icon,
+.btn-caffe-secondary .icon,
+.btn-caffe-tertiary .icon {
+  transition: transform 0.3s ease-in-out;
+}
+
+.btn-caffe-primary:hover .icon,
+.btn-caffe-secondary:hover .icon,
+.btn-caffe-tertiary:hover .icon {
+  transform: scale(1.2);
+}
+
+.custom-dropdown .dropdown-item {
+  color: #3e2f2f;
+  background-color: white;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+  width: 240px;
+  z-index: 2000 !important;
+}
+
+.custom-width-dropdown .dropdown-toggle {
+  width: 185px;
+}
+
+.custom-width-dropdown .custom-dropdown .dropdown-item {
+  width: 185px;
+}
+.filter-dropdown {
+  width: 24vw;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  overflow-x: hidden; /* Add horizontal overflow control */
+  border-radius: 0.75rem;
+  z-index: 1001;
+  position: absolute;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  top: 100% !important;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 960px) {
+  .filter-dropdown {
+    max-width:15%;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin-left: 0 !important;
+  }
+  
+  /* Stack input fields vertically on mobile */
+  .filter-dropdown .d-flex.gap-2 {
+    flex-wrap: wrap;
+  }
+  
+  .filter-dropdown .form-control {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Ensure dropdown stays within viewport boundaries */
+.dropdown-menu[data-bs-popper] {
+  left: auto;
+  right: 0;
+}
+/* auction-list.component.css */
+.auction-card {
+  transition: transform 0.2s;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+
+
+.auction-card .live-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: #dc3545;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.auction-card .card-img-top {
+  height: 250px;
+  overflow: hidden;
+}
+
+.auction-card .card-img-top img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auction-card .auction-price {
+  color: #0d6efd;
+}
+
+.auction-card .card-footer {
+  border-top: none;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.slider-container {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+}
+
+.slider-container .slider-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s ease-in-out;
+}
+
+.slider-container .slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  height: 100%;
+}
+
+.slider-container .slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slider-container .slide .control {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.hover-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.hover-nav div {
+  flex: 1;
+  opacity: 0;
+  transition: opacity 0.3s;
+  cursor: pointer;
+}
+
+.hover-nav div:hover {
+  opacity: 0.2;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hover-nav .nav-left {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.3), transparent);
+}
+
+.hover-nav .nav-right {
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.3), transparent);
+}
+
+.slider-dots {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.slider-dots .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.slider-dots .dot.active {
+  background-color: #fff;
+  transform: scale(1.2);
+}
+
+.slider-dots .dot:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.image-counter {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.slider-container:hover .slider-controls {
+  opacity: 1;
+}
+.sell-badge {
+  color: #4a7d5e;
+  font-size: 0.85rem;
+}
+.status-badge {
+  /* color: #4a7d5e; */
+  font-size: 0.85rem;
+}
+.bg-rent-badge {
+  background: #2a5f8b;
+  color: white;
+}
+
+.bg-sell-badge {
+  background-color: #4a2c2a;
+  color: white;
+}
+.rent-badge {
+  color: #2a5f8b;
+  font-size: 0.85rem;
+}
+.bids-count {
+  .badge {
+    font-size: 0.9rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+}
+
+.btn-primary {
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(111, 78, 55, 0.2);
+  }
+}
+.bid-now-button {
+  background-color: transparent;
+  border: none;
+  color: #c38e79; /* Red shade */
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.3s;
+}
+
+.bid-now-button i {
+  font-size: 1rem;
+}
+
+.bid-now-button:hover {
+  color: #c38e79; /* Slightly darker red on hover */
+  text-decoration: underline;
+}
+.auction-progress {
+  margin: 0;
+  padding: 0;
+}
+
+.progress {
+  background-color: transparent !important;
+  border-radius: 0;
+}
+.custumBottomBorder {
+  border-bottom: 2.5px solid rgba(195, 142, 121, 0.1);
+}
+.status-scheduled {
+font-size: 1.2rem !important;
+}
+/* Add to your component CSS */
+.disabled-auction {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Add to existing CSS */
+.auction-card:has(.disabled-auction) {
+  .card-title,
+  .location,
+  .text-caffe-dark,
+  .status-text,
+  .bid-now-button {
+    opacity: 0.6;
+  }
+  
+  .bid-now-button {
+    cursor: not-allowed;
+    color: #58595bdd !important;
+  }
+}
+.finished-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.5); /* semi-transparent dark overlay */
+  pointer-events: none;
+}
+
+.finished-overlay .badge {
+  font-size: 1.5rem !important;
+  text-transform: uppercase;
+}
+/* auction.component.css */
+.time-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  min-width: 160px;
+  pointer-events: none;
+}
+
+.tooltip-content {
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  position: relative;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip-content::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+}
+.auction-progress {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+.time-tooltip {
+  min-width: 180px;
+}
+
+.tooltip-content {
+  padding: 12px;
+}
+
+.status-message {
+  font-size: 0.8rem;
+  color: #c38e79;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  padding-top: 8px;
+}
+.ended-message {
+  padding: 8px;
+  text-align: center;
+  font-weight: 500;
+  color: #c38e79;
+}
+.section-underline {
+  width: 8rem;
+  height: 3px;
+  background-color: #c38e79;
+  margin-top: -1rem;
+}
+.scroll-container {
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+}
+
+.scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: none;
+  background-color: #f8f9fa !important; /* same as btn-light */
+  border-color: #dee2e6;
+  color: #6c757d;
+}
+.section-underline {
+  width: 10rem;
+  height: 3px;
+  background-color: #c38e79;
+  margin-top: -1rem;
+}
+/* Add to auction.component.css */
+.sticky-categories {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: white;
+  padding-bottom: 0.5rem ;
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+}
+
+.category-scroll-container {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.category-scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Modify existing category-item */
+.category-item {
+  flex-shrink: 0;
+  cursor: pointer;
+  min-width: 120px;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  padding: 0.5rem 1rem;
+}
+.sticky-categories,
+.category-scroll-container {
+  overflow: visible !important;
+}
+.category-scroll-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .category-scroll-container {
+    flex-wrap: wrap;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+/* Hide "More Filters" text on small screens */
+@media (max-width: 1200px) {
+  .more-filters-text {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  .filter-dropdown {
+    width: 90vw;
+    left: 5vw;
+    transform: none !important;
+  }
+}
+/* __________________________________Slider_______________________________________ */
+.category-box {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.category-img {
+  width: 100%;
+  height: 150px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.category-img:hover {
+  transform: scale(1.03);
+}
+
+.section-underline {
+  width: 10rem;
+  height: 3px;
+  background-color: #c38e79;
+  margin-top: -1rem;
+}
+
+/* svg expand/collapse btn */
+/* Base button styles */
+.button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #c38e79;
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition-duration: 0.3s;
+  overflow: hidden;
+  position: relative;
+}
+
+.svgIcon {
+  width: 12px;
+  transition-duration: 0.3s;
+}
+
+.svgIcon path {
+  fill: white;
+}
+
+/* Expand Button (Down arrow) specific styles */
+.expand-button:hover {
+  width: 160px;
+  border-radius: 50px;
+  background-color: #c38e79;
+}
+
+.expand-button:hover .arrowDown {
+  transform: translateY(200%);
+}
+
+.expand-button::before {
+  content: "Expand Categories";
+}
+
+/* Collapse Button (Up arrow) specific styles */
+.collapse-button:hover {
+  width: 170px;
+  border-radius: 50px;
+  background-color: #c38e79;
+}
+
+.collapse-button:hover .arrowUp {
+  transform: translateY(-200%);
+}
+
+.collapse-button::before {
+  content: "Collapse Categories";
+}
+
+/* Shared hover styles */
+.button:hover::before {
+  position: absolute;
+  color: white;
+  font-size: 13px;
+  opacity: 1;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  transition-duration: 0.3s;
+}
+
+.button::before {
+  position: absolute;
+  font-size: 0px;
+  opacity: 0;
+  transition-duration: 0.3s;
+}
+/* ______________________________flipclock_______________________________________________ */
+.flip-clock {
+  gap: 0.5rem;
+}
+
+.flip-card-container {
+  perspective: 1000px;
+  text-align: center;
+}
+
+.flip-card {
+  position: relative;
+  width: 80px;
+  height: 100px;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  margin-bottom: 0.5rem;
+}
+
+.flip-card.flip {
+  transform: rotateX(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  border-radius: 8px;
+  /* background-color: #f0e7e368; */
+  color: #4a2c2a;
+  box-shadow: 0 2px 4px #4a2c2a;
+}
+
+.flip-card-back {
+  transform: rotateX(180deg);
+}
+
+.timer-label {
+  font-size: 0.9rem;
+  color: #4a2c2a;
+}
+/* In your component's CSS file */
+.filter-dropdown {
+  /* Input focus states */
+ 
+  /* Date input icon color */
+ 
+  /* Select dropdown icon */
+  .form-select {
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    /* background-size: 16px 12px; */
+  }
+
+  /* Number input spinner */
+  
+}
+.filter-dropdown .form-control:focus,
+.filter-dropdown .form-select:focus {
+  border-color: #4a2c2a; /* your custom color */
+  box-shadow: 0 0 0 0.05rem #4a2c2a; /* subtle glow */
+}
+.filter-dropdown .form-select {
+  background-color: #fff;
+  border-color: #ccc;
+  color: #333;
+  transition: all 0.3s ease;
+  appearance: none; /* removes native dropdown style */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 2rem;
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
+
+/* Focus style */
+/* Custom Border Color for Pagination */
+
+/* Active Page Border Color */
+.pagination .page-item.active .page-link {
+  /* border: 2px solid #4a2c2a;  */
+  border-color:#c38e79;
+}
+
