@@ -125,6 +125,7 @@ namespace RealEstate.Controllers
             var sub = new Subscription();
             sub.AgentId = agentId;
             sub.SellerId = sellerId;
+            sub.SubscriptionDate = DateTime.Now;
 
             //switch (dto.userType)
             //{

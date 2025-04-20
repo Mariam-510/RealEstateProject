@@ -12,7 +12,8 @@ namespace RealEstate.Models.DTOs.Product
         public string Name { get; set; }
 
         [Length(1, 200)]
-        public string? Description { get; set; }
+        [Required]
+        public string Description { get; set; }
 
         [NonNegative]
         [Required]

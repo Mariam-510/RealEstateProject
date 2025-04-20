@@ -111,26 +111,11 @@ namespace RealEstate.Controllers
 
             foreach (var product in ProductModelList)
             {
-                var productDto = new ProductDTOShow
-                {
-                    Id = product.Id,
-                    Name = product.Name,
-                    Description = product.Description,
-                    Price = product.Price,
-                    Quantity = product.Quantity,
-                    IsUsed = product.IsUsed,
-                    AverageRating = _reviewService.CalculateAverageRating(product.Id),
-                    NumberOfReviews = _reviewService.GetReviewCount(product.Id),
-                    IsDeleted = product.IsDeleted,
-                    CategoryID = product.CategoryID ?? 0,
-                    CategoryName = product.Category?.Name ?? string.Empty,
-                    Productimage = product.Images ?? new List<string>(),
-                    DateAdded= product.DateAdded
-                   
-                };
+                var productDto = product.ToProductDTOShow();
+                productDto.AverageRating = _reviewService.CalculateAverageRating(product.Id);
+                productDto.NumberOfReviews = _reviewService.GetReviewCount(product.Id);
 
                 ProductDtoList.Add(productDto);
-
             }
 
             if (ProductDtoList == null)
@@ -154,6 +139,9 @@ namespace RealEstate.Controllers
             else
             {
                 var ProductDto = ProductModel.ToProductDTOShow();
+                ProductDto.AverageRating = _reviewService.CalculateAverageRating(ProductModel.Id);
+                ProductDto.NumberOfReviews = _reviewService.GetReviewCount(ProductModel.Id);
+
                 if (ProductDto == null)
                 {
                     return BadRequest("Error! While Returning Product !");

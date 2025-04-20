@@ -369,10 +369,18 @@ namespace RealEstate.Controllers
             var property = await _propertyRepo.GetByIdAsync(id);
             if (property == null || property.IsDeleted)
                 return NotFound();
+            
             // Check if an active auction is associated with this property
             var auction = await _auctionRepo.GetByProprtyIdAsync(id);
             if (auction != null && auction.Status == Status.Active && !auction.IsDeleted)
                 return BadRequest("Cannot delete the property because it has an active auction.");
+
+            if (auction != null && auction.Status == Status.Scheduled && !auction.IsDeleted)
+            {
+                _auctionRepo.DeleteAsync(auction.Id);
+            }
+
+
             property.IsDeleted = true;
             await _propertyRepo.UpdateAsync(property);
             return Ok(new { message = "Property soft-deleted successfully." });
