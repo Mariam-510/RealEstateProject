@@ -4,6 +4,8 @@ import {
   FormGroup,
   Validators,
   ReactiveFormsModule,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -34,38 +36,77 @@ export class AddAuctionComponent implements OnInit {
     this.auctionForm = this.fb.group({
       propertyId: ['', Validators.required],
       startTime: ['', [Validators.required, this.futureDateValidator]],
-      endTime: ['', [Validators.required, this.futureDateValidator]],
+      endTime: [
+        '',
+        [
+          Validators.required,
+          this.futureDateValidator,
+          (control: AbstractControl) => this.endTimeValidator(control),
+        ],
+      ],
       startPrice: ['', [Validators.required, Validators.min(0)]],
     });
   }
 
   ngOnInit(): void {
-    // Add cross-validation for end time after start time
+    // Trigger validation when either field changes
     this.auctionForm.get('startTime')?.valueChanges.subscribe(() => {
       this.auctionForm.get('endTime')?.updateValueAndValidity();
+      this.updateFormValidity();
+    });
+
+    this.auctionForm.get('endTime')?.valueChanges.subscribe(() => {
+      this.updateFormValidity();
     });
   }
 
+  private updateFormValidity(): void {
+    // Manually update the form's validity status
+    if (
+      this.auctionForm.get('endTime')?.value &&
+      this.auctionForm.get('startTime')?.value
+    ) {
+      this.auctionForm.get('endTime')?.markAsTouched();
+      this.auctionForm.updateValueAndValidity();
+    }
+  }
+
   // Custom validator for future dates
-  futureDateValidator(control: any) {
+  futureDateValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
     const selectedDate = new Date(control.value);
     const now = new Date();
     return selectedDate > now ? null : { pastDate: true };
   }
 
-  // End time must be after start time
-  endTimeValidator(control: any) {
+  // End time must be after start time by 10 mins
+  endTimeValidator(control: AbstractControl): ValidationErrors | null {
     const startTime = this.auctionForm?.get('startTime')?.value;
-    if (!startTime) return null;
+    if (!startTime || !control.value) return null;
 
     const startDate = new Date(startTime);
     const endDate = new Date(control.value);
-    return endDate > startDate ? null : { endBeforeStart: true };
+
+    // Calculate difference in milliseconds
+    const diffMs = endDate.getTime() - startDate.getTime();
+    const minDifferenceRequired = 10 * 60 * 1000; // 10 minutes in milliseconds
+
+    if (endDate <= startDate) {
+      return { endBeforeStart: true };
+    }
+
+    if (diffMs < minDifferenceRequired) {
+      return { minDuration: true };
+    }
+
+    return null;
   }
 
   onSubmit(): void {
+    // Mark all fields as touched to show errors if any
+    this.auctionForm.markAllAsTouched();
+
     if (this.auctionForm.valid) {
-      // Format dates properly before submission
       const formValue = {
         ...this.auctionForm.value,
         startTime: new Date(this.auctionForm.value.startTime).toISOString(),
@@ -73,10 +114,6 @@ export class AddAuctionComponent implements OnInit {
       };
 
       console.log('Auction data:', formValue);
-      // Here you would typically call your API to create the auction
-      // this.auctionService.createAuction(formValue).subscribe(...);
-
-      // For demonstration, just navigate after "submitting"
       this.router.navigate(['/auctions']);
     }
   }

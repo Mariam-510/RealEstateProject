@@ -89,7 +89,21 @@
                     "
                     class="text-danger"
                   >
-                    Valid future end time is required
+                    <div
+                      *ngIf="auctionForm.get('endTime')?.errors?.['required']"
+                    >
+                      Valid future end time is required
+                    </div>
+                    <div
+                      *ngIf="auctionForm.get('endTime')?.errors?.['endBeforeStart']"
+                    >
+                      End time must be after start time
+                    </div>
+                    <div
+                      *ngIf="auctionForm.get('endTime')?.errors?.['minDuration']"
+                    >
+                      End time must be at least 10 minutes after start time
+                    </div>
                   </div>
                 </div>
               </div>
