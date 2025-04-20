@@ -1,6 +1,8 @@
-﻿using RealEstate.Models.Domains;
+﻿using RealEstate.Models.Attributes;
+using RealEstate.Models.Domains;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RealEstate.Models.DTOs.PropertyDto
 {
@@ -23,6 +25,19 @@ namespace RealEstate.Models.DTOs.PropertyDto
 
         [Required]
         public string PropertyCategory { get; set; }
+
+        [NonNegative]
+        [Required]
+        public int BedRooms { get; set; }
+
+        [NonNegative]
+        [Required]
+        public int BathRooms { get; set; }
+
+        [NonNegative]
+        [Column(TypeName = "decimal(18,2)")]
+        [Required]
+        public decimal Space { get; set; }
 
         [Required]
         public string Status { get; set; }

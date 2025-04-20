@@ -62,7 +62,8 @@ namespace RealEstate
             );
 
 
-            builder.Services.AddIdentity<Account, IdentityRole>()
+            builder.Services.AddIdentityCore<Account>()
+                .AddRoles<IdentityRole>()
                 .AddTokenProvider<DataProtectorTokenProvider<Account>>("RealEstate")
                 .AddEntityFrameworkStores<RealEstateDbContext>()
                 .AddDefaultTokenProviders();

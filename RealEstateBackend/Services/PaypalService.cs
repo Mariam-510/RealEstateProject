@@ -83,7 +83,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using RealEstate.Models;
+using RealEstate.Models.Dtos;
 
 namespace RealEstate.Services
 {

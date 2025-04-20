@@ -5,14 +5,14 @@ import { Observable } from 'rxjs';
 export interface ProductDto {
   id: number;
   name: string;
-  description: string;
+  description: string | undefined;
   price: number;
   quantity: number;
   isUsed: boolean;
   isDeleted: boolean;
   categoryID: number;
   categoryName: string;
-  productImage: string | null;
+  productimage: string[];
   averageRating: number;
   numberOfReviews: number;
   dateAdded: Date;
@@ -32,9 +32,10 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  getProductsByCategory(categoryName: string): Observable<ApiResponse> {
+
+  getProducts(): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(
-      `${this.apiUrl}/GetAll?Category=${categoryName}`
+      `${this.apiUrl}/GetAll`
     );
   }
 
