@@ -10,6 +10,7 @@ namespace RealEstate.Models.Dtos.SubscriptionDto
         public int? SellerId { get; set; }
         public int? AgentId { get; set; }
         public int? PaymentId { get; set; }
+        public DateTime SubscriptionDate { get; set; }
         public SubscriptionPlanDto.SubscriptionPlanDto? SubscriptionPlan { get; set; }
     }
 }

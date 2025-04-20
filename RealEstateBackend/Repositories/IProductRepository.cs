@@ -11,5 +11,7 @@ namespace RealEstate.Repositories
         Task<List<Product>> GetAllProductByCategoryID(int Category);
         Task<Product?> GetByIdAsync(int id);
         Task CalculateAverageRating(int? productId);
+
+        //some change
     }
 }

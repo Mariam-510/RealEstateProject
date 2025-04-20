@@ -1,0 +1,53 @@
+/* Chart container sizes */
+.chart-container-small {
+  height: 250px;
+  width: 100%;
+  position: relative;
+}
+
+.chart-container-medium {
+  height: 300px;
+  width: 100%;
+  position: relative;
+}
+
+.chart-container-large {
+  height: 350px;
+  width: 100%;
+  position: relative;
+}
+
+ .card {
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-header {
+  border-radius: 10px 10px 0 0 !important;
+}
+
+/* Progress bar styling */
+.progress {
+  border-radius: 10px;
+  width: 21vw;
+  margin-bottom: 20px;
+  margin-left: 20px;
+  background-color: #f0f0f0;
+}
+
+.progress-bar {
+  border-radius: 10px;
+}
+.custom-hr {
+  width: 60%;         
+  margin-left: auto ;    
+  margin-right: auto ;   
+  border: none;
+  border-top: 1px solid #5a58573c; 
+}
+ 

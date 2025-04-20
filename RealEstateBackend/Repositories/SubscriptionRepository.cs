@@ -32,7 +32,8 @@ namespace RealEstate.Repositories
             var query = _context.Subscriptions
                 .Where(s => !s.IsDeleted)
                 .Include(s => s.SubscriptionPlan)
-                .OrderByDescending(s => s.Id)
+                //.OrderByDescending(s => s.Id)
+                .OrderByDescending(s => s.SubscriptionDate)
                 .AsQueryable();
 
             switch (userType)
