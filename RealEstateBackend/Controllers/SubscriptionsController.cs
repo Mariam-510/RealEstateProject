@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -6,6 +7,7 @@ using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos.SubscriptionDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
+using System.Security.Claims;
 
 namespace RealEstate.Controllers
 {
@@ -33,10 +35,44 @@ namespace RealEstate.Controllers
 
 
         //Authorize admin
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetByUserId(int userId, [FromQuery] UserType userType)
+        [HttpGet("user")]
+        [Authorize]
+
+        public async Task<IActionResult> GetByUserId()
         {
-            var sub = await _subscriptionRepository.GetLastByUserIdAsync(userId, userType);
+
+            UserType userType;
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var role = User.FindFirstValue(ClaimTypes.Role);
+
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(role))
+                return Unauthorized("Invalid token claims.");
+
+            int? uId = null;
+
+            if (role == "Seller")
+            {
+                var seller = await _sellerRepository.GetByAccountIdAsync(userId);
+                if (seller == null)
+                    return NotFound("Seller not found.");
+                uId = seller.Id;
+                userType = UserType.Seller;
+            }
+            else if (role == "Agent")
+            {
+                var agent = await _agentRepository.GetByAccountIdAsync(userId);
+                if (agent == null)
+                    return NotFound("Agent not found.");
+                uId = agent.Id;
+                userType = UserType.Agent;
+            }
+            else
+            {
+                return Forbid("Only Sellers and Agents can create subscriptions.");
+            }
+
+            var sub = await _subscriptionRepository.GetLastByUserIdAsync((int) uId, userType);
             if (sub == null) return NotFound();
 
             return Ok(_mapper.Map<SubscriptionDto>(sub));
@@ -53,34 +89,67 @@ namespace RealEstate.Controllers
 
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateSubscriptionDto dto)
         {
-            var sub = new Subscription();
 
-            switch (dto.userType)
+            // Get the claims from the current user
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var role = User.FindFirstValue(ClaimTypes.Role);
+
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(role))
+                return Unauthorized("Invalid token claims.");
+
+            int? sellerId = null;
+            int? agentId = null;
+
+            if (role == "Seller")
             {
-                case UserType.Seller:
-                    if (await _sellerRepository.ExistsAsync(dto.UserId))
-                    {
-                        sub.SellerId = dto.UserId;
-                    }
-                    else
-                    {
-                        return BadRequest("Invalid seller id.");
-                    }
-                    break;
-                case UserType.Agent:
-
-                    if (await _agentRepository.ExistsAsync(dto.UserId))
-                    {
-                        sub.AgentId = dto.UserId;
-                    }
-                    else
-                    {
-                        return BadRequest("Invalid agent id.");
-                    }
-                    break;
+                var seller = await _sellerRepository.GetByAccountIdAsync(userId);
+                if (seller == null)
+                    return NotFound("Seller not found.");
+                sellerId = seller.Id;
             }
+            else if (role == "Agent")
+            {
+                var agent = await _agentRepository.GetByAccountIdAsync(userId);
+                if (agent == null)
+                    return NotFound("Agent not found.");
+                agentId = agent.Id;
+            }
+            else
+            {
+                return Forbid("Only Sellers and Agents can create subscriptions.");
+            }
+
+            var sub = new Subscription();
+            sub.AgentId = agentId;
+            sub.SellerId = sellerId;
+
+            //switch (dto.userType)
+            //{
+            //    case UserType.Seller:
+            //        if (await _sellerRepository.ExistsAsync(dto.UserId))
+            //        {
+            //            sub.SellerId = dto.UserId;
+            //        }
+            //        else
+            //        {
+            //            return BadRequest("Invalid seller id.");
+            //        }
+            //        break;
+            //    case UserType.Agent:
+
+            //        if (await _agentRepository.ExistsAsync(dto.UserId))
+            //        {
+            //            sub.AgentId = dto.UserId;
+            //        }
+            //        else
+            //        {
+            //            return BadRequest("Invalid agent id.");
+            //        }
+            //        break;
+            //}
 
             if (!(await _subscriptionPlanRepository.ExistsAsync((dto.SubscriptionPlanId))))
             {
@@ -121,24 +190,56 @@ namespace RealEstate.Controllers
 
 
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> UpdateSubscription(CreateSubscriptionDto dto)
         {
 
-            switch (dto.userType)
-            {
-                case UserType.Seller:
+            //switch (dto.userType)
+            //{
+            //    case UserType.Seller:
 
-                    if (!(await _sellerRepository.ExistsAsync(dto.UserId)))
-                    {
-                        return BadRequest("Invalid seller id.");
-                    }
-                    break;
-                case UserType.Agent:
-                    if(!(await _agentRepository.ExistsAsync(dto.UserId)))
-                    {
-                        return BadRequest("Invalid agent id.");
-                    }
-                    break;
+            //        if (!(await _sellerRepository.ExistsAsync(dto.UserId)))
+            //        {
+            //            return BadRequest("Invalid seller id.");
+            //        }
+            //        break;
+            //    case UserType.Agent:
+            //        if(!(await _agentRepository.ExistsAsync(dto.UserId)))
+            //        {
+            //            return BadRequest("Invalid agent id.");
+            //        }
+            //        break;
+            //}
+
+            UserType userType;
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var role = User.FindFirstValue(ClaimTypes.Role);
+
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(role))
+                return Unauthorized("Invalid token claims.");
+
+            int? uId = null;
+
+            if (role == "Seller")
+            {
+                var seller = await _sellerRepository.GetByAccountIdAsync(userId);
+                if (seller == null)
+                    return NotFound("Seller not found.");
+                uId = seller.Id;
+                userType = UserType.Seller;
+            }
+            else if (role == "Agent")
+            {
+                var agent = await _agentRepository.GetByAccountIdAsync(userId);
+                if (agent == null)
+                    return NotFound("Agent not found.");
+                uId = agent.Id;
+                userType = UserType.Agent;
+            }
+            else
+            {
+                return Forbid("Only Sellers and Agents can create subscriptions.");
             }
 
             if (!(await _subscriptionPlanRepository.ExistsAsync((dto.SubscriptionPlanId))))
@@ -153,7 +254,7 @@ namespace RealEstate.Controllers
             {
 
                 //var sub = await _subscriptionRepository.GetLastByUserIdAsync(dto.UserId);
-                var sub = await _subscriptionRepository.GetLastByUserIdAsync(dto.UserId, dto.userType);
+                var sub = await _subscriptionRepository.GetLastByUserIdAsync((int) uId, userType);
                 if (sub == null) return NotFound();
 
                 var newPlan = await _subscriptionPlanRepository.GetByIdAsync((int)dto.SubscriptionPlanId);

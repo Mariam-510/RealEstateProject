@@ -52,12 +52,12 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("TestAuth")]
-        [Authorize]
-        public async Task<IActionResult> TestAuth()
-        {
-            return Ok("Hello");
-        }
+        //[HttpGet("TestAuth")]
+        //[Authorize]
+        //public async Task<IActionResult> TestAuth()
+        //{
+        //    return Ok("Hello");
+        //}
 
 
         [HttpPost]

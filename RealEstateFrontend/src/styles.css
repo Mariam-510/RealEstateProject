@@ -1,1 +1,17 @@
-/* You can add global styles to this file, and also import other style files */
+.bg-caffe {
+  background-color: #c38e79 !important;
+}
+
+.text-caffe {
+  color: #c38e79 !important;
+}
+
+.border-caffe {
+  border-color: #c38e79 !important;
+}
+
+
+.ngx-slider .ngx-slider-selection,
+.ngx-slider .ngx-slider-pointer {
+  background: #c38e79 !important;
+}

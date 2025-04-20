@@ -71,16 +71,17 @@ namespace RealEstate.Controllers
                 {
                     return NotFound("Seller ID not Found");
                 }
-                if (property.AgentId != seller.Id)
+                if (property.SellerId != seller.Id)
                 {
                     return Unauthorized("You Not allowed To Add Auction ");
                 }
             }
 
-          
-            Auction AuctionModel = AuctionDtO.ToAuctionModel();
-            Auction ActionCreated = await _AuctionRepository.CreateAsync(AuctionModel);
-            AuctionDTOShow ActionShow= ActionCreated.ToAuctionDTOShow();
+
+            var AuctionModel = AuctionDtO.ToAuctionModel();
+            var ActionCreated = await _AuctionRepository.CreateAsync(AuctionModel);
+            
+            var ActionShow= ActionCreated.ToAuctionDTOShow();
 
             return Ok(new { message = "Auction Created Successfully!", ActionShow });
         }
