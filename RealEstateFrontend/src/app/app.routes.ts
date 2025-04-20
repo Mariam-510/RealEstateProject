@@ -7,16 +7,16 @@ import { PHomeComponent } from './Components/Product Home/p-home/p-home.componen
 import { PropertyHomeComponent } from './Components/Property/Home/property-home/property-home.component';
 import { PropertyDetailsComponent } from './Components/RealEstateComponent/property-details/property-details.component';
 import { AuctionHomeComponent } from './Components/Auction/auction-home/auction-home.component';
-import { AddAuctionComponent } from './Components/Forms/add-auction/add-auction.component';
 import { CartComponent } from './Components/cart/cart.component';
 import { AddressSelectionComponent } from './Components/Forms/address-selection/address-selection.component';
 import { NewAddressComponent } from './Components/new-address/new-address.component';
 import { PaymentComponent } from './Components/payment/payment.component';
 import { OrderConfirmationComponent } from './Components/order-confirmation/order-confirmation.component';
-<<<<<<< HEAD
 import { PropertiesPageComponent } from './Components/RealEstateComponent/properties-page/properties-page.component';
 import { ProductDetailsComponent } from './Components/productComponent/product-details/product-details.component';
 import { CatSliderComponent } from './Components/Product Home/Sliders/cat-slider/cat-slider.component';
+import { AddProductComponent } from './Components/add-product/add-product.component';
+import { AddAuctionComponent } from './Components/Forms/add-auction/add-auction.component';
 
 export const routes: Routes = [
   { path: 'products/category/:id', component: CategoryComponent },
@@ -37,20 +37,12 @@ export const routes: Routes = [
 
   { path: 'products/category/:id', component: CategoryComponent, pathMatch: 'full' },
 
-=======
-import { AddPropertyComponent } from './Components/add-property/add-property.component';
-import { AddAuctionComponent } from './Components/add-auction/add-auction.component';
-import { AddCategoryComponent } from './Components/add-category/add-category.component';
-import { AddProductComponent } from './Components/add-product/add-product.component';
-
-export const routes: Routes = [
-  { path: '', component: AddProductComponent, pathMatch: 'full' },
+  { path: 'addProduct', component: AddProductComponent, pathMatch: 'full' },
   {
     path: 'products/category/:id',
     component: CategoryComponent,
     pathMatch: 'full',
   },
->>>>>>> IbrahimFront5
   { path: 'cart', component: CartComponent, pathMatch: 'full' },
 
   { path: 'addressSelection', component: AddressSelectionComponent, pathMatch: 'full', },
