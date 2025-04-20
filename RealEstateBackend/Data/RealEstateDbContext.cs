@@ -30,6 +30,7 @@ namespace RealEstate.Data
         public virtual DbSet<Cart> Carts { get; set; }
         public virtual DbSet<Review> Reviews { get; set; }
         public virtual DbSet<Shipping> Shippings { get; set; }
+        public virtual DbSet<ProductStock> ProductStocks { get; set; }
         #endregion
 
         public RealEstateDbContext(DbContextOptions<RealEstateDbContext> options)

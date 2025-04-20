@@ -14,14 +14,11 @@ namespace RealEstate.Models.Domains
         public string Name { get; set; }
 
         [Length(1, 200)]
-        public string? Description { get; set; }
+        public string Description { get; set; }
 
         [NonNegative]
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
-
-        [NonNegative]
-        public int Quantity { get; set; }
 
         public bool IsUsed { get; set; } = false;
 
@@ -37,7 +34,9 @@ namespace RealEstate.Models.Domains
         public virtual Category? Category { get; set; }
 
         public double AverageRating { get; set; } = 0;
-
+        
+        public virtual ICollection<ProductStock>? ProductStocks { get; set; }
+        
         public virtual ICollection<OrderItem>? OrderItems { get; set; }
 
         public virtual ICollection<Wishlist>? Wishlist { get; set; }

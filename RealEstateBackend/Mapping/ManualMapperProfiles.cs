@@ -79,7 +79,7 @@ namespace RealEstate.Mapping
         //----------------------------------------------------------------------------------------
         // Product
        
-        public static ProductDTOShow ToProductDTOShow( this Product product, double productAverageRating=0, int productNumberOfReviews =0)
+        public static ProductDTOShow ToProductDTOShow( this Product product)
         {
             return new ProductDTOShow
             {
@@ -92,11 +92,7 @@ namespace RealEstate.Mapping
                 IsDeleted = product.IsDeleted,
                 CategoryID = product.CategoryID ?? 0,
                 CategoryName = product.Category?.Name ?? string.Empty,
-                Productimage=product.Images,
-                AverageRating= productAverageRating,
-                NumberOfReviews = productNumberOfReviews,
-
-
+                Productimage=product.Images
             };
         }
         
