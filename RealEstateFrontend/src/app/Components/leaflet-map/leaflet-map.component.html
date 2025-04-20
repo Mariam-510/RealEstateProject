@@ -1,0 +1,58 @@
+<div id="map" [ngStyle]="styleTxt" class="w-100" style="height: 400px;"></div>
+
+<div class="container mt-4">
+  <!-- Category Tabs (Filter Buttons) -->
+  <div class="category-tabs d-flex justify-content-between flex-wrap dark-caffe-text fs-5 mb-4" role="group">
+    <div 
+      class="tab text-center flex-grow-1" 
+      [class.active]="selectedCategory === 'restaurant'" 
+      (click)="filterByCategory('restaurant')">
+      <i [ngClass]="getCategoryIcon('restaurant')" class="me-2 badge-item"></i>Restaurants
+    </div>
+    <div 
+      class="tab text-center flex-grow-1" 
+      [class.active]="selectedCategory === 'school'" 
+      (click)="filterByCategory('school')">
+      <i [ngClass]="getCategoryIcon('school')" class="me-2 badge-item"></i>Schools
+    </div>
+    <div 
+      class="tab text-center flex-grow-1" 
+      [class.active]="selectedCategory === 'hospital'" 
+      (click)="filterByCategory('hospital')">
+      <i [ngClass]="getCategoryIcon('hospital')" class="me-2 badge-item"></i>Hospitals
+    </div>
+    <div 
+      class="tab text-center flex-grow-1" 
+      [class.active]="selectedCategory === 'station'" 
+      (click)="filterByCategory('station')">
+      <i [ngClass]="getCategoryIcon('station')" class="me-2 badge-item"></i>Transports
+    </div>
+  </div>
+
+  <!-- Nearby Places List -->
+  <div *ngIf="filteredPlaces.length > 0; else noResults">
+    <div class="row g-3">
+      <div class="col-md-6" *ngFor="let place of filteredPlaces">
+        <div class="card shadow-sm border-0 h-100 place-card">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title text-caffe fs-5">
+              <span class="me-2">{{ getCategoryEmoji(place.category) }}</span>{{ place.name }}
+            </h5>
+            <div class="distance-badge-container pt-2">
+              <p class="card-text mb-1">
+                <strong class="dark-caffe-text">Distance:</strong>
+                <span class="fw-bold dark-caffe-text">{{ place.distance }} miles</span>
+              </p>
+              <span class="badge dark-caffe-bg text-white fs-6 text-capitalize">{{ place.category }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results Template -->
+  <ng-template #noResults>
+    <p class="text-muted">No nearby places found for the selected category.</p>
+  </ng-template>
+</div>
