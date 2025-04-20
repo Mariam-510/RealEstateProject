@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { CountdownModule } from 'ngx-countdown';
 import { interval, Subscription } from 'rxjs';
 // Add type definitions
 type TimeSegment = 'days' | 'hours' | 'minutes' | 'seconds';
@@ -28,7 +27,7 @@ interface CurrentTime {
 }
 @Component({
   selector: 'app-digit',
-  imports:[CommonModule,CountdownModule,BrowserModule],
+  imports:[CommonModule,BrowserModule],
   templateUrl: './digit.component.html',
   styleUrls: ['./digit.component.css']
 })
