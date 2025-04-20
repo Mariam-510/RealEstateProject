@@ -162,9 +162,24 @@
           <div class="order-items mb-3">
             <div
               *ngFor="let item of cartService.cartItems$ | async"
-              class="d-flex justify-content-between py-2"
+              class="d-flex justify-content-between py-2 align-items-center"
             >
-              <span>{{ item.quantity }} × {{ item.product.name }}</span>
+              <div class="d-flex align-items-center">
+                <img
+                  [src]="
+                    'https://st3.depositphotos.com/1177973/12669/i/450/depositphotos_126693854-stock-photo-set-of-body-care-products.jpg'
+                  "
+                  alt="Product image"
+                  class="me-2"
+                  style="
+                    width: 40px;
+                    height: 40px;
+                    object-fit: cover;
+                    border-radius: 4px;
+                  "
+                />
+                <span>{{ item.quantity }} × {{ item.product.name }}</span>
+              </div>
               <span class="fw-bold">{{
                 item.product.price * item.quantity | currency : "EGP"
               }}</span>
@@ -175,11 +190,18 @@
 
           <!-- Address Section -->
           <div class="mb-3">
-            <h6 class="fw-bold mb-2">Delivery Address</h6>
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="fw-bold mb-2">Delivery Address</h5>
+
+              <a href="#" class="btn btn-primary btn-sm">Change address</a>
+            </div>
+            <hr style="border-color: #e0e0e0" />
+
             <p class="text-muted mb-1">123 Main Street</p>
             <p class="text-muted mb-1">Cairo, Egypt</p>
-            <p class="text-muted">+20 123 456 7890</p>
-            <a href="#" class="text-primary">Change address</a>
+            <p class="text-muted mb-0">+20 123 456 7890</p>
+            <!-- <p class="text-muted">+20 123 456 7890</p>
+            <a href="#" class="btn btn-primary">Change address</a> -->
           </div>
 
           <hr style="border-color: #e0e0e0" />
