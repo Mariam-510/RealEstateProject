@@ -43,7 +43,7 @@ export class AddProductComponent {
       isUsed: [false, Validators.required],
       categoryID: ['', Validators.required],
       images: [[], Validators.required],
-      color: ['#000000'],
+      color: ['#ffffff'], // Changed from #000000 to #ffffff for white
       quantity: [1, [Validators.min(1)]],
     });
   }
@@ -51,13 +51,13 @@ export class AddProductComponent {
   addColorQuantity(): void {
     const color = this.productForm.get('color')?.value;
     const quantity = this.productForm.get('quantity')?.value;
-    
+
     if (color && quantity > 0) {
       // Check if color already exists
       const existingIndex = this.colorQuantities.findIndex(
-        item => item.color.toLowerCase() === color.toLowerCase()
+        (item) => item.color.toLowerCase() === color.toLowerCase()
       );
-      
+
       if (existingIndex >= 0) {
         // Update existing color quantity
         this.colorQuantities[existingIndex].quantity += quantity;
@@ -65,9 +65,10 @@ export class AddProductComponent {
         // Add new color-quantity pair
         this.colorQuantities.push({ color, quantity });
       }
-      
-      // Reset the quantity input
+
+      // Reset the quantity input and color to white
       this.productForm.get('quantity')?.setValue(1);
+      this.productForm.get('color')?.setValue('#ffffff'); // Reset to white
     }
   }
 
@@ -100,7 +101,11 @@ export class AddProductComponent {
   }
 
   onSubmit(): void {
-    if (this.productForm.valid && this.images.length > 0 && this.colorQuantities.length > 0) {
+    if (
+      this.productForm.valid &&
+      this.images.length > 0 &&
+      this.colorQuantities.length > 0
+    ) {
       const formData = new FormData();
 
       // Append all form values
@@ -130,16 +135,3 @@ export class AddProductComponent {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -184,7 +184,10 @@
           <!-- Order Items with scroll -->
           <div class="order-items">
             <div
-              *ngFor="let item of cartService.cartItems$ | async"
+              *ngFor="
+                let item of cartService.cartItems$ | async;
+                let last = last
+              "
               class="order-item"
             >
               <div class="d-flex justify-content-between">
@@ -209,6 +212,13 @@
                 <div class="price-text d-flex align-items-end mb-1">
                   {{ item.product.price * item.quantity | currency : "$" }}
                 </div>
+              </div>
+              <div class="d-flex justify-content-center">
+                <hr
+                  width="240vw"
+                  *ngIf="!last"
+                  style="border: 1px solid #c38e79"
+                />
               </div>
             </div>
           </div>
