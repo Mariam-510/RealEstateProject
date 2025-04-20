@@ -1,0 +1,100 @@
+.category-box {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.category-img {
+  width: 100%;
+  height: 150px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.category-img:hover {
+  transform: scale(1.03);
+}
+
+.section-underline {
+  width: 10rem;
+  height: 3px;
+  background-color: #c38e79;
+  margin-top: -1rem;
+}
+
+/* svg expand/collapse btn */
+/* Base button styles */
+.button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #c38e79;
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition-duration: 0.3s;
+  overflow: hidden;
+  position: relative;
+}
+
+.svgIcon {
+  width: 12px;
+  transition-duration: 0.3s;
+}
+
+.svgIcon path {
+  fill: white;
+}
+
+/* Expand Button (Down arrow) specific styles */
+.expand-button:hover {
+  width: 160px;
+  border-radius: 50px;
+  background-color: #c38e79;
+}
+
+.expand-button:hover .arrowDown {
+  transform: translateY(200%);
+}
+
+.expand-button::before {
+  content: "Expand Categories";
+}
+
+/* Collapse Button (Up arrow) specific styles */
+.collapse-button:hover {
+  width: 170px;
+  border-radius: 50px;
+  background-color: #c38e79;
+}
+
+.collapse-button:hover .arrowUp {
+  transform: translateY(-200%);
+}
+
+.collapse-button::before {
+  content: "Collapse Categories";
+}
+
+/* Shared hover styles */
+.button:hover::before {
+  position: absolute;
+  color: white;
+  font-size: 13px;
+  opacity: 1;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  transition-duration: 0.3s;
+}
+
+.button::before {
+  position: absolute;
+  font-size: 0px;
+  opacity: 0;
+  transition-duration: 0.3s;
+}

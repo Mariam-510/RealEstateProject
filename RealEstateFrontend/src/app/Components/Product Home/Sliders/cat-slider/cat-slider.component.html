@@ -1,0 +1,74 @@
+<!-- cat slider -->
+<div class="container my-3">
+    <h2 class="text-center fw-bold mb-4">Popular Categories</h2>
+    <div class="section-underline mx-auto mb-4"></div>
+  
+    @if (!isContentVisible)
+    {
+    <div class="container my-4 position-relative d-flex align-items-center overflow-hidden pe-2">
+      <div #sliderContainer class="d-flex gap-4 overflow-hidden hide-scrollbar" id="categoryScroll"
+        (mouseleave)="startAutoScroll()" (mouseenter)="stopAutoScroll()">
+        @for (category of categories; track $index)
+        {
+        <div class="category-box text-center">
+  
+          <a [routerLink]="['/category', category.id]">
+            <img [src]="category.imageUrl" [alt]="category.name" class="img-fluid category-img" />
+          </a>
+          <div class="mt-2 fw-semibold text-secondary">{{category.name}}</div>
+        </div>
+        }
+      </div>
+    </div>
+  
+    <!-- <a class="text-center text-caffe" (click)="toggleContent()">
+      <h1>
+        <i class="bi bi-arrow-down-square-fill" style="cursor: pointer;"></i> Expand Categories
+      </h1>
+    </a> -->
+    
+  
+    <div class="d-flex justify-content-center align-items-center">
+      <button class="button expand-button mt-2" (click)="toggleContent()">
+        <svg class="svgIcon arrowDown" viewBox="0 0 384 512">
+          <path d="M374.6 310.6l-160 160c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 370.8V64c0-17.7 14.3-32 32-32s32 14.3 32 32v306.7l105.4-105.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3z"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- <p class="text-center rounded-2 small fw-lighter fs-5 d-block mx-auto" style="width: 13rem;">Expand Categories</p> -->
+    }
+    @else
+    {
+    <div class="d-flex flex-wrap justify-content-center gap-4">
+      @for(category of categories; track category.id;)
+      {
+      <div class="category-box text-center">
+        <a [routerLink]="['/category', category.id]">
+          <img [src]="category.imageUrl" [alt]="category.name" class="img-fluid category-img" />
+        </a>
+        <div class="mt-2 fw-semibold text-secondary">{{category.name}}</div>
+      </div>
+      }
+    </div>
+  
+    <!-- <div class="mt-4">
+      <a class="text-center text-caffe" (click)="toggleContent()">
+        <h1>
+          <i class="bi bi-arrow-up-square-fill" style="cursor: pointer;"></i>
+        </h1>
+      </a>
+      <p class="text-center rounded-2 small fw-lighter fs-5 d-block mx-auto" style="width: 13rem;">Collapse Categories</p>
+    </div> -->
+  
+    <div class="d-flex justify-content-center align-items-center">
+      <button class="button collapse-button mt-4" (click)="toggleContent()">
+        <svg class="svgIcon arrowUp" viewBox="0 0 384 512">
+          <path d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"></path>
+        </svg>
+      </button>
+    </div>
+    }
+  
+  </div>
+  

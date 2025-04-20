@@ -1,0 +1,165 @@
+.footer-container {
+  background: #5e3c31;
+  padding: 1rem 1rem auto;
+  /* box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1); */
+  margin-top: auto;
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-bottom: -2.5rem;
+  padding: 0 1rem;
+}
+
+.footer-section:first-child {
+  width: 25%;
+  margin-right: auto;
+  padding-left: 0;
+}
+
+.footer-section {
+  padding: 1rem;
+  width: 23%;
+  text-align: left;
+}
+
+.footer-heading {
+  color: #c38e79  ;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.footer-description {
+  margin: 1rem auto;
+  line-height: 1.6;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.social-links a {
+  color: white;
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+  color: #e3d0c3;
+}
+
+.footer-section nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-section nav ul li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-link {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.footer-link:hover {
+  color: #e3d0c3;
+}
+
+.contact-info p {
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.contact-info i {
+  color: white;
+}
+
+.copyright {
+  text-align: center;
+  padding: 1rem 0;
+  border-top: 1px solid #6e5447;
+  margin-top: 2rem;
+  color: white;
+}
+
+.footer-brand-link {
+  color: #c38e79 !important;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 600;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.footer-brand-link:hover {
+  color: #e3d0c3 !important;
+}
+
+.footer-brand-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #e3d0c3;
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+  .footer-section:first-child {
+    flex: 1 1 100%;
+    margin-bottom: 1.5rem;
+    padding-right: 0;
+  }
+
+  .footer-section {
+    width: 100%;
+    text-align: center;
+    padding: 0;
+  }
+
+  .footer-section {
+    flex: 1 1 100%;
+    margin-bottom: 1rem;
+  }
+
+  .footer-section nav ul li a {
+    justify-content: center;
+  }
+
+  .footer-heading {
+    font-size: 1.2rem;
+  }
+
+  .social-links {
+    justify-content: center;
+  }
+
+  .contact-info p {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-section nav ul li a {
+    justify-content: center;
+  }
+}

@@ -27,7 +27,15 @@
               }
             ],
             "styles": [
+<<<<<<< Updated upstream
               "src/styles.css"
+=======
+              "src/styles.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css",
+              "node_modules/leaflet/dist/leaflet.css"
+>>>>>>> Stashed changes
             ],
             "scripts": []
           },

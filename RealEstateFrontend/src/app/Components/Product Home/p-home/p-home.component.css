@@ -1,0 +1,265 @@
+/* slider */
+.carousel-img {
+  height: 550px;
+  object-fit: cover;
+}
+
+.carousel-caption {
+  bottom: auto;
+  top: 12%;
+  left: 0;
+  right: 0;
+}
+
+.square-control {
+  border: 2px solid white;
+  border-radius: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.5rem;
+  opacity: 1;
+  top: 35%;
+  margin: 3rem;
+}
+
+.aa{
+  top: 35%
+}
+
+.square-control:hover {
+  background-color: #c38e79;
+}
+
+.form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23c38e79' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
+  background-color: #222 !important;
+  color: white !important;
+  border: 1px solid #555;
+}
+
+.form-select:hover {
+  background-color: #333 !important; /* Slightly lighter dark */
+  /* border-color: #888; */
+  cursor: pointer;
+}
+
+.form-select:focus {
+  background-color: #333 !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.1);
+  /* border-color: #aaa; */
+}
+
+/* .form-select option {
+  background-color: rgba(17, 18, 20, 0.667);
+  color: white;
+} */
+
+@media (max-width: 768px) {
+  .carousel-img {
+      height: 400px;
+  }
+
+  .square-control {
+      margin: 1rem;
+      width: 2rem;
+      height: 2rem;
+  }
+
+  .carousel-caption h1 {
+      font-size: 1.5rem;
+      position: relative;
+      top: -100px;
+  }
+
+  .carousel-caption p {
+      font-size: 1rem;
+      position: relative;
+      top: -100px;
+  }
+
+  .aa {
+      position: relative;
+      width: 80% !important;
+      top: 10% !important;
+      z-index: 1;
+  }
+}
+
+.dropdown-item:hover
+{
+  background-color: #c38e79;
+}
+
+::ng-deep .ngx-slider .ngx-slider-pointer {
+  background-color: #c38e79 !important; /* For pointer/handle color */
+}
+
+::ng-deep .ngx-slider .ngx-slider-selection {
+  background-color: #c38e79 !important; /* For selection bar color */
+}
+
+::ng-deep .ngx-slider .ngx-slider-pointer::after {
+  background-color: white !important; /* For small circle in pointers */
+}
+
+::ng-deep .ngx-slider-span{
+  color: white !important;
+}
+
+.rating:hover{
+  background-color: #c38e79;
+}
+
+
+/*  */
+
+.category-box {
+    width: 200px;
+    flex-shrink: 0;
+  }
+  
+  .category-img {
+    width: 100%;
+    height: 150px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .category-img:hover {
+    transform: scale(1.03);
+  }
+  
+  .section-underline {
+    width: 10rem;
+    height: 3px;
+    background-color: #c38e79;
+    margin-top: -1rem;
+  }
+  
+  .carousel-btn {
+    position: absolute;
+    top: 40%;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  .carousel-btn.left {
+    left: -40px;
+  }
+  
+  .carousel-btn.right {
+    right: -40px;
+  }
+  
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .featured
+  {
+    transition: all 0.3s ease;
+  }
+  
+  .featured:hover
+  {
+    transform: translateY(-8px);
+  }
+  
+  .navImgBtn
+  {
+    opacity: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 3;
+  }
+  
+  .cardHeader:hover .navImgBtn
+  {
+    opacity: 0.60;
+    z-index: 1;
+  }
+  
+  /* add to card */
+  /* From Uiverse.io by vinodjangid07 */ 
+  .CartBtn {
+    width: 140px;
+    height: 30px;
+    /* border-radius: 12px; */
+    border: none;
+    /* background-color: #c38e79; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition-duration: .5s;
+    overflow: hidden;
+    /* box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.103); */
+    position: relative;
+  }
+  
+  .IconContainer {
+    position: absolute;
+    left: -50px;
+    width: 30px;
+    height: 30px;
+    background-color: transparent;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 2;
+    transition-duration: .5s;
+  }
+  
+  .icon {
+    border-radius: 1px;
+  }
+  
+  .text {
+    height: 100%;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    z-index: 1;
+    transition-duration: .5s;
+    font-size: 1.04em;
+    font-weight: 600;
+    margin-top: 1rem;
+  }
+  
+  .CartBtn:hover .IconContainer {
+    transform: translateX(58px);
+    border-radius: 40px;
+    transition-duration: .5s;
+  }
+  
+  .CartBtn:hover .text {
+    transform: translate(10px,0px);
+    transition-duration: .5s;
+  }
+  
+  .CartBtn:active {
+    transform: scale(0.95);
+    transition-duration: .5s;
+  }
