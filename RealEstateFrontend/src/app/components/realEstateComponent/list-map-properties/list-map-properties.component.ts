@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from '../../../Service/toastr.service';
+import { PropertyDto, SharedService } from '../../../Service/shared.service';
+import { LeafletListMapPropertiesComponent } from '../leaflet-list-map-properties/leaflet-list-map-properties.component';
 import { LeafletListMapPropertiesComponent } from "../leaflet-list-map-properties/leaflet-list-map-properties.component";
 import { PropertyDto, SharedService } from '../../../Service/shared.service';
 

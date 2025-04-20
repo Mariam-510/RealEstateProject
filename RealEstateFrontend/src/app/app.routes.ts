@@ -1,4 +1,8 @@
 import { Routes } from '@angular/router';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { TestttComponent } from './testtt/testtt.component';
+import { Testtt2Component } from './testtt2/testtt2.component';
+import { GoogleAndPaypalComponent } from './google-and-paypal/google-and-paypal.component';
 import { PropertiesPageComponent } from './components/realEstateComponent/properties-page/properties-page.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { TestttComponent } from './testtt/testtt.component';
@@ -24,7 +28,8 @@ import { PaymentComponent } from './Components/payment/payment.component';
 import { OrderConfirmationComponent } from './Components/order-confirmation/order-confirmation.component';
 import { AddPropertyComponent } from './Components/add-property/add-property.component';
 import { AddAuctionComponent } from './Components/add-auction/add-auction.component';
-
+import { PropertiesPageComponent } from './components/realEstateComponent/properties-page/properties-page.component';
+import { ProductDetailsComponent } from './Components/productComponent/product-details/product-details.component';
 export const routes: Routes = [
     { path: 'products/category/:id', component: CategoryComponent },
     { path: 'homePage', component: AboutComponent},
