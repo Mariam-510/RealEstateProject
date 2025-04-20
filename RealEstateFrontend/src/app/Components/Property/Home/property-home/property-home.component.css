@@ -1,0 +1,449 @@
+.carousel-img {
+    height: 550px;
+    object-fit: cover;
+}
+
+.carousel-caption {
+  bottom: auto;
+  top: 10%;
+  left: 0;
+  right: 0;
+}
+
+.square-control {
+    border: 2px solid white;
+    border-radius: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    opacity: 1;
+    top: 45%;
+    margin: 3rem;
+}
+
+.square-control:hover {
+    background-color: #c38e79;
+}
+
+.form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23c38e79' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    background-color: rgba(33, 37, 41, 0.075) !important;
+    color: white !important;
+    border-color: white;
+}
+
+.hover-shadow:hover {
+  /* box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); */
+  transform: translateY(-5px);
+}
+
+.transition {
+  transition: all 0.3s ease;
+}
+
+/* .form-select option {
+    background-color: rgba(17, 18, 20, 0.667);
+    color: white;
+} */
+
+.carousel-btn {
+  position: absolute;
+  top: 40%;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.carousel-btn.left {
+  left: -40px;
+}
+
+.carousel-btn.right {
+  right: -40px;
+}
+
+.square-control {
+  border: 2px solid white;
+  border-radius: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.5rem;
+  opacity: 1;
+  top: 35%;
+  margin: 3rem;
+}
+
+.aa{
+  top: 35%
+}
+
+.square-control:hover {
+  background-color: #c38e79;
+}
+
+@media (max-width: 768px) {
+    .carousel-img {
+        height: 400px;
+    }
+
+    .square-control {
+        margin: 1rem;
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .carousel-caption h1 {
+        font-size: 1.5rem;
+        position: relative;
+        top: -100px;
+    }
+
+    .carousel-caption p {
+        font-size: 1rem;
+        position: relative;
+        top: -100px;
+    }
+
+    .aa {
+        position: relative;
+        width: 80% !important;
+        top: 10% !important;
+        z-index: 1;
+    }
+}
+
+/* form selecttt */
+
+/* Default background and text color */
+.form-select {
+  background-color: #222 !important; /* Darker background */
+  color: #fff !important;            /* White text */
+  border: 1px solid #555;            /* Optional border */
+}
+
+.dropdown-item:hover
+{
+  background-color: #c38e79;
+}
+
+.room:hover{
+  background-color: #c38e79;
+}
+
+::ng-deep .ngx-slider .ngx-slider-pointer {
+  background-color: #c38e79 !important; /* For pointer/handle color */
+}
+
+::ng-deep .ngx-slider .ngx-slider-selection {
+  background-color: #c38e79 !important; /* For selection bar color */
+}
+
+::ng-deep .ngx-slider .ngx-slider-pointer::after {
+  background-color: white !important; /* For small circle in pointers */
+}
+
+::ng-deep .ngx-slider-span{
+  color: white !important;
+}
+
+/* Style the dropdown arrow */
+/* .form-select:after {
+  color: #fff;
+} */
+
+/* Hover effect */
+.form-select:hover {
+  background-color: #333 !important; /* Slightly lighter dark */
+  /* border-color: #888; */
+  cursor: pointer;
+}
+
+/* Optional: Focused style */
+.form-select:focus {
+  background-color: #333 !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.1);
+  /* border-color: #aaa; */
+}
+
+
+/* property cards */
+
+/* .category-box {
+    width: 200px;
+    flex-shrink: 0;
+  }
+  
+  .category-img {
+    width: 100%;
+    height: 150px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .category-img:hover {
+    transform: scale(1.03);
+  }
+  
+  .carousel-btn {
+    position: absolute;
+    top: 40%;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  .carousel-btn.left {
+    left: -40px;
+  }
+  
+  .carousel-btn.right {
+    right: -40px;
+  } */
+  
+  .section-underline {
+    width: 10rem;
+    height: 3px;
+    background-color: #c38e79;
+    margin-top: -1rem;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .featured
+  {
+    transition: all 0.3s ease;
+  }
+  
+  .featured:hover
+  {
+    transform: translateY(-8px);
+  }
+  
+  .navImgBtn
+  {
+    opacity: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 3;
+  }
+  
+  .cardHeader:hover .navImgBtn
+  {
+    opacity: 0.60;
+    z-index: 1;
+  }
+
+/*  */
+
+.card img {
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+  }
+  .card {
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  .badge {
+    font-size: 0.65rem;
+    /* background-color: #e50914; */
+  }
+  
+
+  .card-body
+  {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+
+  /* properties carddd */
+
+  .property-card {
+    /* height: 100%; */
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  
+  /* .property-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  } */
+  
+  .image-counter {
+    z-index: 2;
+    backdrop-filter: blur(2px);
+  }
+  
+  .category-badge {
+    top: 15px;
+    left: 15px;
+    z-index: 2;
+    /* font-size: 0.7rem; */
+  }
+  
+  .rent-badge {
+    color: #2a5f8b;
+    font-size: 0.85rem;
+  }
+  
+  .sell-badge {
+    color: #4a7d5e;
+    font-size: 0.85rem;
+  }
+  
+  
+  .bg-rent-badge {
+    background: #2a5f8b;
+    color: white;
+  }
+  
+  .bg-sell-badge {
+    background-color: #4a7d5e;
+    color: white;
+  }
+  
+  .status-overlay {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+  }
+  
+  .status-text {
+    letter-spacing: 2px;
+    transform: rotate(-15deg);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  
+  .property-actions {
+    top: 15px;
+    right: 15px;
+    z-index: 2;
+  }
+  
+  .btn-icon {
+    /* border-radius: 50%; */
+    width: 32px;
+    height: 32px;
+    transition: all 0.2s;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+  }
+  
+  .btn-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  .property-img {
+    height: 250px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+  }
+  
+  /* .property-card:hover,
+  .property-card:hover {
+    opacity: 0.75;
+  } */
+  
+  
+  @media (max-width: 768px) {
+    .property-img {
+      height: 200px;
+    }
+  
+    .status-text {
+      font-size: 1.4rem;
+    }
+  
+  }
+  
+  @media (max-width: 576px) {
+    .property-img {
+      height: 180px;
+    }
+  
+  }
+  
+  /* ---------------------------------------------------------------------------------- */
+  .footer {
+    margin-top: auto;
+  }
+  
+  
+  .mapToggle {
+    z-index: 1000;
+  }
+  
+  
+  /* Update existing .map-container class */
+  .map-container {
+    height: 250px;
+    /* Match image height */
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    /* Match image rounding */
+    overflow: hidden;
+    /* Ensure rounded corners clip map */
+    position: relative;
+    /* For absolute positioning of children */
+  }
+  
+  /* Leaflet map element styling */
+  #map {
+    height: 100%;
+    width: 100%;
+    border-radius: inherit;
+    /* Inherit parent's border-radius */
+  }
+  
+  /* Match image responsive heights */
+  @media (max-width: 768px) {
+    .map-container {
+      height: 200px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .map-container {
+      height: 180px;
+    }
+  }
+  
+  /* Optional: Add hover effect to match cards */
+  /* .property-card:hover .map-container {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  } */
+  

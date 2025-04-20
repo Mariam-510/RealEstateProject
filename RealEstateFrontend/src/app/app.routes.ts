@@ -1,4 +1,9 @@
 import { Routes } from '@angular/router';
+import { CategoryComponent } from './Components/category/category.component';
+import { PHomeComponent } from './Components/Product Home/p-home/p-home.component';
+import { PropertyHomeComponent } from './Components/Property/Home/property-home/property-home.component';
+import { AboutComponent } from './Components/about/about.component';
+import { CatSliderComponent } from './Components/Product Home/Sliders/cat-slider/cat-slider.component';
 import { PropertyDetailsComponent } from './Components/RealEstateComponent/property-details/property-details.component';
 import { TestComponent } from './Components/RealEstateComponent/test/test.component';
 import { TestdetailsComponent } from './Components/RealEstateComponent/testdetails/testdetails.component';
@@ -13,6 +18,11 @@ import { OrderConfirmationComponent } from './Components/order-confirmation/orde
 import { AddPropertyComponent } from './Components/add-property/add-property.component';
 import { AddAuctionComponent } from './Components/add-auction/add-auction.component';
 export const routes: Routes = [
+    { path: 'products/category/:id', component: CategoryComponent },
+    { path: 'homePage', component: AboutComponent},
+    { path: 'home/products', component: PHomeComponent},
+    { path: 'home/properties', component: PropertyHomeComponent},
+    { path: 'home/auctions', component: CatSliderComponent},
     { path: 'property/:id', component: PropertyDetailsComponent },
     { path: 'test/:id', component: TestComponent },
     { path: 'T/:id', component: TestdetailsComponent },

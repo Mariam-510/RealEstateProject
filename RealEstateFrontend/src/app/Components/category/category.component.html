@@ -177,9 +177,9 @@
       <div *ngIf="viewMode === 'grid'" class="row g-4">
         <div
           class="col-12 col-md-6 col-lg-4 col-xl-4"
-          *ngFor="let product of paginatedProducts"
-        >
-          <app-product-card [product]="product"></app-product-card>
+          *ngFor="let product of paginatedProducts">
+          <!-- <app-product-card [product]="product"></app-product-card> -->
+           <app-tttt [product]="product"></app-tttt>
         </div>
       </div>
 

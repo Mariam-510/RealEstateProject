@@ -5,12 +5,13 @@ import {
   ElementRef,
   ViewChild,
 } from '@angular/core';
-import { ProductDto } from '../../Services/product.service';
-import { ProductService } from '../../Services/product.service';
 import { CommonModule } from '@angular/common';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { ProductListItemComponent } from '../product-list-item/product-list-item.component';
 import { RouterModule } from '@angular/router';
+import { ProductDto, ProductService } from '../../Services/product.service';
+import { TtttComponent } from "../tttt/tttt.component";
+
 
 @Component({
   selector: 'app-category',
@@ -20,7 +21,8 @@ import { RouterModule } from '@angular/router';
     ProductCardComponent,
     ProductListItemComponent,
     RouterModule,
-  ],
+    TtttComponent
+],
   templateUrl: './category.component.html',
   styleUrl: './category.component.css',
 })
@@ -39,20 +41,18 @@ export class CategoryComponent implements OnInit {
   totalPages = 0;
   visiblePages: (number | string)[] = [];
 
-  constructor(
-    private productService: ProductService,
-    private elementRef: ElementRef
-  ) {}
-
+  constructor(private productService: ProductService, private elementRef: ElementRef) {}
+  
   ngOnInit() {
     this.loadProductsByCategory('string');
   }
-
+  
   loadProductsByCategory(category: string) {
     this.loading = true;
-    this.productService.getProductsByCategory(category).subscribe({
+    this.productService.getProducts().subscribe({
       next: (response) => {
         this.products = response.productDtoList;
+        console.log(this.products);
         this.totalPages = Math.ceil(this.products.length / this.itemsPerPage);
         this.updateVisiblePages();
         this.loading = false;
