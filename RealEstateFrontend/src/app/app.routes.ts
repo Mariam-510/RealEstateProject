@@ -1,4 +1,11 @@
 import { Routes } from '@angular/router';
+import { PropertiesPageComponent } from './components/realEstateComponent/properties-page/properties-page.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { TestttComponent } from './testtt/testtt.component';
+import { Testtt2Component } from './testtt2/testtt2.component';
+import { ProductDetailsComponent } from './components/productComponent/product-details/product-details.component';
+import { AboutComponent } from './about/about.component';
+import { GoogleAndPaypalComponent } from './google-and-paypal/google-and-paypal.component';
 import { CategoryComponent } from './Components/category/category.component';
 import { PHomeComponent } from './Components/Product Home/p-home/p-home.component';
 import { PropertyHomeComponent } from './Components/Property/Home/property-home/property-home.component';
@@ -17,6 +24,7 @@ import { PaymentComponent } from './Components/payment/payment.component';
 import { OrderConfirmationComponent } from './Components/order-confirmation/order-confirmation.component';
 import { AddPropertyComponent } from './Components/add-property/add-property.component';
 import { AddAuctionComponent } from './Components/add-auction/add-auction.component';
+
 export const routes: Routes = [
     { path: 'products/category/:id', component: CategoryComponent },
     { path: 'homePage', component: AboutComponent},
@@ -51,4 +59,18 @@ export const routes: Routes = [
       { path: '', redirectTo: 'cart', pathMatch: 'full' },
     ],
   },
+  
+  { path: "about", component: AboutComponent, title: "About" },
+
+  // { path: '', redirectTo: 'properties', pathMatch: "full" },
+  { path: 'properties', component: PropertiesPageComponent, title: "Real Estate Properties" },
+
+  { path: 'products/:id', component: ProductDetailsComponent, title: "Product Details" },
+
+  { path: "home", component: GoogleAndPaypalComponent, title: "gopl" },
+
+  { path: "t", component: TestttComponent, title: "t" },
+  { path: "t2", component: Testtt2Component, title: "t2" },
+
+  { path: "**", component: NotFoundComponent }
 ];
