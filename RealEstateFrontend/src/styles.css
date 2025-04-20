@@ -1,1 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
+.bg-caffe{
+    background-color:#c38e79 !important;
+}
+.text-caffe{
+    color:#c38e79 !important;
+}
+.bg-caffe-transparent{
+    background-color:#c38e7992 !important;
+}
+.bg-brown{
+    background-color: #4a2c2a;
+}
+.text-brown{
+    color:#4a2c2a;
+}
