@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from '../../../Service/toastr.service';
-import { ViewMode } from '../properties-page/properties-page.component';
 import { PropertyDto } from '../../../Service/shared.service';
 import { LeafletMapComponent } from "../../../leaflet-map/leaflet-map.component";
+import { ViewMode } from '../properties-page/properties-page.component';
 
 @Component({
   selector: 'app-gird-properties',

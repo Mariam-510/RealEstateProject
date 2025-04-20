@@ -5,7 +5,7 @@ import { AboutComponent } from './about/about.component';
 import { CategoryComponent } from './Components/category/category.component';
 import { PHomeComponent } from './Components/Product Home/p-home/p-home.component';
 import { PropertyHomeComponent } from './Components/Property/Home/property-home/property-home.component';
-import { PropertyDetailsComponent } from './Components/realEstateComponent/property-details/property-details.component';
+import { PropertyDetailsComponent } from './Components/RealEstateComponent/property-details/property-details.component';
 import { AuctionHomeComponent } from './Components/Auction/auction-home/auction-home.component';
 import { AddAuctionComponent } from './Components/Forms/add-auction/add-auction.component';
 import { CartComponent } from './Components/cart/cart.component';
@@ -13,7 +13,7 @@ import { AddressSelectionComponent } from './Components/Forms/address-selection/
 import { NewAddressComponent } from './Components/new-address/new-address.component';
 import { PaymentComponent } from './Components/payment/payment.component';
 import { OrderConfirmationComponent } from './Components/order-confirmation/order-confirmation.component';
-import { PropertiesPageComponent } from './Components/realEstateComponent/properties-page/properties-page.component';
+import { PropertiesPageComponent } from './Components/RealEstateComponent/properties-page/properties-page.component';
 import { ProductDetailsComponent } from './Components/productComponent/product-details/product-details.component';
 import { CatSliderComponent } from './Components/Product Home/Sliders/cat-slider/cat-slider.component';
 
