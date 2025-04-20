@@ -22,13 +22,16 @@ namespace RealEstate.Controllers
 
         public FileService _fileService { get; }
 
-        public ProductsController(IProductRepository productRepository , ICategoryRepository categoryRepository, FileService fileService )
+        private readonly ReviewService _reviewService;
+
+        public ProductsController(IProductRepository productRepository, ICategoryRepository categoryRepository, FileService fileService, ReviewService reviewService)
         {
             _ProductRepository = productRepository;
-            _fileService = fileService;
             _CategoryRepository = categoryRepository;
+            _fileService = fileService;
+            _reviewService = reviewService;
         }
-        
+
         [HttpPost("CreateProduct")]
         public async Task<IActionResult> CreateProduct([FromForm]ProductDTO ProductDTO)
         {
@@ -97,21 +100,46 @@ namespace RealEstate.Controllers
         public async Task<IActionResult> GetAll(string? Name = null, string? SortPrice = null, string? Category = null, string? SortQuantity = null)
         {
            
-            var ProductModel = await _ProductRepository.GetAllAsync(Name, SortPrice, Category, SortQuantity);
-            if (ProductModel == null)
+            var ProductModelList = await _ProductRepository.GetAllAsync(Name, SortPrice, Category, SortQuantity);
+            if (ProductModelList == null)
             {
 
                 return NotFound("Empty Product List!" );
 
             }
-            var ProductDto = ProductModel.ToProductDTOShowList();
-            if (ProductDto == null)
+            List<ProductDTOShow> ProductDtoList = new List<ProductDTOShow>();
+
+            foreach (var product in ProductModelList)
+            {
+                var productDto = new ProductDTOShow
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    Price = product.Price,
+                    Quantity = product.Quantity,
+                    IsUsed = product.IsUsed,
+                    AverageRating = _reviewService.CalculateAverageRating(product.Id),
+                    NumberOfReviews = _reviewService.GetReviewCount(product.Id),
+                    IsDeleted = product.IsDeleted,
+                    CategoryID = product.CategoryID ?? 0,
+                    CategoryName = product.Category?.Name ?? string.Empty,
+                    Productimage = product.Images ?? new List<string>(),
+                    DateAdded= product.DateAdded
+                   
+                };
+
+                ProductDtoList.Add(productDto);
+
+            }
+
+            if (ProductDtoList == null)
             {
 
                 return BadRequest("Error! While Fetching Product List!");
 
             }
-            return Ok(new { message = "Product List is :", ProductDto });
+            return Ok(new { message = "Product List is :", ProductDtoList });
         }
 
 

@@ -5,13 +5,13 @@ import {
   ElementRef,
   ViewChild,
 } from '@angular/core';
-
 import { CommonModule } from '@angular/common';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { ProductListItemComponent } from '../product-list-item/product-list-item.component';
 import { RouterModule } from '@angular/router';
 import { ProductDto, ProductService } from '../../Services/product.service';
 import { TtttComponent } from "../tttt/tttt.component";
+
 
 @Component({
   selector: 'app-category',
@@ -41,12 +41,7 @@ export class CategoryComponent implements OnInit {
   totalPages = 0;
   visiblePages: (number | string)[] = [];
 
-  constructor(
-    private productService: ProductService,
-    private elementRef: ElementRef
-  ) {
-
-  }
+  constructor(private productService: ProductService, private elementRef: ElementRef) {}
   
   ngOnInit() {
     this.loadProductsByCategory('string');

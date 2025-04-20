@@ -2,6 +2,7 @@
 {
     public class ProductDTOShow
     {
+
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -9,6 +10,7 @@
         public int Quantity { get; set; }
         public bool IsUsed { get; set; }
         public double AverageRating { get; set; }
+        public int NumberOfReviews { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime? DateAdded { get; set; }
         public int CategoryID { get; set; }

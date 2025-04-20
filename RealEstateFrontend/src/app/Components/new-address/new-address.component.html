@@ -1,0 +1,172 @@
+<div class="new-address-page">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="bg-white p-4 rounded shadow-sm">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0">Add New Address</h3>
+            <a
+              [routerLink]="'/addressSelection'"
+              class="btn btn-outline-secondary"
+            >
+              <i class="bi bi-arrow-left me-2"></i>Back
+            </a>
+          </div>
+
+          <hr style="border: 2px solid #c38e79" />
+
+          <!-- Map Container -->
+          <div class="mb-4">
+            <div
+              id="map"
+              style="height: 300px; width: 100%; border-radius: 8px"
+            ></div>
+            <div class="d-flex justify-content-between mt-2">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="detectLocation()"
+              >
+                <i class="bi bi-geo-alt"></i> Detect My Location
+              </button>
+              <small class="text-muted"
+                >Or click on the map to select location</small
+              >
+            </div>
+          </div>
+
+          <form [formGroup]="addressForm" (ngSubmit)="onSubmit()">
+            <!-- Rest of your form remains exactly the same -->
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="city" class="form-label">City</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="city"
+                  formControlName="city"
+                />
+                <div
+                  *ngIf="
+                    addressForm.get('city')?.invalid &&
+                    addressForm.get('city')?.touched
+                  "
+                  class="text-danger"
+                >
+                  City is required
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="street" class="form-label">Street</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="street"
+                  formControlName="street"
+                />
+                <div
+                  *ngIf="
+                    addressForm.get('street')?.invalid &&
+                    addressForm.get('street')?.touched
+                  "
+                  class="text-danger"
+                >
+                  Street is required
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label for="buildingNum" class="form-label"
+                  >Building Number</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="buildingNum"
+                  formControlName="buildingNum"
+                />
+                <div
+                  *ngIf="
+                    addressForm.get('buildingNum')?.invalid &&
+                    addressForm.get('buildingNum')?.touched
+                  "
+                  class="text-danger"
+                >
+                  Building number is required
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label for="apartment" class="form-label">Apartment</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="apartment"
+                  formControlName="apartment"
+                />
+                <div
+                  *ngIf="
+                    addressForm.get('apartment')?.invalid &&
+                    addressForm.get('apartment')?.touched
+                  "
+                  class="text-danger"
+                >
+                  Apartment is required
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label for="floor" class="form-label">Floor</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="floor"
+                  formControlName="floor"
+                />
+                <div
+                  *ngIf="
+                    addressForm.get('floor')?.invalid &&
+                    addressForm.get('floor')?.touched
+                  "
+                  class="text-danger"
+                >
+                  Floor is required
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label for="phoneNum" class="form-label">Phone Number</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="phoneNum"
+                  formControlName="phoneNum"
+                />
+                <div
+                  *ngIf="
+                    addressForm.get('phoneNum')?.invalid &&
+                    addressForm.get('phoneNum')?.touched
+                  "
+                  class="text-danger"
+                >
+                  Valid phone number is required
+                </div>
+              </div>
+
+              <div class="col-12 mt-4">
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  [disabled]="addressForm.invalid"
+                >
+                  Save Address
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

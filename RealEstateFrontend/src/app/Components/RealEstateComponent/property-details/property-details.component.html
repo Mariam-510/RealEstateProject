@@ -1,0 +1,524 @@
+<div >
+ 
+  <div style="padding-right:.5rem !important">
+    <section id="overview" class="px-1 ">
+      <div class="lightbox" data-mdb-lightbox-init>
+        <div class="row ms-0 border-0 hover-effect ">
+          <div class="col-lg-8 p-0  pe-2 ">
+            <div class="img-wrapper" style="height: 450px;">
+              <img [src]="property.images[0]" [alt]="property.title"
+                class="w-100 mb-2 mb-md-4 shadow-1-strong rounded-0" />
+              <div class="overlay rounded">
+              </div>
+              <button class="custom-btn position-absolute bottom-0 start-0 m-3 rounded-2 text-caffe">
+                <i class="bi bi-box text-caffe me-1 pe-2"></i>3D View</button>
+            </div>
+            <div class="position-relative">
+              <div class="bg-caffe text-white p-3 ps-3 rounded-0">
+                <h5 class="fw-bold mb-2 fs-4">{{ property.title }}</h5>
+                <p class="mb-1 fs-5"><i class="bi bi-geo-alt"></i> {{ property.location }}</p>
+                <p class="mb-0">Unit ID: <strong>{{property.id}}</strong></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4  p-0  pe-1  ">
+            <div class="img-wrapper" style="height: 450px; ">
+              <img src="details/property5.jpg" data-mdb-img="details/property5.jpg" alt="Dark Roast Iced Coffee"
+                class="w-100 shadow-1-strong rounded-0" />
+              <div class="overlay rounded"></div>
+
+              <!-- Button positioned bottom-right -->
+              <button type="button" class="custom-btn position-absolute bottom-0 end-0 m-3 rounded-2 text-caffe"
+                data-bs-toggle="modal" data-bs-target="#photosModal">
+                <i class="bi bi-images me-1 pe-2 text-caffe"></i>Photos
+              </button>
+              <app-property-photo-modal #photoModal></app-property-photo-modal>
+            </div>
+            <div class="bg-light text-center p-3 ps-3 rounded-0">
+              <div class="row">
+                <div class="col-3 d-flex flex-column align-items-center " *ngFor="let item of icons">
+                  <img [src]="item.src" [alt]="item.alt" style="width:55px;height:48px;">
+                  <div><strong>{{ item.value }}</strong></div>
+                  <small class="text-muted fw-bold">{{ item.label }}</small>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+      <div #tabLinks class="tab-links px-5 py-3 d-flex flex-wrap justify-content-between align-items-center ">
+        <!-- Left side: Nav Links -->
+        <div class="d-flex flex-wrap gap-5">
+          <a href="#overview" (click)="scrollToSection($event, 'overview')" class="active ms-2 me-3">
+            <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+            <span class="fs-5">Overview</span>
+          </a>
+    
+          <a href="#location" (click)="scrollToSection($event, 'location')" class="me-3">
+            <i class="bi bi-geo-alt-fill me-2 fs-4"></i>
+            <span class="fs-5">Location</span>
+          </a>
+    
+          <a href="#PropertyDetails" (click)="scrollToSection($event, 'PropertyDetails')" class="me-3">
+            <!-- <i class="bi bi-calendar3 me-2 fs-6"></i> -->
+            <i class="bi bi-house-door-fill  me-2 fs-4"></i>
+    
+            <span class="fs-5">Property Details</span>
+          </a>
+        </div>
+    
+        <!-- Right side: Icons -->
+        <div class="d-flex align-items-center gap-4 pe-3">
+    
+          <!-- <button class="fav-btn text-muted text-decoration-none d-flex align-items-center pe-3 btn btn-transparent"
+            (click)="toggleFavorite()">
+            <svg *ngIf="isFavorited" class="bp-SvgIcon favorite bp-SvgIcon__size--medium" width="24" height="24"
+              viewBox="0 0 24 24">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z">
+              </path>
+            </svg>
+    
+            <svg *ngIf="!isFavorited" class="bp-SvgIcon favorite bp-SvgIcon__size--medium" width="24" height="24"
+              viewBox="0 0 24 24">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M3.354 4.844C4.306 3.69 5.72 3 7.5 3c1.572 0 2.913.777 3.797 1.457.267.205.503.41.703.597.2-.187.436-.392.703-.597C13.587 3.777 14.928 3 16.5 3c1.78 0 3.194.689 4.146 1.844C21.577 5.974 22 7.468 22 9c0 1.205-.42 2.394-1.019 3.488-.601 1.1-1.416 2.162-2.283 3.131-1.735 1.937-3.766 3.59-4.99 4.522a2.813 2.813 0 01-3.417 0c-1.223-.931-3.254-2.585-4.989-4.522-.868-.969-1.682-2.032-2.283-3.131-.599-1.094-1.02-2.283-1.02-3.487.002-1.532.423-3.025 1.355-4.156zm7.801 2.206a7.918 7.918 0 00-1.078-1.007C9.338 5.473 8.428 5 7.5 5c-1.221 0-2.055.451-2.603 1.116C4.33 6.806 4.001 7.813 4 9c0 .75.266 1.6.773 2.527.504.92 1.213 1.857 2.019 2.757 1.613 1.8 3.53 3.366 4.71 4.264a.813.813 0 00.996 0c1.18-.898 3.097-2.463 4.71-4.264.806-.9 1.515-1.837 2.019-2.757.506-.926.773-1.778.773-2.526 0-1.188-.33-2.195-.898-2.885C18.555 5.451 17.723 5 16.5 5c-.928 0-1.837.473-2.578 1.043a7.906 7.906 0 00-1.077 1.007c-.295.338-.565.7-.845 1.05-.28-.35-.55-.712-.845-1.05z">
+              </path>
+            </svg>
+    
+            <span class="ms-2 text-caffe text-decoration-none d-flex align-items-center fs-5 fw-bold">Favorite</span>
+          </button> -->
+    
+    
+    
+    
+          <!-- <button class="share text-muted text-decoration-none d-flex align-items-center btn btn-transparent">
+            <svg class="bp-SvgIcon share bp-SvgIcon__size--medium " width="24" height="24" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M12.617 3.076a1 1 0 011.09.217l8 8a1 1 0 010 1.414l-8 8A1 1 0 0112 20v-4c-4.317 0-6.255 1.194-7.132 2.169a3.514 3.514 0 00-.77 1.337c-.086.29-.098.507-.098.507A1 1 0 012 20c0-.177.009-.354.02-.531.018-.323.056-.778.13-1.323.148-1.084.445-2.547 1.05-4.025.603-1.475 1.531-3.01 2.965-4.177C7.615 8.762 9.528 8 12 8V4a1 1 0 01.617-.924zm-7.86 12.599c.087-.264.185-.53.294-.796.52-1.274 1.28-2.49 2.378-3.385C8.509 10.614 9.972 10 12 10h1a1 1 0 001-1V6.414L19.586 12 14 17.586V15a1 1 0 00-1-1h-1c-3.43 0-5.723.7-7.243 1.675z">
+              </path>
+            </svg>
+            <span class="ms-2  text-caffe text-decoration-none d-flex align-items-center fs-5 fw-bold">Share</span>
+          </button> -->
+    
+        </div>
+      </div>
+      <div class="ps-5 my-4">
+        <div class="row ">
+          <div class="position-relative end-0">
+            <!-- About this home section -->
+            <div class="col-md-8 ">
+              <div id="about-this-home" #homesection class="mb-1  rounded-3 ">
+                <div class="mb-3">
+                  <!-- <i class="bi bi-house-fill me-3 fs-3 text-caffe"></i> -->
+                  <i class="bi bi-info-circle-fill me-3 fs-3 text-caffe"></i>
+
+                  <span class="fs-3 fw-bold heading-line">About this home</span>
+                </div>
+                <p class="lead ms-4 text-justify fw-light fst-italic">
+                  {{ property.description.length > 200 ? (showMore ? property.description :
+                  property.description.slice(0, 200) + '...') : property.description }}
+                </p>
+                <button *ngIf="property.description.length > 200" class="btn btn-light text-caffe me-2 ms-5 fw-bold"
+                  (click)="showMore = !showMore">
+                  <i class="bi" [ngClass]="showMore ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                  {{ showMore ? 'Show Less' : 'Show More' }}
+                </button>
+              </div>
+              <hr class="mt-4 me-3">
+
+            </div>
+
+            <div #heroSection class=" d-flex justify-content-center">
+              <div #buyNowCard
+                class="position-absolute  bg-transparent rounded top-5 smooth-card end-0 card border-0 d-none d-lg-block"
+                style="max-width: 100%; width: 28vw;">
+                <div class="shadow  rounded-4 bg-white property-card">
+
+                  <!-- Title -->
+                  <!-- <h4 class="card-title fw-bold mb-2 text-center ">
+                    {{property.title}}
+                  </h4> -->
+                  <div
+                  class="cartTitle text-white p-3 rounded-top rounded-bottom text-center d-flex align-items-center justify-content-center position-relative">
+                  <div class="m-0 fw-semibold">
+                    {{property.title}}
+                  </div>
+                </div>
+                  <div class="card-body px-4">
+
+                  
+                  <!-- Price -->
+                  <!-- <h5 class=" ps-2 mb-2">
+                    <i class="bi bi-cash-stack  me-2 fs-5 text-caffe"></i>
+                    <span class="fw-bold">
+                      Price:
+                    </span>
+                    <span class="fs-5 ">{{ property.price | number:'1.0-0' }} EGP</span>
+                  </h5> -->
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <!-- Price -->
+                    <div>
+                      <div class="form-label small fw-bold text-uppercase terracotta-text mb-1" style="color: #4a2c2a">Price</div>
+                      <h3 class="fw-bold text-caffe m-0">{{ property.price | number:'1.2-2' }} EGP</h3>
+                    </div>
+                    
+                    <!-- Buttons -->
+                    <div class="d-flex gap-2 pt-4">
+                      <button class="btn btn-link text-dark p-1" (click)="shareItem(property)">
+                        <i class="bi bi-share fs-5"></i>
+                      </button>
+                      <button class="btn btn-link text-dark p-1">
+                        <i class="bi bi-printer fs-4"></i>
+                      </button>
+                      <button class="btn btn-link p-1" (click)="toggleFavorite(property)">
+                        <i class="bi fs-4" [ngClass]="{
+                          'bi-heart-fill text-danger': property.isFavorite,
+                          'bi-heart text-dark': !property.isFavorite
+                        }"></i>
+                      </button>
+                    </div>
+                  </div>
+                
+                  <div class="custumBottomBorder mb-2"></div>
+
+                  <!-- Location -->
+                  <h5 class="ps-2 mb-2 pt-1">
+                    <i class="bi bi-geo-alt text-caffe me-2 fs-6"></i>
+                    <span class="fw-bold text-caffe-dark">
+                      Location:
+                    </span>
+                    <span class="fs-5 text-caffe-dark">{{ property.location }}</span>
+                  </h5>
+
+                  <h5 class="ps-2 mb-4 ">
+                    <i class="bi bi-house text-caffe me-2 fs-6 "></i>
+                    <span class="fw-bold text-caffe-dark">
+                      Category:
+                    </span>
+                    <span class="fs-5 text-caffe-dark">{{ property.propertyCategory }}</span>
+                  </h5>
+                  <div class="custumBottomBorder mb-2"></div>
+
+                  <!-- Features -->
+                 <!-- Features -->
+                 <div class="col d-flex align-items-center justify-content-between">
+                  <!-- Bedrooms -->
+                  <div class="d-flex align-items-center pb-4">
+                    <div
+                      class="bg-light rounded-circle p-2 me-2 d-flex justify-content-center align-items-center icon-hover"
+                      style="width: 40px; height: 40px;">
+                      <img src="icons/Bed.svg" alt="Bedroom Icon" width="26" height="26">
+                    </div>
+                    <div>
+                      <div class=" text-muted"style="font-size:1.2rem">4 Beds</div>
+
+                      <!-- <div>Bedrooms</div> -->
+                    </div>
+                  </div>
+
+                  <!-- Bathrooms -->
+                  <div class="d-flex align-items-center pb-4">
+                    <div
+                      class="bg-light rounded-circle p-2 me-2 d-flex justify-content-center align-items-center icon-hover"
+                      style="width: 40px; height: 40px;">
+                      <img src="icons/Bath.svg" alt="Bathroom Icon" width="26" height="26">
+                    </div>
+                    <div>
+                      <div class=" text-muted"style="font-size:1.2rem">5 Baths</div>
+
+                      <!-- <div>Bathrooms</div> -->
+                    </div>
+                  </div>
+
+                  <!-- Indoor Area -->
+                  <div class="d-flex align-items-center pb-4">
+                    <div
+                      class="bg-light rounded-circle p-2 me-2 d-flex justify-content-center align-items-center icon-hover"
+                      style="width: 40px; height: 40px;">
+                      <img src="icons/Area.svg" alt="Indoor Area Icon" width="26" height="26">
+                    </div>
+                    <div>
+                      <div class=" text-muted"style="font-size:1.2rem">350 m²</div>
+                      
+                      <!-- <div>Indoor Area</div> -->
+                    </div>
+                  </div>
+                </div>
+                
+                  <!-- Buttons -->
+                  <div class="d-grid gap-3">
+                    <button class="btn btn-caffe-tertiary fs-5 fw-bold">Tour in person</button>
+                    <button class="btn btn-caffe-tertiary fw-bold fs-5">Tour via video chat</button>
+
+                    <div class="text-center text-caffe-dark"><strong>OR</strong></div>
+                    <button class="btn btn-caffe-primary fw-bold fs-5">Request showing</button>
+                  </div>
+                  </div>
+                </div>
+                
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+    <section id="location" class="rounded-3 ps-5 col-8">
+
+      <h2 class="mb-3">
+        <i class="bi bi-geo-alt-fill me-3 fs-3 text-caffe"></i>
+        <span class="fs-3 fw-bold heading-line">Location</span>
+      </h2>
+
+      <div class=" my-4 ps-5 pb-3">
+        <!-- Subtitle Before Description -->
+        <h4>
+          <i class="bi bi-map me-2 text-caffe"></i>Around this home
+        </h4>
+
+        <!-- Flexbox Container for Location & Map -->
+        <div class="d-flex align-items-start mt-2 mb-4">
+
+          <!-- Buttons: Hide Map & Share Location -->
+          <div class="mt-3">
+            <button class="btn btn-light text-caffe fw-bold me-2" (click)="toggleMap()">
+              <i class="bi" [ngClass]="isMapVisible ? 'bi-eye-slash' : 'bi-eye'"></i>
+              {{ isMapVisible ? 'Hide Map' : 'Show Map' }}
+            </button>
+
+            <!-- Share Location Button -->
+            <button class="btn bg-caffe text-white" (click)="openShareModal()">
+              <i class="bi bi-share-fill"></i> Share Location
+            </button>
+
+            <!-- Bootstrap Modal -->
+            <div class="modal fade" id="shareLocationModal" tabindex="-1" aria-labelledby="shareLocationModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="shareLocationModalLabel">Share Location</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Copy the link below to share the location:</p>
+                    <input type="text" class="form-control" [value]="locationUrl" readonly>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn bg-caffe text-white" (click)="copyToClipboard()">Copy Link</button>
+                    <button type="button" class="btn btn-light text-caffe" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+
+
+        <app-leaflet-map *ngIf="isMapVisible" [locationName]="property.location" [styleTxt]="{
+              'height': '350px',
+              'width': '95%',
+              'display': 'block',
+              'margin-left': '15px'
+            }">
+        </app-leaflet-map>
+
+
+      </div>
+      <hr class="mt-4 pb-4">
+
+    </section>
+
+    <section id="PropertyDetails" class=" ps-5 rounded-3  col-8 pb-2">
+
+      <h2 class="mb-3">
+        <i class="bi bi-house-door-fill me-3 fs-3 text-caffe"></i>
+
+        <span class="fs-3 fw-bold heading-line">Property Details</span>
+      </h2>
+
+      <div class="ps-5 my-4">
+        <!-- bi bi-info-circle -->
+        <!-- Subtitle Before Description -->
+        <h4>
+          <i class="bi bi-shield-check me-2 text-caffe"></i>Highlights of Key Features
+        </h4>
+      </div>
+
+      <div class="container my-4 ps-5">
+        <div class="row g-3 px-5">
+          <!-- Property Type Card -->
+          <div class="col-12 col-xl-4">
+            <div class="card h-100 shadow-sm border-0">
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-tag text-caffe fs-5 fs-sm-4"></i>
+                  <div class="d-flex flex-wrap flex-sm-nowrap w-100">
+                    <span class="fw-bold pe-2 fs-5 fs-sm-5">Type:</span>
+                    <span class="text-truncate fs-5">{{ property.type === 'Sell' ? 'For Sale' : 'For Rent' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Property Category Card -->
+          <div class="col-12  col-xl-4">
+            <div class="card h-100 shadow-sm border-0">
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-building text-caffe fs-5 fs-sm-4"></i>
+                  <div class="d-flex flex-wrap flex-sm-nowrap w-100">
+                    <span class="fw-bold pe-2 fs-5 fs-sm-5">Category:</span>
+                    <span class="text-truncate fs-5">{{ property.propertyCategory }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Property Status Card -->
+          <div class="col-12  col-xl-4">
+            <div class="card h-100 shadow-sm border-0">
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="text-caffe fs-5 fs-sm-4" [ngClass]="{
+                              'bi bi-check-circle': property.status === 'Available',
+                              'bi bi-x-circle': property.status === 'Sold',
+                              'bi bi-broadcast': property.status === 'Auctioned'
+                            }"></i>
+                  <div class="d-flex flex-wrap flex-sm-nowrap w-100">
+                    <span class="fw-bold pe-2 fs-5 fs-sm-5">Status:</span>
+                    <span class="text-truncate fs-5">{{ property.status }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price/Sq.Ft Card -->
+          <div class="col-12 col-xl-4">
+            <div class="card h-100 shadow-sm border-0">
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-cash-stack text-caffe fs-5 fs-sm-4"></i>
+                  <div class="d-flex flex-wrap flex-sm-nowrap w-100">
+                    <span class="fw-bold pe-2 fs-5 fs-sm-5">Price/Sq.Ft:</span>
+                    <span class="text-truncate fs-5">${{ property.price }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Time Card -->
+          <div class="col-12  col-xl-4">
+            <div class="card h-100 shadow-sm border-0">
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2">
+                  <!-- <i class="bi bi-clock me-2"></i> -->
+                  <i class="bi bi-hourglass-split  text-caffe fs-5 fs-sm-4"></i>
+                  <div class="d-flex flex-wrap flex-sm-nowrap w-100">
+                    <span class="fw-bold pe-2 fs-5 fs-sm-5">Posted:</span>
+                    <span class="text-truncate fs-5">{{ property.postedDate }} ago
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Area Card -->
+          <div class="col-12 col-xl-4">
+            <div class="card h-100 shadow-sm border-0">
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-aspect-ratio text-caffe fs-5 fs-sm-4"></i>
+                  <div class="d-flex flex-wrap flex-sm-nowrap w-100">
+                    <span class="fw-bold pe-2 fs-5 fs-sm-5">Area:</span>
+                    <span class="text-truncate fs-5">{{ property.area }} m²</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class=" pt-5">
+          <h4>
+            <i class="bi bi-person-check me-2  text-caffe"></i>
+            <span>Property listed by
+              {{ seller.type === 'Agent' ? 'an' : 'a' }} {{ seller.type }}
+            </span>
+
+          </h4>
+          <div class="col-12  py-4 px-5 ">
+            <div class="card h-100 shadow-sm border-0">
+              <div class="card-body d-flex align-items-start justify-content-between">
+
+                <!-- Left: Seller Info -->
+                <div class="d-flex align-items-start gap-3">
+                  <!-- Seller Image -->
+                  <img [src]="seller.imageUrl" alt="Seller Photo" class="rounded-circle shadow-sm mt-1"
+                    style="width: 80px; height: 80px; object-fit: cover;">
+
+                  <!-- Seller Details -->
+                  <div class="pt-1">
+                    <h6 class="mb-1 fs-3 pb-2">{{ seller.name }}</h6>
+                    <p class="text-muted fst-italic small mb-0">
+                      <i [ngClass]="seller.type === 'Agent' ? 'bi-patch-check' : 'bi-person-circle'"
+                        class="me-1 text-caffe">
+                      </i>
+                      {{ seller.type === 'Agent' ? 'Verified real estate agent' : 'Original property seller' }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="pt-4 ">
+                  <button class="btn  bg-caffe d-inline-flex align-items-center gap-2 px-4 py-2 
+                             rounded-pill shadow-sm-hover transition-all 
+                             position-relative overflow-hidden 
+                             hover:bg-caffe-dark 
+                             focus:shadow-lg focus:outline-none 
+                             active:scale-95
+                             border-0
+                             transform-transition
+                             pe-4"> <!-- Added right padding -->
+                    <span class="position-absolute top-0 left-0 w-100 h-100 rounded-pill ring-effect"></span>
+                    <i class="bi bi-chat-dots fs-5 text-white icon-shake"></i>
+                    <span class="fw-semibold text-white ls-1 fs-6">Contact</span>
+                    <span class="arrow-transition d-inline-flex overflow-hidden">
+                      <i class="bi bi-arrow-right-short text-white fs-3"></i>
+                    </span>
+                  </button>
+                </div>
+
+                <style>
+                </style>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <hr class="mt-4">
+
+    </section>
+    <section>
+      <app-recommended id="stop-scroll"></app-recommended>
+    </section>
+
+  </div>
+
+</div>
+
+
+<!-- <app-recommended ></app-recommended> -->
