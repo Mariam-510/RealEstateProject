@@ -2,7 +2,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { CartService } from '../../Services/cart.service';
+import { CartService } from '../../../Services/cart.service';
 
 interface Address {
   id: number;
@@ -45,7 +45,7 @@ export class AddressSelectionComponent {
 
   selectedAddressId: number | null = null;
 
-  constructor(private cartService: CartService) {}
+  constructor(private cartService: CartService) { }
 
   selectAddress(addressId: number): void {
     this.selectedAddressId = addressId;
