@@ -1,1 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+.text-brown
+{
+    color: #c38e79 !important;
+}
+.bg-brown
+{
+    background-color: #c38e79 !important;
+}
+.bg-caffe-light {
+    background-color: rgba(195, 142, 121, 0.05) !important;
+  }
