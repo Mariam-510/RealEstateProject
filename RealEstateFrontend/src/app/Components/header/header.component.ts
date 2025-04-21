@@ -28,7 +28,6 @@ interface CartItem {
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
-
   constructor(private elRef: ElementRef, private _shared: SharedService, private router: Router, private dialog: MatDialog) { }
 
   showMobileNav = false;
@@ -158,10 +157,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.closeMenus();
   }
 
-  openSigUPDialog(): void {
-    this.dialog.open(SignUpRoleComponentComponent);
-  }
-
   handleLogout() {
     // Implement logout logic
     this.isLoggedIn = false;
@@ -173,5 +168,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (!this.elRef.nativeElement.contains(event.target)) {
       this.closeMenus();
     }
+  }
+
+  openSigUPDialog(): void {
+    this.dialog.open(SignUpRoleComponentComponent);
   }
 }
