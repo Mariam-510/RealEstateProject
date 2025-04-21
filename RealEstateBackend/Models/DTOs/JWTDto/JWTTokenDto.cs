@@ -1,4 +1,4 @@
-﻿namespace RealEstate.Models.Dtos.AccountDto
+﻿namespace RealEstate.Models.Dtos.JWTDto
 {
     public class JWTTokenDto
     {
