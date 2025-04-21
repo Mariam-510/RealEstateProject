@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, inject, Input, OnDestroy } from '@angular/core';
 import * as L from 'leaflet';
+import { ToastrService } from '../Service/toastr.service';
 import { CommonModule } from '@angular/common';
 import { lastValueFrom } from 'rxjs';
 
@@ -19,7 +20,7 @@ export class LeafletMapComponent implements AfterViewInit, OnDestroy {
   public mapId: string; // Add unique ID property
 
   // Add component destruction handler
-  constructor() {
+  constructor(private toastr: ToastrService) {
     this.mapId = `map-${Math.random().toString(36).slice(2, 11)}`;
   }
 
@@ -101,11 +102,11 @@ export class LeafletMapComponent implements AfterViewInit, OnDestroy {
         },
         (error) => {
           console.error('Error getting user location:', error);
-          // this.toastr.error('Unable to retrieve your location. Please ensure location services are enabled.');
+          this.toastr.error('Unable to retrieve your location. Please ensure location services are enabled.');
         }
       );
     } else {
-      // this.toastr.error('Geolocation is not supported by this browser.');
+      this.toastr.error('Geolocation is not supported by this browser.');
     }
   }
 
