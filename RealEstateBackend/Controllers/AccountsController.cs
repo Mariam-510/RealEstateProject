@@ -8,6 +8,7 @@ using RealEstate.JWT;
 using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos.AccountDto;
 using RealEstate.Models.Dtos.EmailDto;
+using RealEstate.Models.Dtos.JWTDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
 //using Stripe;
@@ -368,7 +369,7 @@ namespace RealEstate.Controllers
                 {
                     var roles = await UserManager.GetRolesAsync(account);
 
-                    var userId = 0;
+                    int userId = 0;
                     var fName = "";
                     var lName = "";
 
@@ -409,11 +410,17 @@ namespace RealEstate.Controllers
                             fName = buyer.FirstName;
                             lName = buyer.LastName;
                         }
-
                     }
 
-                    //create token
-                    var jwtToken = TokenService.CreateJWTToken(account, roles.ToList());
+
+                    var userClaims = new UserClaimsDto
+                    {
+                        UserId = userId,
+                        FirstName = fName,
+                        LastName = lName
+                    };
+
+                    var jwtToken = TokenService.CreateJWTToken(account, roles.ToList(), userClaims);
 
                     var tokenDto = new JWTTokenDto()
                     {
