@@ -1,6 +1,6 @@
 <div class="d-flex w-100 min-vh-100 shadow overflow-hidden">
     <div class="left-section bg-white position-relative d-flex flex-column justify-content-center align-items-center">
-        <h2 class="text-brown mt-5 text-center">
+        <h2 class="text-caffe mt-5 text-center">
             <i class="bi bi-box-arrow-in-right mt-5 fs-2"></i> Sign Up
         </h2>
         <form [formGroup]="Registerform" class="w-75" (ngSubmit)="Register()">
@@ -10,7 +10,7 @@
                         <label class="form-label fw-semibold mb-0">First Name</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-0">
-                                <i class="bi bi-person text-brown fs-5"></i>
+                                <i class="bi bi-person text-caffe fs-5"></i>
                             </span>
                             <input type="text" class="form-control border-0 shadow-sm" placeholder="First Name"
                                 formControlName="firstName">
@@ -38,7 +38,7 @@
                         <label class="form-label fw-semibold mb-0">Last Name</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-0">
-                                <i class="bi bi-person-fill text-brown fs-5"></i>
+                                <i class="bi bi-person-fill text-caffe fs-5"></i>
                             </span>
                             <input type="text" class="form-control border-0 shadow-sm" placeholder="Last Name"
                                 formControlName="lastName">
@@ -62,7 +62,7 @@
                 <label class="form-label fw-semibold mb-0">Email</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light border-0">
-                        <i class="bi bi-envelope text-brown fs-5"></i>
+                        <i class="bi bi-envelope text-caffe fs-5"></i>
                     </span>
                     <input type="email" class="form-control border-0 shadow-sm" placeholder="Enter your email"
                         formControlName="email">
@@ -82,7 +82,7 @@
                 <label class="form-label fw-semibold mb-0">Password</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light border-0">
-                        <i class="bi bi-key text-brown fs-5"></i>
+                        <i class="bi bi-key text-caffe fs-5"></i>
                     </span>
                     <input type="password" class="form-control border-0 shadow-sm" placeholder="Enter password"
                         formControlName="pass">
@@ -109,7 +109,7 @@
                     <label class="form-label fw-semibold mb-0">Confirm Password</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-0">
-                            <i class="bi bi-key-fill text-brown fs-5"></i>
+                            <i class="bi bi-key-fill text-caffe fs-5"></i>
                         </span>
                         <input type="password" class="form-control border-0 shadow-sm" placeholder="Enter password"
                             formControlName="confirmPassword">
@@ -128,7 +128,7 @@
                     
             </div>
             <!-- Submit and Google Signup -->
-            <button class="mt-4 mb-2 text-light p-2 btnStyle bg-brown w-75 mx-auto d-block">Sign Up</button>
+            <button class="mt-4 mb-2 text-light p-2 btnStyle bg-caffe w-75 mx-auto d-block">Sign Up</button>
             <div class="d-flex align-items-center mt-2">
                 <hr class="flex-grow-1">
                 <span class="mx-2">OR</span>
@@ -144,7 +144,7 @@
             </div>
             <p class="text-center mt-3 mb-0">
                 Already have an account?
-                <a [routerLink]="['/login']" class="text-decoration-none fw-bold text-brown">Sign In</a>
+                <a [routerLink]="['/login']" class="text-decoration-none fw-bold text-caffe">Sign In</a>
             </p>
         </form>
     </div>
