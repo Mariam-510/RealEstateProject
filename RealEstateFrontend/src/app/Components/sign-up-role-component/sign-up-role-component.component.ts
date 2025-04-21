@@ -9,14 +9,14 @@ import { Router, RouterModule } from '@angular/router';
   templateUrl: './sign-up-role-component.component.html',
   styleUrl: './sign-up-role-component.component.css'
 })
- 
+
 export class SignUpRoleComponentComponent {
 
   constructor(
     public dialogRef: MatDialogRef<SignUpRoleComponentComponent>,
-    private router: Router, 
+    private router: Router,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) { }
 
   closeDialog(): void {
     this.dialogRef.close();
@@ -27,13 +27,23 @@ export class SignUpRoleComponentComponent {
     this.router.navigate(['/registerasagent']);
   }
 
+  // signUpAsSeller(): void {
+  //   this.dialogRef.close();
+  //   this.router.navigate(['/register']);
+  // }
+
+  // signUpAsBuyer(): void {
+  //   this.dialogRef.close();
+  //   this.router.navigate(['/register']);
+  // }
+
   signUpAsSeller(): void {
-    this.dialogRef.close();  
-    this.router.navigate(['/register']);
+    this.dialogRef.close();
+    this.router.navigate(['/register'], { queryParams: { role: 'seller' } });
   }
 
   signUpAsBuyer(): void {
-    this.dialogRef.close(); 
-    this.router.navigate(['/register']);
+    this.dialogRef.close();
+    this.router.navigate(['/register'], { queryParams: { role: 'buyer' } });
   }
 }

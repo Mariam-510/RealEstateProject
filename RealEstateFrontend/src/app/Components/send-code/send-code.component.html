@@ -14,9 +14,9 @@
                 <div class="mt-4">
                     <div class="d-flex justify-content-center gap-2">
                         <div *ngFor="let ctrl of codeArray; let i = index; trackBy: trackByIndex" class="text-center">
-                          <input 
-                            type="text" 
-                            maxlength="1" 
+                          <input
+                            type="text"
+                            maxlength="1"
                             class="form-control text-center shadow-sm rounded-3"
                             [(ngModel)]="codeArray[i]"
                             [ngModelOptions]="{standalone: true}"
@@ -24,11 +24,11 @@
                             (blur)="validateInputOnBlur(i)"
                             [ngClass]="{'border-danger': validationErrors[i], 'border-1': validationErrors[i]}">
                         </div>
-                      </div>                                
-                                     
-                    <div class="error text-danger ms-3">
-                        
-                    </div>
+                      </div>
+
+                          <div class="error text-danger ms-3">
+                            {{errorMes}}
+                          </div>
                     <div class="d-flex justify-content-between ">
                         <button  class="mt-4 mb-2 text-light p-2 btnStyle bg-caffe w-50 mx-auto d-block"[disabled]="!isFormValid()">Verifycode</button>
                     </div>
