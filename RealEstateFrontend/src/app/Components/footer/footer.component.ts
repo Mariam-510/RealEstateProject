@@ -11,9 +11,9 @@ import { RouterModule } from '@angular/router';
 export class FooterComponent {
 
   quickLinks = [
-    { label: 'Properties', path: '/home/properties', icon: 'bi-house-fill' },
-    { label: 'Furniture', path: '/home/products', icon: 'bi bi-lamp-fill' },
-    { label: 'Auctions', path: '/home/auctions', icon: 'bi-hammer' },
+    { label: 'Properties', path: '/properties', icon: 'bi-house-fill' },
+    { label: 'Furniture', path: '/products', icon: 'bi bi-lamp-fill' },
+    { label: 'Auctions', path: '/auctions', icon: 'bi-hammer' },
     { label: 'About Us', path: '/about', icon: 'bi-info-circle-fill' }
   ];
   
