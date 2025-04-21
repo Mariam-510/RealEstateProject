@@ -1,0 +1,140 @@
+#progressbar-2 {
+    color: #455A64;
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+#progressbar-2 li {
+    position: relative;
+    text-align: center;
+    width: 50%;
+}
+
+#progressbar-2 li:before {
+    content: '\F287';
+    font-family: "bootstrap-icons";
+    font-size: 13px;
+    /* Set your default icon size here */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #c5cae9;
+    color: #fff;
+    z-index: 1;
+    position: relative;
+}
+
+#progressbar-2 li.active:before {
+    content: '\F26E';
+    /* Bootstrap check-circle icon */
+    font-family: "bootstrap-icons";
+    font-size: 22px;
+    /* Set active icon size */
+    background: green;
+    color: #fff;
+}
+
+
+#progressbar-2 li:after {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(0);
+    height: 5px;
+    width: 100%;
+    background: #c5cae9;
+    z-index: 0;
+}
+
+#progressbar-2 li.completed-line:after {
+    background: green;
+}
+
+#progressbar-2 li:first-child:after {
+    left: 50%;
+    width: 100%;
+}
+
+#progressbar-2 li:last-child:after {
+    display: none;
+    /* no line after the last step */
+}
+
+/* Make it look good on smaller screens */
+@media (max-width: 768px) {
+    #progressbar-2 li:before {
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        font-size: 10px;
+    }
+
+    #progressbar-2 li:after {
+        top: 14px;
+        height: 4px;
+    }
+}
+
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+
+.badge {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.custom-outline {
+    border: 2px solid #c38e79;
+    color: #c38e79;
+    background-color: transparent;
+    border-radius: 6px;
+    padding: 10px;
+    transition: all 0.3s ease;
+}
+.btn:hover.custom-outline {
+    background-color: #c38e79;
+    color: white;
+    border: 2px solid #c38e79;
+    transform: translateY(-2px);
+    transition: all 0.6s ease;
+}
+.cancelled-icon {
+    color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.1);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+  
+  .cancelled-order-card {
+    border-left: 4px solid #dc3545;
+    animation: fadeIn 0.5s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .cancellation-details {
+    border-left: 3px solid #dc3545;
+  }
