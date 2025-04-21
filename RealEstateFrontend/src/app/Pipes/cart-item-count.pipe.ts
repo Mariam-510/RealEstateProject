@@ -1,13 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { CartItem, CartService } from '../Services/cart.service';
+import { CartItem, CartService } from '../Services/BackServices/cart.service';
 
- /* Custom pipe for item count display */
- @Pipe({ name: 'cartItemCount' })
- export class CartItemCountPipe implements PipeTransform {
+/* Custom pipe for item count display */
+@Pipe({ name: 'cartItemCount' })
+export class CartItemCountPipe implements PipeTransform {
 
-  constructor(public cartService: CartService) {}
+  constructor(public cartService: CartService) { }
 
-   transform(items: CartItem[]): number {
-     return items?.reduce((total, item) => total + item.quantity, 0) || 0;
-   }
- }
+  transform(items: CartItem[]): number {
+    return items?.reduce((total, item) => total + item.quantity, 0) || 0;
+  }
+}
