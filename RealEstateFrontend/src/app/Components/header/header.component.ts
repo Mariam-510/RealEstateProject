@@ -2,7 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, effect, ElementRef, HostListener, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+
+import { MatDialog } from '@angular/material/dialog';
 import { SharedService } from '../../Services/shared.service';
+import { SignUpRoleComponentComponent } from '../sign-up-role-component/sign-up-role-component.component';
 
 interface User {
   name: string;
@@ -25,7 +28,8 @@ interface CartItem {
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
-  constructor(private elRef: ElementRef, private _shared: SharedService, private router: Router) {}
+
+  constructor(private elRef: ElementRef, private _shared: SharedService, private router: Router, private dialog: MatDialog) { }
 
   showMobileNav = false;
   showUserMenu = false;
@@ -152,6 +156,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Implement auth logic
     console.log(`Auth type: ${type}`);
     this.closeMenus();
+  }
+
+  openSigUPDialog(): void {
+    this.dialog.open(SignUpRoleComponentComponent);
   }
 
   handleLogout() {
