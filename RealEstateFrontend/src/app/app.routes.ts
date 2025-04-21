@@ -43,7 +43,9 @@ import { ProductDetailsComponent } from './Components/productComponent/product-d
 import { CatSliderComponent } from './Components/Product Home/Sliders/cat-slider/cat-slider.component';
 import { HomePageComponent } from './Components/home-page/home-page.component';
 import { HomeTesttttComponent } from './Components/home-testttt/home-testttt.component';
-
+import { CatSliderComponent } from './Components/Product Home/Sliders/cat-slider/cat-slider.component';
+import { ChatmodalComponent } from './Components/Chat/chatmodal/chatmodal.component';
+import { MainChatComponent } from './Components/Chat/main-chat/main-chat.component';
 export const routes: Routes = [
   { path: 'products/category/:id', component: CategoryComponent },
 
@@ -69,6 +71,19 @@ export const routes: Routes = [
     component: CategoryComponent,
     pathMatch: 'full',
   },
+  {path:'chat',component:ChatmodalComponent},
+
+  {path:'MainChat', component:MainChatComponent},
+  
+  { path: 'products/category/:id', component: CategoryComponent },
+
+  { path: 'homePage', component: AboutComponent },
+
+  { path: 'home/products', component: PHomeComponent },
+
+  { path: 'home/properties', component: PropertyHomeComponent },
+
+  { path: 'home/auctions', component: CatSliderComponent },
   
   { path: 'products/category/:id', component: CategoryComponent },
 

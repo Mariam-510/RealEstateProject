@@ -117,7 +117,6 @@ private updateAuctionsStatus(): void {
     if (this.countdownSubscription) {
       this.countdownSubscription.unsubscribe();
     }
-    window.removeEventListener('resize', this.resizeListener);
     if (this.autoScrollInterval) {
       clearInterval(this.autoScrollInterval);
     }
@@ -608,50 +607,20 @@ getAuctionStatusMessage(auction: Auction): string {
 }
 
 @ViewChild('scrollContainer') scrollContainer!: ElementRef;
-@ViewChild('scrollContainer') scrollContainerRef!: ElementRef<HTMLDivElement>;
+// @ViewChild('scrollContainer') scrollContainerRef!: ElementRef<HTMLDivElement>;
 
   isLeftDisabled = true;
   isRightDisabled = true;
-  private resizeListener = () => {
-    setTimeout(() => this.checkScrollButtons());
-  };
-  
+
   ngAfterViewInit() {
-    setTimeout(() => this.checkScrollButtons());
-    window.addEventListener('resize', this.resizeListener);
-    setTimeout(() => {
-      this.checkScrollButtons();
-      this.startAutoScroll(); // Start auto-scroll after view initializes
-    });
-    window.addEventListener('resize', this.resizeListener);
+
     this.startAutoScroll();
   }
 
 
 
-  checkScrollButtons(): void {
-    const container = this.scrollContainerRef.nativeElement;
-    const scrollLeft = container.scrollLeft;
-    const scrollWidth = container.scrollWidth;
-    const clientWidth = container.clientWidth;
-  
-    this.isLeftDisabled = scrollLeft <= 0;
-    this.isRightDisabled = scrollLeft + clientWidth >= scrollWidth - 1;
-  }
-  
-  scrollLeft(container: HTMLElement): void {
-    container.scrollBy({ left: -200, behavior: 'smooth' });
-    setTimeout(() => this.checkScrollButtons(), 300); // Wait for smooth scroll
-  }
-  
-  scrollRight(container: HTMLElement): void {
-    container.scrollBy({ left: 200, behavior: 'smooth' });
-    setTimeout(() => this.checkScrollButtons(), 300); // Wait for smooth scroll
-  }
-  
-  onScroll() {
-    setTimeout(() => this.checkScrollButtons());
-  }
+
+
   // Add these variables to the component class
 private autoScrollInterval: any;
 private isMouseOver = false;
