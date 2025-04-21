@@ -1,0 +1,311 @@
+.chat-window {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 420px;
+    z-index: 1050;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .card {
+    border: none;
+  }
+  
+  .card-header {
+    background-color: #f8f5f2;
+    border-bottom: 1px solid #e0d7d1;
+  }
+  
+  .text-brown {
+    color: #4a2c2a;
+  }
+  
+  .bg-light-brown {
+    background-color: #f8f5f2;
+  }
+  
+  .profile-img {
+    border: 2px solid #c38e79;
+  }
+  
+  .messages-container {
+    height: 400px;
+    overflow-y: auto;
+    background-color: white;
+    padding: 1rem;
+  }
+  
+  .message-bubble {
+    /* max-width: 80%; */
+    padding: 12px 16px;
+    margin: 4px 0;
+    transition: all 0.2s ease;
+
+  }
+  
+  .sent-message {
+    background-color: #e6c9bf4b;
+    border-radius: 15px 15px 0 15px;
+    margin-right: 0.5rem;
+
+  }
+  
+  .received-message {
+    background-color: #ffffff;
+    border: 1px solid #e0d7d1;
+    border-radius: 0 15px 15px 15px;
+
+  }
+  
+  .message-metadata {
+    font-size: 0.75rem;
+  }
+  
+  .card-footer .btn-brown {
+    background-color: #8d5c52;
+    color: white;
+  }
+  
+  .card-footer .btn-brown:hover {
+    background-color: #6c443e;
+  }
+  
+  .date-separator .badge {
+    font-size: 0.85rem;
+    padding: 0.5em 1em;
+  }
+  
+.profile-img.sent {
+    order: 2; /* Makes image appear after message */
+    margin-left: 0.5rem;
+}
+.profile-img {
+    border: 2px solid #c38e79;
+}
+.sent-message {
+    background-color: #e6c9bf4b;
+    /* color: white; */
+    border-radius: 15px 15px 0 15px;
+      order: 1; /* Makes message bubble appear first */
+    margin-right: 0.5rem;
+}
+
+.received-message {
+    background-color: #ffffff;
+    border: 1px solid #e0d7d1;
+    border-radius: 0 15px 15px 15px;
+}
+.form-control:focus {
+    border-color: #c38e79;
+    box-shadow: 0 0 0 0.2rem rgba(195, 142, 121, 0.25);
+}
+.date-separator {
+    position: relative;
+    z-index: 1;
+    &:before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        border-top: 1px solid #e0d7d1;
+        z-index: -1;
+    }
+    .badge {
+        background-color: #f8f5f2;
+        padding: 0.25rem 0.75rem;
+    }
+}
+/* Scrollbar styling */
+.messages-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+    background: #f8f5f2;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+    background-color: #c38e79;
+    border-radius: 4px;
+}
+.message-metadata {
+    font-size: 0.75rem;
+    color: #7a6a65;
+}
+.status-indicator {
+    font-size: 0.8rem;
+    &.status-read {
+        color: #28a745; /* Green */
+    }
+    &.status-delivered {
+        color: #4a2c2a; /* Brown */
+    }
+    &.status-sent {
+        color: #6c757d; /* Gray */
+    }
+    &.status-pending {
+        color: #ffc107; /* Yellow */
+    }
+    &.status-rejected {
+        color: #dc3545; /* Red */
+    }
+}
+
+.messages-container {
+    max-height: 500px; /* or any height you want */
+    overflow-y: auto;
+    position: relative;
+  }
+.chat-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #fff; /* Ensure background so it doesn't look transparent */
+  }
+.textarea.form-control {
+    padding: 10px; /* Add padding inside the textarea */
+    font-size: 1rem; /* Ensure the font size is consistent */
+    line-height: 1.5; /* Improve line spacing */
+}
+.message-bubble {
+    max-width: calc(100% - 60px); /* Allow more width while maintaining spacing */
+    width: fit-content; /* Shrink to content width */
+    overflow-wrap: normal; /* Only break words when necessary */
+    word-break: normal; /* Keep normal word breaking behavior */
+    white-space: pre-wrap; /* Preserve whitespace but allow wrapping */
+  }
+  
+  /* Add this to ensure proper flex behavior */
+  .d-flex[ngClass*='justify-content-'] {
+    flex-shrink: 0; /* Prevent flex items from shrinking */
+  }
+  
+  .messages-container {
+    overflow-x: hidden;
+    min-width: 0; /* Allow content to shrink below default minimum */
+  }
+  .message-bubble {
+    max-width: calc(100% - 40px); /* Increased from 60px */
+    width: auto; /* Let content determine width */
+    min-width: 120px; /* Minimum width for small messages */
+    overflow-wrap: break-word;
+    white-space: normal; /* Allow natural wrapping */
+    word-break: normal; /* Standard word breaking */
+  }
+  
+/* Message bubble adjustments */
+.message-bubble {
+    max-width: calc(100% - 50px); /* Slightly reduce available space */
+    width: fit-content;
+    min-width: 80px; /* Smaller minimum width for short messages */
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    padding: 10px 15px;
+  }
+  
+
+  
+  .sent-message {
+    background-color: #e6c9bf4b;
+    /* color: white; */
+    border-radius: 15px 15px 0 15px;
+      order: 1; /* Makes message bubble appear first */
+    margin-right: 0.5rem;
+}
+
+.received-message {
+    background-color: #ffffff;
+    border: 1px solid #e0d7d1;
+    border-radius: 0 15px 15px 15px;
+}
+
+  /* Flex container adjustments */
+  .message-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .d-flex[ngClass*='justify-content-'] {
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 100%;
+  }
+  
+  /* Container constraints */
+  .messages-container {
+    overflow-x: hidden;
+    contain: style;
+    padding: 0 8px; /* Add slight horizontal padding */
+  }
+  
+  /* Metadata alignment */
+  .message-metadata {
+    max-width: 85%; /* Match message bubble width */
+    margin-left: auto; /* For sent messages */
+  }
+  
+  .received-message + .message-metadata {
+    margin-left: 0.5rem; /* For received messages */
+  }
+  .message-bubble-with-meta {
+    padding: 12px 16px;
+    margin: 4px 0;
+    /* white-space: pre; */
+    /* max-width: 75%; */
+    position: relative;
+    font-size: 0.95rem;
+    word-break: break-word;
+    white-space: pre-line;
+/* word-break: keep-all; */
+
+  }
+  
+  .sent-message {
+    background-color: #e6c9bf4b;
+    border-radius: 15px 15px 0 15px;
+    margin-right: 0.5rem;
+    align-self: flex-end;
+  }
+  
+  .received-message {
+    background-color: #ffffff;
+    border: 1px solid #e0d7d1;
+    border-radius: 0 15px 15px 15px;
+    align-self: flex-start;
+  }
+  
+  .bubble-meta {
+    font-size: 0.75rem;
+    text-align: right;
+    margin-top: 4px;
+    opacity: 0.7;
+  }
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  
+  .active-chat {
+    background-color: #f8f5f2;
+    border-left: 3px solid #8d5c52;
+  }
+  .chat-list-item {
+    transition: background-color 0.2s;
+    &:hover {
+      background-color: #f8f5f2;
+    }
+    .text-truncate {
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+  
+  .active-chat {
+    background-color: #f8f5f2 !important;
+    border-left: 3px solid #8d5c52;
+  }

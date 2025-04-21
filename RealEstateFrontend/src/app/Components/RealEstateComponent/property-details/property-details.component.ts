@@ -6,6 +6,7 @@ import { SharedServiceService, PropertyDto } from '../../../Services/shared-serv
 import { CardmapComponent } from '../cardmap/cardmap.component';
 import { PropertyDetialsLeafletMapComponent } from '../property-detials-leaflet-map/property-detials-leaflet-map.component';
 import { PropertyPhotoModalComponent } from '../property-photo-modal/property-photo-modal.component';
+import { ChatmodalComponent } from '../../Chat/chatmodal/chatmodal.component';
 
 declare var bootstrap: any; // Required for Bootstrap modal handling
 
@@ -43,7 +44,8 @@ export interface Property {
     PropertyPhotoModalComponent,
     RecommendedComponent,
     CardmapComponent,
-    PropertyDetialsLeafletMapComponent
+    PropertyDetialsLeafletMapComponent,
+    ChatmodalComponent
   ],
   templateUrl: './property-details.component.html',
   styleUrl: './property-details.component.css'

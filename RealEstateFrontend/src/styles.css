@@ -24,3 +24,6 @@
 .text-brown{
     color:#4a2c2a !important;
 }
+.bg-caffe-light {
+  background-color: rgba(195, 142, 121, 0.05) !important; 
+}

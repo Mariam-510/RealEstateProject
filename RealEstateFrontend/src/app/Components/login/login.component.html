@@ -1,13 +1,13 @@
 
     <div class="d-flex w-100 min-vh-100 shadow overflow-hidden">
         <div class="left-section bg-white d-flex flex-column justify-content-center">
-            <h2 class="text-brown mb-2 mt-5 text-center " ><i class="bi bi-box-arrow-in-right me-2 mt-5 fs-2"></i> Log In</h2>
+            <h2 class="text-caffe mb-2 mt-5 text-center " ><i class="bi bi-box-arrow-in-right me-2 mt-5 fs-2"></i> Log In</h2>
             <form [formGroup]="Loginform" (ngSubmit)="login()">
                 <div class="mb-3 mt-5 ">
                     <label class="form-label fw-semibold mb-2">Email</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-0">
-                            <i class="bi bi-envelope text-brown fs-5"></i>
+                            <i class="bi bi-envelope text-caffe fs-5"></i>
                         </span>
                         <input type="email" class="form-control border-0 shadow-sm" placeholder="Enter your email"
                             formControlName="email">
@@ -27,7 +27,7 @@
                     <label class="form-label fw-semibold mb-2">Password</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-0">
-                            <i class="bi bi-key-fill text-brown fs-5"></i>
+                            <i class="bi bi-key-fill text-caffe fs-5"></i>
                         </span>
                         <input type="password" class="form-control border-0 shadow-sm" placeholder="Enter password"
                             formControlName="pass">
@@ -44,12 +44,12 @@
                             Remember me
                         </label>
                     </div>
-                    <a [routerLink]="['/forgetpassword']" class="text-decoration-none text-brown">Forgot Password?</a>
+                    <a [routerLink]="['/forgetpassword']" class="text-decoration-none text-caffe">Forgot Password?</a>
                 </div>
                 <div class="error text-danger ms-3">
                     
                 </div>
-                <button class="mt-4 mb-2 text-light p-2 btnStyle bg-brown w-75 mx-auto d-block">Sign In</button>
+                <button class="mt-4 mb-2 text-light p-2 btnStyle bg-caffe w-75 mx-auto d-block">Sign In</button>
                            
             </form>
             <div class="d-flex align-items-center mt-2">
@@ -68,7 +68,7 @@
             <p class="text-center mt-4 mb-0">
                 Don't have account?
                 <button 
-                class="btn btn-link text-decoration-none fw-bold text-brown p-0" 
+                class="btn btn-link text-decoration-none fw-bold text-caffe p-0" 
                 (click)="openSigUPDialog()">
                 Sign Up
               </button>    
