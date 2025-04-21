@@ -8,6 +8,9 @@ using RealEstate.Repositories;
 using RealEstate.Services;
 using RealEstate.Mapping;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Transactions;
+using AutoMapper;
+using RealEstate.Models.Dtos.ProductStockDto;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,58 +22,85 @@ namespace RealEstate.Controllers
     {
         public IProductRepository _ProductRepository { get; }
         public ICategoryRepository _CategoryRepository { get; }
-
+        public IProductStockRepository productStockRepository { get; }
         public FileService _fileService { get; }
 
         private readonly ReviewService _reviewService;
+        private readonly IWishListRepository wishListRepository;
+        private readonly IMapper mapper;
 
-        public ProductsController(IProductRepository productRepository, ICategoryRepository categoryRepository, FileService fileService, ReviewService reviewService)
+        public ProductsController(IProductRepository productRepository, ICategoryRepository categoryRepository,
+            IProductStockRepository productStockRepository, FileService fileService, ReviewService reviewService,
+            IWishListRepository wishListRepository, IMapper mapper)
         {
             _ProductRepository = productRepository;
             _CategoryRepository = categoryRepository;
+            this.productStockRepository = productStockRepository;
             _fileService = fileService;
             _reviewService = reviewService;
+            this.wishListRepository = wishListRepository;
+            this.mapper = mapper;
         }
 
         [HttpPost("CreateProduct")]
-        public async Task<IActionResult> CreateProduct([FromForm]ProductDTO ProductDTO)
+        public async Task<IActionResult> CreateProduct([FromForm] ProductDTO ProductDTO)
         {
-            if (!ModelState.IsValid)
+            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                return BadRequest(ModelState);
-            }
-            Category ProductCategoryCheck = await _CategoryRepository.GetCategoryByIdAsync(ProductDTO.CategoryID);
-            if (ProductCategoryCheck == null)
-            {
-                return NotFound("CategoryID not found!");
-            }
-            else
-            {
-                Product ProductModel = ProductDTO.ToProductModel();
-
-                ProductModel.Images = new List<string>();
-                //ProductModel.ImageUrl = _fileService.UploadFile("ProductImages", ProductDTO.Productimage);
-                // Handle image uploads
-                foreach (var imageFile in ProductDTO.Productimage)
+                try
                 {
-                    var imageUrl = _fileService.UploadFile("ProductImages", imageFile);
-                    if (!string.IsNullOrEmpty(imageUrl))
+                    if (!ModelState.IsValid)
                     {
-                        ProductModel.Images.Add(imageUrl);
+                        return BadRequest(ModelState);
                     }
-                }
+                    var ProductCategoryCheck = await _CategoryRepository.GetCategoryByIdAsync(ProductDTO.CategoryID);
+                    if (ProductCategoryCheck == null)
+                    {
+                        transactionScope.Dispose();
+                        return NotFound("CategoryID not found!");
+                    }
+                    Product ProductModel = ProductDTO.ToProductModel();
 
-                Product? CreatedProduct = await _ProductRepository.CreateAsync(ProductModel);
-                if (CreatedProduct == null)
-                {
+                    ProductModel.Images = new List<string>();
+                    // Handle image uploads
+                    foreach (var imageFile in ProductDTO.ProductImages)
+                    {
+                        var imageUrl = _fileService.UploadFile("ProductImages", imageFile);
+                        if (!string.IsNullOrEmpty(imageUrl))
+                        {
+                            ProductModel.Images.Add(imageUrl);
+                        }
+                    }
+
+                    Product? CreatedProduct = await _ProductRepository.CreateAsync(ProductModel);
+                    if (CreatedProduct == null)
+                    {
+                        transactionScope.Dispose();
+                        return BadRequest("Product creation failed.");
+                    }
+
+                    var productStocks = mapper.Map<List<ProductStock>>(ProductDTO.ProductStockFormDtos);
+
+                    foreach (var productStock in productStocks)
+                    {
+                        productStock.ProductId = CreatedProduct.Id;
+                        await productStockRepository.CreateAsync(productStock);
+                    }
+
+                    ProductDTOShow DispayedProduct = CreatedProduct.ToProductDTOShow();
+                    if (DispayedProduct != null)
+                    {
+                        transactionScope.Complete();
+                        return Ok(new { message = "Product created successfully!", DispayedProduct });
+                    }
+                    transactionScope.Dispose();
                     return BadRequest("Product creation failed.");
                 }
-                ProductDTOShow DispayedProduct = CreatedProduct.ToProductDTOShow();
-                if (DispayedProduct != null)
+                catch (Exception ex)
                 {
-                    return Ok(new { message = "Product created successfully!", DispayedProduct });
+                    transactionScope.Dispose();
+                    return StatusCode(500, new { message = "An error occurred while processing your request." });
                 }
-                return BadRequest("Product creation failed.");
             }
         }
 
@@ -99,38 +129,23 @@ namespace RealEstate.Controllers
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll(string? Name = null, string? SortPrice = null, string? Category = null, string? SortQuantity = null)
         {
-           
+
             var ProductModelList = await _ProductRepository.GetAllAsync(Name, SortPrice, Category, SortQuantity);
             if (ProductModelList == null)
             {
 
-                return NotFound("Empty Product List!" );
+                return NotFound("Empty Product List!");
 
             }
             List<ProductDTOShow> ProductDtoList = new List<ProductDTOShow>();
 
             foreach (var product in ProductModelList)
             {
-                var productDto = new ProductDTOShow
-                {
-                    Id = product.Id,
-                    Name = product.Name,
-                    Description = product.Description,
-                    Price = product.Price,
-                    Quantity = product.Quantity,
-                    IsUsed = product.IsUsed,
-                    AverageRating = _reviewService.CalculateAverageRating(product.Id),
-                    NumberOfReviews = _reviewService.GetReviewCount(product.Id),
-                    IsDeleted = product.IsDeleted,
-                    CategoryID = product.CategoryID ?? 0,
-                    CategoryName = product.Category?.Name ?? string.Empty,
-                    Productimage = product.Images ?? new List<string>(),
-                    DateAdded= product.DateAdded
-                   
-                };
+                var productDto = product.ToProductDTOShow();
+                productDto.AverageRating = _reviewService.CalculateAverageRating(product.Id);
+                productDto.NumberOfReviews = _reviewService.GetReviewCount(product.Id);
 
                 ProductDtoList.Add(productDto);
-
             }
 
             if (ProductDtoList == null)
@@ -139,92 +154,136 @@ namespace RealEstate.Controllers
                 return BadRequest("Error! While Fetching Product List!");
 
             }
+
+
+            //var favoriteProducts = await wishListRepository.GetAllProductByBuyerIDAsync(1);
+            //foreach (var dto in ProductDtoList)
+            //{
+            //    if (favoriteProducts.Any(f => f.Id == dto.Id))
+            //    {
+            //        dto.IsFavorite = true;
+            //    }
+            //}
+
             return Ok(new { message = "Product List is :", ProductDtoList });
         }
 
 
         [HttpGet("GetbyId/{id}")]
-        public async Task<IActionResult> GetById( int id)
+        public async Task<IActionResult> GetById(int id)
         {
-             Product? ProductModel = await _ProductRepository.GetByIdAsync(id);
-             if(ProductModel == null)
-             {
-               return NotFound("Product Not found !" );
-             }
-            else
+            Product? ProductModel = await _ProductRepository.GetByIdAsync(id);
+            if (ProductModel == null)
             {
-                var ProductDto = ProductModel.ToProductDTOShow();
-                if (ProductDto == null)
-                {
-                    return BadRequest("Error! While Returning Product !");
-                }
-                return Ok(new { message = "Product is :", ProductDto });
+                return NotFound("Product Not found !");
+            }
+            var ProductDto = ProductModel.ToProductDTOShow();
+            ProductDto.AverageRating = _reviewService.CalculateAverageRating(ProductModel.Id);
+            ProductDto.NumberOfReviews = _reviewService.GetReviewCount(ProductModel.Id);
 
+            if (ProductDto == null)
+            {
+                return BadRequest("Error! While Returning Product !");
             }
 
-           
-             
+
+            var favoriteProducts = await wishListRepository.GetAllProductByBuyerIDAsync(1);
+            if (favoriteProducts.Any(f => f.Id == ProductDto.Id))
+            {
+                ProductDto.IsFavorite = true;
+            }
+
+            return Ok(new { message = "Product is :", ProductDto });
+
         }
 
 
         [HttpPut("UpdateProduct/{id}")]
         public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductDTO ProductDTO)
         {
-            if (!ModelState.IsValid)
+            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                return BadRequest(ModelState);
-            }
-            Category ProductCategoryCheck = await _CategoryRepository.GetCategoryByIdAsync(ProductDTO.CategoryID);
-            if (ProductCategoryCheck == null)
-            {
-                return NotFound("CategoryID not found!");
-            }
-            else
-            {
-                Product ProductModel = ProductDTO.ToProductModel();
-                Product? oldProduct = await _ProductRepository.GetByIdAsync(id);
-                if (oldProduct == null)
+                try
                 {
-                    return NotFound("Product Not found!");
-                }
-
-                //ProductModel.ImageUrl = _fileService.UpdateFile("ProductImages", ProductDTO.Productimage, oldProduct.ImageUrl);
-
-
-                // Replace existing images with new ones
-                if (ProductDTO.Productimage != null && ProductDTO.Productimage.Any())
-                {
-                    // Delete all existing images
-                    foreach (var oldImagePath in oldProduct.Images.ToList())
+                    if (!ModelState.IsValid)
                     {
-                        _fileService.DeleteFile(oldImagePath);
+                        return BadRequest(ModelState);
                     }
-
-                    oldProduct.Images.Clear();
-                    ProductModel.Images = new List<string>();
-
-                    // Upload and add new images
-                    foreach (var imageFile in ProductDTO.Productimage)
+                    Category ProductCategoryCheck = await _CategoryRepository.GetCategoryByIdAsync(ProductDTO.CategoryID);
+                    if (ProductCategoryCheck == null)
                     {
-                        var imageUrl = _fileService.UploadFile("ProductImages", imageFile);
-                        if (!string.IsNullOrEmpty(imageUrl))
+                        transactionScope.Dispose();
+                        return NotFound("CategoryID not found!");
+                    }
+                    else
+                    {
+                        Product ProductModel = ProductDTO.ToProductModel();
+                        Product? oldProduct = await _ProductRepository.GetByIdAsync(id);
+                        if (oldProduct == null)
                         {
-                            ProductModel.Images.Add(imageUrl);
+                            transactionScope.Dispose();
+                            return NotFound("Product Not found!");
                         }
+
+                        // Replace existing images with new ones
+                        if (ProductDTO.ProductImages != null && ProductDTO.ProductImages.Any())
+                        {
+                            // Delete all existing images
+                            foreach (var oldImagePath in oldProduct.Images.ToList())
+                            {
+                                _fileService.DeleteFile(oldImagePath);
+                            }
+
+                            oldProduct.Images.Clear();
+                            ProductModel.Images = new List<string>();
+
+                            // Upload and add new images
+                            foreach (var imageFile in ProductDTO.ProductImages)
+                            {
+                                var imageUrl = _fileService.UploadFile("ProductImages", imageFile);
+                                if (!string.IsNullOrEmpty(imageUrl))
+                                {
+                                    ProductModel.Images.Add(imageUrl);
+                                }
+                            }
+                        }
+
+                        Product? UpdatedProduct = await _ProductRepository.UpdateAsync(id, ProductModel);
+                        if (UpdatedProduct == null)
+                        {
+                            transactionScope.Dispose();
+                            return NotFound("Product Not found to Update!.");
+                        }
+
+                        var oldProductStocks = await productStockRepository.GetByProductIdAsync(UpdatedProduct.Id);
+
+                        foreach (var productStock in oldProductStocks)
+                        {
+                            await productStockRepository.DeleteAsync(productStock.Id);
+                        }
+
+                        var productStocks = mapper.Map<List<ProductStock>>(ProductDTO.ProductStockFormDtos);
+
+                        foreach (var productStock in productStocks)
+                        {
+                            productStock.ProductId = UpdatedProduct.Id;
+                            await productStockRepository.CreateAsync(productStock);
+                        }
+
+                        ProductDTOShow DispayedProduct = UpdatedProduct.ToProductDTOShow();
+                        if (DispayedProduct != null)
+                        {
+                            transactionScope.Complete();
+                            return Ok(new { message = "Product Updated successfully!", DispayedProduct });
+                        }
+                        return BadRequest("Product Update failed.");
                     }
                 }
-
-                Product? UpdatedProduct = await _ProductRepository.UpdateAsync(id, ProductModel);
-                if (UpdatedProduct == null)
+                catch (Exception ex)
                 {
-                    return NotFound("Product Not found to Update!.");
+                    transactionScope.Dispose();
+                    return StatusCode(500, new { message = "An error occurred while processing your request." });
                 }
-                ProductDTOShow DispayedProduct = UpdatedProduct.ToProductDTOShow();
-                if (DispayedProduct != null)
-                {
-                    return Ok(new { message = "Product Updated successfully!", DispayedProduct });
-                }
-                return BadRequest("Product Update failed.");
             }
         }
 

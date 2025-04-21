@@ -138,11 +138,14 @@ namespace RealEstate.Repositories
         }
 
 
-        public async Task<OrderItem?> Exists(int cartId, int productId)
+        public async Task<OrderItem?> Exists(int cartId, int productId, string color)
         {
             var orderItem = await dbContext.OrderItems
                 .Where(o => !o.IsDeleted)
-                .FirstOrDefaultAsync(o => o.CartId == cartId && o.ProductId == productId);
+                .FirstOrDefaultAsync(
+                o => o.CartId == cartId 
+                && o.ProductId == productId 
+                && o.Color.ToLower()==color.ToLower());
 
             return orderItem;
         }

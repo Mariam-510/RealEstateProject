@@ -1,0 +1,117 @@
+.number-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #c38e79;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.tech-logo {
+  height: 50px;
+  filter: grayscale(100%);
+  transition: all 0.3s ease;
+}
+
+.tech-logo:hover {
+  filter: none;
+  transform: scale(1.1);
+}
+
+.number-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin: 0 auto;
+}
+
+.service-flow img {
+  border: 3px solid #c38e79;
+  padding: 5px;
+}
+
+.hover-shadow {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-shadow:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ------------------------------------------------------------------- */
+.market-card {
+  background: white;
+  border: 1px solid rgba(195, 142, 121, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 0%, rgba(195, 142, 121, 0.08), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* .market-card:hover .card-glow {
+  opacity: 1;
+} */
+
+.icon-box {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+.bg-gradient-caffe {
+  background: linear-gradient(45deg, #c38e79, #d4a992);
+}
+
+.btn-caffe-hover {
+  color: #c38e79;
+  position: relative;
+  padding-right: 1.5rem;
+  overflow: hidden;
+}
+
+/* .btn-caffe-hover:hover {
+  color: #ad7d6a;
+} */
+
+/* .btn-caffe-hover:hover .bi-arrow-right-short {
+  transform: translateX(3px);
+} */
+
+.bg-caffe-light {
+  background: rgba(195, 142, 121, 0.08);
+}
+
+.border-caffe-10 {
+  border-color: rgba(195, 142, 121, 0.1) !important;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.badge.bg-caffe {
+  letter-spacing: 0.05em;
+}
+
+
+.section-underline {
+  width: 10rem;
+  height: 2px;
+  background-color: #c38e79;
+  margin-top: -0.5rem;
+}

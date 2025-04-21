@@ -8,7 +8,9 @@ namespace RealEstate.Models.Domains
     {
         [Key]
         public int Id { get; set; }    
+        
         public int AvailableProperties { get; set; }
+        
         public bool IsDeleted { get; set; } = false;
 
         [ForeignKey("Seller")]

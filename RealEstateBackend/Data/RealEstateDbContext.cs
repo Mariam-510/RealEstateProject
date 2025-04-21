@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Models.Domains;
+using static RealEstate.Data.DbInitializer;
+using System.Reflection.Emit;
 
 namespace RealEstate.Data
 {
@@ -30,6 +32,7 @@ namespace RealEstate.Data
         public virtual DbSet<Cart> Carts { get; set; }
         public virtual DbSet<Review> Reviews { get; set; }
         public virtual DbSet<Shipping> Shippings { get; set; }
+        public virtual DbSet<ProductStock> ProductStocks { get; set; }
         #endregion
 
         public RealEstateDbContext(DbContextOptions<RealEstateDbContext> options)
@@ -56,6 +59,26 @@ namespace RealEstate.Data
             //----------------------------------------------------------------------------------
             //SeedRoles
             DbInitializer.SeedRoles(builder);
+
+            //----------------------------------------------------------------------------------
+            //SeedCategories
+            DbInitializer.SeedCategories(builder);
+
+            //----------------------------------------------------------------------------------
+            //SeedProducts
+            DbInitializer.SeedProducts(builder);
+
+            //----------------------------------------------------------------------------------
+            //SeedProductStocks
+            DbInitializer.SeedProductStocks(builder);
+
+            //----------------------------------------------------------------------------------
+            //SeedProperties
+            DbInitializer.SeedProperties(builder);
+
+
+
+
         }
 
     }

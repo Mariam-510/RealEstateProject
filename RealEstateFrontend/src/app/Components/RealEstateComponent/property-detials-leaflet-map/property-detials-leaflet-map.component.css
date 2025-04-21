@@ -1,0 +1,75 @@
+.category-tabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 16px;
+}
+
+.tab {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.tab.active {
+  color: #c38e79;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  height: 3px;
+  background-color: #c38e79;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+}
+
+.place-card .card-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.badge-container {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.card-body .distance-badge-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-body .distance-badge-container .badge {
+  margin-left: auto;
+}
+
+.dark-caffe-bg {
+  background-color: #8a6253;
+}
+
+.dark-caffe-text {
+  color: #563e36;
+}
+
+.badge-item:hover {
+  transform: scale(1.2) !important;
+}
+
+.badge-item {
+  display: inline-block;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+  min-height: 400px;
+}
+
+.leaflet-marker-icon.custom-div-icon {
+  background: transparent;
+  border: none;
+}

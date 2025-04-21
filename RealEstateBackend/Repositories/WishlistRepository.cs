@@ -43,6 +43,7 @@ namespace RealEstate.Repositories
                 .Where(W => W.ProductId == productID && W.BuyerId == BuyerID)
                 .FirstOrDefaultAsync();
         }
+        
         public async Task<Wishlist?> GettByBuyerAndpropertyIdAsync(int PropertyID, int BuyerID)
         {
             return await dbcontext.Wishlists
@@ -50,6 +51,7 @@ namespace RealEstate.Repositories
                    .Where(W => W.PropertyId == PropertyID && W.BuyerId == BuyerID)
                    .FirstOrDefaultAsync();
         }
+       
         public async Task<List<Product?>> GetAllProductByBuyerIDAsync(int BuyerID)
         {
             if (!await dbcontext.Buyers.AnyAsync(c => c.Id == BuyerID))

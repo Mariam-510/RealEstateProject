@@ -12,7 +12,7 @@ namespace RealEstate.Repositories
         {
             dbcontext = context;
         }
-        
+
         public async Task<Product?> CreateAsync(Product product)
         {
             if (product != null)
@@ -35,7 +35,10 @@ namespace RealEstate.Repositories
 
         public async Task<Product?> DeleteAsync(int id)
         {
-            Product? Product = await dbcontext.Products.Include(C => C.Category).Where(P => P.IsDeleted == false & P.Category.IsDeleted == false).FirstOrDefaultAsync(t => t.Id == id);
+            Product? Product = await dbcontext.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductStocks)
+                .Where(P => P.IsDeleted == false & P.Category.IsDeleted == false).FirstOrDefaultAsync(p => p.Id == id);
             if (Product == null)
             {
                 return null;
@@ -45,15 +48,22 @@ namespace RealEstate.Repositories
             await dbcontext.SaveChangesAsync();
             return Product;
         }
-       
+
         public async Task<List<Product>> GetAllProductByCategoryID(int CategoryID)
         {
-            return await dbcontext.Products.Where(P => P.IsDeleted == false & P.Category.IsDeleted == false & P.CategoryID == CategoryID).ToListAsync();
+            return await dbcontext.Products
+                .Where(P => P.IsDeleted == false & P.Category.IsDeleted == false & P.CategoryID == CategoryID)
+                .Include(p => p.Category)
+                .Include(p => p.ProductStocks)
+                .ToListAsync();
         }
-        
+
         public async Task<List<Product>> GetAllAsync(string? Name = null, string? SortPrice = null, string? Category = null, string? SortRate = null)
         {
-            var Product = dbcontext.Products.Include(p => p.Category).Where(P => P.IsDeleted == false & P.Category.IsDeleted == false).AsQueryable();
+            var Product = dbcontext.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductStocks)
+                .Where(P => P.IsDeleted == false & P.Category.IsDeleted == false).AsQueryable();
 
             if (!String.IsNullOrEmpty(Name))
             {
@@ -110,7 +120,12 @@ namespace RealEstate.Repositories
 
         public async Task<Product?> GetByIdAsync(int id)
         {
-            Product product = await dbcontext.Products.Include(C => C.Category).Where(P => P.IsDeleted == false & P.Category.IsDeleted == false).FirstOrDefaultAsync(t => t.Id == id);
+            var product = await dbcontext.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductStocks)
+                .Where(P => P.IsDeleted == false & P.Category.IsDeleted == false)
+                .FirstOrDefaultAsync(p => p.Id == id);
+           
             if (product == null)
             {
                 return null;
@@ -121,7 +136,12 @@ namespace RealEstate.Repositories
 
         public async Task<Product?> UpdateAsync(int id, Product product)
         {
-            Product? updatedProduct = await dbcontext.Products.Include(C => C.Category).Where(P => P.IsDeleted == false).FirstOrDefaultAsync(p => p.Id == id);
+            Product? updatedProduct = await dbcontext.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductStocks)
+                .Where(P => P.IsDeleted == false)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            
             if (updatedProduct != null)
             {
                 updatedProduct.Name = product.Name;
@@ -130,7 +150,6 @@ namespace RealEstate.Repositories
                 updatedProduct.IsUsed = product.IsUsed;
                 updatedProduct.CategoryID = product.CategoryID;
                 updatedProduct.DateAdded = DateTime.Now;
-                updatedProduct.Quantity = product.Quantity;
                 updatedProduct.Images = product.Images;
 
                 await dbcontext.SaveChangesAsync();

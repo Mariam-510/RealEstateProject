@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Mapping;
 using RealEstate.Models.Domains;
+using RealEstate.Models.Dtos.OrderItemDto;
 using RealEstate.Models.DTOs.OrderDto;
 using RealEstate.Repositories;
 using Account = RealEstate.Models.Domains.Account;
@@ -21,15 +22,17 @@ namespace RealEstate.Controllers
         public IOrderItemRepository _orderItemRepository { get; }
         public IBuyerRepository _buyerRepository { get; }
         public IProductRepository _productRepository { get; }
+        public IProductStockRepository ProductStockRepository { get; }
 
         public OrdersController(IOrderRepository orderRepository, ICartRepository cartRepository, IOrderItemRepository orderItemRepository,
-            IBuyerRepository buyerRepository, IProductRepository productRepository)
+            IBuyerRepository buyerRepository, IProductRepository productRepository, IProductStockRepository productStockRepository)
         {
             _orderRepository = orderRepository;
             _cartRepository = cartRepository;
             _orderItemRepository = orderItemRepository;
             _buyerRepository = buyerRepository;
             _productRepository = productRepository;
+            ProductStockRepository = productStockRepository;
         }
 
         [HttpGet]
@@ -111,13 +114,24 @@ namespace RealEstate.Controllers
                                     return NotFound($"Product with ID {orderItem.ProductId} not found.");
                                 }
 
-                                if (product.Quantity < orderItem.Quantity)
+                                var productStock = await ProductStockRepository.GetByColorAsync(product.Id, orderItem.Color);
+                                if (productStock == null)
                                 {
-                                    return StatusCode(409, $"Insufficient quantity for product '{product.Name}'. Available: {product.Quantity}, Requested: {orderItem.Quantity}");
+                                    return BadRequest(new { message = "Color isn't available." });
                                 }
 
-                                product.Quantity -= orderItem.Quantity;
-                                await _productRepository.UpdateAsync(product.Id, product);
+                                if (orderItem.Quantity > productStock.Quantity)
+                                {
+                                    return BadRequest(new { message = "Quantity exceeds available stock." });
+                                }
+
+                                //if (product.Quantity < orderItem.Quantity)
+                                //{
+                                //    return StatusCode(409, $"Insufficient quantity for product '{product.Name}'. Available: {product.Quantity}, Requested: {orderItem.Quantity}");
+                                //}
+
+                                productStock.Quantity -= orderItem.Quantity;
+                                await ProductStockRepository.UpdateAsync(productStock.Id, productStock);
 
                                 orderItem.CartId = null;
                                 orderItem.OrderId = order.Id;

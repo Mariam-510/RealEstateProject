@@ -150,7 +150,7 @@ export class AdmindashboardComponent {
       reviews: [],
       categoryName: 'Office',
       stock: 40,
-      sold:5
+      sold: 5
     },
     {
       id: 5,
@@ -205,18 +205,18 @@ export class AdmindashboardComponent {
   get propertiesForSaleAvailable(): number {
     return this.properties.filter(p => p.type === PropertyType.Sell && p.status === PropertyStatus.Available).length;
   }
-  
+
   get RentedProperties(): number {
     return this.properties.filter(p => p.type === PropertyType.Rent && p.status === PropertyStatus.Sold).length;
   }
   get propertiesForRentAvailable(): number {
     return this.properties.filter(p => p.type === PropertyType.Rent && p.status === PropertyStatus.Available).length;
   }
-  
+
   get propertiesForRentCount(): number {
     return this.properties.filter(p => p.type === PropertyType.Rent).length;
   }
- 
+
   get soldAndRentedCount(): number {
     return this.soldProperties + this.RentedProperties;
   }
@@ -242,7 +242,7 @@ export class AdmindashboardComponent {
     return this.products.filter(product => product.isUsed).length;
   }
   get totalNewProducts(): number {
-    return this.products.filter(product => product.isUsed==false).length;
+    return this.products.filter(product => product.isUsed == false).length;
   }
 
   get totalCategories(): number {
@@ -258,7 +258,7 @@ export class AdmindashboardComponent {
   get newProductsCount(): number {
     return this.totalProducts - this.totalUsedProducts;
   }
-  
+
   get SellerNumber(): number {
     return 350;
   }
@@ -286,7 +286,7 @@ export class AdmindashboardComponent {
   get FreeSubscriptionNumber(): number {
     return 100;
   }
-  
+
   public subscriptionPlanChart: ChartConfiguration<'bar'>['data'] = {
     labels: ['Free', 'Basic Sell', 'Pro', 'Enterprise'],
     datasets: [{
@@ -297,12 +297,12 @@ export class AdmindashboardComponent {
         this.proSubscriptionPlanNumber,
         this.EnterpeiseSubscriptionPlanNumber
       ],
-      backgroundColor: ['#c38e79','#D5C7A3', '#E9DFC3', '#F5EEDD'],
+      backgroundColor: ['#c38e79', '#D5C7A3', '#E9DFC3', '#F5EEDD'],
       borderRadius: 4,
-      barThickness: 40  
+      barThickness: 40
     }]
   };
-  
+
   public subscriptionPlanOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
@@ -313,7 +313,7 @@ export class AdmindashboardComponent {
         ticks: {
           stepSize: 30,          // Controls spacing between each tick
           color: '#858796'
-        }, 
+        },
         grid: { color: 'rgba(0, 0, 0, 0.1)' },
       },
       x: {
@@ -350,7 +350,7 @@ export class AdmindashboardComponent {
         '#F5EEDD',
         '#E8C999',
         '#F5EEDD'
-      ],      borderWidth: 1
+      ], borderWidth: 1
     }]
   };
 
@@ -397,13 +397,13 @@ export class AdmindashboardComponent {
         .sort((a, b) => b.sold - a.sold)
         .slice(0, 5)
         .map(p => p.sold),
-      backgroundColor: ['#c38e79','#E8C999','#D5C7A3', '#E9DFC3','#F5EEDD'],
+      backgroundColor: ['#c38e79', '#E8C999', '#D5C7A3', '#E9DFC3', '#F5EEDD'],
       borderRadius: 4
     }]
   };
 
   public topProductsOptions: ChartConfiguration<'bar'>['options'] = {
-    responsive:true,
+    responsive: true,
     maintainAspectRatio: false,
     indexAxis: 'y',
     scales: {

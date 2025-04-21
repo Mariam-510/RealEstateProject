@@ -43,7 +43,7 @@ namespace RealEstate.Controllers
                 return BadRequest(new { message = CreatedCategory.Message });
             }
 
-            CategoryDTOShowWithoutProduct DispayedProduct = CreatedCategory.Category.ToCategoryWithoutProductListDTOShow();
+            CategoryDTOShow DispayedProduct = CreatedCategory.Category.ToCategoryWithoutProductListDTOShow();
             if (DispayedProduct != null)
             {
                 return Ok(new { message = "Category create Successfully!", DispayedProduct });
@@ -77,7 +77,7 @@ namespace RealEstate.Controllers
                             }
                         }
                         Category? DeletedCategoryModel = await _CategoryRepository.DeleteAsync(id);
-                        CategoryDTOShowWithoutProduct DispayedCategory = DeletedCategoryModel.ToCategoryWithoutProductListDTOShow();
+                        CategoryDTOShow DispayedCategory = DeletedCategoryModel.ToCategoryWithoutProductListDTOShow();
                         transactionScope.Complete();
                         return Ok(new { message = "Category Deleted successfully!", DispayedCategory });
 
@@ -102,7 +102,7 @@ namespace RealEstate.Controllers
             }
             else
             {
-                CategoryDTOShowWithoutProduct CategoryDto = CategoryModel.ToCategoryWithoutProductListDTOShow();
+                CategoryDTOShow CategoryDto = CategoryModel.ToCategoryWithoutProductListDTOShow();
                 if (CategoryDto == null)
                 {
                     return BadRequest("Error! While Returning Category !");
@@ -155,7 +155,7 @@ namespace RealEstate.Controllers
             {
                 return BadRequest(new { message = UpdatedCategory.Message });
             }
-            CategoryDTOShowWithoutProduct DispayedCategory = UpdatedCategory.Category.ToCategoryWithoutProductListDTOShow();
+            CategoryDTOShow DispayedCategory = UpdatedCategory.Category.ToCategoryWithoutProductListDTOShow();
             if (DispayedCategory != null)
             {
                 return Ok(new { message = "Category Updated successfully!", DispayedCategory });
