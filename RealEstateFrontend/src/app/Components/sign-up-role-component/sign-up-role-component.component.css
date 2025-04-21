@@ -19,3 +19,9 @@
     width: 18rem;
     background-color:rgba(250, 235, 215, 0.41);
 }
+a.card:active {
+  cursor: pointer;
+}
+a.card {
+  cursor: pointer;
+}
