@@ -30,6 +30,7 @@ import { AddPropertyComponent } from './Components/add-property/add-property.com
 import { AddAuctionComponent } from './Components/add-auction/add-auction.component';
 import { PropertiesPageComponent } from './components/realEstateComponent/properties-page/properties-page.component';
 import { ProductDetailsComponent } from './Components/productComponent/product-details/product-details.component';
+<<<<<<< Updated upstream
 export const routes: Routes = [
     { path: 'products/category/:id', component: CategoryComponent },
     { path: 'homePage', component: AboutComponent},
@@ -47,6 +48,35 @@ export const routes: Routes = [
     component: CategoryComponent,
     pathMatch: 'full',
   },
+=======
+import { CatSliderComponent } from './Components/Product Home/Sliders/cat-slider/cat-slider.component';
+import { ChatmodalComponent } from './Components/Chat/chatmodal/chatmodal.component';
+import { MainChatComponent } from './Components/Chat/main-chat/main-chat.component';
+
+export const routes: Routes = [
+  {path:'chat',component:ChatmodalComponent},
+
+  {path:'MainChat', component:MainChatComponent},
+  
+  { path: 'products/category/:id', component: CategoryComponent },
+
+  { path: 'homePage', component: AboutComponent },
+
+  { path: 'home/products', component: PHomeComponent },
+
+  { path: 'home/properties', component: PropertyHomeComponent },
+
+  { path: 'home/auctions', component: CatSliderComponent },
+
+  { path: 'property/:id', component: PropertyDetailsComponent },
+
+  { path: 'realeastate/auctions', component: AuctionHomeComponent },
+
+  { path: 'addAuction', component: AddAuctionComponent, pathMatch: 'full' },
+
+  { path: 'products/category/:id', component: CategoryComponent, pathMatch: 'full' },
+
+>>>>>>> Stashed changes
   { path: 'cart', component: CartComponent, pathMatch: 'full' },
   {
     path: 'addressSelection',

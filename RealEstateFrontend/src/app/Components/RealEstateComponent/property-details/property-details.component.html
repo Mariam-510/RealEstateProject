@@ -491,14 +491,17 @@
                              active:scale-95
                              border-0
                              transform-transition
-                             pe-4"> <!-- Added right padding -->
+                             pe-4" (click)="chatWindow.toggle()"> <!-- Added right padding -->
                     <span class="position-absolute top-0 left-0 w-100 h-100 rounded-pill ring-effect"></span>
                     <i class="bi bi-chat-dots fs-5 text-white icon-shake"></i>
                     <span class="fw-semibold text-white ls-1 fs-6">Contact</span>
                     <span class="arrow-transition d-inline-flex overflow-hidden">
                       <i class="bi bi-arrow-right-short text-white fs-3"></i>
                     </span>
+                    
                   </button>
+                  <app-chatmodal #chatWindow></app-chatmodal>
+
                 </div>
 
                 <style>

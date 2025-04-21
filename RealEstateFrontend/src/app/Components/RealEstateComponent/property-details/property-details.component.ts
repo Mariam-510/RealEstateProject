@@ -3,9 +3,13 @@ import { Component, HostListener, ViewChild, ElementRef, AfterViewInit, Renderer
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { LeafletMapComponent } from '../../leaflet-map/leaflet-map.component';
 import { PropertyPhotoModalComponent } from '../property-photo-modal/property-photo-modal.component';
+<<<<<<< Updated upstream
 import { RecommendedComponent } from '../recommended/recommended.component';
 import { SharedServiceService ,PropertyDto} from '../../../Services/shared-service.service';
 import { CardmapComponent } from '../cardmap/cardmap.component';
+=======
+import { ChatmodalComponent } from '../../Chat/chatmodal/chatmodal.component';
+>>>>>>> Stashed changes
 
 declare var bootstrap: any; // Required for Bootstrap modal handling
 
@@ -41,7 +45,15 @@ export interface Property {
     CommonModule, 
     LeafletMapComponent, 
     RouterModule,
+<<<<<<< Updated upstream
     PropertyPhotoModalComponent,RecommendedComponent,CardmapComponent
+=======
+    PropertyPhotoModalComponent,
+    RecommendedComponent,
+    CardmapComponent,
+    PropertyDetialsLeafletMapComponent,
+    ChatmodalComponent
+>>>>>>> Stashed changes
   ],
   templateUrl: './property-details.component.html',
   styleUrl: './property-details.component.css'
