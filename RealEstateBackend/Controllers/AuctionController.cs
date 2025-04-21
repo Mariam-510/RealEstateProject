@@ -71,16 +71,21 @@ namespace RealEstate.Controllers
                 {
                     return NotFound("Seller ID not Found");
                 }
-                if (property.AgentId != seller.Id)
+                if (property.SellerId != seller.Id)
                 {
                     return Unauthorized("You Not allowed To Add Auction ");
                 }
             }
 
-          
-            Auction AuctionModel = AuctionDtO.ToAuctionModel();
-            Auction ActionCreated = await _AuctionRepository.CreateAsync(AuctionModel);
-            AuctionDTOShow ActionShow= ActionCreated.ToAuctionDTOShow();
+
+            var AuctionModel = AuctionDtO.ToAuctionModel();
+
+            property.Status = PropertyStatus.Auctioned;
+             await _propertyRepository.UpdateAsync(property);
+
+            var ActionCreated = await _AuctionRepository.CreateAsync(AuctionModel);
+            
+            var ActionShow= ActionCreated.ToAuctionDTOShow();
 
             return Ok(new { message = "Auction Created Successfully!", ActionShow });
         }
@@ -89,14 +94,24 @@ namespace RealEstate.Controllers
         [HttpDelete("DeleteAuction/{id}")]
         public async Task<IActionResult> DeleteAuction(int id)
         {
-            Auction GetAction = await _AuctionRepository.GetByIdAsync(id);
+            var GetAction = await _AuctionRepository.GetByIdAsync(id);
             if(GetAction==null)
             {
                 return NotFound("Auction ID Not found !");
             }
             if(GetAction.Status==Status.Scheduled)
             {
-                Auction ActionDeleted = await _AuctionRepository.DeleteAsync(id);
+                var ActionDeleted = await _AuctionRepository.DeleteAsync(id);
+
+                var property = await _propertyRepository.GetByIdAsync((int) GetAction.PropertyId);
+                if (property == null)
+                {
+                    return NotFound("Property ID Not Found");
+                }
+
+                property.Status = PropertyStatus.Available;
+                await _propertyRepository.UpdateAsync(property);
+
                 AuctionDTOShow ActionShow = ActionDeleted.ToAuctionDTOShow();
                 return Ok(new { message = "Auction is", ActionShow });
             }

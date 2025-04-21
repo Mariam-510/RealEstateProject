@@ -27,6 +27,18 @@ namespace RealEstate.Models.Domains
         [EnumDataType(typeof(PropertyCategory))]
         public PropertyCategory PropertyCategory { get; set; }
 
+        [NonNegative]
+        public int BedRooms { get; set; }
+
+        [NonNegative]
+        public int BathRooms { get; set; }
+        
+        [NonNegative]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Space { get; set; }
+
+        public DateTime AddedDate { get; set; } = DateTime.Now;
+
         public bool IsDeleted { get; set; } = false;
 
         [ForeignKey("Agent")]

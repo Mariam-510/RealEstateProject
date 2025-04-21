@@ -1,0 +1,70 @@
+<!-- slider -->
+<div id="carouselExampleIndicators" class="carousel slide position-relative">
+    <div class="carousel-indicators">
+        <button *ngFor="let slide of slides; let i = index" type="button" [class.active]="i === activeSlide"
+            (click)="setActiveSlide(i)" data-bs-target="#carouselExampleIndicators"
+            [attr.aria-current]="i === activeSlide" [attr.aria-label]="'Slide ' + (i + 1)" style="width: 5rem"></button>
+    </div>
+
+    <div class="carousel-inner">
+        <div *ngFor="let slide of slides; let i = index" class="carousel-item" [class.active]="i === activeSlide">
+            <img [src]="slide.imageUrl" class="d-block w-100 carousel-img" [alt]="slide.alt" />
+            <div class="carousel-caption">
+                <h1 class="fw-bold">{{ slide.title }}</h1>
+                <p class="fs-5 mb-4">{{ slide.subtitle }}</p>
+            </div>
+        </div>
+    </div>
+
+    <button class="carousel-control-prev square-control" type="button" (click)="prev()">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next square-control" type="button" (click)="next()">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+
+    <div class="aa position-absolute start-50 top-50 translate-middle-x text-white w-100 px-3">
+        <div class="bg-dark bg-opacity-75 rounded-3 p-4 mx-auto" style="max-width: 1100px">
+            <div class="row g-2">
+                <div class="col-md">
+                    <select class="form-select">
+                        <option>Sell</option>
+                        <option>Rent</option>
+                    </select>
+                </div>
+                <div class="col-md">
+                    <select class="form-select">
+                        <option>Apartment</option>
+                        <option>Villa</option>
+                    </select>
+                </div>
+                <div class="col-md">
+                    <select class="form-select">
+                        <option>Bedrooms</option>
+                        <option>1</option>
+                        <option>2</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row g-2 mt-2">
+                <div class="col-md">
+                    <select class="form-select">
+                        <option>Price, £</option>
+                    </select>
+                </div>
+                <div class="col-md">
+                    <select class="form-select">
+                        <option>District, community</option>
+                    </select>
+                </div>
+                <div class="col-md bg-caffe rounded">
+                    <button class="btn text-white w-100">
+                        <i class="bi bi-search"></i> SEARCH
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

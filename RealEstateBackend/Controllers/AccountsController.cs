@@ -52,12 +52,12 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("TestAuth")]
-        [Authorize]
-        public async Task<IActionResult> TestAuth()
-        {
-            return Ok("Hello");
-        }
+        //[HttpGet("TestAuth")]
+        //[Authorize]
+        //public async Task<IActionResult> TestAuth()
+        //{
+        //    return Ok("Hello");
+        //}
 
 
         [HttpPost]
@@ -178,6 +178,7 @@ namespace RealEstate.Controllers
                             Dear {account.Email},<br/>
                             Thank you for registering.<br/>
                             Your email confirmation code is: <strong>{confirmationCode}</strong><br/>
+                            This code will expire in 10 minutes.<br/>
                             Please enter this code in the app to confirm your email.";
 
 
@@ -298,6 +299,7 @@ namespace RealEstate.Controllers
                             Dear {account.Email},<br/>
                             Thank you for registering.<br/>
                             Your email confirmation code is: <strong>{confirmationCode}</strong><br/>
+                            This code will expire in 10 minutes.<br/>
                             Please enter this code in the app to confirm your email.";
 
 
@@ -415,8 +417,8 @@ namespace RealEstate.Controllers
             if (user.EmailConfirmed)
                 return Conflict(new { message = "Email is already confirmed." });
 
-            // Optional: Expire the code after 10 minutes
-            if (user.CodeGeneratedAt.HasValue && (DateTime.Now - user.CodeGeneratedAt.Value).TotalMinutes > 10)
+            // Optional: Expire the code after 2 minutes
+            if (user.CodeGeneratedAt.HasValue && (DateTime.Now - user.CodeGeneratedAt.Value).TotalMinutes > 2)
                 return BadRequest(new { message = "The confirmation code has expired." });
 
             if (user.EmailConfirmationCode != code)
@@ -468,7 +470,8 @@ namespace RealEstate.Controllers
                             Dear {account.Email},<br/>
                             Thank you for registering.<br/>
                             Your email confirmation code is: <strong>{confirmationCode}</strong><br/>
-                            Please enter this code in the app to confirm your email.";
+                            This code will expire in 10 minutes.<br/>
+                            .Please enter this code in the app to confirm your email.";
 
 
                     EmailDto emailDto = new EmailDto
@@ -544,7 +547,7 @@ namespace RealEstate.Controllers
 
             var emailBody = $@"
                     <p>Your password reset code is: <strong>{resetCode}</strong></p>
-                    <p>This code will expire in 10 minutes.</p>";
+                    <p>This code will expire in 2 minutes.</p>";
 
             EmailDto emailDto = new EmailDto
             {
@@ -579,7 +582,7 @@ namespace RealEstate.Controllers
                 return BadRequest(new { message = "Invalid reset code." });
 
             if (user.ResetCodeGeneratedAt.HasValue &&
-                (DateTime.UtcNow - user.ResetCodeGeneratedAt.Value).TotalMinutes > 10)
+                (DateTime.UtcNow - user.ResetCodeGeneratedAt.Value).TotalMinutes > 2)
             {
                 return BadRequest(new { message = "Reset code has expired." });
             }
@@ -603,11 +606,9 @@ namespace RealEstate.Controllers
                 return NotFound(new { message = "User not found." });
 
             // Optional: You can re-check code and expiration here for added security
-            if (user.PasswordResetCode == null ||
-                user.ResetCodeGeneratedAt == null ||
-                (DateTime.UtcNow - user.ResetCodeGeneratedAt.Value).TotalMinutes > 10)
+            if (user.PasswordResetCode == null || user.ResetCodeGeneratedAt == null)
             {
-                return BadRequest(new { message = "Reset code is invalid or expired." });
+                return BadRequest(new { message = "Reset code is invalid." });
             }
 
             var resetToken = await UserManager.GeneratePasswordResetTokenAsync(user);

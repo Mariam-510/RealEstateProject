@@ -11,6 +11,9 @@ namespace RealEstate.Models.Dtos.OrderItemDto
         public int Quantity { get; set; }
 
         [Required]
+        public string Color { get; set; }
+
+        [Required]
         public int ProductId { get; set; }
 
         [Required]

@@ -7,6 +7,7 @@ using RealEstate.Models.DTOs.Product;
 using RealEstate.Models.DTOs.Wishlist;
 using RealEstate.Models.DTOs.OrderDto;
 using RealEstate.Models.DTOs.ReviewDto;
+using RealEstate.Models.Dtos.ProductStockDto;
 
 namespace RealEstate.Mapping
 {
@@ -79,7 +80,7 @@ namespace RealEstate.Mapping
         //----------------------------------------------------------------------------------------
         // Product
        
-        public static ProductDTOShow ToProductDTOShow( this Product product, double productAverageRating=0, int productNumberOfReviews =0)
+        public static ProductDTOShow ToProductDTOShow(this Product product)
         {
             return new ProductDTOShow
             {
@@ -87,19 +88,26 @@ namespace RealEstate.Mapping
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                Quantity = product.Quantity,
                 IsUsed = product.IsUsed,
                 IsDeleted = product.IsDeleted,
+                DateAdded = product.DateAdded,
+                AverageRating = product.AverageRating,
                 CategoryID = product.CategoryID ?? 0,
                 CategoryName = product.Category?.Name ?? string.Empty,
-                Productimage=product.Images,
-                AverageRating= productAverageRating,
-                NumberOfReviews = productNumberOfReviews,
-
-
+                Productimage = product.Images,
+                Quantity = product.ProductStocks?.Sum(ps => ps.Quantity) ?? 0,
+                ProductStockDtos = product.ProductStocks?
+                    .Select(ps => new ProductStockDto
+                    {
+                        Id = ps.Id,
+                        ProductId = ps.ProductId,
+                        Color = ps.Color,
+                        Quantity = ps.Quantity
+                    })
+                    .ToList()
             };
         }
-        
+
         public static List<ProductDTOShow> ToProductDTOShowList(this List<Product> products)
         {
             return products.Select(p=>p.ToProductDTOShow()).ToList();
@@ -112,7 +120,6 @@ namespace RealEstate.Mapping
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                Quantity = product.Quantity,
                 IsUsed = product.IsUsed,
                 CategoryID = product.CategoryID
             };
@@ -121,9 +128,9 @@ namespace RealEstate.Mapping
         //----------------------------------------------------------------------------------------
         // Category
         
-        public static CategoryDTOShowWithoutProduct ToCategoryWithoutProductListDTOShow(this Category Category)
+        public static CategoryDTOShow ToCategoryWithoutProductListDTOShow(this Category Category)
         {
-            return new CategoryDTOShowWithoutProduct
+            return new CategoryDTOShow
             {
                 Id = Category.Id,
                 Name = Category.Name,
@@ -142,7 +149,7 @@ namespace RealEstate.Mapping
             };
         }
 
-        public static List<CategoryDTOShowWithoutProduct> ToCategoryDTOShowList(this List<Category> Categories)
+        public static List<CategoryDTOShow> ToCategoryDTOShowList(this List<Category> Categories)
         {
             return Categories.Select(ToCategoryWithoutProductListDTOShow).ToList();
         }

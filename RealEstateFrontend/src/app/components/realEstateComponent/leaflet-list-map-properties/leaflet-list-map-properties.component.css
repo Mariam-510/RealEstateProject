@@ -1,0 +1,14 @@
+#map {
+  height: 500px;
+  position: relative;
+}
+
+/* Marker Highlight Style */
+.highlighted-marker {
+  filter: hue-rotate(180deg) saturate(200%);
+  transform: scale(1.3);
+  transition: all 0.2s ease-out;
+  z-index: 1000 !important;
+}
+
+/* --------------------------------------------------------------------------------------- */
