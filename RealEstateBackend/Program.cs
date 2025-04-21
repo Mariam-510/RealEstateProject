@@ -134,6 +134,7 @@ namespace RealEstate
             builder.Services.AddScoped<IAdminRepository, AdminRepository>();
             builder.Services.AddScoped<IContractRepository, ContractRepository>();
             builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
+            builder.Services.AddScoped<IProductStockRepository, ProductStockRepository>();
             builder.Services.AddScoped<JWTService>();
             builder.Services.AddScoped<FileService>();
             builder.Services.AddScoped<EmailService>();

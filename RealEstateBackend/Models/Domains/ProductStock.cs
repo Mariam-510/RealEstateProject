@@ -14,8 +14,10 @@ namespace RealEstate.Models.Domains
         [NonNegative]
         public int Quantity { get; set; }
 
+        public bool IsDeleted { get; set; } = false;
+
         [ForeignKey("Product")]
-        public int? ProductID { get; set; }
+        public int? ProductId { get; set; }
 
         public virtual Product? Product { get; set; }
 

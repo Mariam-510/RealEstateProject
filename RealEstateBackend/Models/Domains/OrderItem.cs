@@ -11,6 +11,8 @@ namespace RealEstate.Models.Domains
         [NonNegative]
         public int Quantity { get; set; }
 
+        public string Color { get; set; }
+
         [Column(TypeName = "decimal(18,2)")]
         [NonNegative]
         public decimal Price { get; set; }
