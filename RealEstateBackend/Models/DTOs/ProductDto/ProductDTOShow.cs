@@ -1,4 +1,6 @@
-﻿namespace RealEstate.Models.DTOs.Product
+﻿using RealEstate.Models.Dtos.ProductStockDto;
+
+namespace RealEstate.Models.DTOs.Product
 {
     public class ProductDTOShow
     {
@@ -16,6 +18,9 @@
         public int CategoryID { get; set; }
         public string CategoryName { get; set; }
         public List<string> Productimage { get; set; }
+        public List<ProductStockDto>? ProductStockDtos { get; set; }
+        public bool IsFavorite { get; set; } = false;
+
 
     }
 }

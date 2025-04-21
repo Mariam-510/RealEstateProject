@@ -25,10 +25,11 @@ namespace RealEstate.Controllers
         private readonly IAuctionRepository _auctionRepo;
         private readonly IContractRepository _contractRepo;
         private readonly ISubscriptionRepository _subscriptionRepo;
+        private readonly IWishListRepository wishListRepository;
         private readonly EmailService _emailService;
         public PropertyController(IPropertyRepository propertyRepo, IMapper mapper, FileService fileService, EmailService emailService,
             IAgentRepository agentRepo, ISellerRepository sellerRepo, IAuctionRepository auctionRepo, IContractRepository contractRepo,
-            ISubscriptionRepository subscriptionRepo)
+            ISubscriptionRepository subscriptionRepo, IWishListRepository wishListRepository )
         {
             _propertyRepo = propertyRepo;
             _mapper = mapper;
@@ -38,6 +39,7 @@ namespace RealEstate.Controllers
             _auctionRepo = auctionRepo;
             _contractRepo = contractRepo;
             _subscriptionRepo = subscriptionRepo;
+            this.wishListRepository = wishListRepository;
             _emailService = emailService;
         }
         // GET: api/Property
@@ -55,6 +57,7 @@ namespace RealEstate.Controllers
             PropertyType? propertyType = string.IsNullOrEmpty(type) ? null : Enum.TryParse(type, true, out PropertyType parsedType) ? parsedType : (PropertyType?)null;
 
             var properties = await _propertyRepo.GetFilteredAsync(propertyCategory, propertyStatus, propertyType, searchByLocation);
+           
             var propertyDtos = _mapper.Map<List<PropertyDto>>(properties);
             foreach (var dto in propertyDtos)
             {
@@ -64,6 +67,16 @@ namespace RealEstate.Controllers
                     dto.ContractImgUrl = contract.ImageUrl;
                 }
             }
+
+            //var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(1);
+            //foreach (var dto in propertyDtos)
+            //{
+            //    if (favoriteProperties.Any(f => f.Id == dto.Id))
+            //    {
+            //        dto.IsFavorite = true;
+            //    }
+            //}
+
             return Ok(propertyDtos);
         }
 
@@ -73,7 +86,6 @@ namespace RealEstate.Controllers
         {
             try
             {
-
 
                 var PendingProperties = await _propertyRepo.GetAllPending();
                 if (PendingProperties == null )
@@ -87,6 +99,16 @@ namespace RealEstate.Controllers
                         dto.ContractImgUrl = contract.ImageUrl;
                     }
                 }
+
+                //var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(1);
+                //foreach (var dto in PendingPropertyDto)
+                //{
+                //    if (favoriteProperties.Any(f => f.Id == dto.Id))
+                //    {
+                //        dto.IsFavorite = true;
+                //    }
+                //}
+
                 return Ok(PendingPropertyDto); 
 
             }
@@ -161,8 +183,15 @@ namespace RealEstate.Controllers
 
             var propertyDto = _mapper.Map<PropertyDto>(property);
 
+            //var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(1);
+            //if (favoriteProperties.Any(f => f.Id == propertyDto.Id))
+            //{
+            //    propertyDto.IsFavorite = true;
+            //}
+
             return Ok(propertyDto);
         }
+
 
         // POST: api/Property
         [HttpPost]
@@ -251,6 +280,7 @@ namespace RealEstate.Controllers
                 }
             }
         }
+
 
         // PUT: api/Property/5
         [HttpPut("{id}")]
@@ -361,6 +391,7 @@ namespace RealEstate.Controllers
 
 
         }
+
 
         // DELETE: api/Property/5
         [HttpDelete("{id}")]

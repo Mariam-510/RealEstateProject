@@ -21,6 +21,7 @@ namespace RealEstate.Models.DTOs.PropertyDto
         public int? AgentId { get; set; }
         public int? SellerId { get; set; }
         public string? ContractImgUrl { get; set; }
+        public bool IsFavorite { get; set; } = false;
 
     }
 }

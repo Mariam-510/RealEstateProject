@@ -8,5 +8,9 @@ namespace RealEstate.Models.Dtos.OrderItemDto
         [Required]
         [NonNegative]
         public int Quantity { get; set; }
+
+        [Required]
+        public string Color { get; set; }
+
     }
 }
