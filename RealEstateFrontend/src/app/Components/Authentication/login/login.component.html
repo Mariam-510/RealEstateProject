@@ -1,82 +1,78 @@
-
-    <div class="d-flex w-100 min-vh-100 shadow overflow-hidden">
-        <div class="left-section bg-white d-flex flex-column justify-content-center">
-            <h2 class="text-caffe mb-2 mt-5 text-center " ><i class="bi bi-box-arrow-in-right me-2 mt-5 fs-2"></i> Log In</h2>
-            <form [formGroup]="Loginform" (ngSubmit)="login()">
-                <div class="mb-3 mt-5 ">
-                    <label class="form-label fw-semibold mb-2">Email</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light border-0">
-                            <i class="bi bi-envelope text-caffe fs-5"></i>
-                        </span>
-                        <input type="email" class="form-control border-0 shadow-sm" placeholder="Enter your email"
-                            formControlName="email">
-                    </div>
-                    <div *ngIf="Loginform.get('email')?.hasError('required') && Loginform.get('email')?.touched"
-                        class="text-danger small ps-2">
-                        Email is required.
-                    </div>
-                    <div *ngIf="Loginform.get('email')?.hasError('pattern') && Loginform.get('email')?.touched"
-                        class="text-danger small ps-2">
-                        Enter a valid email.
-                    </div>
-                </div>
-
-                <!-- Password -->
-                <div class="mb-3 mt-3">
-                    <label class="form-label fw-semibold mb-2">Password</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light border-0">
-                            <i class="bi bi-key-fill text-caffe fs-5"></i>
-                        </span>
-                        <input type="password" class="form-control border-0 shadow-sm" placeholder="Enter password"
-                            formControlName="pass">
-                    </div>
-                    <div *ngIf="Loginform.get('pass')?.hasError('required') && Loginform.get('pass')?.touched"
-                        class="text-danger small ps-2">
-                        Password is required.
-                    </div>
-                </div>
-                <div class="d-flex justify-content-between ms-2 mt-4 mb-5">
-                    <div>
-                        <input type="checkbox" id="rememberMe" class="me-2">
-                        <label class="form-check-label" for="rememberMe">
-                            Remember me
-                        </label>
-                    </div>
-                    <a [routerLink]="['/forgetpassword']" class="text-decoration-none text-caffe">Forgot Password?</a>
-                </div>
-                <div class="error text-danger ms-3">
-                    
-                </div>
-                <button class="mt-4 mb-2 text-light p-2 btnStyle bg-caffe w-75 mx-auto d-block">Sign In</button>
-                           
-            </form>
-            <div class="d-flex align-items-center mt-2">
-                <hr class="flex-grow-1">
-                <span class="mx-2">OR</span>
-                <hr class="flex-grow-1">
-            </div>
-            <div>
-                <button class="mt-3 mb-3 p-1 btnStyle w-75 mx-auto d-block" (click)="googleLogin()">
-                    <img src="images/Home/Google.png" alt="Google Login" class="ms-0 me-3"
-                        style="width: 32px; height: 32px; cursor: pointer;">
-                    <p class="d-inline">Sign In With Google</p> 
-                  
-                </button>
-            </div>
-            <p class="text-center mt-4 mb-0">
-                Don't have account?
-                <button 
-                class="btn btn-link text-decoration-none fw-bold text-caffe p-0" 
-                (click)="openSigUPDialog()">
-                Sign Up
-              </button>    
-            </p>
-
+<div class="d-flex w-100 min-vh-100 shadow overflow-hidden">
+  <div class="left-section bg-white d-flex flex-column justify-content-center">
+    <h2 class="text-caffe mb-2 mt-5 text-center "><i class="bi bi-box-arrow-in-right me-2 mt-5 fs-2"></i> Log In</h2>
+    <form [formGroup]="Loginform" (ngSubmit)="login()">
+      <div class="mb-3 mt-5 ">
+        <label class="form-label fw-semibold mb-2">Email</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-0">
+            <i class="bi bi-envelope text-caffe fs-5"></i>
+          </span>
+          <input type="email" class="form-control border-0 shadow-sm" placeholder="Enter your email"
+            formControlName="email">
         </div>
-        <div class="right-section">
-
+        <div *ngIf="Loginform.get('email')?.hasError('required') && Loginform.get('email')?.touched"
+          class="text-danger small ps-2">
+          Email is required.
         </div>
+        <div *ngIf="Loginform.get('email')?.hasError('pattern') && Loginform.get('email')?.touched"
+          class="text-danger small ps-2">
+          Enter a valid email.
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3 mt-3">
+        <label class="form-label fw-semibold mb-2">Password</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-0">
+            <i class="bi bi-key-fill text-caffe fs-5"></i>
+          </span>
+          <input type="password" class="form-control border-0 shadow-sm" placeholder="Enter password"
+            formControlName="pass">
+        </div>
+        <div *ngIf="Loginform.get('pass')?.hasError('required') && Loginform.get('pass')?.touched"
+          class="text-danger small ps-2">
+          Password is required.
+        </div>
+      </div>
+      <div class="d-flex justify-content-between ms-2 mt-4 mb-5">
+        <div>
+          <input type="checkbox" id="rememberMe" class="me-2">
+          <label class="form-check-label" for="rememberMe">
+            Remember me
+          </label>
+        </div>
+        <a [routerLink]="['/forgetpassword']" class="text-decoration-none text-caffe">Forgot Password?</a>
+      </div>
+      <div class="error text-danger ms-3">
+        {{errorMes}}
+      </div>
+      <button class="mt-4 mb-2 text-light p-2 btnStyle bg-caffe w-75 mx-auto d-block" (click)="login()">Sign In</button>
+
+    </form>
+    <div class="d-flex align-items-center mt-2">
+      <hr class="flex-grow-1">
+      <span class="mx-2">OR</span>
+      <hr class="flex-grow-1">
     </div>
- 
+    <div>
+      <button class="mt-3 mb-3 p-1 btnStyle w-75 mx-auto d-block" (click)="googleLogin()">
+        <img src="images/Home/Google.png" alt="Google Login" class="ms-0 me-3"
+          style="width: 32px; height: 32px; cursor: pointer;">
+        <p class="d-inline">Sign In With Google</p>
+
+      </button>
+    </div>
+    <p class="text-center mt-4 mb-0">
+      Don't have account?
+      <button class="btn btn-link text-decoration-none fw-bold text-caffe p-0" (click)="openSigUPDialog()">
+        Sign Up
+      </button>
+    </p>
+
+  </div>
+  <div class="right-section">
+
+  </div>
+</div>

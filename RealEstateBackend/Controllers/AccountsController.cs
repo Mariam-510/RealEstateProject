@@ -361,7 +361,7 @@ namespace RealEstate.Controllers
                 var isEmailConfirmed = await UserManager.IsEmailConfirmedAsync(account);
                 if (!isEmailConfirmed)
                 {
-                    return Unauthorized(new { message = "Please confirm your email before logging in." });
+                    return StatusCode(StatusCodes.Status403Forbidden, new { message = "Please confirm your email before logging in." });
                 }
 
                 var checkPasswordResult = await UserManager.CheckPasswordAsync(account, loginDto.Password);

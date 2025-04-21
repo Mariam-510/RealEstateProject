@@ -15,18 +15,32 @@ export class AccountService {
     return this.http.post(`${this.apiUrl}/Register`, userData);
   }
 
+  //----------------------------------------------------------------------------------
   registerAgent(userData: FormData): Observable<any> {
     // Correct endpoint: RegisterAgent
     return this.http.post(`${this.apiUrl}/RegisterAgent`, userData);
   }
 
-  // Add this new method for email confirmation
+  //----------------------------------------------------------------------------------
   confirmEmailCode(email: string, code: string): Observable<any> {
     const formData = new FormData();
     formData.append('email', email);
     formData.append('code', code);
 
     return this.http.post(`${this.apiUrl}/ConfirmEmailCode`, formData);
+  }
+
+  //----------------------------------------------------------------------------------
+  resendConfirmationEmail(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/ResendConfirmEmail`, { email });
+  }
+
+  //----------------------------------------------------------------------------------
+  login(email: string, password: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/Login`, {
+      email: email,
+      password: password
+    });
   }
 
 }

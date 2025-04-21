@@ -44,6 +44,7 @@ import { AddCategoryComponent } from './Components/Admin/add-category/add-catego
 import { AddProductComponent } from './Components/Admin/add-product/add-product.component';
 import { AddPropertyComponent } from './Components/FormsSellerAndAgent/add-property/add-property.component';
 import { AuctionDetailsComponent } from './Components/Auction/Details/auction-details/auction-details.component';
+import { ForgetPasswordSendCodeComponent } from './Components/Authentication/forget-password-send-code/forget-password-send-code.component';
 
 //----------------------------------------------------------------------------------------
 
@@ -103,6 +104,7 @@ export const routes: Routes = [
   { path: 'sendcode', component: SendCodeComponent, title: "Send Code" },
   { path: 'newpassword', component: NewPasswordComponent, title: "Change Password" },
   { path: 'emailnotconfirmed', component: EmailNotConfirmedComponent, title: "Email Not Confirmed" },
+  { path: 'forgetpassword/sendcode', component: ForgetPasswordSendCodeComponent, title: "Send Code" },
 
   //---------------------------------------------------------------------------------------
   { path: 'auctions', component: AuctionHomeComponent, title: "Auctions" },
