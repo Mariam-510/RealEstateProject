@@ -57,6 +57,21 @@ namespace RealEstate.Data
             //----------------------------------------------------------------------------------
             //SeedRoles
             DbInitializer.SeedRoles(builder);
+
+            //----------------------------------------------------------------------------------
+            //SeedCategories
+            DbInitializer.SeedCategories(builder);
+
+            //----------------------------------------------------------------------------------
+            //SeedProducts
+            DbInitializer.SeedProducts(builder);
+
+            //----------------------------------------------------------------------------------
+            //SeedProductStocks
+            DbInitializer.SeedProductStocks(builder);
+            
+
+
         }
 
     }
