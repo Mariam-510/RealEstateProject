@@ -31,7 +31,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   showMobileNav = false;
   showUserMenu = false;
-  isLoggedIn = true; // Set this based on auth state
+  isLoggedIn = false; // Set this based on auth state
   wishlistCount = 0;
   cartCount = 0;
   showCart = false;
@@ -171,5 +171,5 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   openSigUPDialog(): void {
     this.dialog.open(SignUpRoleComponentComponent);
-  }	
+  }
 }

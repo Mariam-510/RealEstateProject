@@ -24,18 +24,8 @@ export class SignUpRoleComponentComponent {
 
   signUpAsAgent(): void {
     this.dialogRef.close();
-    this.router.navigate(['/registerasagent']);
+    this.router.navigate(['/registerAgent']);
   }
-
-  // signUpAsSeller(): void {
-  //   this.dialogRef.close();
-  //   this.router.navigate(['/register']);
-  // }
-
-  // signUpAsBuyer(): void {
-  //   this.dialogRef.close();
-  //   this.router.navigate(['/register']);
-  // }
 
   signUpAsSeller(): void {
     this.dialogRef.close();

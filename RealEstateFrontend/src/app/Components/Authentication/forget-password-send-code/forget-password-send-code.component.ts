@@ -5,12 +5,12 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule } 
 import { AccountService } from '../../../Services/ApiServices/account.service';
 
 @Component({
-  selector: 'app-send-code',
+  selector: 'app-forget-password-send-code',
   imports: [ReactiveFormsModule, CommonModule, FormsModule, RouterModule],
-  templateUrl: './send-code.component.html',
-  styleUrl: './send-code.component.css'
+  templateUrl: './forget-password-send-code.component.html',
+  styleUrl: './forget-password-send-code.component.css'
 })
-export class SendCodeComponent implements OnInit {
+export class ForgetPasswordSendCodeComponent {
   codeArray: string[] = ['', '', '', '', '', ''];
   validationErrors: boolean[] = [false, false, false, false, false, false];
   timer: number = 120;
@@ -29,7 +29,7 @@ export class SendCodeComponent implements OnInit {
     this.email = this.route.snapshot.queryParams['email'];
 
     if (!this.email) {
-      this.router.navigate(['/register']);
+      this.router.navigate(['/forgetpassword']);
       return;
     }
 
@@ -100,6 +100,8 @@ export class SendCodeComponent implements OnInit {
   }
 
 
+  errorMes: string = '';
+
   Confirm(): void {
     // Validate each digit
     this.validationErrors = this.codeArray.map(c => !/^\d$/.test(c));
@@ -110,35 +112,8 @@ export class SendCodeComponent implements OnInit {
 
     const code = this.codeArray.join('').toString();
 
-    this.accountService.confirmEmailCode(this.email, code).subscribe({
-      next: (response) => {
-        console.log('Email confirmed successfully', response);
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        console.error('Confirmation failed', err);
-        this.handleConfirmationError(err);
-      }
-    });
   }
 
-  errorMes: string = '';
-  private handleConfirmationError(error: any): void {
-    if (error.status === 400) {
-      this.errorMes = error.error?.message || 'Invalid code or expired code';
-    } else if (error.status === 404) {
-      this.errorMes = 'User not found';
-    } else if (error.status === 409) {
-      this.errorMes = 'Email already confirmed';
-      this.router.navigate(['/login']);
-    } else {
-      this.errorMes = 'An unexpected error occurred';
-    }
-
-    // Clear the code fields on error
-    // this.codeArray = ['', '', '', '', '', ''];
-    // this.validationErrors = [false, false, false, false, false, false];
-  }
 
 
   isResending = false;
@@ -149,34 +124,6 @@ export class SendCodeComponent implements OnInit {
 
     this.isResending = true;
     this.errorMes = '';
-    this.successMes = '';
-
-    this.accountService.resendConfirmationEmail(this.email).subscribe({
-      next: (response) => {
-        console.log('Resend successful', response);
-        this.successMes = 'New code sent! Check your email.';
-        this.startTimer();
-        this.isResending = false;
-      },
-      error: (err) => {
-        console.error('Resend failed', err);
-        this.handleResendError(err);
-        this.isResending = false;
-      }
-    });
-  }
-  private handleResendError(error: any): void {
-    if (error.status === 404) {
-      this.errorMes = 'Email not found. Please register again.';
-      this.router.navigate(['/register']);
-    } else if (error.status === 409) {
-      this.errorMes = 'Email already confirmed';
-      this.router.navigate(['/login']);
-    } else if (error.status === 400) {
-      this.errorMes = error.error?.message || 'Invalid request';
-    } else {
-      this.errorMes = 'Failed to resend code. Please try again.';
-    }
   }
 
 }

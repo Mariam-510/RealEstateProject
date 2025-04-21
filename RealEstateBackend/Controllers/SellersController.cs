@@ -6,6 +6,7 @@ using RealEstate.JWT;
 using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos.AccountDto;
 using RealEstate.Models.Dtos.BuyerDto;
+using RealEstate.Models.Dtos.JWTDto;
 using RealEstate.Models.Dtos.SellerDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
@@ -157,10 +158,17 @@ namespace RealEstate.Controllers
                         return StatusCode(500, updateResult.Errors);
                     }
 
-
-                    var roles = await UserManager.GetRolesAsync(existingAccount);
                     //create token
-                    var jwtToken = TokenService.CreateJWTToken(existingAccount, roles.ToList());
+                    var roles = await UserManager.GetRolesAsync(existingAccount);
+
+                    var userClaims = new UserClaimsDto
+                    {
+                        UserId = updatedSeller.Id,
+                        FirstName = updatedSeller.FirstName,
+                        LastName = updatedSeller.LastName,
+                    };
+
+                    var jwtToken = TokenService.CreateJWTToken(existingAccount, roles.ToList(), userClaims);
 
                     var tokenDto = new JWTTokenDto()
                     {
