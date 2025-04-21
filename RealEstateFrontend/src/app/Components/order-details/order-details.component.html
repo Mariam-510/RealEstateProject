@@ -1,0 +1,224 @@
+<div class="container">
+  <div class="d-flex flex-wrap">
+    <div class="col-lg-8 col-12 pe-lg-4">
+
+      <div class="shadow-sm" *ngIf="orderStatusCode !== 4">
+        <div class="card-body mt-5">
+          <div class="d-flex justify-content-between mt-4 align-items-center mb-4 pt-4 ps-4 rounded">
+            <div>
+              <h4 class="mb-0">
+                <i class="bi bi-receipt me-2"></i>
+                Order Number <span class="text-brown font-weight-bold">{{ orderId }}</span>
+              </h4>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between text-center ms-1">
+            <div style="flex: 1;">
+              <i class="bi bi-hourglass-split text-brown" style="font-size: 2rem;"></i>
+              <p class="fw-bold mb-2">Pending</p>
+            </div>
+            <div style="flex: 1;">
+              <i class="bi bi-check-circle text-brown" style="font-size: 2rem;"></i>
+              <p class="fw-bold mb-2">Confirmed</p>
+            </div>
+            <div style="flex: 1;">
+              <i class="bi bi-truck text-brown" style="font-size: 2rem;"></i>
+              <p class="fw-bold mb-2">Out For Delivery</p>
+            </div>
+            <div style="flex: 1;">
+              <i class="bi bi-house-door text-brown" style="font-size: 2rem;"></i>
+              <p class="fw-bold mb-2">Delivered</p>
+            </div>
+          </div>
+
+          <div class="progress-container pb-5">
+            <div class="progress-line"></div>
+            <ul id="progressbar-2">
+              <li *ngFor="let step of [0,1,2,3]; let i = index" [ngClass]="{
+          'step0': true,
+          'active': orderStatusCode < 4 && orderStatusCode >= i,
+          'completed-line': orderStatusCode < 4 && orderStatusCode > i
+        }" [id]="'step' + (i + 1)">
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cancelled Order Message -->
+      <div class="card shadow-sm border-0 mt-5" *ngIf="orderStatusCode === 4">
+        <div class="card-body text-center" style="padding: 19px;">
+          <div class="cancelled-icon mb-4">
+            <i class="bi bi-x-circle-fill fs-1"></i>
+          </div>
+          <h3 class="fw-bold mb-3">Order Cancelled</h3>
+          <p class="text-muted mb-4">Your order {{ orderId }} has been cancelled and won't be processed.</p>
+           
+        </div>
+      </div>
+
+
+      <!-- Address Section -->
+      <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h4 class="mb-3"><i class="bi bi-truck-front me-2"></i>Delivery Information</h4>
+              <div class="d-flex align-items-start mb-3 mt-3">
+                <i class="bi bi-person-circle text-brown me-3 mt-3 "></i>
+                <div>
+                  <h6 class="mb-0 mt-3">Customer Name</h6>
+                  <p class="text-muted mb-0">Shahd Abdalla</p>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-start mb-3">
+                <i class="bi bi-geo-alt text-brown  me-3 mt-1"></i>
+                <div>
+                  <h6 class="mb-0">6 October, Giza, Egypt</h6>
+                  <p class="text-muted mb-0">Apartment 12, Floor 3</p>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-start">
+                <i class="bi bi-clock text-brown  me-3 mt-1"></i>
+                <div>
+                  <h6 class="mb-0">Phone Number</h6>
+                  <p class="text-muted mb-0">+20 1150211405</p>
+                </div>
+              </div>
+            </div>
+            <img src="images/Home/Delivery.jpeg" class="img-fluid rounded" style="max-width:180px; height: auto;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: Payment Section -->
+    <div class="col-lg-4 col-12 mt-lg-5 mt-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0 ">
+              Order Summary
+            </h4>
+            <span class="badge bg-light bg-opacity-10  text-success p-2">Paid</span>
+          </div>
+
+          <div class="bg-light p-3 rounded mb-4">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Subtotal</span>
+              <span class="fw-medium">600 EGP</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Delivery Fee</span>
+              <span class="fw-medium">100 EGP</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-muted">Discount</span>
+              <span class="fw-medium text-muted">0 EGP</span>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="mb-0">Total Amount</h5>
+            <h4 class="mb-0 text-brown">700 EGP</h4>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="mb-4">
+            <h5 class="mb-3">Payment Method</h5>
+            <div class="d-flex align-items-center bg-light p-3 rounded">
+              <i class="bi bi-paypal fs-3 text-brown me-3"></i>
+              <div>
+                <h6 class="mb-0">PayPal</h6>
+                <small class="text-muted">Payment completed</small>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn custom-outline w-100 mb-4 " (click)="downloadInvoice()">
+            <i class="bi bi-receipt me-2"></i>Download Invoice
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Order Items Section -->
+<div class="container mt-4 mb-5">
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0 ">
+          <i class="bi bi-box-seam me-2"></i>Order Items
+        </h4>
+        <span class="badge bg-light bg-opacity-10 text-brown p-2">3 Items</span>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded"
+        style="background-color: #f8f9fa;">
+        <div class="d-flex align-items-center">
+          <div class="position-relative">
+            <img src="/images/Home/Sofa.jpg" class="img-fluid rounded"
+              style="width: 130px; height: 140px; object-fit: cover;">
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-brown">
+              2
+            </span>
+          </div>
+          <div class="ms-3">
+            <h6 class="mb-1 fs-5">Modern Velvet Sofa</h6>
+            <div>
+              <div><i class="bi bi-tag me-1 text-brown"></i> Furniture</div>
+            </div>
+            <div class="mt-2">
+              <button class="btn btn-sm text-brown" style="border: none;">
+                <i class="bi bi-chat-left-text me-1"></i>Review
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="text-end">
+          <p class="mb-1 fw-bold fs-5">400 EGP</p>
+          <p class="text-muted small">200 EGP × 2</p>
+        </div>
+      </div>
+
+      <!-- Single Order Item -->
+      <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background-color: #f8f9fa;">
+        <div class="d-flex align-items-center">
+          <div class="position-relative">
+            <img src="/images/Home/Chair.jpg" class="img-fluid rounded"
+              style="width: 130px; height: 140px; object-fit: cover;">
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-brown">
+              1
+            </span>
+          </div>
+
+          <div class="ms-3">
+            <h6 class="mb-1 fs-5">Ergonomic Office Chair</h6>
+            <div>
+              <div><i class="bi bi-tag me-1 text-brown"></i> Furniture</div>
+            </div>
+            <div class="mt-2">
+              <button class="btn btn-sm  text-brown" style="border: none;">
+                <i class="bi bi-chat-left-text me-1"></i>Review
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="text-end">
+          <p class="mb-1 fw-bold fs-5">200 EGP</p>
+          <p class="text-muted small">200 EGP × 1</p>
+        </div>
+      </div>
+
+
+
+
+    </div>
+  </div>
+</div>

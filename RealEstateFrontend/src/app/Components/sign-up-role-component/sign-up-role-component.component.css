@@ -1,0 +1,21 @@
+.btnStyle {
+    border: none;
+    border-radius: 20px;
+    padding: 10px;
+    cursor: pointer;
+    transition: transform 0.5s ease, background-color 0.5s ease;
+  }
+  
+  .btnStyle:hover {
+    transform: scale(1.05);
+  } 
+
+  .btn-close {
+    border: none !important;        
+    outline: none !important;         
+}
+.card
+{
+    width: 18rem;
+    background-color:rgba(250, 235, 215, 0.41);
+}
