@@ -484,5 +484,43 @@ namespace RealEstate.Data
             );
         }
 
+        //----------------------------------------------------------------------------------------------------
+        public static void SeedSubscriptionPlans(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SubscriptionPlan>().HasData(
+                new SubscriptionPlan
+                {
+                    Id = 1,
+                    Name = "Free",
+                    Price = 0,
+                    MaxAllowedProperties = 3,
+                    Description = "Free plan with limited property slots."
+                },
+                new SubscriptionPlan
+                {
+                    Id = 2,
+                    Name = "Basic",
+                    Price = 9.99m,
+                    MaxAllowedProperties = 10,
+                    Description = "Basic plan suitable for individuals with moderate property listings."
+                },
+                new SubscriptionPlan
+                {
+                    Id = 3,
+                    Name = "Pro",
+                    Price = 29.99m,
+                    MaxAllowedProperties = 50,
+                    Description = "Pro plan ideal for professionals managing multiple properties."
+                },
+                new SubscriptionPlan
+                {
+                    Id = 4,
+                    Name = "Enterprise",
+                    Price = 99.99m,
+                    MaxAllowedProperties = 200,
+                    Description = "Enterprise plan for large-scale property management businesses."
+                }
+            );
+        }
     }
 }

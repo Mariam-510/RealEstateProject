@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PaypalService } from '../Service/paypal.service';
 import { ToastrService } from '../Service/toastr.service';
-import { AuthService } from '../Service/auth.service';
+import { AuthService } from '../Service/ApiServices/auth.service';
 
 @Component({
   selector: 'app-google-and-paypal',

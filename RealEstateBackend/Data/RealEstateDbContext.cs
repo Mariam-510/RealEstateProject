@@ -74,9 +74,11 @@ namespace RealEstate.Data
 
             //----------------------------------------------------------------------------------
             //SeedProperties
-            DbInitializer.SeedProperties(builder);
+            //DbInitializer.SeedProperties(builder);
 
-
+            //----------------------------------------------------------------------------------
+            //SeedSubscriptionPlans
+            DbInitializer.SeedSubscriptionPlans(builder);
 
 
         }

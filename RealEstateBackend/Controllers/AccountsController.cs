@@ -178,7 +178,7 @@ namespace RealEstate.Controllers
                             Dear {account.Email},<br/>
                             Thank you for registering.<br/>
                             Your email confirmation code is: <strong>{confirmationCode}</strong><br/>
-                            This code will expire in 10 minutes.<br/>
+                            This code will expire in 2 minutes.<br/>
                             Please enter this code in the app to confirm your email.";
 
 
@@ -299,7 +299,7 @@ namespace RealEstate.Controllers
                             Dear {account.Email},<br/>
                             Thank you for registering.<br/>
                             Your email confirmation code is: <strong>{confirmationCode}</strong><br/>
-                            This code will expire in 10 minutes.<br/>
+                            This code will expire in 2 minutes.<br/>
                             Please enter this code in the app to confirm your email.";
 
 
@@ -368,6 +368,10 @@ namespace RealEstate.Controllers
                 {
                     var roles = await UserManager.GetRolesAsync(account);
 
+                    var userId = 0;
+                    var fName = "";
+                    var lName = "";
+
                     if (roles.Contains("Agent"))
                     {
                         var agent = await AgentRepository.GetByAccountIdAsync(account.Id);
@@ -381,8 +385,31 @@ namespace RealEstate.Controllers
                             {
                                 return BadRequest(new{message = "Your account has been rejected. Please contact support for further details."});
                             }
-
+                            userId = agent.Id;
+                            fName = agent.Name;
                         }
+                    }
+                    else if (roles.Contains("Seller"))
+                    {
+                        var seller = await SellerRepository.GetByAccountIdAsync(account.Id);
+                        if (seller != null)
+                        {
+                            userId = seller.Id;
+                            fName = seller.FirstName;
+                            lName = seller.LastName;
+                        }
+
+                    }
+                    else if (roles.Contains("Buyer"))
+                    {
+                        var buyer = await BuyerRepository.GetByAccountIdAsync(account.Id);
+                        if (buyer != null)
+                        {
+                            userId = buyer.Id;
+                            fName = buyer.FirstName;
+                            lName = buyer.LastName;
+                        }
+
                     }
 
                     //create token
@@ -402,7 +429,7 @@ namespace RealEstate.Controllers
 
         [HttpPost]
         [Route("ConfirmEmailCode")]
-        public async Task<IActionResult> ConfirmEmailCode(string email, string code)
+        public async Task<IActionResult> ConfirmEmailCode([FromForm] string email, [FromForm] string code)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(code))
                 return BadRequest(new { message = "Email and code are required." });
@@ -470,7 +497,7 @@ namespace RealEstate.Controllers
                             Dear {account.Email},<br/>
                             Thank you for registering.<br/>
                             Your email confirmation code is: <strong>{confirmationCode}</strong><br/>
-                            This code will expire in 10 minutes.<br/>
+                            This code will expire in 2 minutes.<br/>
                             .Please enter this code in the app to confirm your email.";
 
 
