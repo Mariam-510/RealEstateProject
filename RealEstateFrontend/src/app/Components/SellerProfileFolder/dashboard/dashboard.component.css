@@ -1,0 +1,4 @@
+.recent-activity-scroll {
+    max-height: 300px; /* adjust height as needed */
+    overflow-y: auto;
+  }
