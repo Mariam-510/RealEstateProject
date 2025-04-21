@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Models.Domains;
+using static RealEstate.Data.DbInitializer;
+using System.Reflection.Emit;
 
 namespace RealEstate.Data
 {
@@ -69,6 +71,11 @@ namespace RealEstate.Data
             //----------------------------------------------------------------------------------
             //SeedProductStocks
             DbInitializer.SeedProductStocks(builder);
+
+            //----------------------------------------------------------------------------------
+            //SeedProperties
+            DbInitializer.SeedProperties(builder);
+
 
 
 

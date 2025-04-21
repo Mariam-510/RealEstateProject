@@ -12,8 +12,6 @@ import { AddressSelectionComponent } from './Components/Forms/address-selection/
 import { NewAddressComponent } from './Components/new-address/new-address.component';
 import { PaymentComponent } from './Components/payment/payment.component';
 import { OrderConfirmationComponent } from './Components/order-confirmation/order-confirmation.component';
-import { AddPropertyComponent } from './Components/add-property/add-property.component';
-import { AddAuctionComponent } from './Components/add-auction/add-auction.component';
 import { LoginComponent } from './Components/login/login.component';
 import { RegisterComponent } from './Components/register/register.component';
 import { ProfileComponent } from './Components/ProfileFolder/profile/profile.component';
@@ -40,6 +38,7 @@ import { ProductDetailsComponent } from './Components/productComponent/product-d
 import { CatSliderComponent } from './Components/Product Home/Sliders/cat-slider/cat-slider.component';
 import { AddProductComponent } from './Components/add-product/add-product.component';
 import { AddAuctionComponent } from './Components/Forms/add-auction/add-auction.component';
+
 export const routes: Routes = [
   { path: 'products/category/:id', component: CategoryComponent },
 
@@ -80,42 +79,50 @@ export const routes: Routes = [
       { path: '', redirectTo: 'cart', pathMatch: 'full' },
     ],
   },
-  {path: 'login', component: LoginComponent, title: "Login"},
-  {path: 'register', component: RegisterComponent, title: "Register"},
-  {path: 'profile', component: ProfileComponent, title: "Profile"},
-  {path: 'registerasagent', component: RegisterAsAgentComponent, title: "Register"},
-  {path: 'forgetpassword', component: ForgetPasswordComponent, title: "Forget Password"},
-  {path: 'sendcode', component: SendCodeComponent, title: "Send Code"},
-  {path: 'newpassword', component: NewPasswordComponent, title: "Change Password"},
-  {path: 'emailnotconfirmed', component: EmailNotConfirmedComponent, title: "Email Not Confirmed"},
-  {path: 'usermenu', component: SideBarComponent, title: "usermenu", children: [
+  { path: 'login', component: LoginComponent, title: "Login" },
+  { path: 'register', component: RegisterComponent, title: "Register" },
+  { path: 'profile', component: ProfileComponent, title: "Profile" },
+  { path: 'registerasagent', component: RegisterAsAgentComponent, title: "Register" },
+  { path: 'forgetpassword', component: ForgetPasswordComponent, title: "Forget Password" },
+  { path: 'sendcode', component: SendCodeComponent, title: "Send Code" },
+  { path: 'newpassword', component: NewPasswordComponent, title: "Change Password" },
+  { path: 'emailnotconfirmed', component: EmailNotConfirmedComponent, title: "Email Not Confirmed" },
+  {
+    path: 'usermenu', component: SideBarComponent, title: "usermenu", children: [
       { path: '', redirectTo: 'userprofile', pathMatch: "full" },
       { path: "userprofile", component: ProfileComponent, title: "userprofile" },
       { path: "userorder", component: OrderSummaryComponent, title: "Order Summary" },
-      {path: 'userorder/orderDetails', component: OrderDetailsComponent, title: "Order Details"},
-]},
+      { path: 'userorder/orderDetails', component: OrderDetailsComponent, title: "Order Details" },
+    ]
+  },
 
-  {path: 'agentmenu', component: AgentSideBarComponent, title: "Agentmenu", children: [
-          { path: '', redirectTo: 'Agentprofile', pathMatch: "full" },
-          { path: "Agentprofile", component: AgentProfileComponent, title: "Agentprofile" },
-          {path: 'Agentdashboard', component: AgentdashboardComponent, title: "AgentDashboard"},
+  {
+    path: 'agentmenu', component: AgentSideBarComponent, title: "Agentmenu", children: [
+      { path: '', redirectTo: 'Agentprofile', pathMatch: "full" },
+      { path: "Agentprofile", component: AgentProfileComponent, title: "Agentprofile" },
+      { path: 'Agentdashboard', component: AgentdashboardComponent, title: "AgentDashboard" },
 
-      ]},
-           
-  {path: 'adminmenu', component: AdminSideBarComponent, title: "Adminmenu", children: [
-              { path: '', redirectTo: 'Adminprofile', pathMatch: "full" },
-              { path: "Adminprofile", component: AdminProfileComponent, title: "Adminprofile" },
-              { path: 'Admindashboard', component: AdmindashboardComponent, title: "AdminDashboard"},
-              { path: 'ViewAllOrder', component: ViewAllOrderComponent, title: "View All Order"},
+    ]
+  },
+
+  {
+    path: 'adminmenu', component: AdminSideBarComponent, title: "Adminmenu", children: [
+      { path: '', redirectTo: 'Adminprofile', pathMatch: "full" },
+      { path: "Adminprofile", component: AdminProfileComponent, title: "Adminprofile" },
+      { path: 'Admindashboard', component: AdmindashboardComponent, title: "AdminDashboard" },
+      { path: 'ViewAllOrder', component: ViewAllOrderComponent, title: "View All Order" },
 
 
-          ]},    
-          
-  {path: 'sellermenu', component: SellersidebarComponent, title: "Sellermenu", children: [
-  { path: '', redirectTo: 'SellerProfile', pathMatch: "full" },
-  { path: "SellerProfile", component: SellerProfileComponent, title: "Seller profile" },
-  {path: 'sellerdashboard', component: DashboardComponent, title: "Seller Dashboard"},
-]},
+    ]
+  },
+
+  {
+    path: 'sellermenu', component: SellersidebarComponent, title: "Sellermenu", children: [
+      { path: '', redirectTo: 'SellerProfile', pathMatch: "full" },
+      { path: "SellerProfile", component: SellerProfileComponent, title: "Seller profile" },
+      { path: 'sellerdashboard', component: DashboardComponent, title: "Seller Dashboard" },
+    ]
+  },
 
 
   { path: "about", component: AboutComponent, title: "About" },
@@ -124,7 +131,7 @@ export const routes: Routes = [
 
   { path: 'products/:id', component: ProductDetailsComponent, title: "Product Details" },
 
-  { path: "home", component: GoogleAndPaypalComponent, title: "gopl" },
+  { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
 
   { path: "**", component: NotFoundComponent }
 ];
