@@ -3,7 +3,7 @@
 <nav class="mobile-nav" [class.active]="showMobileNav">
   <ul>
     <li *ngFor="let item of navItems">
-      <a [routerLink]="item.link" class="nav-link" routerLinkActive="active" (click)="showMobileNav = false">
+      <a [routerLink]="item.link" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="showMobileNav = false">
         <i [class]="item.icon"></i>
         <span>{{ item.label }}</span>
       </a>
@@ -21,17 +21,17 @@
   <!-- Logo Section -->
   <div class="brand-container">
     <div class="brand-content">
-      <a routerLink="/homePage" class="brand-logo w-25">
+      <a routerLink="/" class="brand-logo w-25">
         <img src="https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1" alt="UrbanNest">
       </a>
       <div class="brand-tagline">
-        <a routerLink="/homePage" class="brand-name w-25">UrbanNest</a>
+        <a routerLink="/" class="brand-name w-25">UrbanNest</a>
         <span class="brand-services">
-          <span class="service-item" [class.active]="isRouteActive('/home/properties')">Properties</span>
+          <span class="service-item" [class.active]="isRouteActive('/properties')">Properties</span>
           <span class="separator"> | </span>
-          <span class="service-item" [class.active]="isRouteActive('/home/products')">Furniture</span>
+          <span class="service-item" [class.active]="isRouteActive('/products')">Furniture</span>
           <span class="separator"> | </span>
-          <span class="service-item" [class.active]="isRouteActive('/home/auctions')">Auctions</span>
+          <span class="service-item" [class.active]="isRouteActive('/auctions')">Auctions</span>
         </span>
       </div>
     </div>
@@ -41,7 +41,7 @@
   <nav class="primary-nav">
     <ul>
       <li *ngFor="let item of navItems">
-        <a [routerLink]="item.link" class="nav-link" routerLinkActive="active">
+        <a [routerLink]="item.link" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <i [class]="item.icon"></i>
           <span style="font-size: 1.1rem;">{{ item.label }}</span>
         </a>

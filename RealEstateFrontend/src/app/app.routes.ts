@@ -38,6 +38,11 @@ import { ProductDetailsComponent } from './Components/productComponent/product-d
 import { CatSliderComponent } from './Components/Product Home/Sliders/cat-slider/cat-slider.component';
 import { AddProductComponent } from './Components/add-product/add-product.component';
 import { AddAuctionComponent } from './Components/Forms/add-auction/add-auction.component';
+import { PropertiesPageComponent } from './Components/RealEstateComponent/properties-page/properties-page.component';
+import { ProductDetailsComponent } from './Components/productComponent/product-details/product-details.component';
+import { CatSliderComponent } from './Components/Product Home/Sliders/cat-slider/cat-slider.component';
+import { HomePageComponent } from './Components/home-page/home-page.component';
+import { HomeTesttttComponent } from './Components/home-testttt/home-testttt.component';
 
 export const routes: Routes = [
   { path: 'products/category/:id', component: CategoryComponent },
@@ -64,6 +69,26 @@ export const routes: Routes = [
     component: CategoryComponent,
     pathMatch: 'full',
   },
+  
+  { path: 'products/category/:id', component: CategoryComponent },
+
+  { path: '', component: HomePageComponent },
+  { path: 't', component: HomeTesttttComponent },
+
+  { path: 'products', component: PHomeComponent },
+
+  { path: 'properties', component: PropertyHomeComponent },
+
+  { path: 'auctions', component: CatSliderComponent },
+
+  { path: 'property/:id', component: PropertyDetailsComponent },
+
+  { path: 'realeastate/auctions', component: AuctionHomeComponent },
+
+  { path: 'addAuction', component: AddAuctionComponent, pathMatch: 'full' },
+
+  { path: 'products/category/:id', component: CategoryComponent, pathMatch: 'full' },
+
   { path: 'cart', component: CartComponent, pathMatch: 'full' },
 
   { path: 'addressSelection', component: AddressSelectionComponent, pathMatch: 'full', },
