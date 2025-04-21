@@ -65,7 +65,7 @@ export const routes: Routes = [
 
   { path: 'products/:id', component: ProductDetailsComponent, title: "Product Details" },
 
-  { path: "home", component: GoogleAndPaypalComponent, title: "gopl" },
+  { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
 
   { path: "**", component: NotFoundComponent }
 ];

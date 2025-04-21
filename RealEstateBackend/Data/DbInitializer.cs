@@ -7,7 +7,6 @@ namespace RealEstate.Data
     public static class DbInitializer
     {
         //----------------------------------------------------------------------------------------------------
-        //Seed Roles
         static string AdminRoleId = "98fe3e29-261a-4305-98ae-b6264c17544a";
         static string BuyerRoleId = "972cc7dd-32dd-4ece-aaeb-913bc904655d";
         static string SellerRoleId = "ec29f992-0161-4899-89dd-2314fce2a454";
@@ -66,7 +65,6 @@ namespace RealEstate.Data
         }
 
         //----------------------------------------------------------------------------------------------------
-
         public static void SeedProducts(ModelBuilder modelBuilder)
         {
             // Sofas
@@ -180,6 +178,311 @@ namespace RealEstate.Data
             }
         }
 
+        //----------------------------------------------------------------------------------------------------
+        public static void SeedProperties(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Property>().HasData(
+                // Property 1
+                new Property
+                {
+                    Id = 1,
+                    Title = "Downtown Luxury Apartment",
+                    Description = "This exquisite modern 2-bedroom apartment offers breathtaking panoramic views of the city skyline from its floor-to-ceiling windows. The open-concept living space features high-end finishes including hardwood flooring, custom cabinetry, and premium stainless steel appliances. The master suite boasts a spacious walk-in closet and a spa-like ensuite with heated floors and a rainfall shower. The building amenities include a 24-hour concierge, state-of-the-art fitness center, rooftop terrace with infinity pool, and private dining rooms for entertaining. Located in the heart of the financial district, you're steps away from fine dining, luxury shopping, and cultural attractions. The apartment comes with two underground parking spots and a storage locker. Perfect for professionals seeking a sophisticated urban lifestyle with all the conveniences at your doorstep.",
+                    Location = "El-Korba, Heliopolis, Cairo",
+                    Type = PropertyType.Sell,
+                    Price = 750000.00m,
+                    Status = PropertyStatus.Available,
+                    PropertyCategory = PropertyCategory.Apartment,
+                    BedRooms = 2,
+                    BathRooms = 2,
+                    Space = 110.00m,
+                    AgentId = 1,
+                    SellerId = 1,
+                    Images = new List<string> { "PropertyImages/1-1.jpg", "PropertyImages/1-2.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved
+                },
+
+                // Property 2
+                new Property
+                {
+                    Id = 2,
+                    Title = "Suburban Family Home",
+                    Description = "This charming 4-bedroom family home in the sought-after Green Valley neighborhood offers the perfect blend of comfort and functionality. The recently renovated kitchen features quartz countertops, custom shaker-style cabinets, and professional-grade appliances. The spacious backyard includes a large deck, professionally landscaped gardens, and a play area - ideal for family gatherings and summer barbecues. Inside, you'll find hardwood floors throughout, a cozy fireplace in the living room, and a finished basement that can serve as a recreation room or home office. The primary bedroom includes an ensuite bathroom with double vanity and walk-in closet. Located in a top-rated school district with easy access to parks, community centers, and shopping. The neighborhood is known for its friendly atmosphere and annual community events. A true family sanctuary just minutes from all amenities.",
+                    Location = "El Rehab City, New Cairo",
+                    Type = PropertyType.Rent,
+                    Price = 3200.00m,
+                    Status = PropertyStatus.Available,
+                    PropertyCategory = PropertyCategory.House,
+                    BedRooms = 4,
+                    BathRooms = 3,
+                    Space = 240.00m,
+                    AgentId = 2,
+                    SellerId = 2,
+                    Images = new List<string> { "PropertyImages/2-1.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Pending
+                },
+
+                // Property 3 (Villa)
+                new Property
+                {
+                    Id = 3,
+                    Title = "Luxury Beachfront Villa",
+                    Description = "Experience ultimate luxury in this stunning beachfront villa that offers direct private access to pristine white sand beaches. This architectural masterpiece spans nearly 500 square meters of living space with floor-to-ceiling windows that showcase breathtaking ocean views from every room. The gourmet kitchen is equipped with top-of-the-line appliances, custom cabinetry, and a massive center island. The villa features five ensuite bedrooms, each with its own unique design theme and private balcony. The infinity pool seems to merge with the ocean horizon, surrounded by an expansive sun deck with lounge areas and an outdoor kitchen. Smart home technology controls lighting, temperature, security and entertainment systems throughout the property. The landscaped grounds include tropical gardens, a meditation pavilion, and a private dock. Located in an exclusive gated community with 24/7 security, this is coastal living at its most luxurious and private.",
+                    Location = "Marina El Alamein, North Coast",
+                    Type = PropertyType.Sell,
+                    Price = 2500000.00m,
+                    Status = PropertyStatus.Sold,
+                    PropertyCategory = PropertyCategory.Villa,
+                    BedRooms = 5,
+                    BathRooms = 5,
+                    Space = 480.00m,
+                    AgentId = 1,
+                    SellerId = 3,
+                    Images = new List<string> { "PropertyImages/3-1.jpg", "PropertyImages/3-2.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved
+                },
+
+                // Property 4 (Studio)
+                new Property
+                {
+                    Id = 4,
+                    Title = "City Center Studio",
+                    Description = "This beautifully designed studio apartment offers an exceptional urban living experience in the most vibrant part of downtown. Despite its compact size, the space has been meticulously planned to maximize functionality with custom built-in storage solutions, a Murphy bed that transforms into a workspace, and a kitchenette with full-size appliances cleverly integrated into the design. The unit features polished concrete floors, exposed brick walls, and large industrial-style windows that flood the space with natural light. The building offers fantastic amenities including a shared rooftop terrace with skyline views, co-working spaces, laundry facilities, and a bike storage room. Located in the trendiest neighborhood with countless cafes, restaurants, and nightlife options right outside your door. Perfect for young professionals or students who want to live in the heart of the action without compromising on style and comfort. Includes all utilities and high-speed internet in the rent.",
+                    Location = "Zamalek, Cairo",
+                    Type = PropertyType.Rent,
+                    Price = 1200.00m,
+                    Status = PropertyStatus.Available,
+                    PropertyCategory = PropertyCategory.Studio,
+                    BedRooms = 1,
+                    BathRooms = 1,
+                    Space = 45.00m,
+                    AgentId = 3,
+                    SellerId = 4,
+                    Images = new List<string> { "PropertyImages/4-1.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved
+                },
+
+                // Property 5 (Penthouse)
+                new Property
+                {
+                    Id = 5,
+                    Title = "Skyline Penthouse",
+                    Description = "Perched atop the city's most prestigious tower, this extraordinary penthouse redefines luxury living with its unparalleled views, exquisite finishes, and expansive 320 square meter layout. The residence features a grand entrance gallery that leads to a spectacular great room with 360-degree panoramic views through floor-to-ceiling glass walls. The chef's kitchen is outfitted with the finest appliances from Sub-Zero, Wolf, and Miele, complemented by custom Italian cabinetry and rare stone countertops. The primary bedroom suite is a private sanctuary complete with a lavish dressing room and spa bathroom featuring a freestanding soaking tub and steam shower. Additional highlights include a state-of-the-art home theater, temperature-controlled wine cellar, and a private elevator entrance. The crowning jewel is the sprawling rooftop terrace with an outdoor kitchen, infinity-edge jacuzzi, and multiple lounge and dining areas - perfect for entertaining against the backdrop of the glittering city skyline. This is urban living at its most exclusive and sophisticated.",
+                    Location = "Nile Corniche, Maadi, Cairo",
+                    Type = PropertyType.Sell,
+                    Price = 3850000.00m,
+                    Status = PropertyStatus.Available,
+                    PropertyCategory = PropertyCategory.Penthouse,
+                    BedRooms = 3,
+                    BathRooms = 3,
+                    Space = 320.00m,
+                    AgentId = 2,
+                    SellerId = 5,
+                    Images = new List<string> { "PropertyImages/5-1.jpg", "PropertyImages/5-2.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved
+                },
+
+                // Property 6 (Duplex)
+                new Property
+                {
+                    Id = 6,
+                    Title = "Modern Duplex Apartment",
+                    Description = "This architect-designed duplex apartment offers a unique two-level living experience in the vibrant Tech Park neighborhood. The lower level features an open-concept living area with soaring ceilings, a sleek modern kitchen with waterfall-edge island, and a wall of glass doors that open to a private balcony. A sculptural floating staircase leads to the upper level where you'll find two spacious bedrooms, each with ensuite bathrooms and ample closet space. The interior showcases premium finishes throughout including wide-plank oak flooring, designer lighting fixtures, and smart home technology. The building offers exceptional amenities including a fitness center, co-working lounge, and a rooftop terrace with stunning city views. Located in an up-and-coming area known for its tech startups, trendy cafes, and art galleries. This property appeals to those who appreciate contemporary design and urban convenience, with easy access to public transportation and major highways. A rare opportunity to own a distinctive home in one of the city's most dynamic neighborhoods.",
+                    Location = "Smart Village, 6th of October City, Giza",
+                    Type = PropertyType.Rent,
+                    Price = 4500.00m,
+                    Status = PropertyStatus.Available,
+                    PropertyCategory = PropertyCategory.Duplex,
+                    BedRooms = 2,
+                    BathRooms = 2,
+                    Space = 180.00m,
+                    AgentId = 4,
+                    SellerId = 6,
+                    Images = new List<string> { "PropertyImages/6-1.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Pending
+                },
+
+                // Property 7 (Townhouse)
+                new Property
+                {
+                    Id = 7,
+                    Title = "Historic Townhouse",
+                    Description = "Step into a piece of history with this meticulously restored 19th century townhouse that seamlessly blends period charm with modern comforts. The property retains original features including ornate moldings, hardwood floors, and three original fireplaces, all carefully preserved during the recent renovation. The gourmet kitchen has been completely updated with high-end appliances while maintaining the home's historic character through custom cabinetry that matches the original woodwork. The four bedrooms include a luxurious primary suite with a spa-like bathroom featuring a clawfoot tub and separate shower. The private rear garden is a tranquil oasis with mature plantings, a bluestone patio, and a charming gazebo. Located on one of Old Town's most picturesque streets, this home is just steps from boutique shopping, acclaimed restaurants, and cultural landmarks. The property includes a rare two-car garage and full basement with high ceilings that could be finished for additional living space. A true gem for those who appreciate historic architecture and craftsmanship.",
+                    Location = "Garden City, Cairo",
+                    Type = PropertyType.Sell,
+                    Price = 1250000.00m,
+                    Status = PropertyStatus.Available,
+                    PropertyCategory = PropertyCategory.Townhouse,
+                    BedRooms = 4,
+                    BathRooms = 3,
+                    Space = 280.00m,
+                    AgentId = 5,
+                    SellerId = 7,
+                    Images = new List<string> { "PropertyImages/7-1.jpg", "PropertyImages/7-2.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved
+                },
+
+                // Property 8 (Mansion)
+                new Property
+                {
+                    Id = 8,
+                    Title = "Grand Estate Mansion",
+                    Description = "This palatial estate sprawls across 10 acres of meticulously landscaped grounds in the exclusive Elite Hills enclave. The 12,000 square foot mansion boasts grand formal rooms perfect for entertaining, including a ballroom with crystal chandeliers, a wood-paneled library, and a formal dining room that seats 20. The chef's kitchen is equipped with commercial-grade appliances and connects to a casual breakfast room with panoramic views of the grounds. The primary suite occupies its own wing with a sitting room, two walk-in closets, and a luxurious bathroom with a soaking tub and steam shower. Additional amenities include a home theater, indoor pool complex with spa, tennis court, and a guest house with three bedrooms. The grounds feature formal gardens, a koi pond, and a winding driveway that creates a grand approach. Security features include gated entry, surveillance cameras, and a full generator system. This is a once-in-a-lifetime opportunity to own one of the area's most prestigious properties, offering unparalleled privacy and luxury just minutes from the city center.",
+                    Location = "Katameya Heights, New Cairo",
+                    Type = PropertyType.Sell,
+                    Price = 8500000.00m,
+                    Status = PropertyStatus.Auctioned,
+                    PropertyCategory = PropertyCategory.Mansion,
+                    BedRooms = 8,
+                    BathRooms = 7,
+                    Space = 1200.00m,
+                    AgentId = 1,
+                    SellerId = 8,
+                    Images = new List<string> { "PropertyImages/8-1.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved
+                },
+
+                // Property 9 (Apartment)
+                new Property
+                {
+                    Id = 9,
+                    Title = "River View Apartment",
+                    Description = "Wake up to stunning river views every morning in this bright and airy 1-bedroom apartment. The open-concept layout maximizes the breathtaking water views, with a wall of windows in the living area that frame the ever-changing scenery. The modern kitchen features quartz countertops, stainless steel appliances, and a breakfast bar perfect for casual dining. The bedroom is generously sized with a large walk-in closet, while the bathroom offers a spa-like experience with a deep soaking tub and separate glass shower. The private balcony is the perfect spot to enjoy morning coffee or evening cocktails while watching boats sail by. Building amenities include a 24-hour concierge, fitness center, and a shared rooftop terrace with barbecue stations. Located in the desirable Waterside neighborhood with easy access to riverside walking trails, charming cafes, and the downtown core. This apartment offers an exceptional quality of life for those who appreciate beautiful views and convenient urban living.",
+                    Location = "Nile Towers, Giza Corniche",
+                    Type = PropertyType.Rent,
+                    Price = 1800.00m,
+                    Status = PropertyStatus.Available,
+                    PropertyCategory = PropertyCategory.Apartment,
+                    BedRooms = 1,
+                    BathRooms = 1,
+                    Space = 65.00m,
+                    AgentId = 3,
+                    SellerId = 9,
+                    Images = new List<string> { "PropertyImages/9-1.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Rejected
+                },
+
+                // Property 10 (House)
+                new Property
+                {
+                    Id = 10,
+                    Title = "Fixer-Upper Opportunity",
+                    Description = "This solid 3-bedroom home presents an incredible opportunity for investors or handy homeowners looking to create their dream house. While needing significant updates, the property has good bones with a strong foundation, recently replaced roof, and updated electrical system. The spacious layout includes a large living room with fireplace, separate dining area, and a kitchen that could be opened up to create a modern great room. The backyard is surprisingly large for the neighborhood, offering potential for outdoor living space or even an addition. Located in an up-and-coming area that's seeing rapid redevelopment, this property represents excellent value for those willing to put in the work. The neighborhood is transitioning with new cafes, breweries, and boutiques opening regularly. Just a short commute to downtown, this is a prime candidate for a complete renovation or flip. Bring your vision and contractor to explore the possibilities - this could be transformed into a stunning modern home or a lucrative rental property in one of the city's hottest emerging neighborhoods.",
+                    Location = "Shorouk City, Cairo",
+                    Type = PropertyType.Sell,
+                    Price = 220000.00m,
+                    Status = PropertyStatus.Available,
+                    PropertyCategory = PropertyCategory.House,
+                    BedRooms = 3,
+                    BathRooms = 2,
+                    Space = 150.00m,
+                    AgentId = 4,
+                    SellerId = 10,
+                    Images = new List<string> { "PropertyImages/10-1.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Pending
+                },
+
+                // Property 11 (Villa)
+                new Property
+                {
+                    Id = 11,
+                    Title = "Mountain Retreat Villa",
+                    Description = "Escape to your private mountain sanctuary with this stunning villa nestled in the serene High Peaks region. Designed to blend seamlessly with its natural surroundings, the home features expansive windows that frame breathtaking mountain vistas from every room. The great room boasts a massive stone fireplace and vaulted wood-beamed ceilings, creating a warm and inviting atmosphere. The gourmet kitchen is equipped with professional appliances and a large center island, perfect for preparing meals after a day of outdoor adventures. The property includes four ensuite bedrooms, each with private balconies to enjoy the crisp mountain air. Outside, you'll find multiple terraces, a hot tub with panoramic views, and direct access to hiking trails. The lower level features a recreation room with wet bar, home gym, and sauna. Located in a private community with shared amenities including tennis courts and a clubhouse, this is the ultimate retreat for nature lovers who don't want to sacrifice luxury. Just two hours from the city but feels a world away, offering the perfect balance of seclusion and accessibility.",
+                    Location = "El Gouna, Red Sea",
+                    Type = PropertyType.Rent,
+                    Price = 5000.00m,
+                    Status = PropertyStatus.Available,
+                    PropertyCategory = PropertyCategory.Villa,
+                    BedRooms = 4,
+                    BathRooms = 3,
+                    Space = 300.00m,
+                    AgentId = 5,
+                    SellerId = 11,
+                    Images = new List<string> { "PropertyImages/11-1.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved
+                },
+
+                // Property 12 (Studio)
+                new Property
+                {
+                    Id = 12,
+                    Title = "Artist's Studio Loft",
+                    Description = "This unique live-work space in the heart of the Creative District is perfect for artists, writers, or anyone seeking an inspiring urban loft. The open 35-square-meter space features soaring ceilings with exposed ductwork, original brick walls, and enormous north-facing windows that flood the space with perfect natural light. The flexible layout can accommodate various configurations - use the open area as a painting studio, photography space, or simply as an airy living area. A compact but fully functional kitchenette and a stylish bathroom with walk-in shower complete the space. The building has a rich artistic history, having been home to several notable local artists over the decades. Current residents enjoy the building's creative energy and regular open studio events. Located just steps from galleries, performance spaces, and some of the city's most innovative restaurants. This is more than just an apartment - it's a creative haven in the city's most vibrant arts community. Includes access to shared rooftop space with skyline views.",
+                    Location = "Downtown Arts District, Alexandria",
+                    Type = PropertyType.Rent,
+                    Price = 950.00m,
+                    Status = PropertyStatus.Available,
+                    PropertyCategory = PropertyCategory.Studio,
+                    BedRooms = 0,
+                    BathRooms = 1,
+                    Space = 35.00m,
+                    AgentId = 2,
+                    SellerId = 12,
+                    Images = new List<string> { "PropertyImages/12-1.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved
+                },
+
+                // Property 13 (Penthouse)
+                new Property
+                {
+                    Id = 13,
+                    Title = "Executive Penthouse Suite",
+                    Description = "Designed for the discerning business traveler or corporate executive, this fully-furnished penthouse suite offers hotel-like amenities with the comfort of a private residence. The sophisticated interior features a neutral palette with high-end finishes, creating a serene and productive environment. The living area includes a dedicated workspace with high-speed internet and printer, while the bedroom offers blackout curtains and premium bedding for optimal rest. The kitchen is equipped with everything needed for short or extended stays, including a Nespresso machine and wine cooler. Building amenities rival five-star hotels, including 24/7 concierge service, business center, meeting rooms, and a fitness facility with personal training available. The location couldn't be more convenient - just steps from the financial district's major office towers, luxury shopping, and fine dining. Flexible lease terms available, with housekeeping and laundry services optional. This is corporate housing at its most elegant and convenient, perfect for relocation packages or project-based stays in the city.",
+                    Location = "City Stars Towers, Nasr City, Cairo",
+                    Type = PropertyType.Rent,
+                    Price = 8500.00m,
+                    Status = PropertyStatus.Available,
+                    PropertyCategory = PropertyCategory.Penthouse,
+                    BedRooms = 2,
+                    BathRooms = 2,
+                    Space = 160.00m,
+                    AgentId = 1,
+                    SellerId = 13,
+                    Images = new List<string> { "PropertyImages/13-1.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved
+                },
+
+                // Property 14 (Townhouse)
+                new Property
+                {
+                    Id = 14,
+                    Title = "Modern Townhouse Complex",
+                    Description = "This newly constructed townhouse in the rapidly developing Growth Zone offers contemporary urban living at its finest. The three-level design maximizes space with an open-concept main floor featuring a chef's kitchen with premium appliances, a spacious living/dining area, and access to a private courtyard. The second floor houses two well-proportioned bedrooms and a luxurious main bathroom, while the top level is entirely dedicated to the primary suite with walk-in closet and spa-like ensuite. High-end finishes throughout include wide-plank engineered hardwood floors, custom cabinetry, and smart home features. The property includes two underground parking spots and additional storage. Located in an emerging neighborhood that's attracting young professionals and families with its mix of new condominiums, parks, and trendy eateries. Excellent public transit access and just minutes from downtown. The complex features beautifully landscaped common areas and a shared rooftop terrace with skyline views. A perfect lock-and-leave option for those who want low-maintenance living without sacrificing style or space.",
+                    Location = "Palm Hills, Sheikh Zayed City, Giza",
+                    Type = PropertyType.Sell,
+                    Price = 620000.00m,
+                    Status = PropertyStatus.Sold,
+                    PropertyCategory = PropertyCategory.Townhouse,
+                    BedRooms = 3,
+                    BathRooms = 2,
+                    Space = 210.00m,
+                    AgentId = 3,
+                    SellerId = 14,
+                    Images = new List<string> { "PropertyImages/14-1.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved
+                },
+
+                // Property 15 (Mansion)
+                new Property
+                {
+                    Id = 15,
+                    Title = "Celebrity Estate",
+                    Description = "Once owned by a renowned Hollywood actor, this magnificent 25,000 square foot estate offers unparalleled luxury and privacy on 5 acres in the exclusive Private Hills enclave. The palatial residence features grand formal rooms including a double-height entry foyer, a ballroom with capacity for 200 guests, and a screening room with stadium seating. The gourmet kitchen is outfitted with commercial-grade appliances and connects to multiple dining areas including a breakfast room with panoramic views. The primary suite is a true retreat with his-and-hers bathrooms, dressing rooms, and a private lounge. Additional amenities include a 12-car garage, indoor basketball court, bowling alley, and a wellness center with spa, salon, and massage room. The spectacular grounds feature a resort-style pool complex with cabanas, tennis court, putting green, and manicured gardens designed by a celebrated landscape architect. Security features include a gated entrance, perimeter fencing, and state-of-the-art surveillance system. This is a once-in-a-generation opportunity to own one of the most extraordinary private estates in the region, offering complete privacy just minutes from the city.",
+                    Location = "Beverly Hills, Sheikh Zayed City, Giza",
+                    Type = PropertyType.Sell,
+                    Price = 25000000.00m,
+                    Status = PropertyStatus.Available,
+                    PropertyCategory = PropertyCategory.Mansion,
+                    BedRooms = 10,
+                    BathRooms = 8,
+                    Space = 2500.00m,
+                    AgentId = 5,
+                    SellerId = 15,
+                    Images = new List<string> { "PropertyImages/15-1.jpg", "PropertyImages/15-2.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Pending
+                }
+            );
+        }
 
     }
 }
