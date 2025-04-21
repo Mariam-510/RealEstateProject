@@ -48,7 +48,6 @@ namespace RealEstate.Data
             modelBuilder.Entity<IdentityRole>().HasData(roles);
         }
 
-
         //----------------------------------------------------------------------------------------------------
         public static void SeedCategories(ModelBuilder modelBuilder)
         {
@@ -67,6 +66,7 @@ namespace RealEstate.Data
         }
 
         //----------------------------------------------------------------------------------------------------
+
         public static void SeedProducts(ModelBuilder modelBuilder)
         {
             // Sofas
@@ -124,33 +124,35 @@ namespace RealEstate.Data
             {
         new Product { Id = 26, Name = "Wooden Wardrobe", Description = "This spacious wooden wardrobe is designed with multiple shelves and hanging spaces to organize your clothes. Its natural wood finish adds warmth to any bedroom.", Price = 5000, IsUsed = false, CategoryID = 6, Images = new List<string> { "ProductImages/wardrobe1.jpg", "ProductImages/wardrobe1_1.jpg" }, DateAdded = new DateTime(2023, 1, 5), AverageRating = 4.8 },
         new Product { Id = 27, Name = "Sliding Door Wardrobe", Description = "This wardrobe features sleek sliding doors and a contemporary design. It provides ample storage while fitting perfectly into modern bedrooms.", Price = 4500, IsUsed = true, CategoryID = 6, Images = new List<string> { "ProductImages/wardrobe2.jpg", "ProductImages/wardrobe2_1.jpg"}, DateAdded = new DateTime(2023, 2, 8), AverageRating = 4.4 },
-        new Product { Id = 28, Name = "Mirrored Wardrobe", Description = "A stylish wardrobe with a full-length mirror on the doors. This wardrobe is perfect for storing clothes while also providing a functional mirror for dressing.", Price = 3800, IsUsed = false, CategoryID = 6, Images = new List<string> { "ProductImages/wardrobe3.jpg", "ProductImages/wardrobe3_1.jpg"}, DateAdded = new DateTime(2023, 3, 12), AverageRating = 4.6 },
+        new Product { Id = 28, Name = "Mirrored Wardrobe", Description = "A stylish wardrobe with a full-length mirror on the doors. This wardrobe is perfect for storing clothes while also providing a functional mirror for dressing.", Price = 3800, IsUsed = false, CategoryID = 6, Images = new List<string> { "ProductImages/wardrobe3.jpg", "ProductImages/wardrobe3_1.jpg"}, DateAdded = new DateTime(2023, 3, 12), AverageRating = 4.6 }
             });
 
             // TV Units
             modelBuilder.Entity<Product>().HasData(new Product[]
             {
-        new Product { Id = 29, Name = "Wooden TV Unit", Description = "A stylish wooden TV unit that offers storage for media devices and decorative items. Its clean design complements both traditional and contemporary living rooms.", Price = 3000, IsUsed = false, CategoryID = 7, Images = new List<string> { "ProductImages/tvunit1.jpg"}, DateAdded = new DateTime(2023, 1, 18), AverageRating = 4.5 },
-        new Product { Id = 30, Name = "Modern TV Stand", Description = "A sleek TV stand with a minimalist design, featuring two spacious shelves for media devices. Ideal for contemporary living spaces.", Price = 2000, IsUsed = false, CategoryID = 7, Images = new List<string> { "ProductImages/tvunit2.jpg", "ProductImages/tvunit2_1.jpg" }, DateAdded = new DateTime(2023, 2, 25), AverageRating = 4.7 },
+        new Product { Id = 29, Name = "Wooden TV Unit", Description = "A stylish wooden TV unit that offers storage for media devices and decorative items. Its clean design complements both traditional and contemporary living rooms.", Price = 3000, IsUsed = false, CategoryID = 7, Images = new List<string> { "ProductImages/tvunit1.jpg", "ProductImages/tvunit1_1.jpg"}, DateAdded = new DateTime(2023, 1, 18), AverageRating = 4.5 },
+        new Product { Id = 30, Name = "Modern TV Stand", Description = "A sleek TV stand with a minimalist design, featuring two spacious shelves for media devices. Ideal for contemporary living spaces.", Price = 2000, IsUsed = false, CategoryID = 7, Images = new List<string> { "ProductImages/tvunit2.jpg", "ProductImages/tvunit2_1.jpg" }, DateAdded = new DateTime(2023, 2, 25), AverageRating = 4.7 }
             });
         }
 
         //----------------------------------------------------------------------------------------------------
         public static void SeedProductStocks(ModelBuilder modelBuilder)
         {
-            var random = new Random();
-            var colors = new[] { "Black", "White", "Brown", "Gray", "Beige", "Blue", "Red", "Green", "Yellow" };
+            var random = new Random(123); // Fixed seed for deterministic output
+            var colors = new[]
+            {
+        "#000000", "#FFFFFF", "#A52A2A", "#808080",
+        "#F5F5DC", "#0000FF", "#FF0000", "#008000", "#FFFF00"
+    };
             var stockId = 1;
 
-            // Function to generate stock items for a product
             void AddStockForProduct(int productId)
             {
-                var stockCount = random.Next(2, 6); // 2-5 variants
+                var stockCount = random.Next(2, 6); // 2-5 variants per product
                 var usedColors = new HashSet<string>();
 
                 for (int i = 0; i < stockCount; i++)
                 {
-                    // Ensure unique colors for each product variant
                     string color;
                     do
                     {
@@ -162,8 +164,8 @@ namespace RealEstate.Data
                         new ProductStock
                         {
                             Id = stockId++,
-                            Color = color,
-                            Quantity = random.Next(5, 51), // 5-50 in stock
+                            Color = color, // Now stores hex codes
+                            Quantity = random.Next(5, 51),
                             IsDeleted = false,
                             ProductId = productId
                         }
@@ -171,13 +173,12 @@ namespace RealEstate.Data
                 }
             }
 
-            // Seed stock for all 40 products
+            // Seed for products 1-30 (adjust range if needed)
             for (int productId = 1; productId <= 30; productId++)
             {
                 AddStockForProduct(productId);
             }
         }
-
 
 
     }

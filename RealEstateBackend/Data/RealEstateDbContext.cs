@@ -69,7 +69,7 @@ namespace RealEstate.Data
             //----------------------------------------------------------------------------------
             //SeedProductStocks
             DbInitializer.SeedProductStocks(builder);
-            
+
 
 
         }
