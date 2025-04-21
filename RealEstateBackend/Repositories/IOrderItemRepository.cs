@@ -12,6 +12,6 @@ namespace RealEstate.Repositories
         Task<OrderItem?> UpdateOrderItemQuantityAsync(OrderItem orderItem);
         Task<OrderItem?> UpdateAsync(OrderItem orderItem);
         Task<OrderItem?> DeleteAsync(int id);
-        Task<OrderItem?> Exists(int cartId, int productId);
+        Task<OrderItem?> Exists(int cartId, int productId, string color);
     }
 }

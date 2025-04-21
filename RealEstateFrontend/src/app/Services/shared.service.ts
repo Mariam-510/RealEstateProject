@@ -148,6 +148,124 @@ export class SharedService {
     }
   ];
 
+  HomeProperties: PropertyDto[] = [
+    {
+      id: 1,
+      title: 'Apartment in Gouna',
+      description: 'Luxurious apartment with green view.Spacious villa with a beautiful garden.Spacious villa with a beautiful garden.',
+      location: 'El Gouna Conference & Culture Center, El Gouna, Egypt',
+      price: 4500000,
+      type: 'Sell',
+      propertyCategory: 'Apartment',
+      status: 'Available',
+      images: ['https://images.dailynewsegypt.com/2024/09/real-estate-property.jpg', 'https://www.brinkpm.com/images/blog/bigstock-Luxurious-New-Construction-Hom-165493040.webp', 'https://u.realgeeks.media/songrealestate/_rgg/landscape_images/GreyandBeigeHome.jpg', 'https://images.prop24.com/331109780/Crop600x400'],
+      agentId: 5,
+      bedrooms: 3,
+      bathrooms: 3,
+      space: 130,
+      isFavorite: true,
+      userImage: '',
+      userName: '',
+      date: new Date('2024-03-15'),
+      activeMap: false
+    },
+    {
+      id: 2,
+      title: 'Apartment in Gouna',
+      description: 'Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden.',
+      location: 'El Gouna Conference & Culture Center, El Gouna, Egypt',
+      price: 9500000,
+      type: 'Sell',
+      propertyCategory: 'Duplexes',
+      status: 'Available',
+      images: ['https://images.dailynewsegypt.com/2024/09/real-estate-property.jpg', 'https://u.realgeeks.media/songrealestate/_rgg/landscape_images/GreyandBeigeHome.jpg', 'https://images.prop24.com/331109780/Crop600x400'],
+      sellerId: 3,
+      bedrooms: 5,
+      bathrooms: 4,
+      space: 250,
+      isFavorite: false,
+      userImage: '',
+      userName: '',
+      date: new Date('2023-09-05'),
+      activeMap: false
+    },
+    {
+      id: 3,
+      title: 'Apartment in Gouna',
+      description: 'Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden.',
+      location: 'El Gouna Conference & Culture Center, El Gouna, Egypt',
+      price: 9500000,
+      type: 'Sell',
+      propertyCategory: 'Duplexes',
+      status: 'Available',
+      images: ['https://images.dailynewsegypt.com/2024/09/real-estate-property.jpg', 'https://u.realgeeks.media/songrealestate/_rgg/landscape_images/GreyandBeigeHome.jpg', 'https://images.prop24.com/331109780/Crop600x400'],
+      sellerId: 3,
+      bedrooms: 5,
+      bathrooms: 4,
+      space: 250,
+      isFavorite: false,
+      userImage: '',
+      userName: '',
+      date: new Date('2023-09-05'),
+      activeMap: false
+    },
+  ];
+
+  HomeProducts: Product[] = [
+    {
+      id: 1,
+      name: 'Jacklinnnnnnnnn sddd dsdsd sd sd sd sdfsdf',
+      description: 'Upholstered King Size Bed with Tufted Headboarddddddddddddddddddddddddddd',
+      price: 700,
+      quantity: 100,
+      isUsed: false,
+      images: [
+        'https://www.mocka.com.au/cdn/shop/files/T04028_HiRes_01.jpg?v=1728479772&width=2040',
+        'https://denovofurniture.pk/wp-content/uploads/2024/06/Opulence-New-5.jpg',
+        'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
+      ],
+      averageRating: 5,
+      dateAdded: new Date("2025-04-13"),
+      reviewCount: 88,
+      wishlisted: true
+    },
+    {
+      id: 2,
+      name: 'tt RODDDDDDDDDDDDD ssdf wer',
+      description: 'Upholstered King Sizd',
+      price: 2000,
+      quantity: 30,
+      isUsed: true,
+      images: [
+        'https://wasilaah.com/cdn/shop/products/IMG_9996.jpg?v=1679343647&width=2048',
+        'https://babymore.co.uk/wp-content/uploads/2023/02/Mona-2-Piece-Room-Set-GREY-1-scaled.jpg',
+        'https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1'
+      ],
+      averageRating: 2,
+      dateAdded: new Date("2023-07-07"),
+      reviewCount: 33,
+      wishlisted: true
+    },
+    {
+      id: 3,
+      name: 'ALOOOOOOO',
+      description: 'Upholstered King Size Bed with Tufted Headboarddddddddddddddddddddddddddd',
+      price: 1900,
+      quantity: 4,
+      isUsed: true,
+      images: [
+        'https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg',
+        'https://www.atlys.com/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FW3Iz4WACAy2J0qT0cCT3xA%2Fdidi%2Farticles%2Fl6ozcxn3e3a6lzrs6n6pg9lq%2Fpublic&w=1920&q=75',
+        'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg',
+        'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
+      ],
+      averageRating: 3.5,
+      dateAdded: new Date("2025-04-04"),
+      reviewCount: 10,
+      wishlisted: true
+    },
+  ]
+
 
   HomePageProperties: PropertyDto[] = [
     {

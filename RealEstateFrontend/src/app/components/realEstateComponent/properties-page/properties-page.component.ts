@@ -2,12 +2,11 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-
 import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
+import { Agent, PropertyDto, SharedService } from '../../../Service/shared.service';
 import { ListMapPropertiesComponent } from '../list-map-properties/list-map-properties.component';
 import { GirdPropertiesComponent } from '../gird-properties/gird-properties.component';
 import { ListPropertiesComponent } from '../list-properties/list-properties.component';
-import { Agent, PropertyDto, SharedService } from '../../../Service/shared.service';
 
 export type ViewMode = 'grid3' | 'grid4' | 'list' | 'map';
 

@@ -16,15 +16,18 @@ namespace RealEstate.Controllers
         public IBuyerRepository BuyerRepository { get; }
         public ICartRepository CartRepository { get; }
         public IProductRepository ProductRepository { get; }
+        public IProductStockRepository ProductStockRepository { get; }
         public IMapper Mapper { get; }
 
         public OrderItemsController(IOrderItemRepository orderItemRepository, IBuyerRepository buyerRepository,
-            ICartRepository cartRepository, IProductRepository productRepository, IMapper Mapper)
+            ICartRepository cartRepository, IProductRepository productRepository,
+            IProductStockRepository productStockRepository ,IMapper Mapper)
         {
             OrderItemRepository = orderItemRepository;
             BuyerRepository = buyerRepository;
             CartRepository = cartRepository;
             ProductRepository = productRepository;
+            ProductStockRepository = productStockRepository;
             this.Mapper = Mapper;
         }
 
@@ -104,12 +107,18 @@ namespace RealEstate.Controllers
                 return NotFound("Product not found.");
             }
 
-            var existingOrderItem = await OrderItemRepository.Exists(cart.Id, product.Id);
+            var existingOrderItem = await OrderItemRepository.Exists(cart.Id, product.Id, createOrderItemDto.Color);
             if (existingOrderItem != null)
             {
                 existingOrderItem.Quantity += createOrderItemDto.Quantity;
 
-                if(existingOrderItem.Quantity>product.Quantity)
+                var productStock = await ProductStockRepository.GetByColorAsync(product.Id, createOrderItemDto.Color);
+                if (productStock == null)
+                {
+                    return BadRequest(new { message = "Color isn't available." });
+                }
+
+                if (existingOrderItem.Quantity > productStock.Quantity)
                 {
                     return BadRequest(new { message = "Quantity exceeds available stock." });
                 }
@@ -130,7 +139,13 @@ namespace RealEstate.Controllers
             {
                 var orderItem = Mapper.Map<OrderItem>(createOrderItemDto);
 
-                if (orderItem.Quantity > product.Quantity)
+                var productStock = await ProductStockRepository.GetByColorAsync(product.Id, createOrderItemDto.Color);
+                if (productStock == null)
+                {
+                    return BadRequest(new { message = "Color isn't available." });
+                }
+
+                if (orderItem.Quantity > productStock.Quantity)
                 {
                     return BadRequest(new { message = "Quantity exceeds available stock." });
                 }
@@ -174,7 +189,18 @@ namespace RealEstate.Controllers
                 return NotFound("Product not found.");
             }
 
-            if (editOrderItemDto.Quantity > product.Quantity)
+            //if (editOrderItemDto.Quantity > product.Quantity)
+            //{
+            //    return BadRequest(new { message = "Quantity exceeds available stock." });
+            //}
+
+            var productStock = await ProductStockRepository.GetByColorAsync(product.Id, editOrderItemDto.Color);
+            if (productStock == null)
+            {
+                return BadRequest(new { message = "Color isn't available." });
+            }
+
+            if (editOrderItemDto.Quantity > productStock.Quantity)
             {
                 return BadRequest(new { message = "Quantity exceeds available stock." });
             }

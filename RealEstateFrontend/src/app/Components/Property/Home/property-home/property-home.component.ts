@@ -4,8 +4,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { PropertyDto, SharedService } from '../../../../Services/shared.service';
-import { LeafletMapComponent } from "../../../leaflet-map/leaflet-map.component";
 import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
+import { LeafletMapComponent } from '../../../../leaflet-map/leaflet-map.component';
 
 @Component({
   selector: 'app-property-home',
@@ -178,7 +178,7 @@ export class PropertyHomeComponent implements OnInit {
           return (property.bathrooms || 0) === b;
         });
 
-        
+
         return matchesSearch && matchesType && matchesCategory && matchesPrice && matchesBeds && matchesBaths && matchesSpace;
       })
       .sort((a, b) => {
@@ -346,7 +346,7 @@ export class PropertyHomeComponent implements OnInit {
     { name: 'Townhouse', icon: 'bi bi-house-check' },
     { name: 'Mansion', icon: 'bi bi-bank' }
   ];
-  
+
 
   // properties = [
   //   {
@@ -524,7 +524,7 @@ export class PropertyHomeComponent implements OnInit {
   }
 
   @ViewChild('slider', { static: false }) slider!: ElementRef;
-  
+
   scrollLeft() {
     this.slider.nativeElement.scrollBy({ left: -326, behavior: 'smooth' });
   }
@@ -544,7 +544,7 @@ export class PropertyHomeComponent implements OnInit {
   nextImage(propertyId: number) {
     const property = this.HomePageProperties.find(p => p.id === propertyId);
     if (property) {
-      this.currentImageIndices[propertyId] = 
+      this.currentImageIndices[propertyId] =
         (this.currentImageIndices[propertyId] + 1) % property.images.length;
     }
   }
@@ -552,7 +552,7 @@ export class PropertyHomeComponent implements OnInit {
   prevImage(propertyId: number) {
     const property = this.HomePageProperties.find(p => p.id === propertyId);
     if (property) {
-      this.currentImageIndices[propertyId] = 
+      this.currentImageIndices[propertyId] =
         (this.currentImageIndices[propertyId] - 1 + property.images.length) % property.images.length;
     }
   }

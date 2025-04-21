@@ -1,5 +1,5 @@
-<div >
- 
+<div>
+
   <div style="padding-right:.5rem !important">
     <section id="overview" class="px-1 ">
       <div class="lightbox" data-mdb-lightbox-init>
@@ -55,23 +55,23 @@
             <i class="bi bi-info-circle-fill me-2 fs-4"></i>
             <span class="fs-5">Overview</span>
           </a>
-    
+
           <a href="#location" (click)="scrollToSection($event, 'location')" class="me-3">
             <i class="bi bi-geo-alt-fill me-2 fs-4"></i>
             <span class="fs-5">Location</span>
           </a>
-    
+
           <a href="#PropertyDetails" (click)="scrollToSection($event, 'PropertyDetails')" class="me-3">
             <!-- <i class="bi bi-calendar3 me-2 fs-6"></i> -->
             <i class="bi bi-house-door-fill  me-2 fs-4"></i>
-    
+
             <span class="fs-5">Property Details</span>
           </a>
         </div>
-    
+
         <!-- Right side: Icons -->
         <div class="d-flex align-items-center gap-4 pe-3">
-    
+
           <!-- <button class="fav-btn text-muted text-decoration-none d-flex align-items-center pe-3 btn btn-transparent"
             (click)="toggleFavorite()">
             <svg *ngIf="isFavorited" class="bp-SvgIcon favorite bp-SvgIcon__size--medium" width="24" height="24"
@@ -80,20 +80,20 @@
                 d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z">
               </path>
             </svg>
-    
+
             <svg *ngIf="!isFavorited" class="bp-SvgIcon favorite bp-SvgIcon__size--medium" width="24" height="24"
               viewBox="0 0 24 24">
               <path fill-rule="evenodd" clip-rule="evenodd"
                 d="M3.354 4.844C4.306 3.69 5.72 3 7.5 3c1.572 0 2.913.777 3.797 1.457.267.205.503.41.703.597.2-.187.436-.392.703-.597C13.587 3.777 14.928 3 16.5 3c1.78 0 3.194.689 4.146 1.844C21.577 5.974 22 7.468 22 9c0 1.205-.42 2.394-1.019 3.488-.601 1.1-1.416 2.162-2.283 3.131-1.735 1.937-3.766 3.59-4.99 4.522a2.813 2.813 0 01-3.417 0c-1.223-.931-3.254-2.585-4.989-4.522-.868-.969-1.682-2.032-2.283-3.131-.599-1.094-1.02-2.283-1.02-3.487.002-1.532.423-3.025 1.355-4.156zm7.801 2.206a7.918 7.918 0 00-1.078-1.007C9.338 5.473 8.428 5 7.5 5c-1.221 0-2.055.451-2.603 1.116C4.33 6.806 4.001 7.813 4 9c0 .75.266 1.6.773 2.527.504.92 1.213 1.857 2.019 2.757 1.613 1.8 3.53 3.366 4.71 4.264a.813.813 0 00.996 0c1.18-.898 3.097-2.463 4.71-4.264.806-.9 1.515-1.837 2.019-2.757.506-.926.773-1.778.773-2.526 0-1.188-.33-2.195-.898-2.885C18.555 5.451 17.723 5 16.5 5c-.928 0-1.837.473-2.578 1.043a7.906 7.906 0 00-1.077 1.007c-.295.338-.565.7-.845 1.05-.28-.35-.55-.712-.845-1.05z">
               </path>
             </svg>
-    
+
             <span class="ms-2 text-caffe text-decoration-none d-flex align-items-center fs-5 fw-bold">Favorite</span>
           </button> -->
-    
-    
-    
-    
+
+
+
+
           <!-- <button class="share text-muted text-decoration-none d-flex align-items-center btn btn-transparent">
             <svg class="bp-SvgIcon share bp-SvgIcon__size--medium " width="24" height="24" viewBox="0 0 24 24">
               <path fill-rule="evenodd" clip-rule="evenodd"
@@ -102,7 +102,7 @@
             </svg>
             <span class="ms-2  text-caffe text-decoration-none d-flex align-items-center fs-5 fw-bold">Share</span>
           </button> -->
-    
+
         </div>
       </div>
       <div class="ps-5 my-4">
@@ -142,123 +142,124 @@
                     {{property.title}}
                   </h4> -->
                   <div
-                  class="cartTitle text-white p-3 rounded-top rounded-bottom text-center d-flex align-items-center justify-content-center position-relative">
-                  <div class="m-0 fw-semibold">
-                    {{property.title}}
+                    class="cartTitle text-white p-3 rounded-top rounded-bottom text-center d-flex align-items-center justify-content-center position-relative">
+                    <div class="m-0 fw-semibold">
+                      {{property.title}}
+                    </div>
                   </div>
-                </div>
                   <div class="card-body px-4">
 
-                  
-                  <!-- Price -->
-                  <!-- <h5 class=" ps-2 mb-2">
+
+                    <!-- Price -->
+                    <!-- <h5 class=" ps-2 mb-2">
                     <i class="bi bi-cash-stack  me-2 fs-5 text-caffe"></i>
                     <span class="fw-bold">
                       Price:
                     </span>
                     <span class="fs-5 ">{{ property.price | number:'1.0-0' }} EGP</span>
                   </h5> -->
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                    <!-- Price -->
-                    <div>
-                      <div class="form-label small fw-bold text-uppercase terracotta-text mb-1" style="color: #4a2c2a">Price</div>
-                      <h3 class="fw-bold text-caffe m-0">{{ property.price | number:'1.2-2' }} EGP</h3>
-                    </div>
-                    
-                    <!-- Buttons -->
-                    <div class="d-flex gap-2 pt-4">
-                      <button class="btn btn-link text-dark p-1" (click)="shareItem(property)">
-                        <i class="bi bi-share fs-5"></i>
-                      </button>
-                      <button class="btn btn-link text-dark p-1">
-                        <i class="bi bi-printer fs-4"></i>
-                      </button>
-                      <button class="btn btn-link p-1" (click)="toggleFavorite(property)">
-                        <i class="bi fs-4" [ngClass]="{
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <!-- Price -->
+                      <div>
+                        <div class="form-label small fw-bold text-uppercase terracotta-text mb-1"
+                          style="color: #4a2c2a">Price</div>
+                        <h3 class="fw-bold text-caffe m-0">{{ property.price | number:'1.2-2' }} EGP</h3>
+                      </div>
+
+                      <!-- Buttons -->
+                      <div class="d-flex gap-2 pt-4">
+                        <button class="btn btn-link text-dark p-1" (click)="shareItem(property)">
+                          <i class="bi bi-share fs-5"></i>
+                        </button>
+                        <button class="btn btn-link text-dark p-1">
+                          <i class="bi bi-printer fs-4"></i>
+                        </button>
+                        <button class="btn btn-link p-1" (click)="toggleFavorite(property)">
+                          <i class="bi fs-4" [ngClass]="{
                           'bi-heart-fill text-danger': property.isFavorite,
                           'bi-heart text-dark': !property.isFavorite
                         }"></i>
-                      </button>
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                
-                  <div class="custumBottomBorder mb-2"></div>
 
-                  <!-- Location -->
-                  <h5 class="ps-2 mb-2 pt-1">
-                    <i class="bi bi-geo-alt text-caffe me-2 fs-6"></i>
-                    <span class="fw-bold text-caffe-dark">
-                      Location:
-                    </span>
-                    <span class="fs-5 text-caffe-dark">{{ property.location }}</span>
-                  </h5>
+                    <div class="custumBottomBorder mb-2"></div>
 
-                  <h5 class="ps-2 mb-4 ">
-                    <i class="bi bi-house text-caffe me-2 fs-6 "></i>
-                    <span class="fw-bold text-caffe-dark">
-                      Category:
-                    </span>
-                    <span class="fs-5 text-caffe-dark">{{ property.propertyCategory }}</span>
-                  </h5>
-                  <div class="custumBottomBorder mb-2"></div>
+                    <!-- Location -->
+                    <h5 class="ps-2 mb-2 pt-1">
+                      <i class="bi bi-geo-alt text-caffe me-2 fs-6"></i>
+                      <span class="fw-bold text-caffe-dark">
+                        Location:
+                      </span>
+                      <span class="fs-5 text-caffe-dark">{{ property.location }}</span>
+                    </h5>
 
-                  <!-- Features -->
-                 <!-- Features -->
-                 <div class="col d-flex align-items-center justify-content-between">
-                  <!-- Bedrooms -->
-                  <div class="d-flex align-items-center pb-4">
-                    <div
-                      class="bg-light rounded-circle p-2 me-2 d-flex justify-content-center align-items-center icon-hover"
-                      style="width: 40px; height: 40px;">
-                      <img src="icons/Bed.svg" alt="Bedroom Icon" width="26" height="26">
+                    <h5 class="ps-2 mb-4 ">
+                      <i class="bi bi-house text-caffe me-2 fs-6 "></i>
+                      <span class="fw-bold text-caffe-dark">
+                        Category:
+                      </span>
+                      <span class="fs-5 text-caffe-dark">{{ property.propertyCategory }}</span>
+                    </h5>
+                    <div class="custumBottomBorder mb-2"></div>
+
+                    <!-- Features -->
+                    <!-- Features -->
+                    <div class="col d-flex align-items-center justify-content-between">
+                      <!-- Bedrooms -->
+                      <div class="d-flex align-items-center pb-4">
+                        <div
+                          class="bg-light rounded-circle p-2 me-2 d-flex justify-content-center align-items-center icon-hover"
+                          style="width: 40px; height: 40px;">
+                          <img src="icons/Bed.svg" alt="Bedroom Icon" width="26" height="26">
+                        </div>
+                        <div>
+                          <div class=" text-muted" style="font-size:1.2rem">4 Beds</div>
+
+                          <!-- <div>Bedrooms</div> -->
+                        </div>
+                      </div>
+
+                      <!-- Bathrooms -->
+                      <div class="d-flex align-items-center pb-4">
+                        <div
+                          class="bg-light rounded-circle p-2 me-2 d-flex justify-content-center align-items-center icon-hover"
+                          style="width: 40px; height: 40px;">
+                          <img src="icons/Bath.svg" alt="Bathroom Icon" width="26" height="26">
+                        </div>
+                        <div>
+                          <div class=" text-muted" style="font-size:1.2rem">5 Baths</div>
+
+                          <!-- <div>Bathrooms</div> -->
+                        </div>
+                      </div>
+
+                      <!-- Indoor Area -->
+                      <div class="d-flex align-items-center pb-4">
+                        <div
+                          class="bg-light rounded-circle p-2 me-2 d-flex justify-content-center align-items-center icon-hover"
+                          style="width: 40px; height: 40px;">
+                          <img src="icons/Area.svg" alt="Indoor Area Icon" width="26" height="26">
+                        </div>
+                        <div>
+                          <div class=" text-muted" style="font-size:1.2rem">350 m²</div>
+
+                          <!-- <div>Indoor Area</div> -->
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <div class=" text-muted"style="font-size:1.2rem">4 Beds</div>
 
-                      <!-- <div>Bedrooms</div> -->
-                    </div>
-                  </div>
+                    <!-- Buttons -->
+                    <div class="d-grid gap-3">
+                      <button class="btn btn-caffe-tertiary fs-5 fw-bold">Tour in person</button>
+                      <button class="btn btn-caffe-tertiary fw-bold fs-5">Tour via video chat</button>
 
-                  <!-- Bathrooms -->
-                  <div class="d-flex align-items-center pb-4">
-                    <div
-                      class="bg-light rounded-circle p-2 me-2 d-flex justify-content-center align-items-center icon-hover"
-                      style="width: 40px; height: 40px;">
-                      <img src="icons/Bath.svg" alt="Bathroom Icon" width="26" height="26">
-                    </div>
-                    <div>
-                      <div class=" text-muted"style="font-size:1.2rem">5 Baths</div>
-
-                      <!-- <div>Bathrooms</div> -->
-                    </div>
-                  </div>
-
-                  <!-- Indoor Area -->
-                  <div class="d-flex align-items-center pb-4">
-                    <div
-                      class="bg-light rounded-circle p-2 me-2 d-flex justify-content-center align-items-center icon-hover"
-                      style="width: 40px; height: 40px;">
-                      <img src="icons/Area.svg" alt="Indoor Area Icon" width="26" height="26">
-                    </div>
-                    <div>
-                      <div class=" text-muted"style="font-size:1.2rem">350 m²</div>
-                      
-                      <!-- <div>Indoor Area</div> -->
+                      <div class="text-center text-caffe-dark"><strong>OR</strong></div>
+                      <button class="btn btn-caffe-primary fw-bold fs-5">Request showing</button>
                     </div>
                   </div>
                 </div>
-                
-                  <!-- Buttons -->
-                  <div class="d-grid gap-3">
-                    <button class="btn btn-caffe-tertiary fs-5 fw-bold">Tour in person</button>
-                    <button class="btn btn-caffe-tertiary fw-bold fs-5">Tour via video chat</button>
 
-                    <div class="text-center text-caffe-dark"><strong>OR</strong></div>
-                    <button class="btn btn-caffe-primary fw-bold fs-5">Request showing</button>
-                  </div>
-                  </div>
-                </div>
-                
               </div>
 
             </div>
@@ -323,13 +324,13 @@
         </div>
 
 
-        <app-leaflet-map *ngIf="isMapVisible" [locationName]="property.location" [styleTxt]="{
+        <app-property-detials-leaflet-map *ngIf="isMapVisible" [locationName]="property.location" [styleTxt]="{
               'height': '350px',
               'width': '95%',
               'display': 'block',
               'margin-left': '15px'
             }">
-        </app-leaflet-map>
+        </app-property-detials-leaflet-map>
 
 
       </div>
@@ -483,11 +484,11 @@
                 </div>
 
                 <div class="pt-4 ">
-                  <button class="btn  bg-caffe d-inline-flex align-items-center gap-2 px-4 py-2 
-                             rounded-pill shadow-sm-hover transition-all 
-                             position-relative overflow-hidden 
-                             hover:bg-caffe-dark 
-                             focus:shadow-lg focus:outline-none 
+                  <button class="btn  bg-caffe d-inline-flex align-items-center gap-2 px-4 py-2
+                             rounded-pill shadow-sm-hover transition-all
+                             position-relative overflow-hidden
+                             hover:bg-caffe-dark
+                             focus:shadow-lg focus:outline-none
                              active:scale-95
                              border-0
                              transform-transition
