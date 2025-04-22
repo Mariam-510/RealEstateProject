@@ -1,20 +1,21 @@
 <header class="app-header">
   <!-- Mobile Navigation -->
-<nav class="mobile-nav" [class.active]="showMobileNav">
-  <ul>
-    <li *ngFor="let item of navItems">
-      <a [routerLink]="item.link" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="showMobileNav = false">
-        <i [class]="item.icon"></i>
-        <span>{{ item.label }}</span>
-      </a>
-    </li>
-  </ul>
-</nav>
+  <nav class="mobile-nav" [class.active]="showMobileNav">
+    <ul>
+      <li *ngFor="let item of navItems">
+        <a [routerLink]="item.link" class="nav-link" routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }" (click)="showMobileNav = false">
+          <i [class]="item.icon"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
 
-<!-- Mobile Menu Toggle -->
-<button class="hamburger-btn" (click)="toggleMobileNav()">
-  <i class="bi bi-list"></i>
-</button>
+  <!-- Mobile Menu Toggle -->
+  <button class="hamburger-btn" (click)="toggleMobileNav()">
+    <i class="bi bi-list"></i>
+  </button>
   <!-- Cart Backdrop -->
   <div class="cart-backdrop" [class.active]="showCart" (click)="toggleCart()"></div>
 
@@ -41,7 +42,8 @@
   <nav class="primary-nav">
     <ul>
       <li *ngFor="let item of navItems">
-        <a [routerLink]="item.link" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <a [routerLink]="item.link" class="nav-link" routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }">
           <i [class]="item.icon"></i>
           <span style="font-size: 1.1rem;">{{ item.label }}</span>
         </a>
@@ -74,7 +76,7 @@
           <h4 *ngIf="cartItems.length > 0" class="fs-5">{{ cartItems.length }} Items</h4>
           <button *ngIf="cartItems.length > 0" class="clear-btn" routerLink="/checkout">Clear Cart</button>
         </div>
-      
+
         <!-- Check if cart has items before looping -->
         <div *ngIf="cartItems.length > 0">
           <div *ngFor="let item of cartItems" class="cart-item">
@@ -86,7 +88,7 @@
             </div>
           </div>
         </div>
-      
+
         <!-- Empty cart message -->
         <div *ngIf="cartItems.length === 0" class="empty-cart">
           😔 Your cart is empty
@@ -112,30 +114,30 @@
     <div class="user-menu" #userMenu>
       <button class="user-trigger" (click)="toggleUserMenu()">
         <!-- <i class="bi bi-person-circle fs-3"></i> -->
-         @if (currentUser) {
+        <!-- @if (loggedInUser) {
           <img [src]="currentUser.avatar ? currentUser.avatar : 'bi bi-person-circle fs-3'" alt="User" class="user-avatar" />
          }
          @else
-         {
-          <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
-         }
+         { -->
+        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
+        <!-- } -->
       </button>
       <div class="user-dropdown" [class.active]="showUserMenu">
-        <ng-container *ngIf="!isLoggedIn; else authenticatedUser">
-          <button class="dropdown-item" (click)="handleAuth('login')">
+        <ng-container *ngIf="!loggedInUser; else authenticatedUser">
+          <a routerLink="/login" class="dropdown-item">
             <i class="bi bi-box-arrow-in-right" style="color: #6e5447;"></i> Sign In
-          </button>
-          <button class="dropdown-item" (click)="openSigUPDialog()">
+          </a>
+          <a routerLink="/register" class="dropdown-item" (click)="openSigUPDialog()">
             <i class="bi bi-person-plus" style="color: #6e5447;"></i> Sign Up
-          </button>
+          </a>
         </ng-container>
-        
+
         <ng-template #authenticatedUser>
           <div class="user-info">
             <!-- <p class="user-name">{{ currentUser.firstName }}</p> -->
-            <p class="user-name">{{currentUser?.name ? currentUser?.name : 'User'}}</p>
+            <p class="user-name">{{loggedInUser?.firstName ? loggedInUser?.firstName : 'User'}}</p>
             <!-- <p class="user-email">{{ currentUser.email }}</p> -->
-            <p class="user-email">{{currentUser?.email ? currentUser?.email : 'user@gmail.com'}}</p>
+            <p class="user-email">{{loggedInUser?.email ? loggedInUser?.email : 'user@gmail.com'}}</p>
           </div>
           <a class="dropdown-item" routerLink="/profile">
             <i class="bi bi-person-fill" style="color: #6e5447;"></i> Profile

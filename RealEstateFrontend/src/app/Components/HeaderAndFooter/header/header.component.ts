@@ -5,12 +5,8 @@ import { Router, RouterModule } from '@angular/router';
 import { SharedService } from '../../../Services/shared.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SignUpRoleComponentComponent } from '../../Authentication/sign-up-role-component/sign-up-role-component.component';
-
-interface User {
-  name: string;
-  email: string;
-  avatar: string;
-}
+import { AuthService, User } from '../../../Services/ApiServices/auth.service';
+import { AccountService } from '../../../Services/ApiServices/account.service';
 
 interface CartItem {
   name: string;
@@ -27,11 +23,11 @@ interface CartItem {
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
-  constructor(private elRef: ElementRef, private _shared: SharedService, private router: Router, private dialog: MatDialog) { }
+  constructor(private elRef: ElementRef, private auth: AuthService,
+    private router: Router, private dialog: MatDialog, private accountService: AccountService) { }
 
   showMobileNav = false;
   showUserMenu = false;
-  isLoggedIn = false; // Set this based on auth state
   wishlistCount = 0;
   cartCount = 0;
   showCart = false;
@@ -77,18 +73,58 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   ];
 
-  currentUser: User = {
-    name: "HAAAAAAAAAAAA",
-    email: "haaa@gmail.com",
-    avatar: "https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg"
-  }
-
-  // currentUser: User | null = null;
+  loggedInUser!: User | undefined;
 
   ngOnInit() {
     document.addEventListener('click', this.onClickOutside.bind(this));
     this.updateCartTotal();
     this.updateCartCount(); // Initialize cart count
+
+
+    this.auth.currentUser$.subscribe(user => {
+      if (user) {
+        // console.log('User roles:', user.roles);
+        // console.log('Token expires at:', user.tokenExpiration);
+
+        this.loggedInUser = user;
+        console.log(this.loggedInUser)
+      }
+    });
+
+    // this.testAuth();
+
+  }
+
+  handleLogout() {
+    this.closeMenus();
+    this.auth.logout();
+    this.loggedInUser = undefined;
+    console.log(this.loggedInUser);
+    console.log(this.auth.isAuthenticated());
+  }
+
+
+  // In your component
+  // txt = '';
+
+  // testAuth() {
+  //   this.accountService.testAuth().subscribe({
+  //     next: (response) => {
+  //       // Handle successful text response
+  //       this.txt = (response as { message: string }).message; // Type assertion
+  //       console.log('Authentication successful:', response);
+  //     },
+  //     error: (error) => {
+  //       // Handle error
+  //       this.txt = `Error: ${error.message || 'Unknown error'}`;
+  //       console.error('Authentication failed:', error);
+  //     }
+  //   });
+  // }
+
+
+  openSigUPDialog(): void {
+    this.dialog.open(SignUpRoleComponentComponent);
   }
 
   ngOnDestroy() {
@@ -150,18 +186,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
       total + (item.price * item.quantity), 0);
   }
 
-  handleAuth(type: 'login' | 'register') {
-    // Implement auth logic
-    console.log(`Auth type: ${type}`);
-    this.closeMenus();
-  }
-
-  handleLogout() {
-    // Implement logout logic
-    this.isLoggedIn = false;
-    this.closeMenus();
-  }
-
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
     if (!this.elRef.nativeElement.contains(event.target)) {
@@ -169,7 +193,5 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  openSigUPDialog(): void {
-    this.dialog.open(SignUpRoleComponentComponent);
-  }
+
 }

@@ -10,7 +10,7 @@ import { AccountService } from '../../../Services/ApiServices/account.service';
   templateUrl: './forget-password-send-code.component.html',
   styleUrl: './forget-password-send-code.component.css'
 })
-export class ForgetPasswordSendCodeComponent {
+export class ForgetPasswordSendCodeComponent implements OnInit {
   codeArray: string[] = ['', '', '', '', '', ''];
   validationErrors: boolean[] = [false, false, false, false, false, false];
   timer: number = 120;
@@ -101,20 +101,35 @@ export class ForgetPasswordSendCodeComponent {
 
 
   errorMes: string = '';
-
   Confirm(): void {
     // Validate each digit
     this.validationErrors = this.codeArray.map(c => !/^\d$/.test(c));
 
     if (!this.isFormValid()) {
+      this.errorMes = 'Please enter a valid 6-digit code';
       return;
     }
 
-    const code = this.codeArray.join('').toString();
+    const code = this.codeArray.join('');
 
+    this.accountService.validateResetCode(this.email, code).subscribe({
+      next: () => {
+        this.router.navigate(['/newpassword'], {
+          queryParams: { email: this.email }
+        });
+      },
+      error: (err) => {
+        console.error('Validation failed', err);
+        if (err.status === 404) {
+          this.errorMes = 'User not found';
+        } else if (err.status === 400) {
+          this.errorMes = err.error?.message || 'Invalid or expired code';
+        } else {
+          this.errorMes = 'Validation failed. Please try again.';
+        }
+      }
+    });
   }
-
-
 
   isResending = false;
   successMes = '';
@@ -124,6 +139,30 @@ export class ForgetPasswordSendCodeComponent {
 
     this.isResending = true;
     this.errorMes = '';
+    this.successMes = '';
+
+    this.accountService.forgotPassword(this.email).subscribe({
+      next: (response) => {
+        console.log('Resend successful', response);
+        this.successMes = 'New code sent! Check your email.';
+        this.startTimer();
+        this.isResending = false;
+      },
+      error: (err) => {
+        console.error('Resend failed', err);
+        if (err.status === 404) {
+          this.errorMes = "Email not found.";
+        } else if (err.status === 400) {
+          this.errorMes = err.error?.message || "Email not confirmed or account pending approval";
+        } else if (err.status === 500) {
+          this.errorMes = "Failed to send reset code. Please try again.";
+        } else {
+          this.errorMes = "An unexpected error occurred. Please try again.";
+        }
+        this.isResending = false;
+      }
+
+    });
   }
 
 }
