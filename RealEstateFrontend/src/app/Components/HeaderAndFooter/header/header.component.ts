@@ -6,7 +6,8 @@ import { SharedService } from '../../../Services/shared.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SignUpRoleComponentComponent } from '../../Authentication/sign-up-role-component/sign-up-role-component.component';
 import { AuthService, User } from '../../../Services/ApiServices/auth.service';
-import { AccountService } from '../../../Services/ApiServices/account.service';
+import { API_CONFIG } from '../../../app.config';
+import { CartDto, CartService } from '../../../Services/ApiServices/cart.service';
 
 interface CartItem {
   name: string;
@@ -24,15 +25,17 @@ interface CartItem {
 export class HeaderComponent implements OnInit, OnDestroy {
 
   constructor(private elRef: ElementRef, private auth: AuthService,
-    private router: Router, private dialog: MatDialog, private accountService: AccountService) { }
+    private router: Router, private dialog: MatDialog, private cartService: CartService) { }
 
+  apiConfig = API_CONFIG;
+  cart: CartDto | null = null;
   showMobileNav = false;
   showUserMenu = false;
   wishlistCount = 0;
-  cartCount = 0;
+  // cartCount = 0;
   showCart = false;
   showCartBackdrop = false;
-  cartTotal = 0;
+  // cartTotal = 0;
 
   isRouteActive(routePath: string): boolean {
     return this.router.url === routePath;
@@ -46,39 +49,42 @@ export class HeaderComponent implements OnInit, OnDestroy {
     { label: 'About', link: '/about', icon: 'bi bi-info-circle-fill' }
   ];
 
-  cartItems: CartItem[] = [
-    {
-      name: 'Modern Sofadddddddddd ddddddddd xdddddddddddddddddaaaaaaaaaaaaa',
-      price: 200,
-      quantity: 1,
-      image: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
-    },
-    {
-      name: 'Modern Sofadddddddddd ddddddddd xdddddddddddddddddaaaaaaaaaaaaa',
-      price: 200,
-      quantity: 1,
-      image: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
-    },
-    {
-      name: 'Modern Sofadddddddddd ddddddddd xdddddddddddddddddaaaaaaaaaaaaa',
-      price: 200,
-      quantity: 1,
-      image: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
-    },
-    {
-      name: 'Coffee Table',
-      price: 200,
-      quantity: 2,
-      image: 'https://denovofurniture.pk/wp-content/uploads/2024/06/Opulence-New-5.jpg'
-    }
-  ];
+  image: string = 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg';
+
+
+  // cartItems: CartItem[] = [
+  //   {
+  //     name: 'Modern Sofadddddddddd ddddddddd xdddddddddddddddddaaaaaaaaaaaaa',
+  //     price: 200,
+  //     quantity: 1,
+  //     image: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
+  //   },
+  //   {
+  //     name: 'Modern Sofadddddddddd ddddddddd xdddddddddddddddddaaaaaaaaaaaaa',
+  //     price: 200,
+  //     quantity: 1,
+  //     image: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
+  //   },
+  //   {
+  //     name: 'Modern Sofadddddddddd ddddddddd xdddddddddddddddddaaaaaaaaaaaaa',
+  //     price: 200,
+  //     quantity: 1,
+  //     image: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
+  //   },
+  //   {
+  //     name: 'Coffee Table',
+  //     price: 200,
+  //     quantity: 2,
+  //     image: 'https://denovofurniture.pk/wp-content/uploads/2024/06/Opulence-New-5.jpg'
+  //   }
+  // ];
 
   loggedInUser!: User | undefined;
 
   ngOnInit() {
     document.addEventListener('click', this.onClickOutside.bind(this));
-    this.updateCartTotal();
-    this.updateCartCount(); // Initialize cart count
+    // this.updateCartTotal();
+    // this.updateCartCount(); // Initialize cart count
 
 
     this.auth.currentUser$.subscribe(user => {
@@ -92,7 +98,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
 
     // this.testAuth();
+    this.loadCart();
+  }
 
+  loadCart(): void {
+    this.cartService.getCart().subscribe({
+      next: (cart) => {
+        this.cart = cart;
+        console.log('Cart loaded:', cart);
+      },
+      error: (err) => {
+        console.error('Error loading cart:', err);
+        // Handle error (e.g., show error message)
+      }
+    });
   }
 
   handleLogout() {
@@ -101,6 +120,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.loggedInUser = undefined;
     console.log(this.loggedInUser);
     console.log(this.auth.isAuthenticated());
+  }
+
+  hasRole(requiredRole: string) {
+    return !this.loggedInUser || this.auth.hasRole(requiredRole);
   }
 
 
@@ -162,29 +185,29 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.showCartBackdrop = false;
   }
 
-  private updateCartCount() {
-    // this.cartCount = this.cartItems.reduce((total, item) => total + item.quantity, 0);
-    this.cartCount = this.cartItems.length;
-  }
+  // private updateCartCount() {
+  //   // this.cartCount = this.cartItems.reduce((total, item) => total + item.quantity, 0);
+  //   this.cartCount = this.cartItems.length;
+  // }
 
-  increaseQuantity(item: any) {
-    item.quantity++;
-    this.updateCartTotal();
-    this.updateCartCount();
-  }
+  // increaseQuantity(item: any) {
+  //   item.quantity++;
+  //   this.updateCartTotal();
+  //   this.updateCartCount();
+  // }
 
-  decreaseQuantity(item: any) {
-    if (item.quantity > 1) {
-      item.quantity--;
-      this.updateCartTotal();
-      this.updateCartCount();
-    }
-  }
+  // decreaseQuantity(item: any) {
+  //   if (item.quantity > 1) {
+  //     item.quantity--;
+  //     this.updateCartTotal();
+  //     this.updateCartCount();
+  //   }
+  // }
 
-  private updateCartTotal() {
-    this.cartTotal = this.cartItems.reduce((total, item) =>
-      total + (item.price * item.quantity), 0);
-  }
+  // private updateCartTotal() {
+  //   this.cartTotal = this.cartItems.reduce((total, item) =>
+  //     total + (item.price * item.quantity), 0);
+  // }
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {

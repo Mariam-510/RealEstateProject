@@ -12,6 +12,7 @@ interface DecodedToken {
   email: string;
   firstName: string;
   lastName: string;
+  imageUrl: string;
   roles: string | string[]; // Roles (array if multiple)
 }
 
@@ -21,6 +22,7 @@ export interface User {
   email: string,    // From custom userId claim
   firstName: string,
   lastName: string,
+  imageUrl: string;
   roles: string | string[]; // Roles (array if multiple)
   tokenExpiration: Date
 }
@@ -54,6 +56,7 @@ export class AuthService {
       email: decoded.email,  // Map 'name' claim to email
       firstName: decoded.firstName,
       lastName: decoded.lastName,
+      imageUrl: decoded.imageUrl,
       roles: decoded.roles,
       tokenExpiration: new Date(decoded.exp * 1000)
     };
@@ -96,4 +99,17 @@ export class AuthService {
   isAuthenticated() {
     return !!this.getToken();
   }
+
+  // Safely check if the user exists and has roles
+  hasRole(requiredRole: string): boolean {
+    const user = this.currentUserSubject?.value;
+    if (!user?.roles) return false;
+
+    // Handle array or single string roles
+    if (Array.isArray(user.roles)) {
+      return user.roles.includes(requiredRole);
+    }
+    return user.roles === requiredRole;
+  }
+
 }

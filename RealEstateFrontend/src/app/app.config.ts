@@ -6,6 +6,11 @@ import { withInterceptorsFromDi } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JwtInterceptor } from './Interceptors/jwt.interceptor';
 
+// src/app/config/api.config.ts
+export const API_CONFIG = {
+  apiUrl: 'http://realestategp.runasp.net/'
+};
+
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }),
   provideRouter(routes),
