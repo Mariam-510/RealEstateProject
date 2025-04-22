@@ -26,26 +26,38 @@ export class ForgetPasswordComponent {
 
   );
 
-
   errorMes = "";
+  isSubmitting = false;
   forget() {
     if (this.forgetpassword.invalid) {
-      alert("Please fill in Email fields correctly.");
+      this.errorMes = "Please fill in Email field correctly.";
       return;
     }
 
-    let Emailobj = {
-      email: this.forgetpassword.value.email,
+    const email = this.forgetpassword.value.email!;
+    this.isSubmitting = true;
+    this.errorMes = "";
 
-    };
-
-    console.log("Email Submitted is:", Emailobj);
-
-    // if success
-    this.router.navigate(['forgetpassword/sendcode'], {
-      queryParams: { email: this.forgetpassword.value.email }
+    this.accountService.forgotPassword(email).subscribe({
+      next: () => {
+        this.router.navigate(['forgetpassword/sendcode'], {
+          queryParams: { email: email }
+        });
+        this.isSubmitting = false;
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        if (err.status === 404) {
+          this.errorMes = "Email not found.";
+        } else if (err.status === 400) {
+          this.errorMes = err.error?.message || "Email not confirmed or account pending approval";
+        } else if (err.status === 500) {
+          this.errorMes = "Failed to send reset code. Please try again.";
+        } else {
+          this.errorMes = "An unexpected error occurred. Please try again.";
+        }
+      }
     });
-
   }
 
 

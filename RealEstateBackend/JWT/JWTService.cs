@@ -19,8 +19,8 @@ namespace RealEstate.JWT
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, appUser.Email),
-                new Claim(ClaimTypes.NameIdentifier, appUser.Id),
+                new Claim(JwtRegisteredClaimNames.Sub, appUser.Id),
+                new Claim(JwtRegisteredClaimNames.Email, appUser.Email),
                 new Claim("userId", userData.UserId.ToString()),
                 new Claim("firstName", userData.FirstName),
                 new Claim("lastName", userData.LastName ?? string.Empty)
@@ -28,7 +28,7 @@ namespace RealEstate.JWT
 
             foreach (var role in roles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim("roles", role));
             }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
@@ -38,7 +38,7 @@ namespace RealEstate.JWT
                 configuration["Jwt:Issuer"],
                 configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.Now.AddMinutes(5),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

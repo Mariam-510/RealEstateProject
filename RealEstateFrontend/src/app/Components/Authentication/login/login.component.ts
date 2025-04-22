@@ -5,6 +5,7 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule, AbstractContro
 import { CommonModule } from '@angular/common';
 import { SignUpRoleComponentComponent } from '../sign-up-role-component/sign-up-role-component.component';
 import { AccountService } from '../../../Services/ApiServices/account.service';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, CommonModule, RouterModule],
@@ -21,7 +22,8 @@ export class LoginComponent {
     },
 
   );
-  constructor(private dialog: MatDialog, private router: Router, private accountService: AccountService) { }
+  constructor(private dialog: MatDialog, private router: Router,
+    private accountService: AccountService, private auth: AuthService) { }
 
   openSigUPDialog(): void {
     this.dialog.open(SignUpRoleComponentComponent);
@@ -38,14 +40,20 @@ export class LoginComponent {
     const email = this.Loginform.value.email!;
     const password = this.Loginform.value.pass!; // Note the field name mismatch
 
+    // this.accountService.login(email, password).subscribe({
+    //   next: (response) => {
+    //     console.log('Login successful', response);
+    //     // Store the token
+    //     localStorage.setItem('jwtToken', response.tokenDto.jwtToken);
+
+    //     this.Loginform.reset();
+    //     this.router.navigate(['/']); // Redirect to appropriate page
+    //   },
     this.accountService.login(email, password).subscribe({
       next: (response) => {
-        console.log('Login successful', response);
-        // Store the token
-        localStorage.setItem('jwtToken', response.tokenDto.jwtToken);
-
+        this.auth.setAuthState(response.tokenDto.jwtToken);
         this.Loginform.reset();
-        this.router.navigate(['/']); // Redirect to appropriate page
+        this.router.navigate(['/']);
       },
       error: (err) => {
         console.error('Login failed', err);

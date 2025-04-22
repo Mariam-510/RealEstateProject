@@ -43,4 +43,31 @@ export class AccountService {
     });
   }
 
+  //----------------------------------------------------------------------------------
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/ForgotPassword`, { Email: email });
+  }
+
+  //----------------------------------------------------------------------------------
+  validateResetCode(email: string, code: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/ValidateResetCode`, {
+      Email: email,
+      Code: code
+    });
+  }
+
+  //----------------------------------------------------------------------------------
+  resetPassword(email: string, newPassword: string, confirmPassword: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/ResetPassword`, {
+      Email: email,
+      NewPassword: newPassword,
+      ConfirmPassword: confirmPassword
+    });
+  }
+
+  //----------------------------------------------------------------------------------
+  testAuth() {
+    return this.http.get(`${this.apiUrl}/TestAuth`);
+  }
+
 }
