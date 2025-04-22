@@ -1,0 +1,295 @@
+<div class="approval-page">
+  <div class="container py-4">
+    <h2 class="mb-4 fw-bold" style="color: #c38e79">Property Approvals</h2>
+
+    <!-- Filter Options -->
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <select class="form-select">
+          <option selected>Filter by Status</option>
+          <option>Pending Approval</option>
+          <option>Approved</option>
+          <option>Rejected</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <select class="form-select">
+          <option selected>Filter by Property Type</option>
+          <option>For Sale</option>
+          <option>For Rent</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search by address or ID"
+        />
+      </div>
+    </div>
+
+    <!-- Property List -->
+    <div class="row">
+      <ng-container *ngFor="let property of properties">
+        <div class="col-12 mb-4">
+          <div
+            class="property-card d-flex flex-column flex-md-row rounded shadow-sm border w-100"
+          >
+            <!-- Carousel Section -->
+            <div class="carousel-container position-relative">
+              <!-- Sale/Rent Badge -->
+              <div class="position-absolute top-0 start-0 m-2">
+                <span
+                  [ngClass]="{
+                    'badge bg-success': property.type === 'Sell',
+                    'badge bg-primary': property.type === 'Rent'
+                  }"
+                  class="text-uppercase fs-6"
+                >
+                  {{ property.type === "Sell" ? "For Sale" : "For Rent" }}
+                </span>
+              </div>
+
+              <!-- Carousel -->
+              <div id="carousel-{{ property.id }}" class="carousel slide h-100">
+                <!-- Badges -->
+                <div class="position-absolute top-0 start-0 m-2 z-2">
+                  <span class="badge bg-secondary text-uppercase fw-semibold">
+                    {{ property.propertyCategory }}
+                  </span>
+                </div>
+
+                <!-- Contract Download Button -->
+                <div class="position-absolute top-0 end-0 z-3 me-2 mt-2">
+                  <button
+                    class="btn btn-icon shadow-sm border-0 bg-dark bg-opacity-50 text-white px-2"
+                    (click)="downloadContract(property)"
+                    title="Download Contract"
+                  >
+                    <i
+                      class="bi bi-file-earmark-text"
+                      style="font-size: 1rem"
+                    ></i>
+                  </button>
+                </div>
+
+                <div class="position-absolute bottom-0 end-0 m-2 z-2">
+                  <span
+                    *ngIf="property.type === 'Sell'"
+                    class="badge bg-sell-badge"
+                  >
+                    <i class="bi bi-house-door"></i> For Sale
+                  </span>
+                  <span
+                    *ngIf="property.type === 'Rent'"
+                    class="badge bg-rent-badge"
+                  >
+                    <i class="bi bi-building"></i> For Rent
+                  </span>
+                </div>
+
+                <!-- Slides -->
+                <div class="carousel-inner h-100">
+                  <div
+                    *ngFor="let img of property.images; let i = index"
+                    class="carousel-item h-100"
+                    [class.active]="i === 0"
+                  >
+                    <img
+                      [src]="img"
+                      class="d-block w-100 h-100 object-fit-cover"
+                      [alt]="'Image ' + (i + 1) + ' of ' + property.title"
+                    />
+                  </div>
+                </div>
+
+                <!-- Controls -->
+                <button
+                  class="carousel-control-prev"
+                  type="button"
+                  [attr.data-bs-target]="'#carousel-' + property.id"
+                  data-bs-slide="prev"
+                >
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button
+                  class="carousel-control-next"
+                  type="button"
+                  [attr.data-bs-target]="'#carousel-' + property.id"
+                  data-bs-slide="next"
+                >
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+
+                <!-- Image Counter -->
+                <div
+                  class="position-absolute bottom-0 start-0 m-2 z-2 bg-dark bg-opacity-50 text-white rounded px-2 py-1 small"
+                >
+                  <i class="bi bi-images me-1"></i> {{ property.images.length }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Property Details -->
+            <div
+              class="property-details p-3 d-flex flex-column justify-content-center"
+            >
+              <div class="mt-2">
+                <!-- Price & Status -->
+                <div
+                  class="d-flex justify-content-between align-items-start mb-2"
+                >
+                  <div class="d-flex align-items-baseline gap-2 flex-wrap">
+                    <h5 class="mb-0 fw-bold" style="color: #c38e79">
+                      {{ property.price | number : "1.0-0" }} EGP
+                    </h5>
+                    <small class="text-muted" *ngIf="property.type === 'Rent'"
+                      >/month</small
+                    >
+                    <small
+                      class="text-muted"
+                      *ngIf="property.type === 'Sell' && property.space"
+                    >
+                      ({{
+                        property.price / property.space | number : "1.0-0"
+                      }}
+                      EGP/m²)
+                    </small>
+                  </div>
+                  <span
+                    class="badge"
+                    [ngClass]="{
+                      'bg-warning text-dark': property.status === 'Pending',
+                      'bg-success': property.status === 'Approved',
+                      'bg-danger': property.status === 'Rejected'
+                    }"
+                  >
+                    {{ property.status }}
+                  </span>
+                </div>
+
+                <!-- Title & Location -->
+                <h6 class="mb-1 fw-semibold" title="{{ property.title }}">
+                  {{ property.title }}
+                </h6>
+
+                <div
+                  class="d-flex align-items-center gap-2 text-muted mb-3 mt-3"
+                >
+                  <i class="bi bi-geo-alt-fill fs-6" style="color: #c38e79"></i>
+                  <span
+                    class="text-secondary fst-italic"
+                    title="{{ property.location }}"
+                    >{{ property.location }}</span
+                  >
+                </div>
+
+                <!-- Features -->
+                <div class="d-flex gap-4 text-muted flex-wrap">
+                  <div class="d-flex align-items-center">
+                    <div class="bg-light rounded-circle p-2 mb-1">
+                      <!-- Bed icon SVG -->
+                      <svg
+                        aria-hidden="true"
+                        width="25"
+                        height="25"
+                        viewBox="0 0 55 55"
+                        fill="#c38e79"
+                      >
+                        <!-- SVG paths for bed icon -->
+                      </svg>
+                    </div>
+                    <span class="fs-6">{{ property.bedrooms }} Beds</span>
+                  </div>
+
+                  <div class="d-flex align-items-center">
+                    <div class="bg-light rounded-circle p-2 mb-1">
+                      <!-- Bath icon SVG -->
+                      <svg
+                        aria-hidden="true"
+                        width="25"
+                        height="25"
+                        viewBox="0 0 55 55"
+                        fill="#c38e79"
+                      >
+                        <!-- SVG paths for bath icon -->
+                      </svg>
+                    </div>
+                    <span class="fs-6">{{ property.bathrooms }} Baths</span>
+                  </div>
+
+                  <div class="d-flex align-items-center">
+                    <div class="bg-light rounded-circle p-2 mb-1">
+                      <!-- Area icon SVG -->
+                      <svg
+                        aria-hidden="true"
+                        width="25"
+                        height="25"
+                        viewBox="0 0 55 55"
+                        fill="none"
+                      >
+                        <!-- SVG paths for area icon -->
+                      </svg>
+                    </div>
+                    <span class="fs-6">{{ property.space }} m²</span>
+                  </div>
+                </div>
+
+                <!-- Additional Info -->
+                <div class="mt-3">
+                  <p class="small text-muted mb-2">
+                    <strong>Uploaded:</strong>
+                    {{ property.date | date : "mediumDate" }}
+                  </p>
+                  <p class="small text-muted mb-2">
+                    <strong>Contract Type:</strong> {{ "Standard" }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Footer with Approve/Reject Buttons -->
+              <div
+                class="footer border-top pt-3 mt-3 d-flex justify-content-between align-items-center"
+              >
+                <div class="d-flex align-items-center">
+                  <img
+                    [src]="
+                      property.userImage || 'assets/images/default-user.png'
+                    "
+                    class="rounded-circle me-2"
+                    width="40"
+                    height="40"
+                    alt="Seller"
+                  />
+                  <div>
+                    <small class="d-block fw-bold fs-6" style="color: #c38e79">
+                      {{ property.userName || "Private Seller" }}
+                    </small>
+                    <!-- <small class="text-secondary fst-italic fs-6">
+                        {{ property.seller?.phone || 'Phone not provided' }}
+                      </small> -->
+                  </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                  <button
+                    class="btn btn-danger px-3"
+                    (click)="rejectProperty(property)"
+                  >
+                    <i class="bi bi-x-circle me-2"></i>Reject
+                  </button>
+                  <button
+                    class="btn btn-success px-3"
+                    (click)="approveProperty(property)"
+                  >
+                    <i class="bi bi-check-circle me-2"></i>Approve
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

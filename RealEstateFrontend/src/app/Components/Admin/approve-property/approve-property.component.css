@@ -1,0 +1,158 @@
+/* Main Page Styles */
+.approval-page {
+    background-color: #f8f9fa;
+    min-height: calc(100vh - 140px);
+    padding-top: 30px;
+    padding-bottom: 50px;
+  }
+  
+  /* Property Card */
+  .property-card {
+    height: 280px;
+    min-height: 280px;
+    width: 100%;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background-color: white;
+  }
+  
+  .property-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Carousel Section */
+  .carousel-container {
+    width: 40%;
+    flex: 0 0 40%;
+    height: 100%;
+  }
+  
+  .carousel-inner,
+  .carousel-item,
+  .property-img {
+    height: 100% !important;
+    width: 100%;
+    object-fit: cover;
+  }
+  
+  /* Property Details Section */
+  .property-details {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding: 1rem;
+  }
+  
+  /* Badges */
+  .badge {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Carousel Controls */
+  .carousel-control-prev,
+  .carousel-control-next {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .property-card:hover .carousel-control-prev,
+  .property-card:hover .carousel-control-next {
+    opacity: 0.75;
+  }
+  
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 25px;
+    height: 25px;
+  }
+  
+  /* Button Styles */
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+    transition: all 0.2s;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+  }
+  
+  .btn-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Footer */
+  .footer {
+    margin-top: auto;
+  }
+  
+  /* Status Badges */
+  .bg-warning {
+    background-color: #ffc107 !important;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .property-card {
+      height: auto;
+      min-height: auto;
+      flex-direction: column;
+    }
+  
+    .carousel-container {
+      width: 100%;
+      flex: 0 0 100%;
+      height: 250px;
+    }
+  
+    .footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+  
+    .footer > div:last-child {
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+  
+  /* Custom Button Styles */
+  .btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+  }
+  
+  .btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  
+  .btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+  }
+  
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #c38e79;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a57865;
+  }
