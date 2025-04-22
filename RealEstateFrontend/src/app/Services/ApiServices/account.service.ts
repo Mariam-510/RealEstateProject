@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { API_CONFIG } from '../../app.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
 
-  private apiUrl = 'http://realestategp.runasp.net/api/Accounts'; // Replace with actual API URL
+  private apiUrl = `${API_CONFIG.apiUrl}api/Accounts`; // Replace with actual API URL
 
   constructor(private http: HttpClient) { }
 
@@ -66,8 +67,8 @@ export class AccountService {
   }
 
   //----------------------------------------------------------------------------------
-  testAuth() {
-    return this.http.get(`${this.apiUrl}/TestAuth`);
-  }
+  // testAuth() {
+  //   return this.http.get(`${this.apiUrl}/TestAuth`);
+  // }
 
 }
