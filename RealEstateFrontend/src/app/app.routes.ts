@@ -45,6 +45,9 @@ import { AddProductComponent } from './Components/Admin/add-product/add-product.
 import { AddPropertyComponent } from './Components/FormsSellerAndAgent/add-property/add-property.component';
 import { AuctionDetailsComponent } from './Components/Auction/Details/auction-details/auction-details.component';
 import { ForgetPasswordSendCodeComponent } from './Components/Authentication/forget-password-send-code/forget-password-send-code.component';
+import { AddReviewComponent } from './Components/Order/add-review/add-review.component';
+import { AllReviewComponent } from './Components/Buyer/all-review/all-review.component';
+import { AddSubscriptionplanComponent } from './Components/Admin/add-subscriptionplan/add-subscriptionplan.component';
 
 //----------------------------------------------------------------------------------------
 
@@ -61,6 +64,8 @@ export const routes: Routes = [
       { path: 'viewAllOrder', component: ViewAllOrderComponent, title: "View All Order" },
       { path: 'addProduct', component: AddProductComponent, title: "Add Product" },
       { path: "addCatgory", component: AddCategoryComponent, title: "Add Category" },
+      { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscriptionplan" },
+
     ]
   },
 
@@ -93,6 +98,8 @@ export const routes: Routes = [
       { path: "profile", component: ProfileComponent, title: "Profile" },
       { path: "orders", component: OrderSummaryComponent, title: "Orders Summary" },
       { path: 'orders/:id', component: OrderDetailsComponent, title: "Order Details" },
+      { path: "AllReveiw", component: AllReviewComponent, title: "AllReview" },
+
     ]
   },
 
@@ -105,6 +112,8 @@ export const routes: Routes = [
   { path: 'newpassword', component: NewPasswordComponent, title: "Change Password" },
   { path: 'emailnotconfirmed', component: EmailNotConfirmedComponent, title: "Email Not Confirmed" },
   { path: 'forgetpassword/sendcode', component: ForgetPasswordSendCodeComponent, title: "Send Code" },
+  { path: 'Add Review', component: AddReviewComponent, title: "Add Review" },
+
 
   //---------------------------------------------------------------------------------------
   { path: 'auctions', component: AuctionHomeComponent, title: "Auctions" },

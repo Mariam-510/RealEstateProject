@@ -30,10 +30,10 @@ export class SendCodeComponent implements OnInit {
     // In SendCodeComponent:
     this.email = this.route.snapshot.queryParams['email'];
 
-    // if (!this.email) {
-    //   this.router.navigate(['/register']);
-    //   return;
-    // }
+    if (!this.email) {
+      this.router.navigate(['/register']);
+      return;
+    }
 
     this.startTimer();
   }

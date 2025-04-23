@@ -10,7 +10,7 @@
   
       <ul class="nav flex-column mt-3 ms-2">
         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="userprofile"
+          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="profile"
             routerLinkActive="active">
             <i class="bi bi-person-circle me-2 text-caffe"></i>
             <span class="d-md-inline d-none" *ngIf="!isCollapsed">User Info</span>
@@ -18,20 +18,19 @@
         </li>
          <li class="nav-item">
           <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
-            routerLink="userorder" routerLinkActive="active">
+            routerLink="orders" routerLinkActive="active">
            <i class="bi bi-receipt me-2 text-caffe"></i>
             <span class="d-md-inline d-none" *ngIf="!isCollapsed">Your Order</span>
           </a>
         </li>
-  <!--
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
-            routerLink="bookingHistory" routerLinkActive="active">
-            <i class="fa fa-history me-2 text-danger"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Booking History</span>
+            routerLink="AllReveiw" routerLinkActive="active">
+            <i class="bi bi-chat-left-text me-2 text-caffe"></i>
+            <span class="d-md-inline d-none" *ngIf="!isCollapsed"> Your Reviews</span>
           </a>
         </li>
-  
+  <!-- 
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="reviews"
             routerLinkActive="active">
@@ -42,14 +41,7 @@
   
    -->
   
-        <!-- <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5"
-            (click)="confirmDeleteAccount($event)">
-            <i class="bi bi-trash me-2 text-danger"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Delete Account</span>
-          </a>
-  
-        </li> -->
+   
       </ul>
     </div>
   

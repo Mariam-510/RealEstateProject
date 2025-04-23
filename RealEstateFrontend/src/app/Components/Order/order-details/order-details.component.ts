@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { jsPDF } from 'jspdf';
+import { MatDialog } from '@angular/material/dialog';
+import { AddReviewComponent } from '../add-review/add-review.component';
 
 @Component({
   selector: 'app-order-details',
@@ -14,7 +16,7 @@ export class OrderDetailsComponent {
   orderId: string = '';
   orderStatusCode: number = 0;
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute,private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -158,6 +160,13 @@ export class OrderDetailsComponent {
     doc.line(margin, y - 5, pageWidth - margin, y - 5);
 
     doc.save(`Invoice_${this.orderId}.pdf`);
+  }
+
+  openReviewDialog(event: any): void {
+    this.dialog.open(AddReviewComponent, {
+      width: '400px',
+      data: { productName: event.name }
+    });
   }
 }
 
