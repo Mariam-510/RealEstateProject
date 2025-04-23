@@ -33,23 +33,10 @@
       <ng-container *ngFor="let property of properties">
         <div class="col-12 mb-4">
           <div
-            class="property-card d-flex flex-column flex-md-row rounded shadow-sm border w-100"
+            class="property-card d-flex flex-column flex-md-row rounded shadow-sm border w-100 h-100"
           >
             <!-- Carousel Section -->
             <div class="carousel-container position-relative">
-              <!-- Sale/Rent Badge -->
-              <div class="position-absolute top-0 start-0 m-2">
-                <span
-                  [ngClass]="{
-                    'badge bg-success': property.type === 'Sell',
-                    'badge bg-primary': property.type === 'Rent'
-                  }"
-                  class="text-uppercase fs-6"
-                >
-                  {{ property.type === "Sell" ? "For Sale" : "For Rent" }}
-                </span>
-              </div>
-
               <!-- Carousel -->
               <div id="carousel-{{ property.id }}" class="carousel slide h-100">
                 <!-- Badges -->
@@ -61,35 +48,38 @@
 
                 <!-- Contract Download Button -->
                 <div class="position-absolute top-0 end-0 z-3 me-2 mt-2">
-                  <button
+                  <a
                     class="btn btn-icon shadow-sm border-0 bg-dark bg-opacity-50 text-white px-2"
-                    (click)="downloadContract(property)"
                     title="Download Contract"
+                    href="/TestFiles/sample.pdf"
+                    download
                   >
                     <i
                       class="bi bi-file-earmark-text"
                       style="font-size: 1rem"
                     ></i>
-                  </button>
+                  </a>
                 </div>
 
                 <div class="position-absolute bottom-0 end-0 m-2 z-2">
                   <span
                     *ngIf="property.type === 'Sell'"
-                    class="badge bg-sell-badge"
+                    class="badge bg-success"
+                    style="background-color: #4a7d5e"
                   >
                     <i class="bi bi-house-door"></i> For Sale
                   </span>
                   <span
                     *ngIf="property.type === 'Rent'"
-                    class="badge bg-rent-badge"
+                    class="badge"
+                    style="background-color: #2a5f8b"
                   >
                     <i class="bi bi-building"></i> For Rent
                   </span>
                 </div>
 
                 <!-- Slides -->
-                <div class="carousel-inner h-100">
+                <div class="carousel-inner">
                   <div
                     *ngFor="let img of property.images; let i = index"
                     class="carousel-item h-100"
@@ -97,7 +87,8 @@
                   >
                     <img
                       [src]="img"
-                      class="d-block w-100 h-100 object-fit-cover"
+                      class="d-block"
+                      style="width: 34vw; height: 49vh"
                       [alt]="'Image ' + (i + 1) + ' of ' + property.title"
                     />
                   </div>
@@ -134,10 +125,10 @@
             <div
               class="property-details p-3 d-flex flex-column justify-content-center"
             >
-              <div class="mt-2">
+              <div class="mt-2 d-flex row">
                 <!-- Price & Status -->
                 <div
-                  class="d-flex justify-content-between align-items-start mb-2"
+                  class="d-flex justify-content-between align-items-start mb-2 col-12"
                 >
                   <div class="d-flex align-items-baseline gap-2 flex-wrap">
                     <h5 class="mb-0 fw-bold" style="color: #c38e79">
@@ -150,9 +141,7 @@
                       class="text-muted"
                       *ngIf="property.type === 'Sell' && property.space"
                     >
-                      ({{
-                        property.price / property.space | number : "1.0-0"
-                      }}
+                      ({{ property.price / property.space | number : "1.0-0" }}
                       EGP/m²)
                     </small>
                   </div>
@@ -168,82 +157,89 @@
                   </span>
                 </div>
 
-                <!-- Title & Location -->
-                <h6 class="mb-1 fw-semibold" title="{{ property.title }}">
-                  {{ property.title }}
-                </h6>
+                <div class="col-6">
+                  <!-- Title & Location -->
+                  <h6 class="mb-1 fw-semibold" title="{{ property.title }}">
+                    {{ property.title }}
+                  </h6>
 
-                <div
-                  class="d-flex align-items-center gap-2 text-muted mb-3 mt-3"
-                >
-                  <i class="bi bi-geo-alt-fill fs-6" style="color: #c38e79"></i>
-                  <span
-                    class="text-secondary fst-italic"
-                    title="{{ property.location }}"
-                    >{{ property.location }}</span
+                  <div
+                    class="d-flex align-items-center gap-2 text-muted mb-3 mt-3"
                   >
+                    <i
+                      class="bi bi-geo-alt-fill fs-6"
+                      style="color: #c38e79"
+                    ></i>
+                    <span
+                      class="text-secondary fst-italic"
+                      title="{{ property.location }}"
+                      >{{ property.location }}</span
+                    >
+                  </div>
+
+                  <!-- Features -->
+                  <div class="d-flex gap-4 text-muted flex-wrap">
+                    <div class="d-flex align-items-center">
+                      <div class="bg-light rounded-circle p-2 mb-1">
+                        <img
+                          src="/Images/Bed.svg"
+                          width="20"
+                          height="20"
+                          alt=""
+                        />
+                      </div>
+                      <span class="fs-6">{{ property.bedrooms }} Beds</span>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                      <div class="bg-light rounded-circle p-2 mb-1">
+                        <img
+                          src="/Images/Bath.svg"
+                          width="20"
+                          height="20"
+                          alt=""
+                        />
+                      </div>
+                      <span class="fs-6">{{ property.bathrooms }} Baths</span>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                      <div class="bg-light rounded-circle p-2 mb-1">
+                        <img
+                          src="/Images/Area.svg"
+                          width="20"
+                          height="20"
+                          alt=""
+                        />
+                      </div>
+                      <span class="fs-6">{{ property.space }} m²</span>
+                    </div>
+                  </div>
+
+                  <!-- Additional Info -->
+                  <div class="mt-3">
+                    <p class="small text-muted mb-2">
+                      <strong>Uploaded:</strong>
+                      {{ property.date | date : "mediumDate" }}
+                    </p>
+                    <p class="small text-muted mb-2">
+                      <strong>Contract Type:</strong> {{ "Standard" }}
+                    </p>
+                  </div>
                 </div>
+                <div class="pdf-preview col-6 d-flex justify-content-end">
+                  <button
+                    (click)="showModal()"
+                    class="btn btn-outline-primary btn-sm h-25"
+                  >
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Preview PDF
+                  </button>
 
-                <!-- Features -->
-                <div class="d-flex gap-4 text-muted flex-wrap">
-                  <div class="d-flex align-items-center">
-                    <div class="bg-light rounded-circle p-2 mb-1">
-                      <!-- Bed icon SVG -->
-                      <svg
-                        aria-hidden="true"
-                        width="25"
-                        height="25"
-                        viewBox="0 0 55 55"
-                        fill="#c38e79"
-                      >
-                        <!-- SVG paths for bed icon -->
-                      </svg>
-                    </div>
-                    <span class="fs-6">{{ property.bedrooms }} Beds</span>
-                  </div>
-
-                  <div class="d-flex align-items-center">
-                    <div class="bg-light rounded-circle p-2 mb-1">
-                      <!-- Bath icon SVG -->
-                      <svg
-                        aria-hidden="true"
-                        width="25"
-                        height="25"
-                        viewBox="0 0 55 55"
-                        fill="#c38e79"
-                      >
-                        <!-- SVG paths for bath icon -->
-                      </svg>
-                    </div>
-                    <span class="fs-6">{{ property.bathrooms }} Baths</span>
-                  </div>
-
-                  <div class="d-flex align-items-center">
-                    <div class="bg-light rounded-circle p-2 mb-1">
-                      <!-- Area icon SVG -->
-                      <svg
-                        aria-hidden="true"
-                        width="25"
-                        height="25"
-                        viewBox="0 0 55 55"
-                        fill="none"
-                      >
-                        <!-- SVG paths for area icon -->
-                      </svg>
-                    </div>
-                    <span class="fs-6">{{ property.space }} m²</span>
-                  </div>
-                </div>
-
-                <!-- Additional Info -->
-                <div class="mt-3">
-                  <p class="small text-muted mb-2">
-                    <strong>Uploaded:</strong>
-                    {{ property.date | date : "mediumDate" }}
-                  </p>
-                  <p class="small text-muted mb-2">
-                    <strong>Contract Type:</strong> {{ "Standard" }}
-                  </p>
+                  <iframe
+                    src="/TestFiles/sample.pdf"
+                    width="270"
+                    height="170"
+                  ></iframe>
                 </div>
               </div>
 
@@ -253,9 +249,7 @@
               >
                 <div class="d-flex align-items-center">
                   <img
-                    [src]="
-                      property.userImage || 'assets/images/default-user.png'
-                    "
+                    [src]="'/Images/Home/user.jpeg'"
                     class="rounded-circle me-2"
                     width="40"
                     height="40"
@@ -290,6 +284,51 @@
           </div>
         </div>
       </ng-container>
+    </div>
+  </div>
+
+  <!-- PDF Preview Modal -->
+  <div
+    #pdfModal
+    class="modal fade"
+    id="pdfPreviewModal"
+    tabindex="-1"
+    aria-labelledby="pdfPreviewModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pdfPreviewModalLabel">
+            Contract Preview
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <iframe
+            src="/TestFiles/sample.pdf"
+            width="100%"
+            height="600px"
+          ></iframe>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <a href="/TestFiles/sample.pdf" download class="btn btn-primary">
+            <i class="bi bi-download me-2"></i>Download
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
