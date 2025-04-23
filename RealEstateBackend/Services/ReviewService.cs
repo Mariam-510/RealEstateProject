@@ -40,7 +40,7 @@ namespace RealEstate.Services
         }
 
 
-        public Dictionary<int, int> GetRatingDistribution(int productId)
+        public Dictionary<double, int> GetRatingDistribution(int productId)
         {
             return _context.Reviews
                 .Where(r => r.ProductId == productId && !r.IsDeleted)

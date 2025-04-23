@@ -242,7 +242,8 @@ namespace RealEstate.Controllers
                     var userClaims = new UserClaimsDto
                     {
                         UserId = updatedAdmin.Id,
-                        FirstName = updatedAdmin.Name
+                        FirstName = updatedAdmin.Name,
+                        ImageUrl = existingAccount.ImageUrl
                     };
 
                     var jwtToken = TokenService.CreateJWTToken(existingAccount, roles.ToList(), userClaims);

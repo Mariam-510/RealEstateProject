@@ -26,7 +26,7 @@ namespace RealEstate.Models.Domains
 
         public List<string> Images { get; set; }
 
-        public DateTime? DateAdded { get; set; } = DateTime.Now;
+        public DateTime DateAdded { get; set; } = DateTime.Now;
 
         [ForeignKey("Category")]
         public int? CategoryID { get; set; }

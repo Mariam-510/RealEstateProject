@@ -9,7 +9,7 @@ namespace RealEstate.Models.Domains
         public int Id { get; set; }
 
         [Range(1, 5)]
-        public int Rating { get; set; }
+        public double Rating { get; set; }
 
         [MaxLength(300)]
         public string? Comment { get; set; }

@@ -48,6 +48,8 @@ import { ForgetPasswordSendCodeComponent } from './Components/Authentication/for
 import { AddReviewComponent } from './Components/Order/add-review/add-review.component';
 import { AllReviewComponent } from './Components/Buyer/all-review/all-review.component';
 import { AddSubscriptionplanComponent } from './Components/Admin/add-subscriptionplan/add-subscriptionplan.component';
+import { ViewAllComponent } from './Components/Products/All/view-all/view-all.component';
+
 
 //----------------------------------------------------------------------------------------
 
@@ -125,6 +127,7 @@ export const routes: Routes = [
 
   //---------------------------------------------------------------------------------------
   { path: 'home/products', component: PHomeComponent, title: "Products Home Page" },
+  { path: 'products', component: ViewAllComponent, title: "Products" },
   { path: 'products/:id', component: ProductDetailsComponent, title: "Product Details" },
 
 
@@ -154,9 +157,6 @@ export const routes: Routes = [
   { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
   { path: "**", component: NotFoundComponent },
 
-
-  //----------------------------------------------------------------------------------------
-  { path: 'products/category/:id', component: CategoryComponent },
 
   //----------------------------------------------------------------------------------------
 
