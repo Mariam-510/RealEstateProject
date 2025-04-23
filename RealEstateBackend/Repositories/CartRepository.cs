@@ -16,11 +16,18 @@ namespace RealEstate.Repositories
         {
             var carts = await _context.Carts
                 .Include(c => c.SelectedAddress)
-                .Include(c => c.OrderItems.Where(o => !o.IsDeleted))
-                .ThenInclude(o => o.Product)
-                 .Where(c => !c.IsDeleted)
-                 .ToListAsync();
+                .Include(c => c.OrderItems)
+                    .ThenInclude(o => o.Product)
+                .Where(c => !c.IsDeleted)
+                .ToListAsync();
 
+            // Filter OrderItems after loading
+            foreach (var cart in carts)
+            {
+                cart.OrderItems = cart.OrderItems
+                    .Where(o => !o.IsDeleted)
+                    .ToList();
+            }
             return carts;
         }
 
@@ -58,12 +65,17 @@ namespace RealEstate.Repositories
         {
             var cart = await _context.Carts
                 .Include(c => c.SelectedAddress)
-                .Include(c => c.OrderItems.Where(o => !o.IsDeleted))
-                .ThenInclude(o => o.Product)
-                 .Where(c => !c.IsDeleted)
+                .Include(c => c.OrderItems)
+                    .ThenInclude(o => o.Product)
+                .Where(c => !c.IsDeleted)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
-           cart = await updateTotal(cart);
+            // Manually filter OrderItems after loading
+            cart.OrderItems = cart.OrderItems
+                .Where(o => !o.IsDeleted)
+                .ToList();
+
+            cart = await updateTotal(cart);
 
             return cart;
         }
@@ -72,9 +84,15 @@ namespace RealEstate.Repositories
         {
             var cart = await _context.Carts
                 .Include(c => c.SelectedAddress)
-                .Include(c => c.OrderItems.Where(o => !o.IsDeleted))
-                 .Where(c => !c.IsDeleted)
+                .Include(c => c.OrderItems)
+                    .ThenInclude(o => o.Product)
+                .Where(c => !c.IsDeleted)
                 .FirstOrDefaultAsync(c => c.BuyerId == buyerId);
+
+            // Manually filter OrderItems after loading
+            cart.OrderItems = cart.OrderItems
+                .Where(o => !o.IsDeleted)
+                .ToList();
 
             cart = await updateTotal(cart);
 
@@ -83,12 +101,7 @@ namespace RealEstate.Repositories
 
         public async Task<Cart?> UpdateAsync(Cart cart)
         {
-            var existingcart = await _context.Carts
-                .Include(c => c.SelectedAddress)
-                .Include(c => c.OrderItems.Where(o => !o.IsDeleted))
-                .ThenInclude(o => o.Product)
-                .Where(c => !c.IsDeleted)
-                .FirstOrDefaultAsync(c => c.Id == cart.Id);
+            var existingcart = await GetByIdAsync(cart.Id);
 
             if (existingcart != null)
             {

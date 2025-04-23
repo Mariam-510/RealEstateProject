@@ -115,18 +115,20 @@ namespace RealEstate.Mapping
 
             //------------------------------------------------------------------------------------------------
 
-            CreateMap<Cart, CartDto>()
-                .ForMember(dest => dest.OrderItemDtos, opt => opt.MapFrom(src => src.OrderItems));
+            CreateMap<CreateOrderItemDto, OrderItem>().ReverseMap();
+
+            CreateMap<OrderItem, OrderItemDto>()
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product != null ? src.Product.Name : null))
+                .ForMember(dest => dest.ProductDescription, opt => opt.MapFrom(src => src.Product != null ? src.Product.Description : null))
+                .ForMember(dest => dest.ProductImage, opt => opt.MapFrom(
+                    src => src.Product != null && src.Product.Images != null && src.Product.Images.Count > 0
+                        ? src.Product.Images[0]
+                        : null));
 
             //------------------------------------------------------------------------------------------------
 
-            CreateMap<CreateOrderItemDto, OrderItem>().ReverseMap();
-
-            //CreateMap<OrderItemDto, OrderItem>().ReverseMap();
-            CreateMap<OrderItem, OrderItemDto>()
-                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product != null ? src.Product.Name : null))
-                .ForMember(dest => dest.ProductDescription, opt => opt.MapFrom(src => src.Product != null ? src.Product.Description : null));
-
+            CreateMap<Cart, CartDto>()
+                .ForMember(dest => dest.OrderItemDtos, opt => opt.MapFrom(src => src.OrderItems));
 
             //------------------------------------------------------------------------------------------------
             //********************************************

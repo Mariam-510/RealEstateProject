@@ -15,6 +15,7 @@ export interface OrderItemDto {
   productId?: number;
   productName?: string;
   productDescription?: string;
+  productImage?: string;
 }
 
 export interface CreateOrderItemRequest {

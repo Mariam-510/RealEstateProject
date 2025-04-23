@@ -135,7 +135,27 @@
 }
 
 .category-nav {
-  gap: 100px;
+  gap: 6vw;
+}
+
+.category-nav {
+  display: flex;
+  flex-wrap: wrap;
+  /* Allow items to wrap */
+  column-gap: 6vw;
+  /* Horizontal gap between items */
+  row-gap: 1rem;
+  /* Vertical gap when wrapped to new line */
+  justify-content: center;
+  /* Center items when wrapped */
+}
+
+/* Optional: Adjust for mobile */
+@media (max-width: 768px) {
+  .category-nav {
+    column-gap: 4vw;
+    row-gap: 0.5rem;
+  }
 }
 
 /* In your CSS */
@@ -212,6 +232,7 @@
   transition: all 0.2s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   cursor: default;
+  position: relative;
 }
 
 .color-swatch:hover {
@@ -252,11 +273,40 @@
   }
 }
 
-/* .color-swatch-num:hover+.color-hover-container {
-  display: block;
-  animation: fadeIn 0.2s ease-in-out;
-} */
+.color-swatch {
+  width: 40px;
+  height: 40px;
+  transition: transform 0.2s;
+  position: relative;
 
-/* .no-print {
-  display: none !important;
-} */
+  &.out-of-stock {
+    opacity: 0.5;
+  }
+
+  .out-of-stock-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg,
+        transparent 45%,
+        rgba(255, 0, 0, 0.3) 46%,
+        rgba(255, 0, 0, 0.3) 54%,
+        transparent 55%);
+
+  }
+
+}
+
+.status-overlay {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+.status-text {
+  letter-spacing: 2px;
+  transform: rotate(-15deg);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}

@@ -46,6 +46,7 @@ import { AddPropertyComponent } from './Components/FormsSellerAndAgent/add-prope
 import { AuctionDetailsComponent } from './Components/Auction/Details/auction-details/auction-details.component';
 import { ForgetPasswordSendCodeComponent } from './Components/Authentication/forget-password-send-code/forget-password-send-code.component';
 import { ViewAllComponent } from './Components/Products/All/view-all/view-all.component';
+import { TViewAllProductsComponent } from './Components/Products/ToBeEdited/t-view-all-products/t-view-all-products.component';
 
 //----------------------------------------------------------------------------------------
 
@@ -145,6 +146,7 @@ export const routes: Routes = [
 
   //---------------------------------------------------------------------------------------
   { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
+  { path: "t", component: TViewAllProductsComponent, title: "t" },
   { path: "**", component: NotFoundComponent },
 
 
