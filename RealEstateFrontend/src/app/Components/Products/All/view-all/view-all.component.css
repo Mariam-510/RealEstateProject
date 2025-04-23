@@ -283,7 +283,7 @@
     opacity: 0.5;
   }
 
-  .out-of-stock-overlay {
+  /* .out-of-stock-overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(45deg,
@@ -291,7 +291,23 @@
         rgba(255, 0, 0, 0.3) 46%,
         rgba(255, 0, 0, 0.3) 54%,
         transparent 55%);
+  } */
 
+  .out-of-stock-overlay {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .out-of-stock-overlay::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    transform: translate(-50%, -50%) rotate(45deg);
   }
 
 }
@@ -309,4 +325,9 @@
   letter-spacing: 2px;
   transform: rotate(-15deg);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+
+.pagination {
+  cursor: pointer;
 }
