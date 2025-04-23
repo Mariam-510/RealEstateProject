@@ -31,9 +31,7 @@ import { SellerProfileComponent } from './Components/Seller/seller-profile/selle
 import { DashboardComponent } from './Components/Seller/dashboard/dashboard.component';
 import { PaymentComponent } from './Components/Payments/payment/payment.component';
 import { PropertyDetailsComponent } from './Components/Properties/Details/property-details/property-details.component';
-import { CategoryComponent } from './Components/Products/ToBeEdited/category/category.component';
 import { PHomeComponent } from './Components/Products/Home/p-home/p-home.component';
-import { CatSliderComponent } from './Components/Products/Home/Sliders/cat-slider/cat-slider.component';
 import { AuctionHomeComponent } from './Components/Auction/Home/auction-home/auction-home.component';
 import { ProductDetailsComponent } from './Components/Products/Details/product-details/product-details.component';
 import { AboutComponent } from './Components/AboutAndNotFound/about/about.component';
@@ -67,7 +65,7 @@ export const routes: Routes = [
       { path: 'viewAllOrder', component: ViewAllOrderComponent, title: "View All Order" },
       { path: 'addProduct', component: AddProductComponent, title: "Add Product" },
       { path: "addCatgory", component: AddCategoryComponent, title: "Add Category" },
-      { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscriptionplan" },
+      { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscription Plan" },
 
     ]
   },
