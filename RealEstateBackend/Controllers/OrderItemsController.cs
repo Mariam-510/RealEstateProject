@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Models.Domains;
@@ -82,6 +83,7 @@ namespace RealEstate.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> Create([FromBody] CreateOrderItemDto createOrderItemDto)
         {
             if (!ModelState.IsValid)
@@ -89,7 +91,15 @@ namespace RealEstate.Controllers
                 return BadRequest(ModelState);
             }
 
-            var buyer = await BuyerRepository.GetByIdAsync(createOrderItemDto.BuyerId);
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
+
+            var buyer = await BuyerRepository.GetByIdAsync(buyerId);
             if (buyer == null)
             {
                 return NotFound("Buyer not found.");

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ namespace RealEstate.Controllers
         public IProductRepository _productRepository { get; }
         private readonly IMapper _mapper;
 
-        public WishListController(IWishListRepository wishListRepository , IProductRepository productRepository, IBuyerRepository buyerRepository,IMapper mapper)
+        public WishListController(IWishListRepository wishListRepository, IProductRepository productRepository, IBuyerRepository buyerRepository, IMapper mapper)
         {
             _WishlistRepository = wishListRepository;
             _productRepository = productRepository;
@@ -30,27 +31,41 @@ namespace RealEstate.Controllers
         }
 
         [HttpPost("ToggleProductWishlist")]
-        public async Task<IActionResult> ToggleProductWishlist([FromForm] WishListProductDTO wishListProductDTO)
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> ToggleProductWishlist([FromBody] WishListProductDTO wishListProductDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var Wishlist = await _WishlistRepository.GettByBuyerAndProductIdAsync(wishListProductDTO.ProductId, wishListProductDTO.BuyerId);
+
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
+            var Wishlist = await _WishlistRepository.GetByBuyerAndProductIdAsync(wishListProductDTO.ProductId, buyerId);
+
+
             var ProductFound = await _productRepository.GetByIdAsync(wishListProductDTO.ProductId);
             if (ProductFound == null)
             {
                 return NotFound("Product ID Not Found !");
             }
-            var BuyerFound = await _BuyerRepository.GetByIdAsync(wishListProductDTO.BuyerId);
+            var BuyerFound = await _BuyerRepository.GetByIdAsync(buyerId);
             if (BuyerFound == null)
             {
                 return NotFound("Buyer ID Not Found !");
             }
-            if (Wishlist==null)
+            if (Wishlist == null)
             {
-               
+
                 Wishlist wislistModel = wishListProductDTO.ToWishListProductModel();
+                wislistModel.BuyerId = buyerId;
+
+
                 if (wislistModel != null && wislistModel.ProductId.HasValue && wislistModel.BuyerId.HasValue)
                 {
                     await _WishlistRepository.CreateProductAsync(wislistModel);
@@ -62,16 +77,16 @@ namespace RealEstate.Controllers
                 }
 
             }
-           
+
             else
             {
                 bool newStatus = !Wishlist.IsDeleted;
-                Wishlist Updatedwishlist= await _WishlistRepository.UpdateProductAsync(
+                Wishlist Updatedwishlist = await _WishlistRepository.UpdateProductAsync(
                     Wishlist.BuyerId.Value,
                     Wishlist.ProductId.Value,
                     newStatus
                 );
-                if( Updatedwishlist==null )
+                if (Updatedwishlist == null)
                 {
                     return BadRequest("Sorry You Can`t Update because Product is Deleted !!");
                 }
@@ -81,19 +96,29 @@ namespace RealEstate.Controllers
 
 
         [HttpPost("TogglePropertyWishlist")]
-        public async Task<IActionResult> TogglePropertyWishlist([FromForm] WishListPropertyDTO wishListPropertyDTO)
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> TogglePropertyWishlist([FromBody] WishListPropertyDTO wishListPropertyDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var Wishlist = await _WishlistRepository.GettByBuyerAndpropertyIdAsync(wishListPropertyDTO.PropertyID, wishListPropertyDTO.BuyerId);
+
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
+
+            var Wishlist = await _WishlistRepository.GetByBuyerAndpropertyIdAsync(wishListPropertyDTO.PropertyID, buyerId);
             var ProductFound = await _productRepository.GetByIdAsync(wishListPropertyDTO.PropertyID);
             if (ProductFound == null)
             {
                 return NotFound("Property ID Not Found !");
             }
-            var BuyerFound = await _BuyerRepository.GetByIdAsync(wishListPropertyDTO.BuyerId);
+            var BuyerFound = await _BuyerRepository.GetByIdAsync(buyerId);
             if (BuyerFound == null)
             {
                 return NotFound("Buyer ID Not Found !");
@@ -101,9 +126,11 @@ namespace RealEstate.Controllers
             if (Wishlist == null)
             {
                 Wishlist wislistModel = wishListPropertyDTO.ToWishListPropertyModel();
+                wislistModel.BuyerId = buyerId;
+
                 if (wislistModel != null && wislistModel.PropertyId.HasValue && wislistModel.BuyerId.HasValue)
                 {
-                    
+
                     await _WishlistRepository.CreatePropertyAsync(wislistModel);
                     return Ok("Property WishList Created Successfully");
                 }
@@ -131,10 +158,18 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("GetAllproductByBuyerIDAsync/{BuyerID}")]
-        public async Task<IActionResult> GetAllPrductByBuyerIDAsync(int BuyerID)
+        [HttpGet("GetAllproductByBuyerID")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> GetAllPrductByBuyerIDAsync()
         {
-            List<Product>? productList = await _WishlistRepository.GetAllProductByBuyerIDAsync(BuyerID);
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
+            List<Product>? productList = await _WishlistRepository.GetAllProductByBuyerIDAsync(buyerId);
 
             if (productList == null || !productList.Any())
             {
@@ -147,12 +182,21 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("GetAllPropertyByBuyerIDAsync/{BuyerID}")]
-        public async Task<IActionResult> GetAllPropertyByBuyerIDAsync(int BuyerID)
+        [HttpGet("GetAllPropertyByBuyerID")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> GetAllPropertyByBuyerIDAsync()
         {
-            List<Property>? propertyList = await _WishlistRepository.GetAllPropertyByBuyerIDAsync(BuyerID);
+            string buyerIdStr = User.FindFirst("userId")?.Value;
 
-            if (propertyList == null )
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
+
+            List<Property>? propertyList = await _WishlistRepository.GetAllPropertyByBuyerIDAsync(buyerId);
+
+            if (propertyList == null)
             {
                 return NotFound("Buyer ID not found!");
             }

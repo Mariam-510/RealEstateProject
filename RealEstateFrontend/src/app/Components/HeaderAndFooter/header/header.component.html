@@ -54,57 +54,74 @@
   <!-- User Controls -->
   <div class="user-controls">
 
-    <div *ngIf="hasRole('Buyer')" class="action-icons">
+    <div *ngIf="hasRoleOrNoUser('Buyer')" class="action-icons">
       <button class="icon-btn" (click)="toggleWishlist()">
         <i class="bi bi-heart fs-4"></i>
         <span *ngIf="wishlistCount > 0" class="badge">{{ wishlistCount }}</span>
       </button>
       <button class="icon-btn" (click)="toggleCart()">
         <i class="bi bi-cart fs-4"></i>
-        <span *ngIf="(cart?.orderItemDtos?.length || 0) > 0" class="badge">{{ cart?.orderItemDtos?.length }}</span>
+        <div *ngIf="(cart$ | async) as cart">
+          <span *ngIf="(cart?.orderItemDtos?.length || 0) > 0" class="badge">{{ cart?.orderItemDtos?.length }}</span>
+        </div>
       </button>
     </div>
 
     <!-- Cart Panel -->
-    <div *ngIf="hasRole('Buyer')" class="cart-panel" [class.active]="showCart">
+    <div *ngIf="hasRoleOrNoUser('Buyer')" class="cart-panel" [class.active]="showCart">
       <div class="cart-header">
         <!-- <h4>Your Cart ({{ cartItems.length }})</h4> -->
         <h4>Your Cart</h4>
         <button class="close-btn" (click)="toggleCart()">&times;</button>
       </div>
+
       <div class="cart-content">
-        <div class="mt-2 d-flex justify-content-between">
-          <h4 *ngIf="cart?.orderItemDtos" class="fs-5">{{ cart?.orderItemDtos?.length }} Items</h4>
-          <button *ngIf="(cart?.orderItemDtos?.length || 0) > 0" class="clear-btn" routerLink="/checkout">Clear
-            Cart</button>
+        <div *ngIf="(cart$ | async) as cart">
+          <div class="mt-2 d-flex justify-content-between">
+            <h4 *ngIf="cart?.orderItemDtos" class="fs-5">{{ cart?.orderItemDtos?.length }} Items</h4>
+            <button *ngIf="(cart?.orderItemDtos?.length || 0) > 0" class="clear-btn" routerLink="/checkout">Clear
+              Cart</button>
+          </div>
         </div>
 
         <!-- Check if cart has items before looping -->
-        <div *ngIf="(cart?.orderItemDtos?.length || 0) > 0">
-          <div *ngFor="let item of cart?.orderItemDtos" class="cart-item">
-            <img [src]="image" alt="Product image">
-            <div class="item-info">
-              <h5>{{ (item.productName?.length || 0) > 20 ? item.productName?.slice(0, 20) + '...' : item.productName }}
-              </h5>
-              <p>{{ item.price | currency:'EGP ' }}</p>
-              <p>{{ item.quantity }} x aaaaaa</p>
+        <div *ngIf="(cart$ | async) as cart">
+          <div *ngIf="(cart?.orderItemDtos?.length || 0) > 0">
+            <div *ngFor="let item of cart?.orderItemDtos" class="cart-item">
+              <img [src]="image" alt="Product image">
+              <div class="item-info">
+                <h5>{{ (item?.productName?.length ?? 0) > 20 ? item.productName?.slice(0, 20) + '...' : item.productName
+                  }}
+                </h5>
+                <p>{{ item.price | currency:'EGP ' }}</p>
+                <p>{{ item.quantity }} x aaaaaa</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Empty cart message -->
-        <div *ngIf="(cart?.orderItemDtos?.length || 0) == 0" class="empty-cart">
+        <div *ngIf="(cart$ | async) as cart">
+          <!-- Empty cart message -->
+          <div *ngIf="(cart?.orderItemDtos?.length || 0) == 0" class="empty-cart">
+            😔 Your cart is empty
+          </div>
+        </div>
+
+        <div *ngIf="!(cart$ | async) as cart" class="empty-cart">
           😔 Your cart is empty
         </div>
       </div>
-      <div *ngIf="cart?.orderItemDtos && (cart?.orderItemDtos?.length || 0) > 0; else emptyCardFooter"
-        class="cart-footer">
-        <div class="total">
-          <span><i class="bi bi-cash-stack text-caffe"></i> Total:</span>
-          <span class="text-muted">{{ cart?.totalPrice | currency:'EGP ' }}</span>
+
+      <div *ngIf="(cart$ | async) as cart; else emptyCardFooter">
+        <div *ngIf="cart?.orderItemDtos && (cart?.orderItemDtos?.length || 0) > 0; else emptyCardFooter"
+          class="cart-footer">
+          <div class="total">
+            <span><i class="bi bi-cash-stack text-caffe"></i> Total:</span>
+            <span class="text-muted">{{ cart?.totalPrice | currency:'EGP ' }}</span>
+          </div>
+          <button class="viewCart-btn" routerLink="/checkout">View Cart</button>
+          <button class="checkout-btn mb-4" routerLink="/checkout">Proceed to Checkout</button>
         </div>
-        <button class="viewCart-btn" routerLink="/checkout">View Cart</button>
-        <button class="checkout-btn mb-4" routerLink="/checkout">Proceed to Checkout</button>
       </div>
 
       <ng-template #emptyCardFooter>
@@ -116,7 +133,7 @@
 
     <!-- User Dropdown -->
     <div class="user-menu" #userMenu>
-      <button class="user-trigger" (click)="toggleUserMenu()">
+      <button class=" user-trigger" (click)="toggleUserMenu()">
 
         <!-- Show image when available, icon when not -->
         <ng-container *ngIf="loggedInUser?.imageUrl; else defaultIcon">

@@ -17,12 +17,30 @@ export interface OrderItemDto {
   productDescription?: string;
 }
 
+export interface CreateOrderItemRequest {
+  ProductId: number;
+  Quantity: number;
+  Color: string;
+}
+
+export interface CreateOrderItemResponse {
+  message: string;
+  orderItemDto: OrderItemDto;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class OrderItemService {
-  private apiUrl = `${API_CONFIG.apiUrl}api/Carts`;
+  private apiUrl = `${API_CONFIG.apiUrl}api/OrderItems`;
 
   constructor(private http: HttpClient) { }
+
+  createOrderItem(request: CreateOrderItemRequest): Observable<CreateOrderItemResponse> {
+    return this.http.post<CreateOrderItemResponse>(
+      `${this.apiUrl}`,
+      request
+    );
+  }
 
 }

@@ -372,6 +372,7 @@ namespace RealEstate.Controllers
                     int userId = 0;
                     var fName = "";
                     var lName = "";
+                    var imageUrl = account.ImageUrl;
 
                     if (roles.Contains("Agent"))
                     {
@@ -417,7 +418,8 @@ namespace RealEstate.Controllers
                     {
                         UserId = userId,
                         FirstName = fName,
-                        LastName = lName
+                        LastName = lName,
+                        ImageUrl = imageUrl
                     };
 
                     var jwtToken = TokenService.CreateJWTToken(account, roles.ToList(), userClaims);

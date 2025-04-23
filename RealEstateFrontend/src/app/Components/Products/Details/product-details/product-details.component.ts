@@ -2,9 +2,15 @@ import { ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, QueryLi
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgxImageZoomModule } from 'ngx-image-zoom';
-import { ProductDTO, Review, SharedService } from '../../../../Service/shared.service';
 import { ToastrService } from '../../../../Services/toastr.service';
 import { ZoomDirective } from '../../../../drectives/zoom.directive';
+import { AuthService, User } from '../../../../Services/ApiServices/auth.service';
+import { ProductService, ProductDTO, ProductStockDto } from '../../../../Services/ApiServices/product.service';
+import { API_CONFIG } from '../../../../app.config';
+import { OrderItemService } from '../../../../Services/ApiServices/order-item.service';
+import { CartService } from '../../../../Services/ApiServices/cart.service';
+import { ReviewResponseDto, ReviewService } from '../../../../Services/ApiServices/review.service';
+import { WishListService } from '../../../../Services/ApiServices/wish-list.service';
 
 
 @Component({
@@ -15,46 +21,68 @@ import { ZoomDirective } from '../../../../drectives/zoom.directive';
 })
 export class ProductDetailsComponent implements OnInit {
 
-  product: ProductDTO = {
-    id: 1,
-    name: 'Luxury Sectional Sofa',
-    description: '3-piece modular sectional sofa with premium top-grain leather upholstery and high-density foam cushions. Features reclining seats, built-in cup holders, and USB charging ports. Configurable in multiple layouts with reversible chaise. Includes decorative throw pillows. Seat depth: 22", total dimensions: 120"W x 60"D x 36"H.',
-    price: 0,
-    quantity: 0,
-    isUsed: false,
-    averageRating: 0,
-    categoryID: 0,
-    categoryName: '',
-    Productimages: [
-    ],
-    isFavorite: false,
-    colors: [],
-    numOfReviews: 0,
-    date: new Date()
-  };
-
-  reviews: Review[] = [];
+  apiConfig = API_CONFIG;
+  product: ProductDTO | null = null; // ✅ Correct interface
+  reviews: ReviewResponseDto[] = [];
+  loggedInUser!: User | undefined;
+  quantity = 1;
+  selectedColorStock: ProductStockDto | undefined;
 
   constructor(
-    private route: ActivatedRoute, private sharedService: SharedService, private renderer: Renderer2,
-    private elRef: ElementRef, private cdr: ChangeDetectorRef, private toastr: ToastrService
+    private route: ActivatedRoute, private renderer: Renderer2,
+    private elRef: ElementRef, private cdr: ChangeDetectorRef, private toastr: ToastrService,
+    private productService: ProductService, private auth: AuthService, private orderItemService: OrderItemService,
+    private cartService: CartService, private reviewService: ReviewService, private wishListService: WishListService
   ) { }
+
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       const productId = parseInt(params['id'], 10);
-      const foundProduct = this.sharedService.products.find(p => p.id === productId);
+      if (!isNaN(productId)) {
+        this.loadProduct(productId);
 
-      if (foundProduct) {
-        this.product = foundProduct;
+        // Get reviews for this product
+        this.reviewService.getReviewsByProduct(productId).subscribe({
+          next: (reviews) => {
+            this.reviews = reviews;
+          },
+          error: (err) => {
+            this.toastr.error('Failed to load reviews');
+            console.error(err);
+          }
+        });
       } else {
-        console.warn(`Product with ID ${productId} not found.`);
+        this.toastr.error('Invalid product ID');
+      }
+    });
+    // Auto-select first available color
+    if (this.product?.productStockDtos?.length) {
+      this.selectedColorStock = this.product.productStockDtos[0];
+    }
+
+    this.auth.currentUser$.subscribe(user => {
+      if (user) {
+        this.loggedInUser = user;
+        console.log(this.loggedInUser)
       }
     });
 
-    this.reviews = this.sharedService.reviews;
   }
 
+  private loadProduct(id: number): void {
+    this.productService.getProductById(id).subscribe({
+      next: (response) => { // Correct type
+        this.product = response;
+        console.log(this.product)
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.toastr.error('Failed to load product');
+        console.error('Error loading product:', err);
+      }
+    });
+  }
   //-----------------------------------------------------------------------------
   @HostListener('pan', ['$event'])
   onPan(event: any) {
@@ -80,11 +108,15 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   prevSlide() {
-    this.selectedIndex = this.selectedIndex > 0 ? this.selectedIndex - 1 : this.product.Productimages.length - 1;
+    if (this.product?.productimage) {
+      this.selectedIndex = this.selectedIndex > 0 ? this.selectedIndex - 1 : this.product?.productimage.length - 1;
+    }
   }
 
   nextSlide() {
-    this.selectedIndex = this.selectedIndex < this.product.Productimages.length - 1 ? this.selectedIndex + 1 : 0;
+    if (this.product?.productimage) {
+      this.selectedIndex = this.selectedIndex < this.product?.productimage.length - 1 ? this.selectedIndex + 1 : 0;
+    }
   }
 
 
@@ -134,12 +166,16 @@ export class ProductDetailsComponent implements OnInit {
 
   modalPrev(event: MouseEvent) {
     event.stopPropagation();
-    this.modalIndex = this.modalIndex > 0 ? this.modalIndex - 1 : this.product.Productimages.length - 1;
+    if (this.product?.productimage) {
+      this.modalIndex = this.modalIndex > 0 ? this.modalIndex - 1 : this.product?.productimage.length - 1;
+    }
   }
 
   modalNext(event: MouseEvent) {
     event.stopPropagation();
-    this.modalIndex = this.modalIndex < this.product.Productimages.length - 1 ? this.modalIndex + 1 : 0;
+    if (this.product?.productimage) {
+      this.modalIndex = this.modalIndex < this.product?.productimage.length - 1 ? this.modalIndex + 1 : 0;
+    }
   }
 
   // Add this to handle body scroll
@@ -319,8 +355,24 @@ export class ProductDetailsComponent implements OnInit {
   //-----------------------------------------------------------------------------
   Math = Math;
 
+  // In your component
   toggleFavorite(product: any) {
-    product.isFavorite = !product.isFavorite;
+    // Optimistic UI update
+    const previousState = product.isFavorite;
+    product.isFavorite = !previousState;
+
+    this.wishListService.toggleProductWishlist(product.id).subscribe({
+      next: (response) => {
+        this.toastr.success(response);
+        // Optional: Update with actual API state if needed
+      },
+      error: (err) => {
+        // Revert UI state on error
+        product.isFavorite = previousState;
+        this.toastr.error('Error updating wishlist');
+        console.error(err);
+      }
+    });
   }
 
   shareItem(item: any): void {
@@ -338,42 +390,73 @@ export class ProductDetailsComponent implements OnInit {
     }
   }
 
-  quantity: number = 1;
-
-  increaseQuantity() {
-    if (this.quantity < this.product.quantity) {
-      this.quantity++;
+  selectColor(stock: ProductStockDto) {
+    this.selectedColorStock = stock;
+    this.quantity = 1; // Reset quantity when color changes
+    if (stock.quantity == 0) {
+      this.quantity = 0; // Reset quantity when color changes
     }
   }
 
   decreaseQuantity() {
-    if (this.quantity > 1) {
-      this.quantity--;
+    if (this.quantity > 1) this.quantity--;
+  }
+
+  // Update quantity validation
+  increaseQuantity() {
+    if (this.selectedColorStock && this.quantity < this.selectedColorStock.quantity) {
+      this.quantity++;
     }
   }
+
+  // Add this method for button text
+  getAddToCartButtonText(): string {
+    if (!this.selectedColorStock) return 'Select Color';
+    if (this.selectedColorStock.quantity === 0) return 'Out of Stock';
+    if (this.quantity > this.selectedColorStock.quantity) return 'Exceeds Stock';
+    return 'Add to Cart';
+  }
+
 
   addToCart() {
-    if (this.quantity > 0 && this.quantity <= this.product.quantity) {
-      // Your add to cart logic here
-      console.log(`Added ${this.quantity} items to cart`);
+    if (!this.selectedColorStock) {
+      alert('Please select a color');
+      return;
     }
+
+    this.orderItemService.createOrderItem({
+      ProductId: this.product!.id,
+      Quantity: this.quantity,
+      Color: this.selectedColorStock.color
+    }).subscribe({
+      next: (response) => {
+        alert('Added to cart successfully!');
+        this.cartService.notifyCartUpdated(); // <-- Add this line
+        // Reset or update state as needed
+      },
+      error: (err) => {
+        console.error('Error adding to cart:', err);
+        alert(err.error?.message || 'Failed to add to cart');
+      }
+    });
   }
 
-  isProductNew() {
-    // Assuming your product has a creationDate property
-    const daysSinceCreation = Math.floor((Date.now() - new Date(this.product.date).getTime()) / (1000 * 3600 * 24));
-    return daysSinceCreation < 5; // 5-day threshold for "new" products
+  isProductNew(): boolean {
+    // Use a fallback date (e.g., current date) if dateAdded is undefined
+    const creationDate = new Date(this.product?.dateAdded ?? new Date());
+    const currentDate = new Date();
+    const timeDifference = currentDate.getTime() - creationDate.getTime();
+    const daysSinceCreation = Math.floor(timeDifference / (1000 * 3600 * 24));
+
+    return daysSinceCreation < 5;
   }
 
-  //-----------------------------------------------------------------------------
+  //------------------------------------------------------------------------s-----
   showMore: boolean = false;
 
   //-----------------------------------------------------------------------------
   showHelpPopup = true;
   closeHelpPopup = false;
-  // isLoggedIn = true;
-  isLoggedIn = false;
-  userName = 'Mariam'
 
   toggleHelp() {
     this.showHelpPopup = !this.showHelpPopup;
@@ -384,6 +467,18 @@ export class ProductDetailsComponent implements OnInit {
     window.print();
   }
 
+  //-----------------------------------------------------------------------------
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
+  }
 
   //-----------------------------------------------------------------------------
   // Pagination variables

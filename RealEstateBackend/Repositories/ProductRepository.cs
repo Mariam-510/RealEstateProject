@@ -158,7 +158,7 @@ namespace RealEstate.Repositories
             return null;
         }
 
-        public async Task CalculateAverageRating(int? id)
+        public async Task<double> CalculateAverageRating(int? id)
         {
             var product = await dbcontext.Products
                 .Include(r => r.Reviews)
@@ -178,7 +178,11 @@ namespace RealEstate.Repositories
                     product.AverageRating = 0;
 
                 await dbcontext.SaveChangesAsync();
+                
+                return product.AverageRating;
             }
+
+            return 0;
         }
     }
 }

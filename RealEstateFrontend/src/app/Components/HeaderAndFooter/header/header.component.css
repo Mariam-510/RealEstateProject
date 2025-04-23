@@ -2,11 +2,13 @@
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 0.8rem 2rem;
   background: white;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  position: relative;
-  z-index: 1001;
+  /* position: relative; */
+  position: sticky;
+  top: 0;
+  z-index: 1005 !important;
 }
 
 /* Cart Backdrop */
@@ -17,7 +19,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.3);
-  z-index: 999;
+  z-index: 1005 !important;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
@@ -39,7 +41,7 @@
   background: white;
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
   transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1002;
+  z-index: 1005 !important;
   display: flex;
   flex-direction: column;
   /* border-radius: 5px; */
@@ -164,7 +166,7 @@
   /* transition: background 0.2s ease; */
 }
 
-.viewCart-btn{
+.viewCart-btn {
   background-color: transparent;
   border: 2px solid #c38e79;
   border-radius: 5px;
@@ -268,7 +270,7 @@
   color: #c38e79;
 }
 
-.brand-name:hover{
+.brand-name:hover {
   color: #c38e79 !important;
 }
 
@@ -368,13 +370,14 @@
   opacity: 0;
   visibility: hidden;
   transition: all 0.2s ease;
-  z-index: 1000;
+  z-index: 1005 !important;
 }
 
 .user-controls .user-menu .user-dropdown.active {
   opacity: 1;
   visibility: visible;
   top: 100%;
+  z-index: 1005 !important;
 }
 
 .user-controls .user-menu .user-dropdown .dropdown-item {
@@ -419,8 +422,7 @@
   border-bottom: 1px solid #eee;
 }
 
-.user-avatar
-{
+.user-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -458,11 +460,10 @@
   right: 0;
   background: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease-out;
-  z-index: 1000;
+  z-index: 5000 !important;
 }
 
 .mobile-nav.active {
@@ -606,15 +607,15 @@
     grid-template-columns: auto 1fr auto;
     padding: 1rem;
   }
-  
+
   .primary-nav {
     display: none;
   }
-  
+
   .brand-container .brand-logo img {
     height: 40px;
   }
-  
+
   .brand-name {
     font-size: 1.2rem !important;
   }
@@ -624,11 +625,11 @@
   .user-controls .action-icons {
     display: none;
   }
-  
+
   .brand-services {
     display: none;
   }
-  
+
   .cart-panel {
     width: 100%;
     max-width: 100%;

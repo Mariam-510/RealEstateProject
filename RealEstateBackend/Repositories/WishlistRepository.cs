@@ -36,7 +36,7 @@ namespace RealEstate.Repositories
             return wishlist;
         }
 
-        public async Task<Wishlist?> GettByBuyerAndProductIdAsync(int productID, int BuyerID)
+        public async Task<Wishlist?> GetByBuyerAndProductIdAsync(int productID, int BuyerID)
         {
             return await dbcontext.Wishlists
                 .Include(W => W.Product)
@@ -44,7 +44,7 @@ namespace RealEstate.Repositories
                 .FirstOrDefaultAsync();
         }
         
-        public async Task<Wishlist?> GettByBuyerAndpropertyIdAsync(int PropertyID, int BuyerID)
+        public async Task<Wishlist?> GetByBuyerAndpropertyIdAsync(int PropertyID, int BuyerID)
         {
             return await dbcontext.Wishlists
                    .Include(W => W.Property)

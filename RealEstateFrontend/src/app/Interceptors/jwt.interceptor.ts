@@ -9,6 +9,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthService } from '../Services/ApiServices/auth.service';
+import { API_CONFIG } from '../app.config';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
@@ -19,6 +20,7 @@ export class JwtInterceptor implements HttpInterceptor {
   ) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+
     // Get the token from storage
     const token = this.authService.getToken();
 
@@ -35,10 +37,11 @@ export class JwtInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error) => {
         if (error.status === 401) { // Unauthorized
-          // this.authService.logout();
+          this.authService.logout();
           this.router.navigate(['/login'], {
             queryParams: { message: 'Unauthorized' }
           });
+          console.log(error);
         }
         return throwError(error);
       })
