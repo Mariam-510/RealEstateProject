@@ -1,8 +1,6 @@
 .new-product-page {
-  background-color: #f8f9fa;
-  min-height: calc(100vh - 140px);
-  padding-top: 20px;
-}
+   min-height: calc(100vh - 140px);
+ }
 
 .form-control:focus,
 .form-select:focus {
@@ -36,10 +34,7 @@
   object-fit: cover;
 }
 
-/* Character counter */
-.text-muted {
-  font-size: 0.8rem;
-}
+ 
 
 /* Section headers */
 h5 {

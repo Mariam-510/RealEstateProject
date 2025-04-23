@@ -20,7 +20,7 @@ export class RegisterComponent {
     private accountService: AccountService
   ) {
     this.route.queryParams.subscribe(params => {
-      this.role = params['role'] || 'buyer'; // Fallback to 'buyer' if no param
+      this.role = params['role'] || 'buyer';  
     });
   }
 
@@ -63,7 +63,6 @@ export class RegisterComponent {
     }
 
     const formData = new FormData();
-    // Use type assertions and null checks
     formData.append('IsBuyer', (this.role === 'buyer').toString());
     formData.append('FirstName', this.Registerform.value.firstName!);
     formData.append('LastName', this.Registerform.value.lastName || '');
@@ -74,7 +73,6 @@ export class RegisterComponent {
     this.accountService.register(formData).subscribe({
       next: (response) => {
         console.log('Registration successful', response);
-        // In registration component:
         this.router.navigate(['/sendcode'], {
           queryParams: { email: this.Registerform.value.email }
         });
@@ -89,13 +87,10 @@ export class RegisterComponent {
 
   private handleRegistrationError(err: any): void {
     if (err.status === 400) {
-      // alert(err.error?.message || 'Validation error occurred');
       this.errorMes = err.error?.message || 'Validation error occurred';
     } else if (err.status === 500) {
-      // alert('Server error. Please try again later.');
       this.errorMes = 'Server error. Please try again later.';
     } else {
-      // alert('An unexpected error occurred. Please try again.');
       this.errorMes = 'An unexpected error occurred. Please try again.';
     }
   }
