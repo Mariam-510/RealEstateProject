@@ -18,7 +18,7 @@ export class ZoomDirective {
     this.renderer.setStyle(this.lens, 'background-repeat', 'no-repeat');
     this.renderer.setStyle(this.lens, 'pointer-events', 'none');
     this.renderer.setStyle(this.lens, 'display', 'none');
-    this.renderer.setStyle(this.lens, 'z-index', '1003');
+    this.renderer.setStyle(this.lens, 'z-index', '1010');
     this.renderer.appendChild(document.body, this.lens);
   }
 

@@ -2,19 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, effect, ElementRef, HostListener, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { SharedService } from '../../../Services/shared.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SignUpRoleComponentComponent } from '../../Authentication/sign-up-role-component/sign-up-role-component.component';
 import { AuthService, User } from '../../../Services/ApiServices/auth.service';
 import { API_CONFIG } from '../../../app.config';
 import { CartDto, CartService } from '../../../Services/ApiServices/cart.service';
-
-interface CartItem {
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
+import { catchError, Observable, of, startWith, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -24,18 +17,56 @@ interface CartItem {
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
+  // constructor(private elRef: ElementRef, private auth: AuthService,
+  //   private router: Router, private dialog: MatDialog, private cartService: CartService) { }
+
+  cart$: Observable<CartDto | null>;
+
   constructor(private elRef: ElementRef, private auth: AuthService,
-    private router: Router, private dialog: MatDialog, private cartService: CartService) { }
+    private router: Router, private dialog: MatDialog, private cartService: CartService) {
+    // Initialize cart$ after dependencies are injected
+    this.cart$ = this.cartService.cartUpdated$.pipe(
+      startWith(null),
+      switchMap(() => {
+        if (this.hasRole("Buyer")) {
+          return this.cartService.getCart().pipe(
+            catchError(() => of(null))
+          );
+        }
+        return of(null);
+      })
+    );
+
+
+    // console.log(this.cart$);
+    // this.cart$.subscribe(cart => {
+    //   if (cart) {
+    //     console.log(cart.orderItemDtos); // Access property on emitted value
+    //   }
+    // });
+  }
+
+  cartCall() {
+    this.cart$ = this.cartService.cartUpdated$.pipe(
+      startWith(null),
+      switchMap(() => {
+        if (this.hasRole("Buyer")) {
+          return this.cartService.getCart().pipe(
+            catchError(() => of(null))
+          );
+        }
+        return of(null);
+      })
+    );
+  }
 
   apiConfig = API_CONFIG;
   cart: CartDto | null = null;
   showMobileNav = false;
   showUserMenu = false;
   wishlistCount = 0;
-  // cartCount = 0;
   showCart = false;
   showCartBackdrop = false;
-  // cartTotal = 0;
 
   isRouteActive(routePath: string): boolean {
     return this.router.url === routePath;
@@ -51,100 +82,65 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   image: string = 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg';
 
-
-  // cartItems: CartItem[] = [
-  //   {
-  //     name: 'Modern Sofadddddddddd ddddddddd xdddddddddddddddddaaaaaaaaaaaaa',
-  //     price: 200,
-  //     quantity: 1,
-  //     image: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
-  //   },
-  //   {
-  //     name: 'Modern Sofadddddddddd ddddddddd xdddddddddddddddddaaaaaaaaaaaaa',
-  //     price: 200,
-  //     quantity: 1,
-  //     image: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
-  //   },
-  //   {
-  //     name: 'Modern Sofadddddddddd ddddddddd xdddddddddddddddddaaaaaaaaaaaaa',
-  //     price: 200,
-  //     quantity: 1,
-  //     image: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
-  //   },
-  //   {
-  //     name: 'Coffee Table',
-  //     price: 200,
-  //     quantity: 2,
-  //     image: 'https://denovofurniture.pk/wp-content/uploads/2024/06/Opulence-New-5.jpg'
-  //   }
-  // ];
-
   loggedInUser!: User | undefined;
 
   ngOnInit() {
     document.addEventListener('click', this.onClickOutside.bind(this));
-    // this.updateCartTotal();
-    // this.updateCartCount(); // Initialize cart count
-
 
     this.auth.currentUser$.subscribe(user => {
-      if (user) {
-        // console.log('User roles:', user.roles);
-        // console.log('Token expires at:', user.tokenExpiration);
-
-        this.loggedInUser = user;
-        console.log(this.loggedInUser)
-      }
-    });
-
-    // this.testAuth();
-    this.loadCart();
-  }
-
-  loadCart(): void {
-    this.cartService.getCart().subscribe({
-      next: (cart) => {
-        this.cart = cart;
-        console.log('Cart loaded:', cart);
-      },
-      error: (err) => {
-        console.error('Error loading cart:', err);
-        // Handle error (e.g., show error message)
-      }
+      this.loggedInUser = user;
+      // Trigger initial load
+      this.cartService.notifyCartUpdated();
     });
   }
+
+
+  // ngOnInit() {
+  //   document.addEventListener('click', this.onClickOutside.bind(this));
+
+  //   this.auth.currentUser$.subscribe(user => {
+  //     if (user) {
+  //       this.loggedInUser = user;
+  //       console.log(this.loggedInUser)
+  //       // this.testAuth();
+  //       if (this.hasRole("Buyer")) {
+  //         this.loadCart();
+  //       }
+  //     }
+  //   });
+
+  // }
+
+  // loadCart(): void {
+  //   this.cartService.getCart().subscribe({
+  //     next: (cart) => {
+  //       this.cart = cart;
+  //       console.log('Cart loaded:', cart);
+  //     },
+  //     error: (err) => {
+  //       console.error('Error loading cart:', err);
+  //       // Handle error (e.g., show error message)
+  //     }
+  //   });
+  // }
 
   handleLogout() {
     this.closeMenus();
     this.auth.logout();
     this.loggedInUser = undefined;
+    this.cartService.notifyCartUpdated(); // <-- Add this line
+    this.cartCall();
     console.log(this.loggedInUser);
     console.log(this.auth.isAuthenticated());
   }
 
   hasRole(requiredRole: string) {
-    return !this.loggedInUser || this.auth.hasRole(requiredRole);
+    return this.auth.hasRole(requiredRole);
   }
 
-
-  // In your component
-  // txt = '';
-
-  // testAuth() {
-  //   this.accountService.testAuth().subscribe({
-  //     next: (response) => {
-  //       // Handle successful text response
-  //       this.txt = (response as { message: string }).message; // Type assertion
-  //       console.log('Authentication successful:', response);
-  //     },
-  //     error: (error) => {
-  //       // Handle error
-  //       this.txt = `Error: ${error.message || 'Unknown error'}`;
-  //       console.error('Authentication failed:', error);
-  //     }
-  //   });
-  // }
-
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
 
   openSigUPDialog(): void {
     this.dialog.open(SignUpRoleComponentComponent);

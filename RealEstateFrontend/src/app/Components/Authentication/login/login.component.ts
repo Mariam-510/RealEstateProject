@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { SignUpRoleComponentComponent } from '../sign-up-role-component/sign-up-role-component.component';
 import { AccountService } from '../../../Services/ApiServices/account.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { CartService } from '../../../Services/ApiServices/cart.service';
+
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, CommonModule, RouterModule],

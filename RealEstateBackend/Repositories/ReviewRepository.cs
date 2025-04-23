@@ -19,6 +19,7 @@ namespace RealEstate.Repositories
         {
             return _context.Reviews
                 .Include(r => r.Buyer)
+                .ThenInclude(b => b.Account)
                 .Include(r => r.Product)
                 .Where(r => r.IsDeleted == false)
                 .ToListAsync();
@@ -28,6 +29,7 @@ namespace RealEstate.Repositories
         {
             return _context.Reviews
                 .Include(r => r.Buyer)
+                .ThenInclude(b => b.Account)
                 .Include(r => r.Product)
                 .Where(r => r.IsDeleted == false && r.ProductId == productId)
                 .OrderByDescending(r => r.Date)
@@ -45,6 +47,7 @@ namespace RealEstate.Repositories
         {
             return _context.Reviews
                 .Include(r => r.Buyer)
+                .ThenInclude(b=>b.Account)
                 .Include(r => r.Product)
                 .Where(r => r.IsDeleted == false && r.BuyerId == buyerId)
                 .OrderByDescending(r => r.Date)
@@ -55,6 +58,7 @@ namespace RealEstate.Repositories
         {
             return await _context.Reviews
                 .Include(r => r.Buyer)
+                .ThenInclude(b => b.Account)
                 .Include(r => r.Product)
                 .Where(r => r.IsDeleted == false)
                 .FirstOrDefaultAsync(r => r.Id == id);

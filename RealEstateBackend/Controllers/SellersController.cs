@@ -166,6 +166,7 @@ namespace RealEstate.Controllers
                         UserId = updatedSeller.Id,
                         FirstName = updatedSeller.FirstName,
                         LastName = updatedSeller.LastName,
+                        ImageUrl = existingAccount.ImageUrl
                     };
 
                     var jwtToken = TokenService.CreateJWTToken(existingAccount, roles.ToList(), userClaims);

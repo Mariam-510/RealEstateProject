@@ -23,7 +23,8 @@ namespace RealEstate.JWT
                 new Claim(JwtRegisteredClaimNames.Email, appUser.Email),
                 new Claim("userId", userData.UserId.ToString()),
                 new Claim("firstName", userData.FirstName),
-                new Claim("lastName", userData.LastName ?? string.Empty)
+                new Claim("lastName", userData.LastName ?? string.Empty),
+                new Claim("imageUrl", userData.ImageUrl ?? string.Empty),
             };
 
             foreach (var role in roles)
@@ -38,7 +39,7 @@ namespace RealEstate.JWT
                 configuration["Jwt:Issuer"],
                 configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.Now.AddMinutes(5),
+                expires: DateTime.Now.AddHours(1),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
