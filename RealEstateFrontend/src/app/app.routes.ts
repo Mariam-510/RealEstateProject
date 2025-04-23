@@ -49,6 +49,7 @@ import { AddReviewComponent } from './Components/Order/add-review/add-review.com
 import { AllReviewComponent } from './Components/Buyer/all-review/all-review.component';
 import { AddSubscriptionplanComponent } from './Components/Admin/add-subscriptionplan/add-subscriptionplan.component';
 import { ViewAllComponent } from './Components/Products/All/view-all/view-all.component';
+import { TViewAllProductsComponent } from './Components/Products/ToBeEdited/t-view-all-products/t-view-all-products.component';
 
 
 //----------------------------------------------------------------------------------------
@@ -155,6 +156,7 @@ export const routes: Routes = [
 
   //---------------------------------------------------------------------------------------
   { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
+  { path: "t", component: TViewAllProductsComponent, title: "t" },
   { path: "**", component: NotFoundComponent },
 
 

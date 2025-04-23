@@ -15,7 +15,7 @@ namespace RealEstate.Models.Dtos.OrderItemDto
 
         public decimal Price { get; set; }
 
-        public bool IsDeleted { get; set; } = false;
+        public bool IsDeleted { get; set; }
 
         public int? CartId { get; set; }
 
@@ -26,5 +26,8 @@ namespace RealEstate.Models.Dtos.OrderItemDto
         public string? ProductName { get; set; }
         
         public string? ProductDescription { get; set; }
+
+        public string? ProductImage { get; set; }
+
     }
 }

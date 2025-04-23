@@ -105,11 +105,19 @@ namespace RealEstate.Controllers
 
 
         [HttpPut]
-        [Route("ClearCart/{cartId}")]
-        public async Task<IActionResult> ClearCart(int cartId)
+        [Route("ClearCart")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> ClearCart()
         {
+            string buyerIdStr = User.FindFirst("userId")?.Value;
 
-            var cart = await CartRepository.GetByIdAsync(cartId);
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
+            var cart = await CartRepository.GetByBuyerIdAsync(buyerId);
+            
             if (cart == null)
             {
                 return NotFound(new { message = "Cart not found" });

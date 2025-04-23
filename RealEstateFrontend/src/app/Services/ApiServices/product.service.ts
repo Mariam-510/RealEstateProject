@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../app.config';
@@ -31,6 +31,13 @@ export interface ProductDTO {
   isFavorite: boolean;
 }
 
+export interface ProductFilters {
+  name?: string;
+  sortPrice?: string;
+  category?: string;
+  sortQuantity?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -39,9 +46,24 @@ export class ProductService {
 
   constructor(private http: HttpClient) { }
 
-  // Get buyer's cart
+  // id
   getProductById(id: number): Observable<ProductDTO> {
     return this.http.get<ProductDTO>(`${this.apiUrl}/GetbyId/${id}`);
+  }
+
+  // all
+  getAllProducts(filters?: ProductFilters): Observable<ProductDTO[]> {
+    let params = new HttpParams();
+
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params = params.append(key, value);
+        }
+      });
+    }
+
+    return this.http.get<ProductDTO[]>(`${this.apiUrl}/GetAll`, { params });
   }
 
 

@@ -37,7 +37,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
       })
     );
 
-
     // console.log(this.cart$);
     // this.cart$.subscribe(cart => {
     //   if (cart) {
@@ -58,6 +57,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
         return of(null);
       })
     );
+  }
+
+  clearCart() {
+    this.cartService.clearCart().subscribe({
+      next: (response) => {
+        console.log('Cart cleared:', response.message);
+        console.log('Updated cart:', response.cartDto);
+        this.cartService.notifyCartUpdated(); // Update UI components
+      },
+      error: (err) => {
+        console.error('Error clearing cart:', err);
+      }
+    });
   }
 
   apiConfig = API_CONFIG;
@@ -94,35 +106,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
 
-
-  // ngOnInit() {
-  //   document.addEventListener('click', this.onClickOutside.bind(this));
-
-  //   this.auth.currentUser$.subscribe(user => {
-  //     if (user) {
-  //       this.loggedInUser = user;
-  //       console.log(this.loggedInUser)
-  //       // this.testAuth();
-  //       if (this.hasRole("Buyer")) {
-  //         this.loadCart();
-  //       }
-  //     }
-  //   });
-
-  // }
-
-  // loadCart(): void {
-  //   this.cartService.getCart().subscribe({
-  //     next: (cart) => {
-  //       this.cart = cart;
-  //       console.log('Cart loaded:', cart);
-  //     },
-  //     error: (err) => {
-  //       console.error('Error loading cart:', err);
-  //       // Handle error (e.g., show error message)
-  //     }
-  //   });
-  // }
 
   handleLogout() {
     this.closeMenus();

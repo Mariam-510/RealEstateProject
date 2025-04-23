@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { Product, SharedService } from '../../../../Services/shared.service';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
 import { FormsModule } from '@angular/forms';
+import { ProductDTO, ProductFilters, ProductService } from '../../../../Services/ApiServices/product.service';
+import { API_CONFIG } from '../../../../app.config';
 
 
 @Component({
@@ -14,8 +15,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class ViewAllComponent {
 
-  products: Product[] = [];
-  filteredProducts: Product[] = [];
+  apiConfig = API_CONFIG;
+
+  products: ProductDTO[] = [];
+  filteredProducts: ProductDTO[] = [];
 
   currentImageIndices: { [key: number]: number } = {};
   Math = Math;
@@ -51,10 +54,15 @@ export class ViewAllComponent {
 
   isSticky: boolean = false;
 
-  constructor(private _sharedService: SharedService, private elRef: ElementRef) { }
+  constructor(private elRef: ElementRef, private productService: ProductService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
-  ngOnInit(): void {
-    this.products = this._sharedService.products;
+  async ngOnInit() {
+
+    await this.loadProducts();
+
+    console.log(this.products);
 
     this.minPrice = Math.min(...this.products.map(p => p.price));
     this.maxPrice = Math.max(...this.products.map(p => p.price));
@@ -73,6 +81,30 @@ export class ViewAllComponent {
 
     this.applyFilters();
   }
+
+  async loadProducts(filters?: ProductFilters) {
+    try {
+      this.products = await this.productService.getAllProducts(filters).toPromise() ?? [];
+      console.log(this.products);
+      this.cdr.detectChanges();
+    } catch (err) {
+      console.error('Error loading products:', err);
+    }
+  }
+
+
+  // loadProducts(filters?: ProductFilters) {
+  //   this.productService.getAllProducts(filters).subscribe({
+  //     next: (response) => {
+  //       this.products = response;
+  //       console.log(response);
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: (err) => {
+  //       console.error('Error loading products:', err);
+  //     }
+  //   });
+  // }
 
   get currentCategoryCount(): number {
     if (!this.selectedCategory) return this.products.length;
@@ -117,7 +149,7 @@ export class ViewAllComponent {
           product.name.toLowerCase().includes(this.searchQuery.toLowerCase());
 
         const matchesCondition = this.selectedCondition === '' || product.isUsed === this.selectedCondition;
-        const matchesCategory = !this.selectedCategory || product.category === this.selectedCategory;
+        const matchesCategory = !this.selectedCategory || product.categoryName.toLowerCase() === this.selectedCategory.toLowerCase();
         const matchesPrice = product.price >= this.minPrice && product.price <= this.maxPrice;
         const matchesRating = this.selectedRating === 0 || (product.averageRating >= this.selectedRating && product.averageRating < (this.selectedRating + 1));
 
@@ -140,7 +172,7 @@ export class ViewAllComponent {
   get categoriesWithCounts() {
     const counts = new Map<string, number>();
     this.products.forEach(p => {
-      counts.set(p.category, (counts.get(p.category) || 0) + 1);
+      counts.set(p.categoryName, (counts.get(p.categoryName) || 0) + 1);
     });
     return Array.from(counts.entries()).map(([name, count]) => ({ name, count }));
   }
@@ -179,17 +211,9 @@ export class ViewAllComponent {
   toggleWishList(productId: number): void {
     const product = this.products.find(p => p.id === productId);
     if (product) {
-      product.wishlisted = !product.wishlisted;
+      product.isFavorite = !product.isFavorite;
     }
   }
-
-  // @HostListener('document:click', ['$event'])
-  // onDocumentClick(event: MouseEvent): void {
-  //   // Close color list when clicking outside
-  //   if (!this.elRef.nativeElement.contains(event.target)) {
-  //     this.openedProductId = null;
-  //   }
-  // }
 
   toggleColorList(productId: number): void {
     this.openedProductId = this.openedProductId === productId ? null : productId;
@@ -207,17 +231,9 @@ export class ViewAllComponent {
     this.applyFilters();
   }
 
-  addToCart(productId: number): void {
-    const product = this.products.find(p => p.id === productId);
-    if (product) {
-      // Add your cart logic here
-      console.log('Added to cart:', product.name);
-    }
-  }
-
   nextImage(productId: number): void {
     const product = this.products.find(p => p.id === productId);
-    if (product && this.currentImageIndices[productId] < product.images.length - 1) {
+    if (product && this.currentImageIndices[productId] < product.productimage.length - 1) {
       this.currentImageIndices[productId]++;
     }
   }

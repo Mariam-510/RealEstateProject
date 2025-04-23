@@ -176,7 +176,7 @@ namespace RealEstate.Controllers
                 }
             }
 
-            return Ok(new { message = "Product List is :", ProductDtoList });
+            return Ok(ProductDtoList);
         }
 
 

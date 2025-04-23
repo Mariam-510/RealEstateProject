@@ -14,6 +14,11 @@ export interface CartDto {
   orderItemDtos?: OrderItemDto[];
 }
 
+export interface ClearCartResponse {
+  message: string;
+  cartDto: CartDto;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -33,6 +38,14 @@ export class CartService {
   // Get buyer's cart
   getCart(): Observable<CartDto> {
     return this.http.get<CartDto>(`${this.apiUrl}/Buyer`);
+  }
+
+  //clear cart
+  clearCart(): Observable<ClearCartResponse> {
+    return this.http.put<ClearCartResponse>(
+      `${this.apiUrl}/ClearCart`,
+      {}  // Empty body for PUT request
+    );
   }
 
 }
