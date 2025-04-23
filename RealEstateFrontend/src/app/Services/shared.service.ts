@@ -35,6 +35,8 @@ export interface Product {
   dateAdded: Date;
   reviewCount: number;
   wishlisted: boolean;
+  category: string;
+  colors: string[];
 }
 
 @Injectable({
@@ -227,7 +229,9 @@ export class SharedService {
       averageRating: 5,
       dateAdded: new Date("2025-04-13"),
       reviewCount: 88,
-      wishlisted: true
+      wishlisted: true,
+      category: 'Living Room Furniture',
+      colors: ['black', 'gray', '#2a5f8b', '#4a7d5e', 'black', 'gray', '#c38e79', '#2a5f8b', '#4a7d5e']
     },
     {
       id: 2,
@@ -244,7 +248,9 @@ export class SharedService {
       averageRating: 2,
       dateAdded: new Date("2023-07-07"),
       reviewCount: 33,
-      wishlisted: true
+      wishlisted: true,
+      category: 'Living Room Furniture',
+      colors: ['black', 'gray', '#2a5f8b', '#4a7d5e', 'black', 'gray', '#c38e79', '#2a5f8b', '#4a7d5e']
     },
     {
       id: 3,
@@ -262,10 +268,11 @@ export class SharedService {
       averageRating: 3.5,
       dateAdded: new Date("2025-04-04"),
       reviewCount: 10,
-      wishlisted: true
+      wishlisted: true,
+      category: 'Living Room Furniture',
+      colors: ['black', 'gray', '#2a5f8b', '#4a7d5e', 'black', 'gray', '#c38e79', '#2a5f8b', '#4a7d5e']
     },
   ]
-
 
   HomePageProperties: PropertyDto[] = [
     {
@@ -333,8 +340,8 @@ export class SharedService {
   products: Product[] = [
     {
       id: 1,
-      name: 'Jacklinnnnnnnnn sddd dsdsd sd sd sd sdfsdf',
-      description: 'Upholstered King Size Bed with Tufted Headboarddddddddddddddddddddddddddd',
+      name: 'aaah asdd asd ddddddddd fffffff ddddddd eeeeeee qaqqq',
+      description: 'Upholstered King Size Bed with Tufted Headboardddd ddddddddd  dddddddddddddd',
       price: 700,
       quantity: 100,
       isUsed: false,
@@ -346,7 +353,9 @@ export class SharedService {
       averageRating: 5,
       dateAdded: new Date("2025-04-13"),
       reviewCount: 88,
-      wishlisted: true
+      wishlisted: true,
+      category: 'Beds',
+      colors: ['black', 'gray', '#2a5f8b', '#4a7d5e', 'black', 'gray', '#c38e79', '#2a5f8b', '#4a7d5e']
     },
     {
       id: 2,
@@ -363,7 +372,9 @@ export class SharedService {
       averageRating: 2,
       dateAdded: new Date("2023-07-07"),
       reviewCount: 33,
-      wishlisted: true
+      wishlisted: true,
+      category: 'Sofas',
+      colors: ['black', 'gray', '#2a5f8b', '#4a7d5e', 'black', 'gray', '#c38e79', '#2a5f8b', '#4a7d5e']
     },
     {
       id: 3,
@@ -381,7 +392,9 @@ export class SharedService {
       averageRating: 3.5,
       dateAdded: new Date("2025-04-04"),
       reviewCount: 10,
-      wishlisted: true
+      wishlisted: true,
+      category: 'Dining Sets',
+      colors: ['black', 'gray', '#2a5f8b', '#4a7d5e', 'black', 'gray', '#c38e79', '#2a5f8b', '#4a7d5e']
     },
     {
       id: 4,
@@ -398,7 +411,9 @@ export class SharedService {
       averageRating: 5,
       dateAdded: new Date("2023-01-01"),
       reviewCount: 88,
-      wishlisted: false
+      wishlisted: false,
+      category: 'Chairs',
+      colors: ['black', 'gray', '#2a5f8b', '#4a7d5e', 'black', 'gray', '#c38e79', '#2a5f8b', '#4a7d5e']
     },
     {
       id: 5,
@@ -415,7 +430,9 @@ export class SharedService {
       averageRating: 2,
       dateAdded: new Date("2023-07-07"),
       reviewCount: 33,
-      wishlisted: false
+      wishlisted: false,
+      category: 'Tables',
+      colors: ['black', 'gray', '#2a5f8b', '#4a7d5e', 'black', 'gray', '#c38e79', '#2a5f8b', '#4a7d5e']
     },
     {
       id: 6,
@@ -433,7 +450,9 @@ export class SharedService {
       averageRating: 3.5,
       dateAdded: new Date("2025-04-04"),
       reviewCount: 10,
-      wishlisted: false
+      wishlisted: false,
+      category: 'Wardrobe',
+      colors: ['black', 'gray', '#2a5f8b', '#4a7d5e', 'black', 'gray', '#c38e79', '#2a5f8b', '#4a7d5e']
     },
     {
       id: 7,
@@ -450,7 +469,9 @@ export class SharedService {
       averageRating: 5,
       dateAdded: new Date("2023-01-01"),
       reviewCount: 88,
-      wishlisted: true
+      wishlisted: true,
+      category: 'TV Units',
+      colors: ['black', 'gray', '#2a5f8b', '#4a7d5e', 'black', 'gray', '#c38e79', '#2a5f8b', '#4a7d5e']
     },
     {
       id: 8,
@@ -467,7 +488,9 @@ export class SharedService {
       averageRating: 2,
       dateAdded: new Date("2023-07-07"),
       reviewCount: 33,
-      wishlisted: true
+      wishlisted: true,
+      category: 'Sofas',
+      colors: ['black', 'gray', '#2a5f8b', '#4a7d5e', 'black', 'gray', '#c38e79', '#2a5f8b', '#4a7d5e']
     },
     {
       id: 9,
@@ -485,7 +508,9 @@ export class SharedService {
       averageRating: 3.5,
       dateAdded: new Date("2025-04-04"),
       reviewCount: 10,
-      wishlisted: false
+      wishlisted: false,
+      category: 'Beds',
+      colors: ['black', 'gray', '#2a5f8b', '#4a7d5e', 'black', 'gray', '#c38e79', '#2a5f8b', '#4a7d5e']
     },
   ];
 
