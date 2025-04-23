@@ -266,3 +266,8 @@
   background-color: #c38e79;
   margin-top: -0.5rem;
 }
+
+
+.pagination {
+  cursor: pointer;
+}

@@ -5,6 +5,9 @@ import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
 import { FormsModule } from '@angular/forms';
 import { ProductDTO, ProductFilters, ProductService } from '../../../../Services/ApiServices/product.service';
 import { API_CONFIG } from '../../../../app.config';
+import { AuthService } from '../../../../Services/ApiServices/auth.service';
+import { WishListService } from '../../../../Services/ApiServices/wish-list.service';
+import { ToastrService } from '../../../../Services/toastr.service';
 
 
 @Component({
@@ -55,7 +58,8 @@ export class ViewAllComponent {
   isSticky: boolean = false;
 
   constructor(private elRef: ElementRef, private productService: ProductService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef, private toastr: ToastrService, private auth: AuthService,
+    private wishListService: WishListService,
   ) { }
 
   async ngOnInit() {
@@ -92,19 +96,6 @@ export class ViewAllComponent {
     }
   }
 
-
-  // loadProducts(filters?: ProductFilters) {
-  //   this.productService.getAllProducts(filters).subscribe({
-  //     next: (response) => {
-  //       this.products = response;
-  //       console.log(response);
-  //       this.cdr.detectChanges();
-  //     },
-  //     error: (err) => {
-  //       console.error('Error loading products:', err);
-  //     }
-  //   });
-  // }
 
   get currentCategoryCount(): number {
     if (!this.selectedCategory) return this.products.length;
@@ -208,11 +199,31 @@ export class ViewAllComponent {
     this.applyFilters();
   }
 
-  toggleWishList(productId: number): void {
-    const product = this.products.find(p => p.id === productId);
-    if (product) {
-      product.isFavorite = !product.isFavorite;
-    }
+  // toggleWishList(productId: number): void {
+  //   const product = this.products.find(p => p.id === productId);
+  //   if (product) {
+  //     product.isFavorite = !product.isFavorite;
+  //   }
+  // }
+
+  // In your component
+  toggleWishList(product: any) {
+    // Optimistic UI update
+    const previousState = product.isFavorite;
+    product.isFavorite = !previousState;
+
+    this.wishListService.toggleProductWishlist(product.id).subscribe({
+      next: (response) => {
+        this.toastr.success(response);
+        // Optional: Update with actual API state if needed
+      },
+      error: (err) => {
+        // Revert UI state on error
+        product.isFavorite = previousState;
+        this.toastr.error('Error updating wishlist');
+        console.error(err);
+      }
+    });
   }
 
   toggleColorList(productId: number): void {
@@ -360,8 +371,19 @@ export class ViewAllComponent {
 
       this.lastScrollTop = scrollY; // Update last scroll position
     }
+  }
 
 
 
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
   }
 }

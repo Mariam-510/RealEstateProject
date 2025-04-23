@@ -335,14 +335,20 @@
 
             <div class="position-absolute top-0 end-0 m-2 z-2 d-flex gap-2">
               <!-- Wishlist Button -->
-              <a (click)="toggleWishList(product.id)" class="d-inline-block" style="cursor: pointer;" role="button">
+              <a *ngIf="hasRoleOrNoUser('Buyer')" (click)="toggleWishList(product)" class="d-inline-block"
+                style="cursor: pointer;" role="button">
                 <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;">
-                  <i class="bi {{ product.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart text-white' }}"></i>
+                  <!-- <i class="bi {{ product.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart text-white' }}"></i> -->
+                  <i class="bi" [ngClass]="{
+                        'bi-heart-fill text-danger': product?.isFavorite && hasUser(),
+                        'bi-heart text-white': !product?.isFavorite || !hasUser()
+                      }"></i>
                 </span>
               </a>
 
               <!-- Add to Cart Button -->
-              <a *ngIf="product.quantity > 0" [routerLink]="['/products', product.id]" style="cursor: pointer;">
+              <a *ngIf="product.quantity > 0 && hasRoleOrNoUser('Buyer')" [routerLink]="['/products', product.id]"
+                style="cursor: pointer;">
                 <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;"><i class="bi bi-cart3"></i></span>
               </a>
             </div>
@@ -396,69 +402,71 @@
           </div>
 
           <div class="card-body p-2">
-            <a [routerLink]="['/products', product.id]" class="d-block text-decoration-none"
-              style="position: relative; color: inherit;">
+            <!-- <a [routerLink]="['/products', product.id]" class="d-block text-decoration-none"
+              style="position: relative; color: inherit;"> -->
 
-              <h5 class="card-title mb-1">
-                {{ product.name }}
-              </h5>
-              <!-- <p class="card-text text-muted small mb-2" style="min-height: 42px;">
+            <h5 class="card-title mb-1">
+              {{ product.name }}
+            </h5>
+            <!-- <p class="card-text text-muted small mb-2" style="min-height: 42px;">
                             {{ product.description.length > 60 ? (product.description | slice:0:60) + '...' :
                             product.description }}
                         </p> -->
 
-              <!-- Colors -->
-              <div class="d-flex gap-2 flex-wrap my-3">
-                <!-- First 7 colors -->
-                <div *ngFor="let productStockDto of product.productStockDtos?.slice(0,5); let i = index"
-                  class="color-swatch hover-scale rounded-5" [class.selected]="i === 0"
-                  [style.background]="productStockDto.color" [class.out-of-stock]="productStockDto.quantity === 0">
+            <!-- Colors -->
+            <div class="d-flex gap-2 flex-wrap my-3">
+              <!-- First 7 colors -->
+              <div *ngFor="let productStockDto of product.productStockDtos?.slice(0,4); let i = index"
+                class="color-swatch hover-scale rounded-5" [class.selected]="i === 0"
+                [style.background]="productStockDto.color" [class.out-of-stock]="productStockDto.quantity === 0">
 
-                  <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+                <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+              </div>
+
+              <!-- Enhanced remaining colors container -->
+              <div *ngIf="(product.productStockDtos?.length ??0) > 4" class="position-relative d-inline-block">
+                <div
+                  class="color-swatch-num mt-1 d-flex align-items-center justify-content-center position-relative fw-semibold"
+                  (click)="toggleColorList(product.id)">
+
+                  + {{ (product.productStockDtos?.length ?? 0) - 4 }} more
                 </div>
 
-                <!-- Enhanced remaining colors container -->
-                <div *ngIf="(product.productStockDtos?.length ??0) > 4" class="position-relative d-inline-block">
-                  <div
-                    class="color-swatch-num mt-1 d-flex align-items-center justify-content-center position-relative fw-semibold"
-                    (click)="toggleColorList(product.id)">
+                <!-- Hidden color list that appears on hover -->
+                <div class="color-hover-container" *ngIf="openedProductId === product.id">
+                  <div class="d-flex gap-2 flex-column justify-content-center p-2">
+                    <div *ngFor="let productStockDto of product.productStockDtos?.slice(4)"
+                      class="color-swatch rounded-5" [style.background]="productStockDto.color">
 
-                    + {{ (product.productStockDtos?.length ?? 0) - 4 }} more
-                  </div>
-
-                  <!-- Hidden color list that appears on hover -->
-                  <div class="color-hover-container" *ngIf="openedProductId === product.id">
-                    <div class="d-flex gap-2 flex-column justify-content-center p-2">
-                      <div *ngFor="let productStockDto of product.productStockDtos?.slice(4)"
-                        class="color-swatch rounded-5" [style.background]="productStockDto.color">
-                      </div>
+                      <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-bold text-caffe">EGP {{ product.price | number }}</span>
-                <span class="badge text-white" [style.background-color]="product.isUsed ? '#de8332' : '#2a5f8b'">
-                  {{ product.isUsed ? 'Used' : 'New' }}
-                </span>
-              </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-semibold text-muted" style="font-size: 1.25rem;">EGP {{ product.price | number }}</span>
+              <span class=" badge text-white" [style.background-color]="product.isUsed ? '#de8332' : '#2a5f8b'">
+                {{ product.isUsed ? 'Used' : 'New' }}
+              </span>
+            </div>
 
-              <div class="d-flex justify-content-between align-items-center mt-2">
-                <div class="text-warning small">
-                  <ng-container *ngFor="let star of [].constructor(5); let i = index">
-                    <i class="star bi" [ngClass]="{
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <div class="text-warning small">
+                <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                  <i class="star bi" [ngClass]="{
                                             'bi-star-fill': i < Math.floor(product.averageRating),
                                             'bi-star-half': i === Math.floor(product.averageRating) && product.averageRating % 1 !== 0,
                                             'bi-star': i >= Math.ceil(product.averageRating)
                                             }">
-                    </i>
-                  </ng-container>
-                </div>
-                <small class="text-muted">{{ product.numberOfReviews }} Reviews</small>
+                  </i>
+                </ng-container>
               </div>
+              <small class="text-muted">{{ product.numberOfReviews }} Reviews</small>
+            </div>
 
-            </a>
+            <!-- </a> -->
           </div>
 
         </div>
@@ -479,7 +487,7 @@
                 <!-- Wishlist Button -->
                 <div class="position-absolute top-0 end-0 m-2 z-2 d-flex gap-2">
                   <!-- Wishlist Button -->
-                  <a (click)="toggleWishList(product.id)" class="d-inline-block" style="cursor: pointer;" role="button">
+                  <a (click)="toggleWishList(product)" class="d-inline-block" style="cursor: pointer;" role="button">
                     <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;">
                       <i class="bi {{ product.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart text-white' }}"></i>
                     </span>
