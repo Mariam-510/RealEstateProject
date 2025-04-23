@@ -283,16 +283,6 @@
     opacity: 0.5;
   }
 
-  /* .out-of-stock-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(45deg,
-        transparent 45%,
-        rgba(255, 0, 0, 0.3) 46%,
-        rgba(255, 0, 0, 0.3) 54%,
-        transparent 55%);
-  } */
-
   .out-of-stock-overlay {
     position: absolute;
     inset: 0;
@@ -306,10 +296,9 @@
     left: 50%;
     width: 12%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0);
     transform: translate(-50%, -50%) rotate(45deg);
   }
-
 }
 
 .status-overlay {

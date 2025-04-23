@@ -179,6 +179,7 @@ namespace RealEstate.Controllers
 
 
         [HttpPut]
+        [Route("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] EditOrderItemDto editOrderItemDto)
         {
             if (!ModelState.IsValid)
@@ -198,11 +199,6 @@ namespace RealEstate.Controllers
             {
                 return NotFound("Product not found.");
             }
-
-            //if (editOrderItemDto.Quantity > product.Quantity)
-            //{
-            //    return BadRequest(new { message = "Quantity exceeds available stock." });
-            //}
 
             var productStock = await ProductStockRepository.GetByColorAsync(product.Id, editOrderItemDto.Color);
             if (productStock == null)

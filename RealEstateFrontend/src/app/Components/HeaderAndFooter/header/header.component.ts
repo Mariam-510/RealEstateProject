@@ -164,30 +164,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.showCartBackdrop = false;
   }
 
-  // private updateCartCount() {
-  //   // this.cartCount = this.cartItems.reduce((total, item) => total + item.quantity, 0);
-  //   this.cartCount = this.cartItems.length;
-  // }
-
-  // increaseQuantity(item: any) {
-  //   item.quantity++;
-  //   this.updateCartTotal();
-  //   this.updateCartCount();
-  // }
-
-  // decreaseQuantity(item: any) {
-  //   if (item.quantity > 1) {
-  //     item.quantity--;
-  //     this.updateCartTotal();
-  //     this.updateCartCount();
-  //   }
-  // }
-
-  // private updateCartTotal() {
-  //   this.cartTotal = this.cartItems.reduce((total, item) =>
-  //     total + (item.price * item.quantity), 0);
-  // }
-
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
     if (!this.elRef.nativeElement.contains(event.target)) {

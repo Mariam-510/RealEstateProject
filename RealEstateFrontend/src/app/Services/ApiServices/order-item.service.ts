@@ -29,6 +29,16 @@ export interface CreateOrderItemResponse {
   orderItemDto: OrderItemDto;
 }
 
+export interface EditOrderItemDto {
+  Color: string;
+  Quantity: number;
+}
+
+export interface EditOrderItemResponse {
+  message: string;
+  orderItemDto: OrderItemDto;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -41,6 +51,21 @@ export class OrderItemService {
     return this.http.post<CreateOrderItemResponse>(
       `${this.apiUrl}`,
       request
+    );
+  }
+
+  // Add to your OrderItemService
+  deleteOrderItem(id: number): Observable<any> {
+    return this.http.delete<any>(
+      `${this.apiUrl}/${id}`
+    );
+  }
+
+  // Add to your OrderItemService
+  updateOrderItem(id: number, dto: EditOrderItemDto): Observable<EditOrderItemResponse> {
+    return this.http.put<EditOrderItemResponse>(
+      `${this.apiUrl}/${id}`,
+      dto
     );
   }
 
