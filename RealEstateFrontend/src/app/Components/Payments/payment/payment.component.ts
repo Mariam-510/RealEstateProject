@@ -253,7 +253,11 @@ export class PaymentComponent implements OnInit, AfterViewInit {
       console.log('Order placed successfully:', response);
 
       this.cartService.notifyCartUpdated();
-      this.router.navigate(['/checkout/confirmation']);
+      // this.router.navigate(['/checkout/confirmation']);
+      // Navigate with order ID in state
+      this.router.navigate(['/checkout/confirmation'], {
+        queryParams: { orderId: response.id }
+      });
 
     } catch (error) {
       console.error('Error placing order:', error);
