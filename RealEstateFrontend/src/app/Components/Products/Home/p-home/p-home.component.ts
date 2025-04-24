@@ -6,6 +6,11 @@ import { FormsModule } from '@angular/forms';
 import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
 import { CatSliderComponent } from '../Sliders/cat-slider/cat-slider.component';
 import { Product, SharedService } from '../../../../Services/shared.service';
+import { ProductDTO, ProductFilters, ProductService } from '../../../../Services/ApiServices/product.service';
+import { AuthService } from '../../../../Services/ApiServices/auth.service';
+import { WishListService } from '../../../../Services/ApiServices/wish-list.service';
+import { ToastrService } from '../../../../Services/toastr.service';
+import { API_CONFIG } from '../../../../app.config';
 
 @Component({
   selector: 'app-p-home',
@@ -15,18 +20,39 @@ import { Product, SharedService } from '../../../../Services/shared.service';
 })
 export class PHomeComponent implements OnInit {
 
-  constructor(private _sharedService: SharedService, private cdr: ChangeDetectorRef) { }
+  constructor(private _sharedService: SharedService, private cdr: ChangeDetectorRef, private productService: ProductService,
+    private auth: AuthService, private wishListService: WishListService, private toastr: ToastrService) { }
 
-  products: Product[] = [];
+  apiConfig = API_CONFIG;
+  products: ProductDTO[] = [];
+  recentProducts: ProductDTO[] = [];
+  topRatedProducts: ProductDTO[] = [];
   hoverStates: { [key: number]: boolean } = {};
   currentImageIndices: { [key: number]: number } = {};
   currentImageIndicesTopRated: { [key: number]: number } = {};
 
-  ngOnInit(): void {
+  Math = Math;
+  activeSlide = 0;
+  private sliderAutoScrollSubscription: Subscription | null = null;
+  private sliderAutoScrollInterval = 3000;
+
+  sliderOptions: Options = {
+    floor: 0,
+    ceil: 1000000,
+    translate: () => '',          // Remove value labels
+    hideLimitLabels: true,        // Hide default min/max labels (0 and 1,000,000)
+    hidePointerLabels: true,      // Hide handle labels
+    showTicks: false,             // Remove tick marks
+    showTicksValues: false        // Remove numbers under ticks
+  };
+
+  async ngOnInit() {
+
+    await this.loadProducts();
+    this.getRecentProducts();
+    this.getTopRatedProducts();
 
     this.sliderStartAutoScroll();
-
-    this.products = this._sharedService.products;
 
     this.products.forEach(product => {
       this.currentImageIndices[product.id] = 0;
@@ -47,22 +73,53 @@ export class PHomeComponent implements OnInit {
     this.applyFilters();
   }
 
-  sliderOptions: Options = {
-    floor: 0,
-    ceil: 1000000,
-    translate: () => '',          // Remove value labels
-    hideLimitLabels: true,        // Hide default min/max labels (0 and 1,000,000)
-    hidePointerLabels: true,      // Hide handle labels
-    showTicks: false,             // Remove tick marks
-    showTicksValues: false        // Remove numbers under ticks
-  };
+  async loadProducts(filters?: ProductFilters) {
+    try {
+      this.products = await this.productService.getAllProducts(filters).toPromise() ?? [];
+      console.log(this.products);
+      this.cdr.detectChanges();
+    } catch (err) {
+      console.error('Error loading products:', err);
+    }
+  }
 
+  private getRecentProducts(): void {
+    if (!this.products.length) return;
+  
+    // Find the latest date
+    const latestDate = new Date(Math.max(...this.products.map(p => new Date(p.dateAdded).getTime())));
+    
+    // Calculate 14 days before latest date
+    const cutoffDate = new Date(latestDate);
+    cutoffDate.setDate(latestDate.getDate() - 14);
+  
+    // Filter and sort
+    this.recentProducts = this.products
+      .filter(product => {
+        const productDate = new Date(product.dateAdded);
+        return productDate >= cutoffDate && productDate <= latestDate;
+      })
+      .sort((a, b) => {
+        // Sort by most recent first (descending order)
+        return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
+      });
+  }
 
+  private getTopRatedProducts(): void {
+    // Sort products by averageRating descending, then by number of reviews
+    this.topRatedProducts = [...this.products].sort((a, b) => {
+      // First sort by rating
+      if (b.averageRating !== a.averageRating) {
+        return b.averageRating - a.averageRating;
+      }
+      // If ratings are equal, sort by number of reviews
+      return b.numberOfReviews - a.numberOfReviews;
+    });
+  
+    // Optional: Take only top 10 products
+    this.topRatedProducts = this.topRatedProducts.slice(0, 8);
+  }
 
-  Math = Math;
-  activeSlide = 0;
-  private sliderAutoScrollSubscription: Subscription | null = null;
-  private sliderAutoScrollInterval = 3000;
 
   slides = [
     {
@@ -140,13 +197,14 @@ export class PHomeComponent implements OnInit {
   canScrollLeftTopRatedProduct = false;
   canScrollRightTopRatedProduct = true;
 
-  filteredProducts: Product[] = this.products;
+  filteredProducts: ProductDTO[] = this.products;
 
   selectedCategory: string = '';
   selectedState: string = '';
   selectedRating: number = 0;
   minPrice = 0;
   maxPrice = 1000000;
+  openedProductId: number | null = null;
 
 
   toggleCategory(category: string): void {
@@ -162,6 +220,10 @@ export class PHomeComponent implements OnInit {
   toggleRating(rating: number): void {
     this.selectedRating = this.selectedRating === rating ? 0 : rating;
     this.applyFilters();
+  }
+
+  toggleColorList(productId: number): void {
+    this.openedProductId = this.openedProductId === productId ? null : productId;
   }
 
   applyFilters(): void {
@@ -227,7 +289,7 @@ export class PHomeComponent implements OnInit {
     const product = this.products.find(p => p.id === productId);
     if (product) {
       this.currentImageIndices[productId] =
-        (this.currentImageIndices[productId] + 1) % product.images.length;
+        (this.currentImageIndices[productId] + 1) % product.productimage.length;
     }
   }
 
@@ -235,7 +297,7 @@ export class PHomeComponent implements OnInit {
     const product = this.products.find(p => p.id === productId);
     if (product) {
       this.currentImageIndices[productId] =
-        (this.currentImageIndices[productId] - 1 + product.images.length) % product.images.length;
+        (this.currentImageIndices[productId] - 1 + product.productimage.length) % product.productimage.length;
     }
   }
 
@@ -243,7 +305,7 @@ export class PHomeComponent implements OnInit {
     const product = this.products.find(p => p.id === productId);
     if (product) {
       this.currentImageIndicesTopRated[productId] =
-        (this.currentImageIndicesTopRated[productId] + 1) % product.images.length;
+        (this.currentImageIndicesTopRated[productId] + 1) % product.productimage.length;
     }
   }
 
@@ -251,15 +313,27 @@ export class PHomeComponent implements OnInit {
     const product = this.products.find(p => p.id === productId);
     if (product) {
       this.currentImageIndicesTopRated[productId] =
-        (this.currentImageIndicesTopRated[productId] - 1 + product.images.length) % product.images.length;
+        (this.currentImageIndicesTopRated[productId] - 1 + product.productimage.length) % product.productimage.length;
     }
   }
 
-  toggleWishList(productId: number) {
-    const product = this.products.find(p => p.id === productId);
-    if (product) {
-      product.wishlisted = !product.wishlisted;
-    }
+  toggleWishList(product: any) {
+    // Optimistic UI update
+    const previousState = product.isFavorite;
+    product.isFavorite = !previousState;
+
+    this.wishListService.toggleProductWishlist(product.id).subscribe({
+      next: (response) => {
+        this.toastr.success(response);
+        // Optional: Update with actual API state if needed
+      },
+      error: (err) => {
+        // Revert UI state on error
+        product.isFavorite = previousState;
+        this.toastr.error('Error updating wishlist');
+        console.error(err);
+      }
+    });
   }
 
   addToCart(productId: number) {
@@ -267,6 +341,36 @@ export class PHomeComponent implements OnInit {
     if (product) {
       // this.cartService.addToCart(product);
     }
+  }
+
+  shareItem(item: any): void {
+    const shareText = `Check out this product: ${item.name} - ${item.description}. 
+    Category: ${item.category?.name || 'General'}
+    Price: EGP ${item.price} 
+    Condition: ${item.isUsed ? 'Used' : 'New'}`;
+    if (navigator.share) {
+      navigator.share({
+        title: item.title,
+        text: shareText,
+        url: window.location.href
+      }).then(() => console.log('Shared successfully'))
+        .catch(err => console.error('Sharing failed', err));
+    } else {
+      // Fallback for browsers that don’t support navigator.share
+      console.error(`Copy and share this: ${shareText}`);
+    }
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
+  }
+
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
   }
 
   // isNewArrival(dateAdded: Date | string): boolean {

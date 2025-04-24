@@ -169,161 +169,147 @@
 <app-cat-slider></app-cat-slider>
 
 <!-- new arrivals products -->
-<!-- style="width: 82%" -->
 <div class="container my-5" style="width: 87%">
     <h2 class="text-center fw-bold mb-4">New Arrivals</h2>
     <div class="section-underline mx-auto mb-4"></div>
 
     <div class="position-relative">
-        <!-- [ngClass]="{'d-none': !canScrollLeftProduct}" -->
-        <!-- [ngClass]="{'disabled': !canScrollLeftProduct}" -->
         <button class="carousel-btn left" [disabled]="!canScrollLeftProduct" (click)="scrollLeft()">
             <i class="bi bi-chevron-left"></i>
         </button>
 
-        <!-- [ngClass]="{'': !canScrollLeftProduct}" -->
         <div class="hide-scrollbar d-flex overflow-auto gap-3 px-2" #slider (scroll)="checkScroll()">
 
-            <!-- <div class="card flex-shrink-0" style="width: 16rem;">
-        <div class="position-relative">
-          <span class="badge bg-danger position-absolute top-0 start-0 m-2 z-1">Best Seller</span>
-          <div id="carousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-              <div class="carousel-item active">
-                <img src="https://wasilaah.com/cdn/shop/products/IMG_9996.jpg?v=1679343647&width=2048" height="255" class="d-block w-100" alt="...">
-              </div>
-              <div class="carousel-item">
-                <img src="https://babymore.co.uk/wp-content/uploads/2023/02/Mona-2-Piece-Room-Set-GREY-1-scaled.jpg" height="255" class="d-block w-100" alt="...">
-              </div>
-              <div class="carousel-item">
-                <img src="https://wasilaah.com/cdn/shop/products/IMG_9996.jpg?v=1679343647&width=2048" height="255" class="d-block w-100" alt="...">
-              </div>
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon small"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next">
-              <span class="carousel-control-next-icon small"></span>
-            </button>
-          </div>
-        </div>
-        <div class="card-body p-2">
-          <h5 class="card-title mb-1">Jacklin</h5>
-          <p class="card-text text-muted small">Upholstered King Size Bed with Tufted Headboard</p>
-          <div class="d-flex align-items-center gap-2">
-            <span class="fw-bold text-dark">EGP 22000</span>
-          </div>
-          <div class="d-flex align-items-center mt-1">
-            <div class="text-warning small">★★★★★</div>
-            <small class="text-muted ms-2">88 Reviews</small>
-          </div>
-        </div>
-      </div> -->
-
-
-
-            @for(product of products; track product.id)
+            @for(product of recentProducts; track product.id)
             {
-            <!-- style="width: 18rem; position: relative;" -->
             <div class="card flex-shrink-0" style="width: 19.3rem; position: relative;">
                 <div class="cardHeader position-relative">
 
-                    <!-- <div class="d-flex flex-wrap gap-2 position-absolute top-0 start-0 p-2 z-2">
-            @if (isNewArrival(product.dateAdded)) {
-              <span class="badge bg-danger">New Arrival</span>
-            }
-
-            <span class="badge" [ngClass]="product.quantity > 0 ? 'bg-success' : 'bg-danger'">
-              {{ product.quantity > 0 ? 'In Stock' : 'Out of Stock' }}
-            </span>
-          
-            <span class="badge" [ngClass]="product.isUsed ? 'bg-secondary' : 'bg-primary'">
-              {{ product.isUsed ? 'Used' : 'New' }}
-            </span>
-          </div> -->
-
-                    <!-- <span class="badge bg-dark bg-opacity-50 position-absolute top-0 start-0 m-2 z-2" style="font-size: 0.9rem;">{{ product.averageRating }} <i class="bi bi-star-fill text-warning"></i></span> -->
-                    @if (product.wishlisted)
-                    {
-                    <a (click)="toggleWishList(product.id)" style="cursor: pointer;">
-                        <span class="badge bg-dark bg-opacity-50 position-absolute top-0 start-0 m-2 z-2"
-                            style="font-size: 0.9rem;"><i class="bi bi-heart-fill text-danger"></i></span>
-                    </a>
-                    }
-                    @else {
-                    <a (click)="toggleWishList(product.id)" style="cursor: pointer;">
-                        <span class="badge bg-dark bg-opacity-50 position-absolute top-0 start-0 m-2 z-2"
-                            style="font-size: 0.9rem;"><i class="bi bi-heart text-danger"></i></span>
-                    </a>
-                    }
-
-                    <a (click)="addToCart(product.id)" style="cursor: pointer;">
-                        <span class="badge bg-dark bg-opacity-50 position-absolute bottom-0 end-0 m-2 z-2"
-                            style="font-size: 1rem;"><i class="bi bi-cart3"></i></span>
-                    </a>
-
-                    <!-- <span class="badge bg-caffe position-absolute top-0 start-0 z-2" style="margin: 0.5rem 5rem;">{{ product.isUsed ? 'Used' : 'New' }}</span>
-          @if (isNewArrival(product.dateAdded))
-          {
-            <span class="badge bg-danger position-absolute top-0 start-0 z-2" style="margin: 0.5rem 8.5rem;">New Arrival</span>
-          } -->
-
+        
+                    <span class="badge position-absolute bg-dark bg-opacity-50 fw-semibold top-0 start-0 m-2 z-2"
+                      style="font-size: 0.88rem;">
+                      {{ product.categoryName }}
+                    </span>
+        
+                    <div class="position-absolute top-0 end-0 m-2 z-2 d-flex gap-2">
+                      <a *ngIf="hasRoleOrNoUser('Buyer')" (click)="toggleWishList(product)" class="d-inline-block"
+                        style="cursor: pointer;" role="button">
+                        <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;">
+                          <i class="bi" [ngClass]="{
+                                'bi-heart-fill text-danger': product?.isFavorite && hasUser(),
+                                'bi-heart text-white': !product?.isFavorite || !hasUser()
+                              }"></i>
+                        </span>
+                      </a>
+        
+                      <a *ngIf="product.quantity > 0 && hasRoleOrNoUser('Buyer')" [routerLink]="['/products', product.id]"
+                        style="cursor: pointer;">
+                        <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;"><i class="bi bi-cart3"></i></span>
+                      </a>
+                    </div>
+        
+        
+                    <!-- Image Carousel -->
                     <div class="position-relative overflow-hidden">
-
-                        <a [routerLink]="['/product', product.id]" class="d-block z-1" style="position: relative;">
-                            <img [src]="product.images[currentImageIndices[product.id]]" height="255"
-                                alt="Product Image" class="d-block w-100" style="transition: transform 0.3s ease;">
-                        </a>
-
-                        <!-- Navigation buttons -->
-                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-between px-2"
-                            style="pointer-events: none;">
-                            <button
-                                class="navImgBtn btn btn-dark btn-sm rounded-circle position-absolute top-50 start-0 translate-middle-y bg-dark m-2"
-                                style="pointer-events: auto;" (click)="prevImage(product.id); $event.stopPropagation()">
-                                <i class="bi bi-chevron-left"></i>
-                            </button>
-                            <button
-                                class="navImgBtn btn btn-dark btn-sm rounded-circle position-absolute top-50 end-0 translate-middle-y bg-dark m-2"
-                                style="pointer-events: auto;" (click)="nextImage(product.id); $event.stopPropagation()">
-                                <i class="bi bi-chevron-right"></i>
-                            </button>
+                      <a [routerLink]="['/products', product.id]" class="d-block" style="position: relative;">
+                        <img [src]="apiConfig.apiUrl + product.productimage[currentImageIndices[product.id]]"
+                          alt="{{ product.name }} - Image {{ currentImageIndices[product.id] + 1 }}" class="img-fluid w-100"
+                          style="height: 255px; object-fit: cover; transition: transform 0.3s ease;" loading="lazy">
+        
+        
+                        <div *ngIf="product.quantity == 0"
+                          class="status-overlay d-flex align-items-center justify-content-center position-absolute">
+                          <div class="status-text text-white text-uppercase fw-bold bg-caffe"
+                            style="font-size: 1.5rem; padding: 0.1rem 0.6rem; border-radius: 4px;">
+                            SOLD OUT
+                          </div>
                         </div>
+                      </a>
+        
+                      <!-- Navigation buttons -->
+                      <div
+                        class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-between px-2"
+                        style="pointer-events: none;">
+                        <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
+                          (click)="prevImage(product.id); $event.stopPropagation()">
+                          <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
+                          (click)="nextImage(product.id); $event.stopPropagation()">
+                          <i class="bi bi-chevron-right"></i>
+                        </button>
+                      </div>
+        
+                      <!-- Image counter -->
+                      <div class="position-absolute bottom-0 m-2 px-2 py-1 bg-dark bg-opacity-50 text-white rounded small z-2">
+                        <i class="bi bi-images me-1"></i>{{ currentImageIndices[product.id] + 1 }}/{{
+                        product.productimage.length }}
+                      </div>
+                    </div>
+        
+                  </div>
 
-                        <!-- Image counter -->
+                  <div class="card-body p-2">
+        
+                    <h5 class="card-title mb-1">
+                      {{ product.name }}
+                    </h5>
+        
+                    <!-- Colors -->
+                    <div class="d-flex gap-2 flex-wrap my-3">
+                      <!-- First 7 colors -->
+                      <div *ngFor="let productStockDto of product.productStockDtos?.slice(0,4); let i = index"
+                        class="color-swatch hover-scale rounded-5" [class.selected]="i === 0"
+                        [style.background]="productStockDto.color" [class.out-of-stock]="productStockDto.quantity === 0">
+        
+                        <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+                      </div>
+        
+                      <!-- Enhanced remaining colors container -->
+                      <div *ngIf="(product.productStockDtos?.length ??0) > 4" class="position-relative d-inline-block">
                         <div
-                            class="position-absolute bottom-0 m-2 px-2 py-1 bg-dark bg-opacity-50 text-white rounded small z-2">
-                            <i class="bi bi-images me-1"></i>{{ currentImageIndices[product.id] + 1 }}/{{
-                            product.images.length }}
+                          class="color-swatch-num mt-1 d-flex align-items-center justify-content-center position-relative fw-semibold"
+                          (click)="toggleColorList(product.id)">
+        
+                          + {{ (product.productStockDtos?.length ?? 0) - 4 }} more
                         </div>
-                    </div>
-                </div>
-
-                <div class="card-body p-2">
-                    <h5 class="card-title mb-1" style="height: 50px;">{{product.name}}</h5>
-                    <p class="card-text text-muted small mb-2 overflow-hidden" style="height: 40px;">
-                        {{product.description.length > 60 ? (product.description | slice:0:60) + '...' :
-                        product.description}}
-                    </p>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="fw-bold text-dark">EGP {{product.price}}</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mt-1">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="text-warning small">
-                                <ng-container *ngFor="let star of [].constructor(5); let i = index">
-                                    <i class="star bi" [ngClass]="{
-                              'bi-star-fill': i < Math.floor(product.averageRating),
-                              'bi-star-half': i === Math.floor(product.averageRating) && product.averageRating % 1 !== 0,
-                              'bi-star': i >= Math.ceil(product.averageRating)
-                            }">
-                                    </i>
-                                </ng-container>
+        
+                        <!-- Hidden color list that appears on hover -->
+                        <div class="color-hover-container" *ngIf="openedProductId === product.id">
+                          <div class="d-flex gap-2 flex-column justify-content-center p-2">
+                            <div *ngFor="let productStockDto of product.productStockDtos?.slice(4)"
+                              class="color-swatch rounded-5" [style.background]="productStockDto.color">
+        
+                              <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
                             </div>
+                          </div>
                         </div>
-                        <small class="text-muted">{{product.reviewCount}} Reviews</small>
+                      </div>
                     </div>
-                </div>
+        
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="fw-semibold text-muted" style="font-size: 1.25rem;">EGP {{ product.price | number }}</span>
+                      <span class=" badge text-white" [style.background-color]="product.isUsed ? '#de8332' : '#2a5f8b'">
+                        {{ product.isUsed ? 'Used' : 'New' }}
+                      </span>
+                    </div>
+        
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                      <div class="text-warning small">
+                        <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                          <i class="star bi" [ngClass]="{
+                                                    'bi-star-fill': i < Math.floor(product.averageRating),
+                                                    'bi-star-half': i === Math.floor(product.averageRating) && product.averageRating % 1 !== 0,
+                                                    'bi-star': i >= Math.ceil(product.averageRating)
+                                                    }">
+                          </i>
+                        </ng-container>
+                      </div>
+                      <small class="text-muted">{{ product.numberOfReviews }} Reviews</small>
+                    </div>
+        
+                    <!-- </a> -->
+                  </div>
             </div>
             }
 
@@ -441,167 +427,168 @@
     <div class="section-underline mx-auto mb-4"></div>
 
     <div class="position-relative">
-        <!-- [ngClass]="{'d-none': !canScrollLeftProduct}" -->
-        <!-- [ngClass]="{'disabled': !canScrollLeftProduct}" -->
         <button class="carousel-btn left" [disabled]="!canScrollLeftTopRatedProduct"
             (click)="scrollLeftTopRatedProduct()">
             <i class="bi bi-chevron-left"></i>
         </button>
 
-        <!-- [ngClass]="{'': !canScrollLeftProduct}" -->
         <div class="hide-scrollbar d-flex overflow-auto gap-3 px-2" #topRatedSlider
             (scroll)="checkScrollTopRatedProduct()">
 
-            <!-- <div class="card flex-shrink-0" style="width: 16rem;">
-        <div class="position-relative">
-          <span class="badge bg-danger position-absolute top-0 start-0 m-2 z-1">Best Seller</span>
-          <div id="carousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-              <div class="carousel-item active">
-                <img src="https://wasilaah.com/cdn/shop/products/IMG_9996.jpg?v=1679343647&width=2048" height="255" class="d-block w-100" alt="...">
-              </div>
-              <div class="carousel-item">
-                <img src="https://babymore.co.uk/wp-content/uploads/2023/02/Mona-2-Piece-Room-Set-GREY-1-scaled.jpg" height="255" class="d-block w-100" alt="...">
-              </div>
-              <div class="carousel-item">
-                <img src="https://wasilaah.com/cdn/shop/products/IMG_9996.jpg?v=1679343647&width=2048" height="255" class="d-block w-100" alt="...">
-              </div>
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon small"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next">
-              <span class="carousel-control-next-icon small"></span>
-            </button>
-          </div>
-        </div>
-        <div class="card-body p-2">
-          <h5 class="card-title mb-1">Jacklin</h5>
-          <p class="card-text text-muted small">Upholstered King Size Bed with Tufted Headboard</p>
-          <div class="d-flex align-items-center gap-2">
-            <span class="fw-bold text-dark">EGP 22000</span>
-          </div>
-          <div class="d-flex align-items-center mt-1">
-            <div class="text-warning small">★★★★★</div>
-            <small class="text-muted ms-2">88 Reviews</small>
-          </div>
-        </div>
-      </div> -->
-
-
-
-            @for(product of products; track product.id)
+            @for(product of topRatedProducts; track product.id)
             {
-            <!-- style="width: 18rem; position: relative;" -->
             <div class="card flex-shrink-0" style="width: 19.3rem; position: relative;">
-                <div class="position-relative">
+                <div class="cardHeader position-relative">
 
-                    <!-- <div class="d-flex flex-wrap gap-2 position-absolute top-0 start-0 p-2 z-2">
-            @if (isNewArrival(product.dateAdded)) {
-              <span class="badge bg-danger">New Arrival</span>
-            }
-
-            <span class="badge" [ngClass]="product.quantity > 0 ? 'bg-success' : 'bg-danger'">
-              {{ product.quantity > 0 ? 'In Stock' : 'Out of Stock' }}
-            </span>
-          
-            <span class="badge" [ngClass]="product.isUsed ? 'bg-secondary' : 'bg-primary'">
-              {{ product.isUsed ? 'Used' : 'New' }}
-            </span>
-          </div> -->
-
+                    <!-- Category Badge -->
                     <!-- <span class="badge bg-dark bg-opacity-50 position-absolute top-0 start-0 m-2 z-2"
-                        style="font-size: 0.9rem;">{{ product.averageRating }} <i
-                            class="bi bi-star-fill text-warning"></i></span> -->
-                    <!-- <span class="badge bg-caffe position-absolute top-0 start-0 z-2" style="margin: 0.5rem 5rem;">{{ product.isUsed ? 'Used' : 'New' }}</span>
-          @if (isNewArrival(product.dateAdded))
-          {
-            <span class="badge bg-danger position-absolute top-0 start-0 z-2" style="margin: 0.5rem 8.5rem;">New Arrival</span>
-          } -->
-
-                    @if (product.wishlisted)
-                    {
-                    <a (click)="toggleWishList(product.id)" style="cursor: pointer;">
-                        <span class="badge bg-dark bg-opacity-50 position-absolute top-0 start-0 m-2 z-2"
-                            style="font-size: 0.9rem;"><i class="bi bi-heart-fill text-danger"></i></span>
-                    </a>
-                    }
-                    @else {
-                    <a (click)="toggleWishList(product.id)" style="cursor: pointer;">
-                        <span class="badge bg-dark bg-opacity-50 position-absolute top-0 start-0 m-2 z-2"
-                            style="font-size: 0.9rem;"><i class="bi bi-heart text-danger"></i></span>
-                    </a>
-                    }
-
-                    <a (click)="addToCart(product.id)" style="cursor: pointer;">
-                        <span class="badge bg-dark bg-opacity-50 position-absolute bottom-0 end-0 m-2 z-2"
-                            style="font-size: 1rem;"><i class="bi bi-cart3"></i></span>
-                    </a>
-
-                    <div class="position-relative overflow-hidden">
-
-                        <a [routerLink]="['/product', product.id]" class="d-block z-1" style="position: relative;">
-                            <img [src]="product.images[currentImageIndicesTopRated[product.id]]" height="255"
-                                alt="Product Image" class="d-block w-100" style="transition: transform 0.3s ease;">
+                        style="font-size: 0.88rem;">
+                        {{ product.categoryName }}
+                    </span> -->
+        
+                    <span class="badge position-absolute bg-dark bg-opacity-50 fw-semibold top-0 start-0 m-2 z-2"
+                        style="font-size: 0.88rem;">
+                        {{ product.categoryName }}
+                    </span>
+        
+                    <div class="position-absolute top-0 end-0 m-2 z-2 d-flex gap-2">
+                        <!-- Wishlist Button -->
+                        <a *ngIf="hasRoleOrNoUser('Buyer')" (click)="toggleWishList(product)" class="d-inline-block"
+                        style="cursor: pointer;" role="button">
+                        <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;">
+                            <!-- <i class="bi {{ product.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart text-white' }}"></i> -->
+                            <i class="bi" [ngClass]="{
+                                'bi-heart-fill text-danger': product?.isFavorite && hasUser(),
+                                'bi-heart text-white': !product?.isFavorite || !hasUser()
+                                }"></i>
+                        </span>
                         </a>
-
-                        <!-- Navigation buttons -->
-                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-between px-2"
-                            style="z-index: 3; pointer-events: none;">
-                            <button
-                                class="btn btn-dark btn-sm rounded-circle position-absolute top-50 start-0 translate-middle-y bg-dark bg-opacity-50 m-2"
-                                style="pointer-events: auto;"
-                                (click)="prevImageTopRated(product.id); $event.stopPropagation()">
-                                <i class="bi bi-chevron-left"></i>
-                            </button>
-                            <button
-                                class="btn btn-dark btn-sm rounded-circle position-absolute top-50 end-0 translate-middle-y bg-dark bg-opacity-50 m-2"
-                                style="pointer-events: auto;"
-                                (click)="nextImageTopRated(product.id); $event.stopPropagation()">
-                                <i class="bi bi-chevron-right"></i>
-                            </button>
-                        </div>
-
-                        <!-- Image counter -->
-                        <div
-                            class="position-absolute bottom-0 m-2 px-2 py-1 bg-dark bg-opacity-50 text-white rounded small z-2">
-                            <i class="bi bi-images me-1"></i>{{ currentImageIndicesTopRated[product.id] + 1 }}/{{
-                            product.images.length }}
-                        </div>
+        
+                        <!-- Add to Cart Button -->
+                        <a *ngIf="product.quantity > 0 && hasRoleOrNoUser('Buyer')" [routerLink]="['/products', product.id]"
+                        style="cursor: pointer;">
+                        <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;"><i class="bi bi-cart3"></i></span>
+                        </a>
                     </div>
-                </div>
-
-                <div class="card-body p-2">
-                    <h5 class="card-title mb-1" style="height: 50px;">{{product.name}}</h5>
-                    <p class="card-text text-muted small mb-2 overflow-hidden" style="height: 40px;">
-                        {{product.description.length > 60 ? (product.description | slice:0:60) + '...' :
-                        product.description}}
-                    </p>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="fw-bold text-dark">EGP {{product.price}}</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mt-1">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="text-warning small">
-                                <ng-container *ngFor="let star of [].constructor(5); let i = index">
-                                    <i class="star bi" [ngClass]="{
-                              'bi-star-fill': i < Math.floor(product.averageRating),
-                              'bi-star-half': i === Math.floor(product.averageRating) && product.averageRating % 1 !== 0,
-                              'bi-star': i >= Math.ceil(product.averageRating)
-                            }">
-                                    </i>
-                                </ng-container>
+        
+                    <!-- <a (click)="shareItem(product)" style="cursor: pointer;">
+                                    <span class="badge bg-dark bg-opacity-50 position-absolute end-0 m-2 z-2"
+                                        style="font-size: 0.8rem;"><i class="bi bi-share fs-5"></i></span>
+                                </a> -->
+        
+        
+                    <!-- Image Carousel -->
+                    <div class="position-relative overflow-hidden">
+                        <a [routerLink]="['/products', product.id]" class="d-block" style="position: relative;">
+                        <img [src]="apiConfig.apiUrl + product.productimage[currentImageIndices[product.id]]"
+                            alt="{{ product.name }} - Image {{ currentImageIndices[product.id] + 1 }}" class="img-fluid w-100"
+                            style="height: 255px; object-fit: cover; transition: transform 0.3s ease;" loading="lazy">
+        
+        
+                        <div *ngIf="product.quantity == 0"
+                            class="status-overlay d-flex align-items-center justify-content-center position-absolute">
+                            <div class="status-text text-white text-uppercase fw-bold bg-caffe"
+                            style="font-size: 1.5rem; padding: 0.1rem 0.6rem; border-radius: 4px;">
+                            SOLD OUT
                             </div>
                         </div>
-                        <small class="text-muted">{{product.reviewCount}} Reviews</small>
+                        </a>
+        
+                        <!-- Navigation buttons -->
+                        <div
+                        class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-between px-2"
+                        style="pointer-events: none;">
+                        <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
+                            (click)="prevImage(product.id); $event.stopPropagation()">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
+                            (click)="nextImage(product.id); $event.stopPropagation()">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                        </div>
+        
+                        <!-- Image counter -->
+                        <div class="position-absolute bottom-0 m-2 px-2 py-1 bg-dark bg-opacity-50 text-white rounded small z-2">
+                        <i class="bi bi-images me-1"></i>{{ currentImageIndices[product.id] + 1 }}/{{
+                        product.productimage.length }}
+                        </div>
                     </div>
-                </div>
+        
+                    </div>
+
+                    <div class="card-body p-2">
+                    <!-- <a [routerLink]="['/products', product.id]" class="d-block text-decoration-none"
+                        style="position: relative; color: inherit;"> -->
+        
+                    <h5 class="card-title mb-1">
+                        {{ product.name }}
+                    </h5>
+                    <!-- <p class="card-text text-muted small mb-2" style="min-height: 42px;">
+                                    {{ product.description.length > 60 ? (product.description | slice:0:60) + '...' :
+                                    product.description }}
+                                </p> -->
+        
+                    <!-- Colors -->
+                    <div class="d-flex gap-2 flex-wrap my-3">
+                        <!-- First 7 colors -->
+                        <div *ngFor="let productStockDto of product.productStockDtos?.slice(0,4); let i = index"
+                        class="color-swatch hover-scale rounded-5" [class.selected]="i === 0"
+                        [style.background]="productStockDto.color" [class.out-of-stock]="productStockDto.quantity === 0">
+        
+                        <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+                        </div>
+        
+                        <!-- Enhanced remaining colors container -->
+                        <div *ngIf="(product.productStockDtos?.length ??0) > 4" class="position-relative d-inline-block">
+                        <div
+                            class="color-swatch-num mt-1 d-flex align-items-center justify-content-center position-relative fw-semibold"
+                            (click)="toggleColorList(product.id)">
+        
+                            + {{ (product.productStockDtos?.length ?? 0) - 4 }} more
+                        </div>
+        
+                        <!-- Hidden color list that appears on hover -->
+                        <div class="color-hover-container" *ngIf="openedProductId === product.id">
+                            <div class="d-flex gap-2 flex-column justify-content-center p-2">
+                            <div *ngFor="let productStockDto of product.productStockDtos?.slice(4)"
+                                class="color-swatch rounded-5" [style.background]="productStockDto.color">
+        
+                                <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+        
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold text-muted" style="font-size: 1.25rem;">EGP {{ product.price | number }}</span>
+                        <span class=" badge text-white" [style.background-color]="product.isUsed ? '#de8332' : '#2a5f8b'">
+                        {{ product.isUsed ? 'Used' : 'New' }}
+                        </span>
+                    </div>
+        
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div class="text-warning small">
+                        <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                            <i class="star bi" [ngClass]="{
+                                                    'bi-star-fill': i < Math.floor(product.averageRating),
+                                                    'bi-star-half': i === Math.floor(product.averageRating) && product.averageRating % 1 !== 0,
+                                                    'bi-star': i >= Math.ceil(product.averageRating)
+                                                    }">
+                            </i>
+                        </ng-container>
+                        </div>
+                        <small class="text-muted">{{ product.numberOfReviews }} Reviews</small>
+                    </div>
+        
+                    <!-- </a> -->
+                    </div>
             </div>
             }
 
         </div>
 
-        <!-- [ngClass]="{'disabled': !canScrollRightProduct}" -->
         <button class="carousel-btn right" [disabled]="!canScrollRightTopRatedProduct"
             (click)="scrollRightTopRatedProduct()">
             <i class="bi bi-chevron-right"></i>
