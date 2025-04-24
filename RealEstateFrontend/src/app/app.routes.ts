@@ -50,117 +50,163 @@ import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointmen
 import { ViewAllComponent } from './Components/Products/All/view-all/view-all.component';
 import { TViewAllProductsComponent } from './Components/Products/ToBeEdited/t-view-all-products/t-view-all-products.component';
 
+import { ListPropertiesComponent } from './Components/Properties/All/list-properties/list-properties.component';
+import { ApprovePropertyComponent } from './Components/Admin/approve-property/approve-property.component';
 
 //----------------------------------------------------------------------------------------
 
 export const routes: Routes = [
+  { path: 'ap', component: ApprovePropertyComponent, pathMatch: 'full' },
 
-  { path: "about", component: AboutComponent, title: "About" },
+  { path: 'about', component: AboutComponent, title: 'About' },
 
   //---------------------------------------------------------------------------------------
   {
-    path: 'admin', component: AdminSideBarComponent, title: "Admin", children: [
-      { path: '', redirectTo: 'profile', pathMatch: "full" },
-      { path: "profile", component: AdminProfileComponent, title: "Profile" },
-      { path: 'dashboard', component: AdmindashboardComponent, title: "Dashboard" },
-      { path: 'viewAllOrder', component: ViewAllOrderComponent, title: "View All Order" },
-      { path: 'addProduct', component: AddProductComponent, title: "Add Product" },
-      { path: "addCatgory", component: AddCategoryComponent, title: "Add Category" },
-      { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscription Plan" },
-
-    ]
+    path: 'admin',
+    component: AdminSideBarComponent,
+    title: 'Admin',
+    children: [
+      { path: '', redirectTo: 'profile', pathMatch: 'full' },
+      {
+        path: 'dashboard',
+        component: AdmindashboardComponent,
+        title: 'Dashboard',
+      },
+      {
+        path: 'viewAllOrder',
+        component: ViewAllOrderComponent,
+        title: 'View All Order',
+      },
+      {
+        path: 'addProduct',
+        component: AddProductComponent,
+        title: 'Add Product',
+      },
+      {
+        path: 'addCatgory',
+        component: AddCategoryComponent,
+        title: 'Add Category',
+      },
+      {
+        path: 'addSubscriptionPlan',
+        component: AddSubscriptionplanComponent,
+        title: 'Add Subscription Plan',
+      },
+    ],
+  },
+  //---------------------------------------------------------------------------------------
+  {
+    path: 'seller',
+    component: SellersidebarComponent,
+    title: 'Seller',
+    children: [
+      { path: '', redirectTo: 'profile', pathMatch: 'full' },
+      { path: 'profile', component: SellerProfileComponent, title: 'Profile' },
+      { path: 'dashboard', component: DashboardComponent, title: 'Dashboard' },
+      {
+        path: 'addAuction',
+        component: AddAuctionComponent,
+        title: 'Add Auction',
+      },
+      {
+        path: 'addProperty',
+        component: AddPropertyComponent,
+        title: 'Add Property',
+      },
+      {
+        path: 'ViewAllAppointment',
+        component: ViewAllPointmentComponent,
+        title: 'Viall all Appointment',
+      },
+    ],
   },
 
   //---------------------------------------------------------------------------------------
   {
-    path: 'agent', component: AgentSideBarComponent, title: "Agent", children: [
-      { path: '', redirectTo: 'profile', pathMatch: "full" },
-      { path: "profile", component: AgentProfileComponent, title: "Profile" },
-      { path: 'dashboard', component: AgentdashboardComponent, title: "Dashboard" },
-      { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
-      { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
-    ]
+    path: 'user',
+    component: SideBarComponent,
+    title: 'User',
+    children: [
+      { path: '', redirectTo: 'profile', pathMatch: 'full' },
+      { path: 'profile', component: ProfileComponent, title: 'Profile' },
+      {
+        path: 'orders',
+        component: OrderSummaryComponent,
+        title: 'Orders Summary',
+      },
+      {
+        path: 'orders/:id',
+        component: OrderDetailsComponent,
+        title: 'Order Details',
+      },
+      { path: 'AllReveiw', component: AllReviewComponent, title: 'AllReview' },
+    ],
   },
 
   //---------------------------------------------------------------------------------------
+  { path: 'login', component: LoginComponent, title: 'Login' },
+  { path: 'register', component: RegisterComponent, title: 'Register' },
   {
-    path: 'seller', component: SellersidebarComponent, title: "Seller", children: [
-      { path: '', redirectTo: 'profile', pathMatch: "full" },
-      { path: "profile", component: SellerProfileComponent, title: "Profile" },
-      { path: 'dashboard', component: DashboardComponent, title: "Dashboard" },
-      { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
-      { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
-      { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "Viall all Appointment" },
-
-    ]
+    path: 'registerAgent',
+    component: RegisterAsAgentComponent,
+    title: 'Register',
   },
-
-  //---------------------------------------------------------------------------------------
   {
-    path: 'user', component: SideBarComponent, title: "User", children: [
-      { path: '', redirectTo: 'profile', pathMatch: "full" },
-      { path: "profile", component: ProfileComponent, title: "Profile" },
-      { path: "orders", component: OrderSummaryComponent, title: "Orders Summary" },
-      { path: 'orders/:id', component: OrderDetailsComponent, title: "Order Details" },
-      { path: "AllReveiw", component: AllReviewComponent, title: "AllReview" },
-
-    ]
+    path: 'forgetpassword',
+    component: ForgetPasswordComponent,
+    title: 'Forget Password',
   },
+  { path: 'sendcode', component: SendCodeComponent, title: 'Send Code' },
+  {
+    path: 'newpassword',
+    component: NewPasswordComponent,
+    title: 'Change Password',
+  },
+  {
+    path: 'emailnotconfirmed',
+    component: EmailNotConfirmedComponent,
+    title: 'Email Not Confirmed',
+  },
+  {
+    path: 'forgetpassword/sendcode',
+    component: ForgetPasswordSendCodeComponent,
+    title: 'Send Code',
+  },
+  { path: 'Add Review', component: AddReviewComponent, title: 'Add Review' },
 
   //---------------------------------------------------------------------------------------
-  { path: 'login', component: LoginComponent, title: "Login" },
-  { path: 'register', component: RegisterComponent, title: "Register" },
-  { path: 'registerAgent', component: RegisterAsAgentComponent, title: "Register" },
-  { path: 'forgetpassword', component: ForgetPasswordComponent, title: "Forget Password" },
-  { path: 'sendcode', component: SendCodeComponent, title: "Send Code" },
-  { path: 'newpassword', component: NewPasswordComponent, title: "Change Password" },
-  { path: 'emailnotconfirmed', component: EmailNotConfirmedComponent, title: "Email Not Confirmed" },
-  { path: 'forgetpassword/sendcode', component: ForgetPasswordSendCodeComponent, title: "Send Code" },
-  { path: 'Add Review', component: AddReviewComponent, title: "Add Review" },
-
-
-  //---------------------------------------------------------------------------------------
-  { path: 'auctions', component: AuctionHomeComponent, title: "Auctions" },
-  { path: 'auctions/:id', component: AuctionDetailsComponent, title: "Auction Details" },
-
-  //---------------------------------------------------------------------------------------
-  { path: 'chat', component: ChatmodalComponent, title: "Chat" },
-  { path: 'MainChat', component: MainChatComponent, title: "Main Chat" },
-
-  //---------------------------------------------------------------------------------------
-  { path: 'products', component: PHomeComponent, title: "Products Home Page" },
-  { path: 'products/all', component: ViewAllComponent, title: "Products" },
-  { path: 'products/:id', component: ProductDetailsComponent, title: "Product Details" },
-
-
-  //---------------------------------------------------------------------------------------
-  { path: 'properties', component: PropertyHomeComponent, title: "Properties Home Page " },
-  { path: 'properties/all', component: PropertiesPageComponent, title: "Properties" },
-  { path: 'properties/:id', component: PropertyDetailsComponent, title: "Property Details" },
-
-  //---------------------------------------------------------------------------------------
-  { path: '', redirectTo: 'home', pathMatch: "full" },
-  { path: 'home', component: HomePageComponent, title: "Home" },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: HomePageComponent, title: 'Home' },
 
   //---------------------------------------------------------------------------------------
   {
     path: 'checkout',
     children: [
       { path: '', redirectTo: 'cart', pathMatch: 'full' },
-      { path: 'cart', component: CartComponent, title: "Cart" },
-      { path: 'address', component: AddressSelectionComponent, title: "Address" },
-      { path: 'address/new', component: NewAddressComponent, title: "Add Address" },
-      { path: 'payment', component: PaymentComponent, title: "Payment" },
-      { path: 'confirmation', component: OrderConfirmationComponent, title: "Order Confirmation" },
+      { path: 'cart', component: CartComponent, title: 'Cart' },
+      {
+        path: 'address',
+        component: AddressSelectionComponent,
+        title: 'Address',
+      },
+      {
+        path: 'address/new',
+        component: NewAddressComponent,
+        title: 'Add Address',
+      },
+      { path: 'payment', component: PaymentComponent, title: 'Payment' },
+      {
+        path: 'confirmation',
+        component: OrderConfirmationComponent,
+        title: 'Order Confirmation',
+      },
     ],
   },
 
   //---------------------------------------------------------------------------------------
-  { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
-  { path: "t", component: TViewAllProductsComponent, title: "t" },
-  { path: "**", component: NotFoundComponent },
-
+  { path: 'gopl', component: GoogleAndPaypalComponent, title: 'gopl' },
+  { path: 't', component: TViewAllProductsComponent, title: 't' },
+  { path: '**', component: NotFoundComponent },
 
   //----------------------------------------------------------------------------------------
-
 ];
