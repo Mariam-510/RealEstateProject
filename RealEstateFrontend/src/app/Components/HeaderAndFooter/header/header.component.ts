@@ -92,8 +92,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     { label: 'About', link: '/about', icon: 'bi bi-info-circle-fill' }
   ];
 
-  image: string = 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg';
-
   loggedInUser!: User | undefined;
 
   ngOnInit() {

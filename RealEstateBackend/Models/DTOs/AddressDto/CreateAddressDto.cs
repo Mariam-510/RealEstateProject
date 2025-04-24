@@ -8,15 +8,14 @@ namespace RealEstate.Models.DTOs.AddressDto
     {
 
         [Required]
-        [MaxLength(100)]
+        [MaxLength(50)]
         public string City { get; set; }
 
         [Required]
-        [MaxLength(100)]
         public string Street { get; set; }
 
         [Required]
-        [MaxLength(50)]
+        [MaxLength(20)]
         [DisplayName("Building Number")]
         public string BuildingNum { get; set; }
 
@@ -29,6 +28,5 @@ namespace RealEstate.Models.DTOs.AddressDto
         [MaxLength(15)]
         [DisplayName("Phone Number")]
         public string PhoneNum { get; set; }
-        public int BuyerId { get; set; }
     }
 }

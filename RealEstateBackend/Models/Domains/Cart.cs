@@ -21,10 +21,6 @@ namespace RealEstate.Models.Domains
         public int? BuyerId { get; set; }
         public virtual Buyer? Buyer { get; set; }
 
-        [ForeignKey("SelectedAddress")]
-        public int? SelectedAddressId { get; set; }
-        public virtual Address? SelectedAddress { get; set; }
-
         public virtual IEnumerable<OrderItem>? OrderItems { get; set; }
     }
 }

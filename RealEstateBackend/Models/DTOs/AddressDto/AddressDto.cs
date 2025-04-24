@@ -8,11 +8,9 @@ namespace RealEstate.Models.DTOs.AddressDto
         public string City { get; set; }
         public string Street { get; set; }
         public string BuildingNum { get; set; }
-        public string? Apartment { get; set; }
-        public string? Floor { get; set; }
-
-        public string? PhoneNum { get; set; }
-
+        public string Apartment { get; set; }
+        public string Floor { get; set; }
+        public string PhoneNum { get; set; }
         public string? BuyerId { get; set; }
     }
 }

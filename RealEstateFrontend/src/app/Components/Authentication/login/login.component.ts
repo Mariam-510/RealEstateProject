@@ -42,15 +42,6 @@ export class LoginComponent {
     const email = this.Loginform.value.email!;
     const password = this.Loginform.value.pass!; // Note the field name mismatch
 
-    // this.accountService.login(email, password).subscribe({
-    //   next: (response) => {
-    //     console.log('Login successful', response);
-    //     // Store the token
-    //     localStorage.setItem('jwtToken', response.tokenDto.jwtToken);
-
-    //     this.Loginform.reset();
-    //     this.router.navigate(['/']); // Redirect to appropriate page
-    //   },
     this.accountService.login(email, password).subscribe({
       next: (response) => {
         this.auth.setAuthState(response.tokenDto.jwtToken);

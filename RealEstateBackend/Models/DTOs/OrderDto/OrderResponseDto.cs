@@ -10,8 +10,9 @@ namespace RealEstate.Models.DTOs.OrderDto
         public int Id { get; set; }
         public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
-        public decimal TotalAmount { get; set; }
-        public bool IsDeleted { get; set; } = false;
+        public decimal SubTotal { get; set; }
+        public decimal DeliveryFees { get; set; }
+        public bool IsDeleted { get; set; }
         public int? BuyerId { get; set; }
         public int? AddressId { get; set; }
         public int? PaymentId { get; set; }

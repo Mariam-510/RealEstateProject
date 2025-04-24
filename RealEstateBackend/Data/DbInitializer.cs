@@ -522,5 +522,41 @@ namespace RealEstate.Data
                 }
             );
         }
+
+        //----------------------------------------------------------------------------------------------------
+        public static void SeedShippings(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Shipping>().HasData(
+                new Shipping { Id = 1, City = "Cairo", DeliveryFees = 50m, IsDeleted = false },
+                new Shipping { Id = 2, City = "Giza", DeliveryFees = 50m, IsDeleted = false },
+                new Shipping { Id = 3, City = "Alexandria", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 4, City = "Dakahlia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 5, City = "Beheira", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 6, City = "Monufia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 7, City = "Qalyubia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 8, City = "Gharbia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 9, City = "Sharqia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 10, City = "Damietta", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 11, City = "Port Said", DeliveryFees = 100m, IsDeleted = false },
+                new Shipping { Id = 12, City = "Ismailia", DeliveryFees = 100m, IsDeleted = false },
+                new Shipping { Id = 13, City = "Suez", DeliveryFees = 100m, IsDeleted = false },
+                new Shipping { Id = 14, City = "Kafr el-Sheikh", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 15, City = "Fayoum", DeliveryFees = 100m, IsDeleted = false },
+                new Shipping { Id = 16, City = "Beni Suef", DeliveryFees = 120m, IsDeleted = false },
+                new Shipping { Id = 17, City = "Minya", DeliveryFees = 120m, IsDeleted = false },
+                new Shipping { Id = 18, City = "Assiut", DeliveryFees = 120m, IsDeleted = false },
+                new Shipping { Id = 19, City = "Sohag", DeliveryFees = 120m, IsDeleted = false },
+                new Shipping { Id = 20, City = "Qena", DeliveryFees = 150m, IsDeleted = false },
+                new Shipping { Id = 21, City = "Luxor", DeliveryFees = 150m, IsDeleted = false },
+                new Shipping { Id = 22, City = "Aswan", DeliveryFees = 150m, IsDeleted = false },
+                new Shipping { Id = 23, City = "Red Sea", DeliveryFees = 200m, IsDeleted = false },
+                new Shipping { Id = 24, City = "New Valley", DeliveryFees = 200m, IsDeleted = false },
+                new Shipping { Id = 25, City = "Matrouh", DeliveryFees = 200m, IsDeleted = false },
+                new Shipping { Id = 26, City = "North Sinai", DeliveryFees = 200m, IsDeleted = false },
+                new Shipping { Id = 27, City = "South Sinai", DeliveryFees = 200m, IsDeleted = false }
+            );
+        }
+
+
     }
 }

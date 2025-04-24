@@ -17,7 +17,11 @@ namespace RealEstate.Models.Domains
 
         [Column(TypeName = "decimal(18,2)")]
         [NonNegative]
-        public decimal TotalAmount { get; set; }
+        public decimal SubTotal { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        [NonNegative]
+        public decimal DeliveryFees { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 

@@ -180,6 +180,7 @@ namespace RealEstate.Controllers
 
         [HttpPut]
         [Route("{id}")]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> Edit(int id, [FromBody] EditOrderItemDto editOrderItemDto)
         {
             if (!ModelState.IsValid)
@@ -232,6 +233,7 @@ namespace RealEstate.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> Delete(int id)
         {
             var orderItem = await OrderItemRepository.DeleteAsync(id);
