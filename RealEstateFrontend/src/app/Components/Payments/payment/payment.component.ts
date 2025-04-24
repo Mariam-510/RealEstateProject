@@ -1,5 +1,5 @@
 // payment.component.ts
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
@@ -11,6 +11,7 @@ import { API_CONFIG } from '../../../app.config';
 import { ShippingDto, ShippingService } from '../../../Services/ApiServices/shipping.service';
 import { firstValueFrom } from 'rxjs';
 import { CreateOrderDto, OrderService } from '../../../Services/ApiServices/order.service';
+import { PaymentDto, PaymentService } from '../../../Services/ApiServices/payment.service';
 
 @Component({
   selector: 'app-payment',
@@ -54,10 +55,10 @@ export class PaymentComponent implements OnInit, AfterViewInit {
   localCart: CartDto | null = null; // Local copy of cart data
   shippingDto: ShippingDto | null = null;
 
-  constructor(private router: Router, private route: ActivatedRoute, private auth: AuthService,
+  constructor(private router: Router, private route: ActivatedRoute, private cd: ChangeDetectorRef, private auth: AuthService,
     private toastr: ToastrService, private payPalService: PaypalService, private cartService: CartService,
-    private addressService: AddressService, private shippingService: ShippingService, private orderService: OrderService
-
+    private addressService: AddressService, private shippingService: ShippingService, private orderService: OrderService,
+    private paymentService: PaymentService
   ) { }
 
   clientId: string = '';
@@ -86,6 +87,7 @@ export class PaymentComponent implements OnInit, AfterViewInit {
       if (this.address?.city) {
         await this.loadShipping(this.address.city);
       }
+
     } catch (error) {
       console.error('Initialization error:', error);
       // Handle error appropriately
@@ -132,20 +134,136 @@ export class PaymentComponent implements OnInit, AfterViewInit {
     return this.localCart ? { ...this.localCart } : null; // Return read-only copy
   }
 
-  async ngAfterViewInit(): Promise<void> {
-    this.loadStripe();
-  }
-
   get selectedPaymentMethod(): string {
     return this.selectedMethod;
   }
 
-  set selectedPaymentMethod(value: string) {
+  // set selectedPaymentMethod(value: string) {
+  //   this.selectedMethod = value;
+
+  //   // if (value === 'paypal') {
+  //   //   setTimeout(() => this.renderPayPalButton(), 0);
+  //   // }
+  // }
+
+  selectPaymentMethod(value: string) {
     this.selectedMethod = value;
+    this.cd.detectChanges(); // Force DOM update
+
+    // console.log("ppppppppppppppppp")
 
     if (value === 'paypal') {
-      setTimeout(() => this.renderPayPalButton(), 0);
+      this.paypalButtonRendered = false;
+      setTimeout(() => this.renderPayPalButton(), 50);
     }
+  }
+
+
+  private async renderPayPalButton() {
+    // console.log("-------------------------------------------ppppppppppppppppp")
+
+    if (this.paypalButtonRendered) return;
+
+    try {
+      this.clientId = this.payPalService.clientId;
+      const paypal = await this.payPalService.loadPayPal(this.clientId);
+
+      if (!paypal?.Buttons) {
+        console.error('PayPal SDK failed to load');
+        return;
+      }
+
+      const renderButton = () => {
+        const container = document.getElementById('paypal-button-container');
+        if (container && !container.children.length && paypal.Buttons) {
+          // console.log("ppppppppppppppppp-------------------------------------------")
+          paypal.Buttons({
+            createOrder: (data: any, actions: any) => {
+              if (!this.localCart?.totalPrice) {
+                this.toastr.error('Missing cart total');
+                throw new Error('Missing cart total');
+              }
+              return actions.order.create({
+                purchase_units: [{
+                  amount: {
+                    value: (this.localCart.totalPrice + (this.shippingDto?.deliveryFees ?? 0)).toFixed(2)
+                  }
+                }]
+              });
+            },
+            onApprove: async (data: any, actions: any) => {
+              const order = await actions.order.capture();
+              this.toastr.success('Payment successful!');
+              this.paymentWithPayPal();
+              // setTimeout(() => {
+              //   window.location.href = `/gopl`;
+              // }, 2500);
+            },
+            onError: (err: any) => {
+              this.toastr.error('Payment failed. Please try again.');
+            }
+          }).render('#paypal-button-container');
+          this.paypalButtonRendered = true; // Set flag AFTER successful render
+        } else {
+          setTimeout(renderButton, 50);
+        }
+      };
+
+      renderButton();
+    } catch (error) {
+      console.error('PayPal initialization error:', error);
+      this.paypalButtonRendered = false;
+    }
+  }
+
+
+  paymentWithPayPal() {
+    const amount = (this.localCart?.totalPrice ?? 0) + (this.shippingDto?.deliveryFees ?? 0);
+
+    this.paymentService.createPayPalOrder(amount).subscribe({
+      next: (paymentResponse: PaymentDto) => {
+        console.log('Payment successful:', paymentResponse);
+        // Handle successful payment (e.g., show confirmation, redirect)
+        this.handlePlaceOrder(paymentResponse.id);
+      },
+      error: (err) => {
+        console.error('Payment failed:', err);
+        // Handle error (e.g., show error message)
+      },
+      complete: () => {
+        // Optional: Handle completion
+      }
+    });
+  }
+
+  //--------------------------------------------------------------------------------------------------------
+  async completeOrder() {
+    await this.handlePlaceOrder(null);
+  }
+
+  async handlePlaceOrder(paymentId: number | null) {
+    const orderData: CreateOrderDto = {
+      paymentId: paymentId,
+      deliveryFees: this.shippingDto?.deliveryFees ?? 0,
+      addressId: this.address?.id ?? 0
+    };
+
+    try {
+      const response = await firstValueFrom(this.orderService.placeOrder(orderData));
+      console.log('Order placed successfully:', response);
+
+      this.cartService.notifyCartUpdated();
+      this.router.navigate(['/checkout/confirmation']);
+
+    } catch (error) {
+      console.error('Error placing order:', error);
+      // Handle error (show error message)
+    }
+  }
+
+  //--------------------------------------------------------------------------------------------------------
+  async ngAfterViewInit(): Promise<void> {
+    this.loadStripe();
   }
 
 
@@ -164,73 +282,6 @@ export class PaymentComponent implements OnInit, AfterViewInit {
     } catch (error) {
       console.error('Payment error:', error);
       this.isProcessing = false;
-    }
-  }
-
-  private async renderPayPalButton() {
-    if (this.paypalButtonRendered) return;
-
-    this.paypalButtonRendered = true;
-
-    try {
-      this.clientId = this.payPalService.clientId;
-
-      const paypal = await this.payPalService.loadPayPal(this.clientId);
-
-      if (!paypal || !paypal.Buttons) {
-        console.error('PayPal SDK failed to load');
-        return;
-      }
-
-      paypal.Buttons({
-        createOrder: (data: any, actions: any) => {
-          return actions.order.create({
-            purchase_units: [{ amount: { value: 700 } }]
-          });
-        },
-        onApprove: async (data: any, actions: any) => {
-          const order = await actions.order.capture();
-          console.log('Payment captured:', order);
-          // // window.location.href = `/success?orderId=${data.orderID}`;
-          // window.location.href = `/profile/bookingHistory`;
-          this.toastr.success('Payment successful!');
-          setTimeout(() => {
-            window.location.href = `/gopl`;
-          }, 2500);
-        },
-        onError: (err: any) => {
-          // console.error('PayPal Error:', err);
-          this.toastr.error('Payment failed. Please try again.');
-        }
-      }).render('#paypal-button-container');
-
-    } catch (error) {
-      console.error('Error initializing PayPal:', error);
-    }
-  }
-
-
-  async completeOrder() {
-    await this.handlePlaceOrder();
-  }
-
-  async handlePlaceOrder() {
-    const orderData: CreateOrderDto = {
-      paymentId: null,
-      deliveryFees: this.shippingDto?.deliveryFees ?? 0,
-      addressId: this.address?.id ?? 0
-    };
-
-    try {
-      const response = await firstValueFrom(this.orderService.placeOrder(orderData));
-      console.log('Order placed successfully:', response);
-
-      this.cartService.notifyCartUpdated();
-      this.router.navigate(['/checkout/confirmation']);
-
-    } catch (error) {
-      console.error('Error placing order:', error);
-      // Handle error (show error message)
     }
   }
 
