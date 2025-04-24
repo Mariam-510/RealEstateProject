@@ -1189,3 +1189,66 @@ section {
   color: #6c757d;
   font-weight: 500;
 }
+<<<<<<< Updated upstream
+=======
+
+
+/* ----------------------------------------------------------------------------- */
+/* Updated Styles */
+.color-swatch {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  border: 2px solid transparent;
+  position: relative;
+
+  &.selected {
+    border-color: #4a2c2a;
+    transform: scale(1.1);
+  }
+
+  &.out-of-stock {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .selected-indicator {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #4a2c2a;
+  }
+
+  /* .out-of-stock-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg,
+        transparent 45%,
+        rgba(255, 0, 0, 0.3) 46%,
+        rgba(255, 0, 0, 0.3) 54%,
+        transparent 55%);
+
+  } */
+
+  .out-of-stock-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg,
+        transparent 44%,
+        white 45%,
+        rgba(255, 0, 0, 0.8) 46%,
+        rgba(255, 0, 0, 0.8) 54%,
+        white 55%,
+        transparent 56%);
+}
+
+}
+>>>>>>> Stashed changes
