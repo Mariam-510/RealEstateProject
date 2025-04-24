@@ -53,9 +53,10 @@ namespace RealEstate.Mapping
             return new OrderResponseDto
             {
                 Id = order.Id,
-                OrderDate = order.OrderDate,
-                Status = order.Status,
-                TotalAmount = order.TotalAmount,
+                OrderDate = order.OrderDate.ToString(),
+                Status = order.Status.ToString(),
+                SubTotal = order.SubTotal,
+                DeliveryFees = order.DeliveryFees,
                 IsDeleted = order.IsDeleted,
                 BuyerId = order.BuyerId,
                 AddressId = order.AddressId,
@@ -70,10 +71,15 @@ namespace RealEstate.Mapping
         {
             return new ReviewResponseDto
             {
+                Id = review.Id,
                 Rating = review.Rating,
                 Comment = review.Comment,
+                Date = review.Date.ToString(),
                 ProductId = review.ProductId,
-                BuyerId = review.BuyerId
+                BuyerId = review.BuyerId,
+                BuyerFName = review.Buyer.FirstName,
+                BuyerLName = review.Buyer.LastName,
+                BuyerImageUrl = review.Buyer.Account?.ImageUrl
             };
         }
 
@@ -162,7 +168,6 @@ namespace RealEstate.Mapping
             return new Wishlist
             {
 
-                BuyerId = wishlistproductDTO.BuyerId,
                 ProductId = wishlistproductDTO.ProductId,
             };
         }
@@ -172,7 +177,6 @@ namespace RealEstate.Mapping
             return new Wishlist
             {
 
-                BuyerId = wishlistpropertyDTO.BuyerId,
                 PropertyId = wishlistpropertyDTO.PropertyID,
             };
         }

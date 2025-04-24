@@ -47,10 +47,10 @@
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css");
 
 /* Add these styles */
-#paypal-button-container {
+/* #paypal-button-container {
   min-height: 40px;
   margin: 15px 0;
-}
+} */
 
 .btn-primary:disabled {
   opacity: 0.7;
@@ -65,7 +65,8 @@
   max-height: 100vw;
   overflow-y: auto;
   margin-bottom: 15px;
-  padding-right: 8px; /* Add padding for scrollbar */
+  padding-right: 8px;
+  /* Add padding for scrollbar */
 }
 
 .order-items div:last-child {
@@ -138,4 +139,32 @@
   min-width: 80px;
   text-align: right;
   padding-left: 10px;
+}
+
+
+.color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: default;
+}
+
+.color-swatch:hover {
+  transform: scale(1.05);
+}
+
+
+#paypal-button-container {
+  min-height: 55px;
+  width: 100%;
+  position: relative;
+}
+
+#paypal-button-container>* {
+  width: 100% !important;
+  height: 55px !important;
 }

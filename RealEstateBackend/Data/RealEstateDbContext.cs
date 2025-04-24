@@ -80,6 +80,12 @@ namespace RealEstate.Data
             //SeedSubscriptionPlans
             DbInitializer.SeedSubscriptionPlans(builder);
 
+            //----------------------------------------------------------------------------------
+            //SeedSubscriptionPlans
+            DbInitializer.SeedShippings(builder);
+
+            //----------------------------------------------------------------------------------
+
 
         }
 

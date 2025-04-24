@@ -14,13 +14,17 @@
                 <div class="mt-4">
                     <div class="d-flex justify-content-center gap-2">
                         <div *ngFor="let ctrl of codeArray; let i = index; trackBy: trackByIndex" class="text-center">
-                          <input
+                            <input
+                            #codeInput
                             type="text"
                             maxlength="1"
                             class="form-control text-center shadow-sm rounded-3"
                             [(ngModel)]="codeArray[i]"
                             [ngModelOptions]="{standalone: true}"
-                            (keyup)="moveFocus($event, i)"
+                            (input)="onInput($event, i)"
+                            (keydown)="onKeyDown($event, i)"
+                            (keypress)="onKeyPress($event)"
+                            (paste)="handlePaste($event, i)"
                             (blur)="validateInputOnBlur(i)"
                             [ngClass]="{'border-danger': validationErrors[i], 'border-1': validationErrors[i]}">
                         </div>

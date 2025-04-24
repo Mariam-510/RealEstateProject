@@ -31,9 +31,7 @@ import { SellerProfileComponent } from './Components/Seller/seller-profile/selle
 import { DashboardComponent } from './Components/Seller/dashboard/dashboard.component';
 import { PaymentComponent } from './Components/Payments/payment/payment.component';
 import { PropertyDetailsComponent } from './Components/Properties/Details/property-details/property-details.component';
-import { CategoryComponent } from './Components/Products/ToBeEdited/category/category.component';
 import { PHomeComponent } from './Components/Products/Home/p-home/p-home.component';
-import { CatSliderComponent } from './Components/Products/Home/Sliders/cat-slider/cat-slider.component';
 import { AuctionHomeComponent } from './Components/Auction/Home/auction-home/auction-home.component';
 import { ProductDetailsComponent } from './Components/Products/Details/product-details/product-details.component';
 import { AboutComponent } from './Components/AboutAndNotFound/about/about.component';
@@ -44,6 +42,14 @@ import { AddCategoryComponent } from './Components/Admin/add-category/add-catego
 import { AddProductComponent } from './Components/Admin/add-product/add-product.component';
 import { AddPropertyComponent } from './Components/FormsSellerAndAgent/add-property/add-property.component';
 import { AuctionDetailsComponent } from './Components/Auction/Details/auction-details/auction-details.component';
+import { ForgetPasswordSendCodeComponent } from './Components/Authentication/forget-password-send-code/forget-password-send-code.component';
+import { AddReviewComponent } from './Components/Order/add-review/add-review.component';
+import { AllReviewComponent } from './Components/Buyer/all-review/all-review.component';
+import { AddSubscriptionplanComponent } from './Components/Admin/add-subscriptionplan/add-subscriptionplan.component';
+import { ViewAllComponent } from './Components/Products/All/view-all/view-all.component';
+import { TViewAllProductsComponent } from './Components/Products/ToBeEdited/t-view-all-products/t-view-all-products.component';
+import { ApprovePropertyComponent } from './Components/Admin/approve-property/approve-property.component';
+
 
 //----------------------------------------------------------------------------------------
 
@@ -60,6 +66,8 @@ export const routes: Routes = [
       { path: 'viewAllOrder', component: ViewAllOrderComponent, title: "View All Order" },
       { path: 'addProduct', component: AddProductComponent, title: "Add Product" },
       { path: "addCatgory", component: AddCategoryComponent, title: "Add Category" },
+      { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscription Plan" },
+      { path: 'ap', component: ApprovePropertyComponent, pathMatch: 'full' },
     ]
   },
 
@@ -92,6 +100,8 @@ export const routes: Routes = [
       { path: "profile", component: ProfileComponent, title: "Profile" },
       { path: "orders", component: OrderSummaryComponent, title: "Orders Summary" },
       { path: 'orders/:id', component: OrderDetailsComponent, title: "Order Details" },
+      { path: "AllReveiw", component: AllReviewComponent, title: "AllReview" },
+
     ]
   },
 
@@ -103,6 +113,9 @@ export const routes: Routes = [
   { path: 'sendcode', component: SendCodeComponent, title: "Send Code" },
   { path: 'newpassword', component: NewPasswordComponent, title: "Change Password" },
   { path: 'emailnotconfirmed', component: EmailNotConfirmedComponent, title: "Email Not Confirmed" },
+  { path: 'forgetpassword/sendcode', component: ForgetPasswordSendCodeComponent, title: "Send Code" },
+  { path: 'Add Review', component: AddReviewComponent, title: "Add Review" },
+
 
   //---------------------------------------------------------------------------------------
   { path: 'auctions', component: AuctionHomeComponent, title: "Auctions" },
@@ -113,13 +126,14 @@ export const routes: Routes = [
   { path: 'MainChat', component: MainChatComponent, title: "Main Chat" },
 
   //---------------------------------------------------------------------------------------
-  { path: 'home/products', component: PHomeComponent, title: "Products Home Page" },
+  { path: 'products', component: PHomeComponent, title: "Products Home Page" },
+  { path: 'products/all', component: ViewAllComponent, title: "Products" },
   { path: 'products/:id', component: ProductDetailsComponent, title: "Product Details" },
 
 
   //---------------------------------------------------------------------------------------
-  { path: 'home/properties', component: PropertyHomeComponent, title: "Properties Home Page " },
-  { path: 'properties', component: PropertiesPageComponent, title: "Properties" },
+  { path: 'properties', component: PropertyHomeComponent, title: "Properties Home Page " },
+  { path: 'properties/all', component: PropertiesPageComponent, title: "Properties" },
   { path: 'properties/:id', component: PropertyDetailsComponent, title: "Property Details" },
 
   //---------------------------------------------------------------------------------------
@@ -141,11 +155,9 @@ export const routes: Routes = [
 
   //---------------------------------------------------------------------------------------
   { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
+  { path: "t", component: TViewAllProductsComponent, title: "t" },
   { path: "**", component: NotFoundComponent },
 
-
-  //----------------------------------------------------------------------------------------
-  { path: 'products/category/:id', component: CategoryComponent },
 
   //----------------------------------------------------------------------------------------
 

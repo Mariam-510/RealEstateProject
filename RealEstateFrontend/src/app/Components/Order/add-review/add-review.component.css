@@ -1,0 +1,40 @@
+ p {
+  font-size: 25px;
+  font-weight: 400; 
+}
+.stars {
+  display: flex;
+  margin-bottom: 20px;
+  flex-direction: row-reverse;
+  justify-content: center;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.stars input {
+  display: none;
+}
+
+.stars label {
+  color: gray;
+  transition: color 0.3s;
+}
+
+.stars label:hover,
+.stars label:hover ~ label,
+.stars input:checked ~ label {
+  color: gold;
+}
+
+.container {
+  padding: 40px;
+  border-radius: 140px;
+}
+
+.B1:hover {
+  background-color: rgb(205, 200, 200);
+  transform: scale(1.1);
+}
+.B2:hover {
+  transform: scale(1.1);
+ }

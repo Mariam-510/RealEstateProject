@@ -4,6 +4,8 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+import { AddressService } from '../../../Services/ApiServices/address.service';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
 
 @Component({
   selector: 'app-new-address',
@@ -30,12 +32,19 @@ export class NewAddressComponent implements OnInit, AfterViewInit {
     shadowSize: [41, 41],
   });
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router,
+    private addressService: AddressService, private auth: AuthService) {
     // Set default icon
     L.Marker.prototype.options.icon = this.defaultIcon;
   }
 
   ngOnInit(): void {
+
+    if (!this.hasRole('Buyer')) {
+      // Redirect to login if not Buyer
+      this.router.navigate(['/login']);
+    }
+
     this.addressForm = this.fb.group({
       city: ['', Validators.required],
       street: ['', Validators.required],
@@ -178,10 +187,39 @@ export class NewAddressComponent implements OnInit, AfterViewInit {
     }
   }
 
+  errorMes = "";
+
   onSubmit(): void {
     if (this.addressForm.valid) {
-      console.log('Address saved:', this.addressForm.value);
-      this.router.navigate(['/checkout/address']);
+      this.addressService.createAddress(this.addressForm.value).subscribe({
+        next: (createdAddress) => {
+          console.log('Address created successfully:', createdAddress);
+          this.router.navigate(['/checkout/address']);
+        },
+        error: (err) => {
+          console.error('Error creating address:', err);
+          if (err.status === 400) {
+            this.errorMes = err.error?.message || 'Bad request';
+          }
+          else {
+            this.errorMes = 'Error creating address. Please try again.';
+          }
+        }
+      });
+    } else {
+      this.errorMes = 'Please fill in all required fields correctly.';
     }
+  }
+
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
   }
 }

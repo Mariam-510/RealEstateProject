@@ -6,7 +6,7 @@ namespace RealEstate.Repositories
     {
         Task<Payment> GetByIdAsync(int id);
         Task<IEnumerable<Payment>> GetAllAsync();
-        Task AddAsync(Payment payment);
+        Task<Payment> AddAsync(Payment payment);
         Task UpdateAsync(Payment payment);
         Task DeleteAsync(int id);
         Task<bool> PaymentExists(int id);

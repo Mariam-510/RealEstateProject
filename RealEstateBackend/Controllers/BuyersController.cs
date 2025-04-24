@@ -7,6 +7,7 @@ using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos.AccountDto;
 using RealEstate.Models.Dtos.AgentDto;
 using RealEstate.Models.Dtos.BuyerDto;
+using RealEstate.Models.Dtos.JWTDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
 using System.Transactions;
@@ -157,9 +158,18 @@ namespace RealEstate.Controllers
                     }
 
 
-                    var roles = await UserManager.GetRolesAsync(existingAccount);
                     //create token
-                    var jwtToken = TokenService.CreateJWTToken(existingAccount, roles.ToList());
+                    var roles = await UserManager.GetRolesAsync(existingAccount);
+
+                    var userClaims = new UserClaimsDto
+                    {
+                        UserId = updatedBuyer.Id,
+                        FirstName = updatedBuyer.FirstName,
+                        LastName = updatedBuyer.LastName,
+                        ImageUrl = existingAccount.ImageUrl
+                    };
+
+                    var jwtToken = TokenService.CreateJWTToken(existingAccount, roles.ToList(), userClaims);
 
                     var tokenDto = new JWTTokenDto()
                     {

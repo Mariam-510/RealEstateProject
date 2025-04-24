@@ -10,24 +10,45 @@
   
       <ul class="nav flex-column mt-3 ms-2">
         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="Adminprofile"
+          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="profile"
             routerLinkActive="active">
             <i class="bi bi-person-circle me-2 text-caffe"></i>
             <span class="d-md-inline d-none" *ngIf="!isCollapsed">Admin Info</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="Admindashboard"
+          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="dashboard"
             routerLinkActive="active">
             <i class="bi bi-receipt me-2 text-caffe"></i>
             <span class="d-md-inline d-none" *ngIf="!isCollapsed">Dashboard</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="ViewAllOrder"
+          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="viewAllOrder"
             routerLinkActive="active">
             <i class="bi bi-eye me-2 text-caffe"></i>
             <span class="d-md-inline d-none" *ngIf="!isCollapsed">View All Order</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="addProduct"
+            routerLinkActive="active">
+            <i class="bi  bi-box-seam me-2 text-caffe"></i>
+            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Add Product</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="addCatgory"
+            routerLinkActive="active">
+            <i class="bi bi-collection me-2 text-caffe"></i>
+            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Add Category</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="addSubscriptionPlan"
+            routerLinkActive="active">
+            <i class="bi bi-credit-card me-2 text-caffe"></i>
+            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Add Subscriptionplan</span>
           </a>
         </li>
       

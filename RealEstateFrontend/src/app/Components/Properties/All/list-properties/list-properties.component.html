@@ -100,7 +100,7 @@
             <div class="d-flex justify-content-between align-items-start mb-2">
               <div class="d-flex align-items-baseline gap-2 flex-wrap">
                 <h5 class="text-caffe mb-0 fw-bold">
-                  {{ property.price | number:'1.0-0' }} EGP
+                  EGP {{ property.price | number:'1.0-0' }}
                 </h5>
                 <small class="text-muted" *ngIf="property.type === 'Rent'">/month</small>
                 <small class="text-muted" *ngIf="property.type === 'Sell' && property.space">

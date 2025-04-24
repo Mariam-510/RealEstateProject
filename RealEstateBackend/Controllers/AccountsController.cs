@@ -8,6 +8,7 @@ using RealEstate.JWT;
 using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos.AccountDto;
 using RealEstate.Models.Dtos.EmailDto;
+using RealEstate.Models.Dtos.JWTDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
 //using Stripe;
@@ -52,12 +53,12 @@ namespace RealEstate.Controllers
         }
 
 
-        //[HttpGet("TestAuth")]
-        //[Authorize]
-        //public async Task<IActionResult> TestAuth()
-        //{
-        //    return Ok("Hello");
-        //}
+        [HttpGet("TestAuth")]
+        [Authorize]
+        public async Task<IActionResult> TestAuth()
+        {
+            return Ok(new { message = "Hello" });
+        }
 
 
         [HttpPost]
@@ -360,7 +361,7 @@ namespace RealEstate.Controllers
                 var isEmailConfirmed = await UserManager.IsEmailConfirmedAsync(account);
                 if (!isEmailConfirmed)
                 {
-                    return Unauthorized(new { message = "Please confirm your email before logging in." });
+                    return StatusCode(StatusCodes.Status403Forbidden, new { message = "Please confirm your email before logging in." });
                 }
 
                 var checkPasswordResult = await UserManager.CheckPasswordAsync(account, loginDto.Password);
@@ -368,9 +369,10 @@ namespace RealEstate.Controllers
                 {
                     var roles = await UserManager.GetRolesAsync(account);
 
-                    var userId = 0;
+                    int userId = 0;
                     var fName = "";
                     var lName = "";
+                    var imageUrl = account.ImageUrl;
 
                     if (roles.Contains("Agent"))
                     {
@@ -409,11 +411,18 @@ namespace RealEstate.Controllers
                             fName = buyer.FirstName;
                             lName = buyer.LastName;
                         }
-
                     }
 
-                    //create token
-                    var jwtToken = TokenService.CreateJWTToken(account, roles.ToList());
+
+                    var userClaims = new UserClaimsDto
+                    {
+                        UserId = userId,
+                        FirstName = fName,
+                        LastName = lName,
+                        ImageUrl = imageUrl
+                    };
+
+                    var jwtToken = TokenService.CreateJWTToken(account, roles.ToList(), userClaims);
 
                     var tokenDto = new JWTTokenDto()
                     {

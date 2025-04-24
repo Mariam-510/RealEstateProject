@@ -84,7 +84,7 @@ namespace RealEstate.Data
         new Product { Id = 7, Name = "Modern Metal Bed Frame", Description = "This modern metal bed frame features clean lines and a minimalist design. Durable and long-lasting, it is ideal for modern bedrooms that need a chic touch.", Price = 2500, IsUsed = true, CategoryID = 2, Images = new List<string> { "ProductImages/bed2.jpg", "ProductImages/bed2_1.jpg"}, DateAdded = new DateTime(2023, 2, 18), AverageRating = 3.9 },
         new Product { Id = 8, Name = "Elegant Queen-Size Bed", Description = "A queen-size bed with an elegant upholstered headboard, soft fabric that adds comfort and luxury to your sleep space.", Price = 3200, IsUsed = false, CategoryID = 2, Images = new List<string> { "ProductImages/bed3.jpg", "ProductImages/bed3_1.jpg" }, DateAdded = new DateTime(2023, 3, 8), AverageRating = 4.8 },
         new Product { Id = 9, Name = "Bunk Bed Set", Description = "A sturdy bunk bed designed for children's rooms. It's space-saving, practical, and comes with safety rails to ensure comfort and security for little ones.", Price = 2200, IsUsed = false, CategoryID = 2, Images = new List<string> { "ProductImages/bed4.jpg", "ProductImages/bed4_1.jpg","ProductImages/bed4_2.jpg" }, DateAdded = new DateTime(2023, 4, 15), AverageRating = 4.3 },
-        new Product { Id = 10, Name = "Storage Bed with Drawers", Description = "A functional bed with built-in storage drawers beneath the frame. Perfect for those who need extra storage in their bedroom without compromising on style.", Price = 2700, IsUsed = true, CategoryID = 2, Images = new List<string> { "ProductImages/bed5.jpg", "ProductImages/bed5_1.jpg", "ProductImages/bed5_3.jpg" }, DateAdded = new DateTime(2023, 5, 20), AverageRating = 4.1 }
+        new Product { Id = 10, Name = "Storage Bed with Drawers", Description = "A functional bed with built-in storage drawers beneath the frame. Perfect for those who need extra storage in their bedroom without compromising on style.", Price = 2700, IsUsed = true, CategoryID = 2, Images = new List<string> { "ProductImages/bed5.jpg", "ProductImages/bed5_1.jpg"}, DateAdded = new DateTime(2023, 5, 20), AverageRating = 4.1 }
             });
 
             // Dining Sets
@@ -128,7 +128,7 @@ namespace RealEstate.Data
             // TV Units
             modelBuilder.Entity<Product>().HasData(new Product[]
             {
-        new Product { Id = 29, Name = "Wooden TV Unit", Description = "A stylish wooden TV unit that offers storage for media devices and decorative items. Its clean design complements both traditional and contemporary living rooms.", Price = 3000, IsUsed = false, CategoryID = 7, Images = new List<string> { "ProductImages/tvunit1.jpg", "ProductImages/tvunit1_1.jpg"}, DateAdded = new DateTime(2023, 1, 18), AverageRating = 4.5 },
+        new Product { Id = 29, Name = "Wooden TV Unit", Description = "A stylish wooden TV unit that offers storage for media devices and decorative items. Its clean design complements both traditional and contemporary living rooms.", Price = 3000, IsUsed = false, CategoryID = 7, Images = new List<string> { "ProductImages/tvunit1.jpg"}, DateAdded = new DateTime(2023, 1, 18), AverageRating = 4.5 },
         new Product { Id = 30, Name = "Modern TV Stand", Description = "A sleek TV stand with a minimalist design, featuring two spacious shelves for media devices. Ideal for contemporary living spaces.", Price = 2000, IsUsed = false, CategoryID = 7, Images = new List<string> { "ProductImages/tvunit2.jpg", "ProductImages/tvunit2_1.jpg" }, DateAdded = new DateTime(2023, 2, 25), AverageRating = 4.7 }
             });
         }
@@ -522,5 +522,41 @@ namespace RealEstate.Data
                 }
             );
         }
+
+        //----------------------------------------------------------------------------------------------------
+        public static void SeedShippings(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Shipping>().HasData(
+                new Shipping { Id = 1, City = "Cairo", DeliveryFees = 50m, IsDeleted = false },
+                new Shipping { Id = 2, City = "Giza", DeliveryFees = 50m, IsDeleted = false },
+                new Shipping { Id = 3, City = "Alexandria", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 4, City = "Dakahlia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 5, City = "Beheira", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 6, City = "Monufia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 7, City = "Qalyubia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 8, City = "Gharbia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 9, City = "Sharqia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 10, City = "Damietta", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 11, City = "Port Said", DeliveryFees = 100m, IsDeleted = false },
+                new Shipping { Id = 12, City = "Ismailia", DeliveryFees = 100m, IsDeleted = false },
+                new Shipping { Id = 13, City = "Suez", DeliveryFees = 100m, IsDeleted = false },
+                new Shipping { Id = 14, City = "Kafr el-Sheikh", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 15, City = "Fayoum", DeliveryFees = 100m, IsDeleted = false },
+                new Shipping { Id = 16, City = "Beni Suef", DeliveryFees = 120m, IsDeleted = false },
+                new Shipping { Id = 17, City = "Minya", DeliveryFees = 120m, IsDeleted = false },
+                new Shipping { Id = 18, City = "Assiut", DeliveryFees = 120m, IsDeleted = false },
+                new Shipping { Id = 19, City = "Sohag", DeliveryFees = 120m, IsDeleted = false },
+                new Shipping { Id = 20, City = "Qena", DeliveryFees = 150m, IsDeleted = false },
+                new Shipping { Id = 21, City = "Luxor", DeliveryFees = 150m, IsDeleted = false },
+                new Shipping { Id = 22, City = "Aswan", DeliveryFees = 150m, IsDeleted = false },
+                new Shipping { Id = 23, City = "Red Sea", DeliveryFees = 200m, IsDeleted = false },
+                new Shipping { Id = 24, City = "New Valley", DeliveryFees = 200m, IsDeleted = false },
+                new Shipping { Id = 25, City = "Matrouh", DeliveryFees = 200m, IsDeleted = false },
+                new Shipping { Id = 26, City = "North Sinai", DeliveryFees = 200m, IsDeleted = false },
+                new Shipping { Id = 27, City = "South Sinai", DeliveryFees = 200m, IsDeleted = false }
+            );
+        }
+
+
     }
 }

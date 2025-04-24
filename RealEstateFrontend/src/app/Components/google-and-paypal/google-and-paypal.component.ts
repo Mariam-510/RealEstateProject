@@ -20,12 +20,6 @@ export class GoogleAndPaypalComponent implements OnInit {
 
   async ngOnInit() {
 
-    this.currentUser = this._authService.currentUser;
-    this._authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-    });
-
-
     try {
       this.clientId = this.payPalService.clientId;
 
@@ -61,11 +55,17 @@ export class GoogleAndPaypalComponent implements OnInit {
     } catch (error) {
       console.error('Error initializing PayPal:', error);
     }
+
+    // this.currentUser = this._authService.currentUser;
+    // this._authService.currentUser$.subscribe(user => {
+    //   this.currentUser = user;
+    // });
+
   }
 
 
   googleLogin() {
-    this._authService.googleLogin();
+    // this._authService.googleLogin();
   }
 
 }

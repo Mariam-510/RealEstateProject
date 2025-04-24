@@ -1,5 +1,5 @@
-<div class="mx-3 mt-1">
-  <div class="row align-items-center mt-4 ms-5 pt-2 mb-1">
+<div class="mx-3">
+  <div class="row align-items-center mt-2 ms-5">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb mb-3">
         <li class="breadcrumb-item d-flex align-items-center">
@@ -16,7 +16,7 @@
         </li>
         <li class="breadcrumb-item active d-flex align-items-center" aria-current="page">
           <i class="bi bi-tag-fill me-2 text-caffe"></i>
-          <span class="fw-medium">{{ product.name}}</span>
+          <span class="fw-medium">{{ product?.name}}</span>
         </li>
       </ol>
     </nav>
@@ -33,10 +33,10 @@
 
       <!-- Thumbnail Column (Scrollable) -->
       <div class="thumbnail-scroller position-relative d-flex flex-md-column flex-row gap-2" #thumbnailContainer>
-        <div class="thumbnail-wrapper position-relative" *ngFor="let img of product.Productimages; let i = index"
+        <div class="thumbnail-wrapper position-relative" *ngFor="let img of product?.productimage; let i = index"
           (click)="selectedIndex = i" [class.active-thumbnail]="i === selectedIndex">
 
-          <img [src]="img" class="img-thumbnail thumbnail" alt="Thumbnail {{ i + 1 }}" #thumbnail />
+          <img [src]="apiConfig.apiUrl+img" class="img-thumbnail thumbnail" alt="Thumbnail {{ i + 1 }}" #thumbnail />
 
           <div
             class="thumbnail-overlay position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center no-print">
@@ -50,15 +50,15 @@
         <div
           class="photo-counter position-absolute top-0 start-0 mt-3 ms-2 bg-dark bg-opacity-75 text-white px-4 py-2 rounded-pill">
           <i class="bi bi-images me-1"></i>
-          {{ selectedIndex + 1 }}/{{ product.Productimages.length }}
+          {{ selectedIndex + 1 }}/{{ product?.productimage?.length }}
         </div>
 
         <div class="slider-track d-flex h-100" [style.transform]="'translateX(' + (-selectedIndex * 100) + '%)'">
-          <div *ngFor="let img of product.Productimages"
+          <div *ngFor="let img of product?.productimage"
             class="slide position-relative d-flex justify-content-center align-items-center">
 
             <div class="image-wrapper position-relative" (click)="openModal()">
-              <img [src]=" img" [appZoom]="img" class="slider-image" />
+              <img [src]="apiConfig.apiUrl + img" [appZoom]="apiConfig.apiUrl+img" class="slider-image" />
               <div
                 class="overlay position-absolute top-0 start-0 w-100 h-100 d-flex text-white justify-content-center align-items-center">
               </div>
@@ -74,7 +74,7 @@
 
         <!-- Slider Indicators -->
         <div class="slider-indicators position-absolute d-flex">
-          <div *ngFor="let img of product.Productimages; let i = index" class="indicator"
+          <div *ngFor="let img of product?.productimage; let i = index" class="indicator"
             [class.active]="i === selectedIndex" (click)="selectedIndex = i"></div>
         </div>
       </div>
@@ -87,14 +87,14 @@
 
   <!-- Product Details Section -->
   <div #productCard *ngIf="!isModalOpen"
-    class="printCart position-absolute end-0 rounded-4 smooth-card custom-card card border-0 d-none d-lg-block me-3 print-visible"
+    class="printCart position-absolute pt-2 end-0 rounded-4 smooth-card custom-card card border-0 d-none d-lg-block me-3 print-visible"
     style="width: 24.5vw;">
 
     <!-- Product Header -->
     <div
       class="cartTitle text-white p-3 rounded-top rounded-bottom text-center d-flex align-items-center justify-content-center position-relative">
       <div class="m-0 fw-semibold">
-        {{ product.name }}
+        {{ product?.name }}
       </div>
     </div>
 
@@ -103,35 +103,27 @@
       <!-- Badges -->
       <div class="mb-2 d-flex flex-wrap gap-2">
         <!-- Condition Badges -->
-        <!-- <span *ngIf="!product.isUsed" class="badge py-2 text-white"
-          style="background-color: #4284c1; min-width: 4.5rem;">
-          New
-        </span> -->
-
-        <span *ngIf="!product.isUsed" class="badge py-2 text-white"
+        <span *ngIf="!product?.isUsed" class="badge py-2 text-white"
           style="background-color: #2a5f8b; min-width: 4.5rem;">
           New
         </span>
 
-        <span *ngIf="product.isUsed" class="badge py-2 text-white"
+        <span *ngIf="product?.isUsed" class="badge py-2 text-white"
           style="background-color: #de8332; min-width: 4.5rem;">
           Used
         </span>
 
-        <!-- <span *ngIf="isProductNew()" class="badge py-2 text-white" style="background-color: #de8332;">
-          Just Added
-        </span> -->
-
         <!-- Stock Status Badges -->
-        <span *ngIf="product.quantity < 4 && product.quantity > 0" class="badge py-2 bg-danger text-white">
-          Only {{ product.quantity }} left!
+        <span *ngIf="(product?.quantity ?? 0) < 4 && (product?.quantity ?? 0) > 0"
+          class="badge py-2 bg-danger text-white">
+          Only {{ product?.quantity }} left!
         </span>
 
-        <span *ngIf="product.quantity === 0" class="badge py-2 bg-secondary text-white">
+        <span *ngIf="(product?.quantity ?? 0) === 0" class="badge py-2 bg-secondary text-white">
           Out of Stock
         </span>
 
-        <span *ngIf="product.quantity > 3" class="badge py-2 text-white"
+        <span *ngIf="(product?.quantity ?? 0) > 3" class="badge py-2 text-white"
           style="background-color: #4a7d5e; min-width: 4.6rem;">
           In Stock
         </span>
@@ -139,8 +131,8 @@
 
         <!-- Alternative with compact rating display -->
         <!-- background-color: #966141; -->
-        <span *ngIf="product.averageRating" class="badge py-2 text-white bg-caffe" style="min-width: 4.6rem;">
-          <i class="bi bi-star-fill me-1"></i>{{ product.averageRating | number:'1.1-1' }}
+        <span *ngIf="product?.averageRating" class="badge py-2 text-white bg-caffe" style="min-width: 4.6rem;">
+          <i class="bi bi-star-fill me-1"></i>{{ product?.averageRating | number:'1.1-1' }}
         </span>
 
 
@@ -153,13 +145,13 @@
           <div class="rating-stars text-caffe">
             <ng-container *ngFor="let star of [].constructor(5); let i = index">
               <i class="bi fs-5" [ngClass]="{
-            'bi-star-fill': i < Math.floor(product.averageRating),
-            'bi-star-half': i === Math.floor(product.averageRating) && product.averageRating % 1 !== 0,
-            'bi-star': i >= Math.ceil(product.averageRating)
+            'bi-star-fill': i < Math.floor(product?.averageRating ?? 0 ),
+            'bi-star-half': i === Math.floor(product?.averageRating ?? 0) && (product?.averageRating ?? 0) % 1 !== 0,
+            'bi-star': i >= Math.ceil(product?.averageRating ?? 0)
           }"></i>
             </ng-container>
           </div>
-          <span class="text-muted">({{product.numOfReviews}} reviews)</span>
+          <span class="text-muted">({{product?.numberOfReviews}} reviews)</span>
         </div>
 
         <!-- Action Buttons -->
@@ -172,13 +164,13 @@
             <i class="bi bi-printer fs-4"></i>
           </button>
 
-          <button class="btn btn-link p-1" (click)="$event.stopPropagation(); toggleFavorite(product)">
+          <button *ngIf="hasRoleOrNoUser('Buyer')" class="btn btn-link p-1"
+            (click)="$event.stopPropagation(); toggleFavorite(product)">
             <i class="bi fs-4" [ngClass]="{
-            'bi-heart-fill text-danger': product.isFavorite,
-            'bi-heart text-dark': !product.isFavorite
+            'bi-heart-fill text-danger': product?.isFavorite && hasUser(),
+            'bi-heart text-dark': !product?.isFavorite || !hasUser()
           }"></i>
           </button>
-
         </div>
       </div>
 
@@ -187,61 +179,52 @@
       <!-- Price -->
       <div class="mb-3">
         <div class="form-label small fw-bold text-uppercase terracotta-text mb-1" style="color: #4a2c2a">Price</div>
-        <h3 class="fw-bold text-caffe">{{ product.price | number:'1.2-2' }} EGP</h3>
+        <h3 class="fw-bold text-caffe">EGP {{ product?.price | number:'1.2-2' }}</h3>
       </div>
 
       <!-- Color Selector -->
       <div class="mb-4">
-        <div class="form-label small fw-bold text-uppercase terracotta-text" style="color: #4a2c2a">Available Color
+        <div class="form-label small fw-bold text-uppercase terracotta-text" style="color: #4a2c2a">
+          Available Color
         </div>
 
         <div class="d-flex gap-2 flex-wrap">
-          <!-- First 7 colors -->
-          <div *ngFor="let color of product.colors.slice(0,6); let i = index" class="color-swatch hover-scale rounded-5"
-            [class.selected]="i === 0" [style.background]="color">
-          </div>
-
-          <!-- Enhanced remaining colors container -->
-          <div *ngIf="product.colors.length > 6" class="position-relative d-inline-block">
-            <div
-              class="color-swatch-num mt-1 d-flex align-items-center justify-content-center position-relative fw-semibold">
-              + {{ product.colors.length - 6 }} more
+          <!-- All color swatches -->
+          <div *ngFor="let productStockDto of product?.productStockDtos"
+            class="color-swatch hover-scale rounded-5 position-relative"
+            [class.selected]="productStockDto === selectedColorStock"
+            [class.out-of-stock]="productStockDto.quantity === 0" [style.background]="productStockDto.color"
+            (click)="productStockDto.quantity > 0 ? selectColor(productStockDto) : null">
+            <div *ngIf="productStockDto === selectedColorStock" class="selected-indicator">
+              <i class="bi bi-check"></i>
             </div>
-
-            <!-- Hidden color list that appears on hover -->
-            <div class="color-hover-container no-print">
-              <div class="d-flex gap-2 flex-column justify-content-center p-2">
-                <div *ngFor="let color of product.colors.slice(6)" class="color-swatch rounded-5"
-                  [style.background]="color">
-                </div>
-              </div>
-            </div>
+            <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
           </div>
         </div>
 
       </div>
 
       <!-- CTA Section -->
-      <div class="mb-3">
-
+      <div class="mb-3" *ngIf="hasRoleOrNoUser('Buyer')">
         <div class="d-flex align-items-center gap-3">
           <div class="quantity-controls d-flex align-items-center border rounded-2">
-            <!-- Quantity Controls -->
-            <button class="btn px-2 py-1 text-caffe" (click)="decreaseQuantity()" [disabled]="quantity === 1">
+            <button class="btn px-2 py-1 text-caffe" (click)="decreaseQuantity()"
+              [disabled]="quantity === 1 || !selectedColorStock">
               <i class="bi bi-dash" style="font-size: 1.5rem;"></i>
             </button>
 
             <span class="px-3 fw-bold">{{ quantity }}</span>
+
             <button class="btn px-2 py-1 text-caffe" (click)="increaseQuantity()"
-              [disabled]="quantity >= product.quantity">
+              [disabled]="!selectedColorStock || quantity >= (selectedColorStock?.quantity ?? 0)">
               <i class="bi bi-plus" style="font-size: 1.5rem;"></i>
             </button>
           </div>
 
           <button class="btn bg-caffe text-white btn-lg fw-bold hover-lift py-2 flex-grow-1" (click)="addToCart()"
-            [disabled]="product.quantity === 0">
+            [disabled]="!selectedColorStock || selectedColorStock.quantity === 0 || quantity > selectedColorStock.quantity">
             <i class="bi bi-cart3 me-2"></i>
-            {{ product.quantity === 0 ? 'Out of Stock' : 'Add to Cart' }}
+            {{ getAddToCartButtonText() }}
           </button>
         </div>
       </div>
@@ -266,7 +249,7 @@
         </div>
       </div>
 
-      <div class="custumBottomBorder mb-3"></div>
+      <div class="custumBottomBorder"></div>
 
     </div>
 
@@ -280,31 +263,31 @@
   <div class="ms-2"></div>
 
   <a href="#overview" (click)="scrollToSection($event, 'overview')" class="active ms-2 me-3">
-    <i class="bi bi-info-circle-fill me-2 fs-6"></i> <span class="fs-5">Design Story</span>
+    <i class="bi bi-info-circle-fill me-2 fs-5"></i> <span class="fs-5">Design Story</span>
   </a>
 
   <a href="#price" (click)="scrollToSection($event, 'price')" class="me-3">
-    <i class="bi bi-tag-fill me-2 fs-6"></i>
+    <i class="bi bi-tag-fill me-2 fs-5"></i>
     <span class="fs-5">Price</span>
   </a>
 
   <a href="#colors" (click)="scrollToSection($event, 'colors')" class="me-3">
-    <i class="bi bi-palette2 me-2 fs-6"></i>
+    <i class="bi bi-palette2 me-2 fs-5"></i>
     <span class="fs-5">Colors</span>
   </a>
 
   <a href="#payment-shipping" (click)="scrollToSection($event, 'payment-shipping')" class="me-3">
-    <i class="bi bi-credit-card-fill me-2 fs-6"></i>
+    <i class="bi bi-credit-card-fill me-2 fs-5"></i>
     <span class="fs-5">Payment & Shipping</span>
   </a>
 
   <a href="#terms-conditions" (click)="scrollToSection($event, 'terms-conditions')" class="me-3">
-    <i class="bi bi-file-earmark-text-fill me-2 fs-6"></i>
+    <i class="bi bi-file-earmark-text-fill me-2 fs-5"></i>
     <span class="fs-5">Terms & Conditions</span>
   </a>
 
   <a href="#reviews" (click)="scrollToSection($event, 'reviews')">
-    <i class="bi bi-chat-dots-fill me-2 fs-6"></i>
+    <i class="bi bi-chat-dots-fill me-2 fs-5"></i>
     <span class="fs-5">Reviews</span>
   </a>
 </div>
@@ -327,12 +310,12 @@
         <h4 style="color: #4a2c2a;"><i class="bi bi-lightbulb me-2"></i> What You Need To Know</h4>
 
         <div>
-          <div *ngIf="!product.isUsed" class="d-flex align-items-center gap-2">
+          <div *ngIf="!product?.isUsed" class="d-flex align-items-center gap-2">
             <span class="badge bg-caffe text-white py-2 px-3" style="font-size: 1rem;">
               <i class="bi bi-stars me-2" style="font-size: 1rem;"></i>Brand New
             </span>
           </div>
-          <div *ngIf="product.isUsed" class="d-flex align-items-center gap-2">
+          <div *ngIf="product?.isUsed" class="d-flex align-items-center gap-2">
             <span class="badge bg-caffe text-white py-2 px-3" style="font-size: 1rem;">
               <i class="bi bi-recycle me-2" style="font-size: 1rem;"></i>Certified Pre-Owned
             </span>
@@ -343,30 +326,19 @@
 
       <!-- Description -->
       <div class="ms-3 text-justify text-muted mb-2 no-print" style="font-size: 1.2rem;">
-        {{ product.description.length > 200 ? (showMore ? product.description : product.description.slice(0, 200) +
+        {{ (product?.description?.length ??0) > 200 ? (showMore ? product?.description : product?.description?.slice(0,
+        200) +
         '...') :
-        product.description }}
+        product?.description }}
       </div>
 
       <div class="ms-3 text-justify text-muted mb-2 print-full-description d-none print-full-description"
         style="font-size: 1.2rem;">
-        {{product.description }}
+        {{product?.description }}
       </div>
 
       <!-- Interactive Elements -->
-      <div *ngIf="product.description.length > 200" class="text-center mt-3 no-print">
-
-        <!-- <button class="btn btn-link text-caffe p-0" (click)="showMore = !showMore" aria-controls="descriptionContent"
-          [attr.aria-label]="showMore ? 'Collapse description' : 'Expand description'">
-          <span class="d-inline-block animate-bounce">
-            <i class="bi" [ngClass]="showMore ? 'bi-chevron-double-up' : 'bi-chevron-double-down'"
-              style="font-size: 1.5rem;"></i>
-          </span>
-          <span class="ms-2 fw-medium">
-            {{ showMore ? 'Show Less' : 'Show More' }}
-          </span>
-        </button> -->
-
+      <div *ngIf="(product?.description?.length || 0) > 200" class="text-center mt-3 no-print">
 
         <div *ngIf="!showMore" class="d-flex justify-content-center align-items-center">
           <button class="buttonDes expand-button bg-caffe" (click)="showMore = !showMore"
@@ -409,7 +381,7 @@
 
       <div class="ms-3">
         <div class="d-flex align-items-baseline gap-2 mb-3">
-          <h3 class="text-caffe fw-bold mb-0">1,899.00 EGP</h3>
+          <h3 class="text-caffe fw-bold mb-0">{{product?.price}}</h3>
           <span class="text-success small fw-semibold">
             <i class="bi bi-patch-check-fill"></i>
             Value That Lasts
@@ -423,7 +395,7 @@
               <i class="bi bi-box-seam text-caffe fs-5 me-1"></i>
               <div>
                 <p class="mb-0 small">In Stock Availability</p>
-                <p class="mb-0 fw-bold">{{ product.quantity }} Units Remaining</p>
+                <p class="mb-0 fw-bold">{{ product?.quantity }} Units Remaining</p>
               </div>
             </div>
           </div>
@@ -459,8 +431,9 @@
 
       <div class="ms-3 mt-3">
         <div class="d-flex gap-3 flex-wrap mt-2 align-items-center">
-          <div *ngFor="let color of product.colors" class="color-swatch position-relative rounded-circle"
-            [style.backgroundColor]="color" style="width: 4.5rem; height: 4.5rem;">
+          <div *ngFor="let productStockDto of product?.productStockDtos"
+            class="color-swatch position-relative rounded-circle" [style.backgroundColor]="productStockDto.color"
+            style="width: 4.5rem; height: 4.5rem;">
           </div>
         </div>
 
@@ -693,7 +666,7 @@
     <!-- Average Rating -->
     <div class="ps-4 mb-2 d-flex align-items-center gap-3">
       <div class="display-5 fw-bold text-caffe">
-        {{ product.averageRating | number:'1.1-1' }}<small class="fs-6 text-muted">/5</small>
+        {{ product?.averageRating | number:'1.1-1' }}<small class="fs-6 text-muted">/5</small>
       </div>
       <div>
         <h4>
@@ -715,12 +688,21 @@
               <div class="d-flex justify-content-between align-items-start mb-3">
                 <!-- User Info -->
                 <div class="d-flex align-items-center">
-                  <img [src]="review.userImage" alt="{{ review.userName }}'s profile picture"
-                    class="rounded-circle me-2 avatar-img">
+
+                  <ng-container *ngIf="review?.buyerImageUrl; else defaultIcon">
+                    <img [src]="apiConfig.apiUrl + review.buyerImageUrl" alt="{{ review.buyerFName }}'s profile picture"
+                      class="rounded-circle me-2 avatar-img">
+                  </ng-container>
+
+                  <ng-template #defaultIcon>
+                    <i class="bi bi-person-circle fs-2 me-2 text-brown"></i>
+                  </ng-template>
+
+
                   <div>
-                    <h5 class="m-0 fs-5 me-3">{{ review.userName }}</h5>
+                    <h5 class="m-0 fs-5 me-3">{{ review.buyerFName ?? '' + " "+ review.buyerLName ?? ''}}</h5>
                     <div class="text-muted small">
-                      {{ review.date | date:'mediumDate' }}
+                      {{ review.date}}
                     </div>
                   </div>
                 </div>
@@ -775,16 +757,16 @@
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 
 <div id="stop-scroll">
-  <!-- Lorem ipsum dolor, sit amet consectetur adipisicing elit. Iusto excepturi impedit et eveniet ducimus, suscipit maxime
-  nesciunt dicta! Iure aperiam atque inventore earum modi accusantium, laboriosam quod. Aspernatur, minima in? -->
+  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Iusto excepturi impedit et eveniet ducimus, suscipit maxime
+  nesciunt dicta! Iure aperiam atque inventore earum modi accusantium, laboriosam quod. Aspernatur, minima in?
 </div>
 
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 <!-- Add this at the bottom of your template, before the closing divs -->
 <div *ngIf="!closeHelpPopup" class="floating-help-container position-fixed  mb-5 me-4" [class.show-help]="showHelpPopup"
   style="transition: transform 0.3s ease; transform: translateY(100%); right: 20px; bottom: -30px;"
-  [ngStyle]="(isLoggedIn && !showHelpPopup) ? {bottom: '30px'} : {bottom: '-30px'}"
-  [ngStyle]="(!isLoggedIn && !showHelpPopup) ? {bottom: '10px'} : {bottom: '-30px'}">
+  [ngStyle]="(hasUser() && !showHelpPopup) ? {bottom: '30px'} : {bottom: '-30px'}"
+  [ngStyle]="(!hasUser() && !showHelpPopup) ? {bottom: '10px'} : {bottom: '-30px'}">
 
 
   <div class="card border-0 shadow-lg rounded-3" style="width: 300px; background-color: #f8f9fa;">
@@ -798,8 +780,12 @@
           <div class="me-2 animate-tilt">
             <i class="bi bi-magic" style="font-size: 1.2rem"></i>
           </div>
-          <h5 class="mb-0">
-            {{ isLoggedIn ? 'How can we help, '+userName + '?' : 'Need Help?' }}
+          <h5 *ngIf="hasUser()" class="mb-0">
+            {{ 'How can we help, '+ loggedInUser?.firstName + '?' }}
+          </h5>
+
+          <h5 *ngIf="!hasUser()" class="mb-0">
+            {{ 'Need Help?' }}
           </h5>
         </div>
       </button>
@@ -811,7 +797,7 @@
 
     <div class="card-body">
       <!-- Registration Prompt -->
-      <div class="mb-3" *ngIf="!isLoggedIn">
+      <div class="mb-3" *ngIf="!hasUser()">
         <p class="mb-1 small fw-bold">Get better experience as registered user!</p>
         <button class="btn btn-sm bg-caffe text-white w-100 hover-lift rounded" routerLink="/register">
           Create Account
@@ -819,11 +805,22 @@
       </div>
 
       <!-- Loggedin User Prompt -->
-      <div class="mb-3" *ngIf="isLoggedIn">
+      <div class="mb-3" *ngIf="hasUser()">
         <div class="d-flex align-items-center mb-3">
-          <img src="propertyImages/user.jpeg" class="rounded-circle me-2" width="40" height="40" alt="Profile">
+
+          <!-- Show image when available, icon when not -->
+          <ng-container *ngIf="loggedInUser?.imageUrl; else defaultIcon">
+            <img [src]="apiConfig.apiUrl + loggedInUser?.imageUrl" class="rounded-circle me-2" width="40" height="40"
+              alt="Profile">
+          </ng-container>
+
+          <ng-template #defaultIcon>
+            <i class="bi bi-person-circle fs-2 me-2 text-brown"></i>
+          </ng-template>
+
+
           <div>
-            <p class="mb-0 small fw-bold"> {{userName}}</p>
+            <p class="mb-0 small fw-bold"> {{loggedInUser?.firstName}}</p>
             <div class="d-flex align-items-center">
               <span class="badge bg-caffe rounded-pill me-1">Pro Member</span>
               <i class="bi bi-patch-check-fill text-info"></i>
@@ -873,18 +870,19 @@
     <div class="modal-main-image-container position-relative flex-grow-1">
       <div class="slider-track" [style.transform]="'translateX(' + (-modalIndex * 100) + '%)'">
 
-        <div *ngFor="let img of product.Productimages"
+        <div *ngFor="let img of product?.productimage"
           class="slide position-relative d-flex justify-content-center align-items-center">
           <div class="image-wrapper position-relative">
 
             <!-- <img [src]="img" [appZoom]="img" class="modal-main-image d-block" /> -->
 
             <ng-container *ngIf="isZoomed; else noZoom">
-              <img [src]="img" [appZoom]="img" class="modal-main-image d-block" style="cursor: crosshair;" />
+              <img [src]="apiConfig.apiUrl+img" [appZoom]="apiConfig.apiUrl+img" class="modal-main-image d-block"
+                style="cursor: crosshair;" />
             </ng-container>
 
             <ng-template #noZoom>
-              <img [src]="img" class="modal-main-image d-block" />
+              <img [src]="apiConfig.apiUrl+img" class="modal-main-image d-block" />
             </ng-template>
 
 
@@ -915,7 +913,7 @@
       <div
         class="photo-counter position-absolute bottom-0 end-0 mb-4 me-3 bg-dark bg-opacity-75 text-white px-3 py-1 rounded-pill">
         <i class="bi bi-images me-1"></i>
-        {{ modalIndex + 1 }}/{{ product.Productimages.length }}
+        {{ modalIndex + 1 }}/{{ product?.productimage?.length }}
       </div>
 
       <!-- Navigation Arrows -->
@@ -926,8 +924,8 @@
     <!-- Thumbnails -->
     <div class="modal-thumbnails mt-2">
       <div class="thumbnails-scroll d-flex gap-2">
-        <img *ngFor="let img of product.Productimages; let i = index" [src]="img" [class.active]="i === modalIndex"
-          (click)="modalIndex = i; $event.stopPropagation()" class="modal-thumbnail">
+        <img *ngFor="let img of product?.productimage; let i = index" [src]="apiConfig.apiUrl+img"
+          [class.active]="i === modalIndex" (click)="modalIndex = i; $event.stopPropagation()" class="modal-thumbnail">
       </div>
     </div>
   </div>

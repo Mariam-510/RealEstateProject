@@ -6,12 +6,23 @@ namespace RealEstate.Models.DTOs.ReviewDto
 {
     public class ReviewResponseDto
     {
-        public int Rating { get; set; }
+        public int Id { get; set; }
+
+        public double Rating { get; set; }
 
         public string? Comment { get; set; }
 
+        public string Date { get; set; }
+
         public int? BuyerId { get; set; }
+        
+        public string? BuyerFName { get; set; }
+       
+        public string? BuyerLName { get; set; }
+
+        public string? BuyerImageUrl { get; set; }
 
         public int? ProductId { get; set; }
+
     }
 }

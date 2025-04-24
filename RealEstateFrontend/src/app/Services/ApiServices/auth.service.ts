@@ -1,122 +1,115 @@
-import { inject, Injectable, signal } from '@angular/core';
+// auth.service.ts
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
 import { BehaviorSubject } from 'rxjs';
-// import { environment } from '../environments/environment';
+
+interface DecodedToken {
+  // Standard claims
+  sub: string;         // Account ID (from NameIdentifier)
+  exp: number;
+  userId: string;      // Agent/Seller/Buyer ID
+  email: string;
+  firstName: string;
+  lastName: string;
+  imageUrl: string;
+  roles: string | string[]; // Roles (array if multiple)
+}
+
+export interface User {
+  accountId: string,      // From NameIdentifier
+  userId: number,
+  email: string,    // From custom userId claim
+  firstName: string,
+  lastName: string,
+  imageUrl: string;
+  roles: string | string[]; // Roles (array if multiple)
+  tokenExpiration: Date
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly router = inject(Router);
-
-  // Unified user state (using both Signal and Observable)
   private currentUserSubject = new BehaviorSubject<any>(null);
-  currentUser = signal<any>(null);
   currentUser$ = this.currentUserSubject.asObservable();
+  private tokenExpirationTimer: any;
 
-  constructor() {
-    this.loadInitialUser();
+  constructor(private router: Router) {
+    this.initializeAuthState();
+  }
 
-    // Check for Google OAuth redirect on initialization
-    if (window.location.hash.includes('access_token')) {
-      this.handleGoogleRedirect();
+  private initializeAuthState() {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+      this.setAuthState(token);
     }
   }
 
-  private loadInitialUser() {
-    // Check localStorage for Google user
-    const googleUser = localStorage.getItem('googleUser');
-    if (googleUser) {
-      this.setUser(JSON.parse(googleUser));
-    }
-  }
+  setAuthState(token: string) {
+    localStorage.setItem('jwtToken', token);
+    const decoded = jwtDecode<DecodedToken>(token);
 
-  private formatGoogleUser(userInfo: any): any {
-    return {
-      id: userInfo.sub,
-      name: userInfo.name,
-      email: userInfo.email,
-      avatar: userInfo.picture ? userInfo.picture : 'img/userIcon.png',
-      firstName: userInfo.given_name,
-      lastName: userInfo.family_name,
-      phoneNum: userInfo.phone_number || '011',
-      authMethod: 'google',
-      idToken: userInfo.id_token // Will be null unless you request it specifically
+    const currentUser: User = {
+      accountId: decoded.sub,
+      userId: Number(decoded.userId),  // Converts the string to a number
+      email: decoded.email,  // Map 'name' claim to email
+      firstName: decoded.firstName,
+      lastName: decoded.lastName,
+      imageUrl: decoded.imageUrl,
+      roles: decoded.roles,
+      tokenExpiration: new Date(decoded.exp * 1000)
     };
+
+    this.currentUserSubject.next(currentUser);
+    this.setAutoLogout(decoded.exp);
   }
 
-  private setUser(user: any) {
-    this.currentUser.set(user);
-    this.currentUserSubject.next(user);
+  private setAutoLogout(expirationTime: number) {
+    const expiresIn = expirationTime * 1000 - Date.now();
+
+    this.tokenExpirationTimer = setTimeout(() => {
+      this.logout(true);
+    }, expiresIn);
   }
 
-  private clearUser() {
-    this.currentUser.set(null);
+  logout(isExpired = false) {
+    localStorage.removeItem('jwtToken');
     this.currentUserSubject.next(null);
-  }
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+    }
 
-
-  // Google login - now initiates OAuth flow
-  googleLogin(): void {
-    const clientId = '787977218185-shafp92svop2slqecfj7espka3b35pth.apps.googleusercontent.com';
-    const redirectUri = 'http://localhost:4200/home';
-    const scope = 'email profile openid';
-    const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=${scope}`;
-
-    window.location.href = authUrl;
-  }
-
-  // Handle Google OAuth redirect
-  private async handleGoogleRedirect(): Promise<void> {
-    try {
-      const fragment = window.location.hash.substring(1);
-      const params = new URLSearchParams(fragment);
-      const accessToken = params.get('access_token');
-
-      if (!accessToken) {
-        throw new Error('No access token found');
-      }
-
-      const userInfo = await this.getGoogleUserInfo(accessToken);
-      const formattedUser = this.formatGoogleUser(userInfo);
-
-      this.setUser(formattedUser);
-      localStorage.setItem('googleUser', JSON.stringify(formattedUser));
-
-      // Clear the URL fragment and navigate
-      this.router.navigate(['/home'], { replaceUrl: true });
-    } catch (error) {
-      console.error('Google login failed:', error);
-      this.clearUser();
+    if (isExpired) {
+      this.redirectToLoginWithMessage('Session expired. Please login again.');
     }
   }
 
-  private async getGoogleUserInfo(accessToken: string): Promise<any> {
-    const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+  private redirectToLoginWithMessage(message: string) {
+    // Use your router to navigate to login with query params
+    this.router.navigate(['/login'], {
+      queryParams: { message }
     });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch user info');
-    }
-
-    return await response.json();
   }
 
-  // Unified logout
-  logout() {
-    if (this.currentUser()?.authMethod === 'google') {
-      // For direct OAuth, we can't programmatically sign out of Google,
-      // but we can clear our local state
-      localStorage.removeItem('googleUser');
+  getToken() {
+    return localStorage.getItem('jwtToken');
+  }
 
-      // Optional: Redirect to Google logout page
-      // window.location.href = 'https://accounts.google.com/Logout';
+  isAuthenticated() {
+    return !!this.getToken();
+  }
+
+  // Safely check if the user exists and has roles
+  hasRole(requiredRole: string): boolean {
+    const user = this.currentUserSubject?.value;
+    if (!user?.roles) return false;
+
+    // Handle array or single string roles
+    if (Array.isArray(user.roles)) {
+      return user.roles.includes(requiredRole);
     }
-    this.clearUser();
-    this.router.navigate(['/']);
+    return user.roles === requiredRole;
   }
 
 }

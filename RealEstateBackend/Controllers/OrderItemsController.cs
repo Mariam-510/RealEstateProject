@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Models.Domains;
@@ -82,6 +83,7 @@ namespace RealEstate.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> Create([FromBody] CreateOrderItemDto createOrderItemDto)
         {
             if (!ModelState.IsValid)
@@ -89,7 +91,15 @@ namespace RealEstate.Controllers
                 return BadRequest(ModelState);
             }
 
-            var buyer = await BuyerRepository.GetByIdAsync(createOrderItemDto.BuyerId);
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
+
+            var buyer = await BuyerRepository.GetByIdAsync(buyerId);
             if (buyer == null)
             {
                 return NotFound("Buyer not found.");
@@ -169,6 +179,8 @@ namespace RealEstate.Controllers
 
 
         [HttpPut]
+        [Route("{id}")]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> Edit(int id, [FromBody] EditOrderItemDto editOrderItemDto)
         {
             if (!ModelState.IsValid)
@@ -188,11 +200,6 @@ namespace RealEstate.Controllers
             {
                 return NotFound("Product not found.");
             }
-
-            //if (editOrderItemDto.Quantity > product.Quantity)
-            //{
-            //    return BadRequest(new { message = "Quantity exceeds available stock." });
-            //}
 
             var productStock = await ProductStockRepository.GetByColorAsync(product.Id, editOrderItemDto.Color);
             if (productStock == null)
@@ -226,6 +233,7 @@ namespace RealEstate.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> Delete(int id)
         {
             var orderItem = await OrderItemRepository.DeleteAsync(id);

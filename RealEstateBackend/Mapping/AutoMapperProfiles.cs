@@ -18,6 +18,7 @@ using RealEstate.Models.Dtos.ShippingDto;
 using RealEstate.Models.Dtos.SubscriptionPlanDto;
 using RealEstate.Models.Dtos.ProductStockDto;
 using RealEstate.Models.DTOs.Category;
+using RealEstate.Models.Dtos.PaymentDto;
 
 
 namespace RealEstate.Mapping
@@ -115,18 +116,20 @@ namespace RealEstate.Mapping
 
             //------------------------------------------------------------------------------------------------
 
-            CreateMap<Cart, CartDto>()
-                .ForMember(dest => dest.OrderItemDtos, opt => opt.MapFrom(src => src.OrderItems));
+            CreateMap<CreateOrderItemDto, OrderItem>().ReverseMap();
+
+            CreateMap<OrderItem, OrderItemDto>()
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product != null ? src.Product.Name : null))
+                .ForMember(dest => dest.ProductDescription, opt => opt.MapFrom(src => src.Product != null ? src.Product.Description : null))
+                .ForMember(dest => dest.ProductImage, opt => opt.MapFrom(
+                    src => src.Product != null && src.Product.Images != null && src.Product.Images.Count > 0
+                        ? src.Product.Images[0]
+                        : null));
 
             //------------------------------------------------------------------------------------------------
 
-            CreateMap<CreateOrderItemDto, OrderItem>().ReverseMap();
-
-            //CreateMap<OrderItemDto, OrderItem>().ReverseMap();
-            CreateMap<OrderItem, OrderItemDto>()
-                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product != null ? src.Product.Name : null))
-                .ForMember(dest => dest.ProductDescription, opt => opt.MapFrom(src => src.Product != null ? src.Product.Description : null));
-
+            CreateMap<Cart, CartDto>()
+                .ForMember(dest => dest.OrderItemDtos, opt => opt.MapFrom(src => src.OrderItems));
 
             //------------------------------------------------------------------------------------------------
             //********************************************
@@ -167,7 +170,20 @@ namespace RealEstate.Mapping
 
             //------------------------------------------------------------------------------------------------
 
-            //CreateMap<Product, ProductDTO>().ReverseMap();
+            CreateMap<Payment, PaymentDto>()
+                .ForMember(dest => dest.PaymentMethod,
+                           opt => opt.MapFrom(src => src.PaymentMethod.ToString()))
+                .ForMember(dest => dest.PaidAt,
+                           opt => opt.MapFrom(src => src.PaidAt.ToString("yyyy-MM-dd HH:mm:ss"))) // Or another format if preferred
+                .ReverseMap()
+                .ForMember(dest => dest.PaymentMethod,
+                           opt => opt.MapFrom(src => Enum.Parse<PaymentMethod>(src.PaymentMethod)))
+                .ForMember(dest => dest.PaidAt,
+                           opt => opt.MapFrom(src => DateTime.Parse(src.PaidAt)));
+
+            //------------------------------------------------------------------------------------------------
+
+            //C
 
             //CreateMap<Product, ProductDTOShow>().ReverseMap();
 

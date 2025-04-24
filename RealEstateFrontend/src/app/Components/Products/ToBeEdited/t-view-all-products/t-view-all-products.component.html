@@ -79,6 +79,7 @@
                             <span class="fw-medium">All Categories</span>
                         </span>
                     </button>
+                    
                     <!-- style="color: #4a2c2a;" -->
                     <button *ngFor="let cat of categoriesWithCounts" class="nav-link p-0 pb-2 position-relative"
                         [class.active]="selectedCategory === cat.name" (click)="toggleCategory(cat.name)">
@@ -343,9 +344,9 @@
 
                         <div class="position-absolute top-0 end-0 m-2 z-2 d-flex gap-2">
                             <!-- Wishlist Button -->
-                            <a (click)="toggleWishList(product.id)" 
+                            <a (click)="toggleWishList(product.id)"
                             class="d-inline-block"
-                            style="cursor: pointer;" 
+                            style="cursor: pointer;"
                             role="button">
                             <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;">
                                 <i class="bi {{ product.wishlisted ? 'bi-heart-fill text-danger' : 'bi-heart text-white' }}"></i>
@@ -416,7 +417,7 @@
                             <div *ngFor="let color of product.colors.slice(0,5); let i = index" class="color-swatch hover-scale rounded-5"
                               [class.selected]="i === 0" [style.background]="color">
                             </div>
-                  
+
                             <!-- Enhanced remaining colors container -->
                             <div *ngIf="product.colors.length > 5" class="position-relative d-inline-block">
                               <div class="color-swatch-num mt-1 d-flex align-items-center justify-content-center position-relative fw-semibold"
@@ -424,7 +425,7 @@
 
                                 + {{ product.colors.length - 5 }} more
                               </div>
-                  
+
                               <!-- Hidden color list that appears on hover -->
                               <div class="color-hover-container" *ngIf="openedProductId === product.id">
                                 <div class="d-flex gap-2 flex-column justify-content-center p-2">
@@ -474,15 +475,15 @@
                                 <!-- Wishlist Button -->
                                 <div class="position-absolute top-0 end-0 m-2 z-2 d-flex gap-2">
                                     <!-- Wishlist Button -->
-                                    <a (click)="toggleWishList(product.id)" 
+                                    <a (click)="toggleWishList(product.id)"
                                     class="d-inline-block"
-                                    style="cursor: pointer;" 
+                                    style="cursor: pointer;"
                                     role="button">
                                     <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;">
                                         <i class="bi {{ product.wishlisted ? 'bi-heart-fill text-danger' : 'bi-heart text-white' }}"></i>
                                     </span>
                                     </a>
-        
+
                                     <!-- Add to Cart Button -->
                                     <!-- <a (click)="addToCart(product.id)" style="cursor: pointer;">
                                         <span class="badge bg-dark bg-opacity-50"
