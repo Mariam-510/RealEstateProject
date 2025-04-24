@@ -70,40 +70,6 @@ namespace RealEstate.Controllers
             return Ok(cartDto);
         }
 
-
-        [HttpPut]
-        [Route("UpdateAddress/{cartId}")]
-        public async Task<IActionResult> UpdateAddress(int cartId, [FromBody] UpdateCartAddressDto updateCartAddressDto)
-        {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            //cart
-            var cart = await CartRepository.GetByIdAsync(cartId);
-            if (cart == null)
-            {
-                return NotFound("Cart not found");
-            }
-
-            var address = await AddressRepository.GetByIdAsync(updateCartAddressDto.SelectedAddressId);
-            if (address == null)
-            {
-                return NotFound("Address not found");
-            }
-
-            cart.SelectedAddressId = updateCartAddressDto.SelectedAddressId;
-
-            await CartRepository.UpdateAsync(cart);
-
-            var cartDto = Mapper.Map<CartDto>(cart);
-
-            return Ok(cartDto);
-
-        }
-
-
         [HttpPut]
         [Route("ClearCart")]
         [Authorize(Roles = "Buyer")]
@@ -133,7 +99,6 @@ namespace RealEstate.Controllers
             }
 
             cart.OrderItems = null;
-            cart.SelectedAddressId=null;
             
             cart = await CartRepository.UpdateAsync(cart);
 

@@ -7,11 +7,15 @@
           <!-- Header with title and clear button -->
           <div class="cart-header pb-3">
             <div class="d-flex justify-content-between align-items-center">
-              <h3 class="mb-0 fw-bold">Shopping Cart</h3>
 
-              <div *ngIf="(cart$ | async) as cart">
-                <button (click)="clearCart()" class="clear-cart-btn btn btn-danger-custom">
-                  <i class="bi bi-trash-fill me-2"></i>
+              <div class="mb-0 fw-semibold">
+                <i class="bi bi-cart fs-3 text-brown"></i>
+                <h3 class="d-inline ms-2 text-brown">Shopping Cart</h3>
+              </div>
+
+              <div *ngIf="localCart">
+                <button (click)="clearCart()" class="clear-cart-btn btn border-0 text-caffe fw-bold">
+                  <!-- <i class="bi bi-trash"></i> -->
                   Clear Cart
                 </button>
               </div>
@@ -20,66 +24,68 @@
           </div>
 
           <!-- Column Headers -->
-          <div class="cart-column-headers row py-3 mb-2 bg-light rounded-pill fw-medium">
-            <div class="col-md-2 text-muted">Image</div>
-            <div class="col-md-2 text-muted">Product</div>
-            <div class="col-md-3 text-muted text-center">&nbsp;&nbsp;Color</div>
-            <div class="col-md-2 text-muted text-center">Quantity</div>
-            <div class="col-md-2 text-muted text-center">Price</div>
-            <div class="col-md-1 text-muted text-center">Action</div>
+          <div class="cart-column-headers row py-3 mb-2 fw-medium">
+            <div class="col-md-1 text-center ms-4 me-5 text-brown">Image</div>
+            <div class="col-md-2 text-center ms-2 me-5 text-brown">Product</div>
+            <div class="col-md-1 text-center ms-3 me-3 text-brown">&nbsp;&nbsp;Color</div>
+            <div class="col-md-2 text-center me-1 text-brown">Quantity</div>
+            <div class="col-md-2 text-center me-3 text-brown">Price</div>
+            <div class="col-md-1 text-center text-brown">Action</div>
           </div>
 
           <!-- Divider -->
           <hr class="my-2" style="border-top: 3px solid #c38e79" />
 
           <!-- Cart Items -->
-          <div *ngIf="(cart$ | async) as cart; else emptyCart">
+          <div *ngIf="localCart; else emptyCart">
 
-            <div class="cart-item py-3" *ngFor="let item of cart.orderItemDtos; let last = last">
+            <div class="cart-item pt-3" *ngFor="let item of localCart.orderItemDtos; let last = last">
               <div class="row align-items-center">
                 <!-- Product Image -->
-                <div class="col-md-2">
+                <div class="col-md-2 ms-2">
                   <img [src]="apiConfig.apiUrl+item.productImage" alt="Product"
                     class="product-image img-fluid rounded-3" />
                 </div>
 
                 <!-- Product Name -->
                 <div class="col-md-3">
-                  <h6 class="mb-1 fw-semibold">{{ item.productName }}</h6>
+                  <h6 class="mb-1 fw-semibold text-brown">{{ item.productName }}</h6>
                   @if(item.productDescription)
                   {
-                  <small class="text-muted" style="font-style: italic" title="{{ item.productDescription }}">SKU:
+                  <small class="text-muted" style="font-style: italic" title="{{ item.productDescription }}">
                     {{
-                    item.productDescription.length > 60
-                    ? item.productDescription.slice(0, 60) + ".."
+                    item.productDescription.length > 55
+                    ? item.productDescription.slice(0, 55) + ".."
                     : item.productDescription
                     }}</small>
                   }
                 </div>
 
                 <!-- Color -->
-                <div class="col-md-2 text-start">
+                <div class="col-md-1 text-center me-2">
                   &nbsp; &nbsp;
                   <span class="color-circle" [style.background]="item.color"></span>
                 </div>
 
                 <!-- Quantity Controls -->
-                <div class="col-md-2">
+                <div class="col-md-2 text-center me-3">
                   <div class="quantity-wrapper d-flex align-items-center justify-content-center">
                     <!-- Decrement/Delete Button -->
-                    <button class="quantity-btn btn btn-sm" [class.btn-secondary-custom]="item.quantity === 1"
+                    <button class="quantity-btn btn btn-sm text-caffe"
+                      [class.btn-secondary-custom]="item.quantity === 1"
                       [class.btn-secondary-custom]="item.quantity > 1"
                       (click)="handleDecrement(item); $event.stopPropagation()">
-                      <i class="bi" [class.bi-trash]="item.quantity === 1" [class.bi-dash-lg]="item.quantity > 1"></i>
+                      <!-- <i class="bi" [class.bi-trash]="item.quantity === 1" [class.bi-dash-lg]="item.quantity > 1"></i> -->
+                      <i class="bi" [ngClass]="item.quantity === 1? 'bi-trash text-brown': 'bi-dash-lg text-caffe'"></i>
                     </button>
 
                     <!-- Quantity Display -->
-                    <div class="quantity-value mx-3 fw-bold">
+                    <div class="quantity-value text-brown fw-semibold">
                       {{ item.quantity }}
                     </div>
 
                     <!-- Increment Button -->
-                    <button class="quantity-btn btn btn-sm btn-secondary-custom"
+                    <button class="quantity-btn btn btn-sm btn-secondary-custom text-caffe"
                       (click)="handleIncrement(item); $event.stopPropagation()">
                       <i class="bi bi-plus-lg"></i>
                     </button>
@@ -87,18 +93,19 @@
                 </div>
 
                 <!-- Price -->
-                <div class="col-md-2 text-center">
-                  <span class="fw-bold">
-                    {{ item.price * item.quantity | currency : "EGP " }}
+                <div class="col-md-2 text-center me-3">
+                  <span class="fw-bold text-caffe">
+                    {{ item.price | currency : "EGP " }}
                   </span>
                   <div *ngIf="item.quantity > 1" class="text-muted small">
-                    {{ item.price | currency : "EGP " }} each
+                    {{ item.price /item.quantity | currency : "EGP " }} each
                   </div>
                 </div>
 
                 <!-- Remove Button -->
                 <div class="col-md-1 text-center">
-                  <button class="btn btn-sm btn-secondary-custom" (click)="deleteItem(item.id)" title="Remove item">
+                  <button class="btn btn-sm btn-secondary-custom text-brown" (click)="deleteItem(item.id)"
+                    title="Remove item">
                     <i class="bi bi-trash"></i>
                   </button>
                 </div>
@@ -125,45 +132,52 @@
       <!-- Order Summary Section -->
       <div class="col-lg-4">
         <div class="summary-card bg-white p-4 rounded-3 shadow-sm">
-          <h5 class="mb-4 text-center fw-bold">
+          <!-- <h3 class="mb-4 text-center fw-bold">
             <i class="bi bi-receipt me-2"></i>
             Order Summary
-          </h5>
+          </h3> -->
+
+          <div class="mb-4 fw-semibold text-center">
+            <i class="bi bi-receipt fs-4 text-brown"></i>
+            <h3 class="d-inline ms-2 text-brown">Order Summary</h3>
+          </div>
 
           <!-- Summary Items -->
           <div class="d-flex justify-content-between mb-3">
-            <span class="text-muted">Subtotal
-              ({{(cart$ | async)?.orderItemDtos?.length || 0}} items)
+            <span class="text-brown fw-semibold">Subtotal
+              ({{localCart?.orderItemDtos?.length || 0}} items)
             </span>
-            <span class="fw-medium">
+            <span>
               {{
-              (cart$ | async)?.totalPrice | currency : "EGP "
+              localCart?.totalPrice | currency : "EGP "
               }}
             </span>
           </div>
 
           <div class="d-flex justify-content-between mb-3">
-            <span class="text-muted">Shipping</span>
-            <span>-</span>
+            <span class="text-brown fw-semibold">Shipping</span>
+            <i class="bi bi-dash"></i>
           </div>
 
           <div class="d-flex justify-content-between mb-3">
-            <span class="text-muted">Tax</span>
-            {{0| currency : "EGP "}}
+            <span class="text-brown fw-semibold">Tax</span>
+            <span>
+              {{0| currency : "EGP "}}
+            </span>
           </div>
 
           <hr style="border-top: 3px solid #c38e79" />
 
-          <div class="d-flex justify-content-between mb-4">
-            <span class="fw-bold fs-5">Total</span>
-            <span class="fw-bold fs-5">
-              {{((cart$ | async)?.totalPrice ?? 0)| currency : "EGP "}}
+          <div class="d-flex justify-content-between mb-3">
+            <span class="fw-semibold fs-5 text-brown">Total</span>
+            <span class="fw-semibold fs-5 text-caffe">
+              {{(localCart?.totalPrice ?? 0)| currency : "EGP "}}
             </span>
           </div>
 
           <!-- Promo Code -->
           <div class="mb-4">
-            <label for="promoCode" class="form-label small text-muted mb-2">Promo Code</label>
+            <label for="promoCode" class="form-label small text-brown mb-2">Promo Code</label>
             <div class="input-group">
               <input type="text" class="form-control" id="promoCode" placeholder="Enter promo code" />
               <button class="btn" type="button" style="background-color: #c38e79; color: white">
@@ -174,13 +188,13 @@
 
           <!-- Checkout Button -->
           <a routerLink="/checkout/address" class="btn w-100 mb-3 py-2 fw-bold"
-            style="background-color: #c38e79; color: white" [class.disabled]="!(cart$ | async)?.orderItemDtos?.length">
+            style="background-color: #c38e79; color: white" [class.disabled]="!localCart?.orderItemDtos?.length">
             <i class="bi bi-lock-fill me-2"></i>
             Proceed to Checkout
           </a>
 
           <!-- Secure Checkout Badge -->
-          <div class="secure-checkout-badge text-center mt-3">
+          <div class="secure-checkout-badge text-center mt-1">
             <i class="bi bi-shield-check text-success me-2"></i>
             <small class="text-muted">Secure SSL Encrypted Checkout</small>
           </div>

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,7 @@ namespace RealEstate.Controllers
 
         [HttpGet]
         [Route("City/{city}")]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> GetByCity([FromRoute] string city)
         {
             var shipping = await ShippingRepository.GetByCityAsync(city);

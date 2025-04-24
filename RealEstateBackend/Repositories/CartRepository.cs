@@ -15,7 +15,6 @@ namespace RealEstate.Repositories
         public async Task<List<Cart>> GetAllAsync()
         {
             var carts = await _context.Carts
-                .Include(c => c.SelectedAddress)
                 .Include(c => c.OrderItems)
                     .ThenInclude(o => o.Product)
                 .Where(c => !c.IsDeleted)
@@ -64,7 +63,6 @@ namespace RealEstate.Repositories
         public async Task<Cart?> GetByIdAsync(int id)
         {
             var cart = await _context.Carts
-                .Include(c => c.SelectedAddress)
                 .Include(c => c.OrderItems)
                     .ThenInclude(o => o.Product)
                 .Where(c => !c.IsDeleted)
@@ -83,7 +81,6 @@ namespace RealEstate.Repositories
         public async Task<Cart?> GetByBuyerIdAsync(int buyerId)
         {
             var cart = await _context.Carts
-                .Include(c => c.SelectedAddress)
                 .Include(c => c.OrderItems)
                     .ThenInclude(o => o.Product)
                 .Where(c => !c.IsDeleted)
@@ -105,7 +102,6 @@ namespace RealEstate.Repositories
 
             if (existingcart != null)
             {
-                existingcart.SelectedAddressId = cart.SelectedAddressId;
                 existingcart.OrderItems = cart.OrderItems;
 
                 existingcart = await updateTotal(existingcart); 

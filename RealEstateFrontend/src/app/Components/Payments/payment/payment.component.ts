@@ -1,8 +1,15 @@
 // payment.component.ts
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { CartService } from '../../../Services/BackServices/cart.service';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { AddressDto, AddressService } from '../../../Services/ApiServices/address.service';
+import { PaypalService } from '../../../Services/PaymentServices/paypal.service';
+import { ToastrService } from '../../../Services/toastr.service';
+import { CartDto, CartService } from '../../../Services/ApiServices/cart.service';
+import { API_CONFIG } from '../../../app.config';
+import { ShippingDto, ShippingService } from '../../../Services/ApiServices/shipping.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-payment',
@@ -11,7 +18,9 @@ import { CartService } from '../../../Services/BackServices/cart.service';
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css'],
 })
-export class PaymentComponent implements AfterViewInit {
+export class PaymentComponent implements OnInit, AfterViewInit {
+  apiConfig = API_CONFIG;
+
   paymentMethods = [
     {
       id: 'cash',
@@ -40,25 +49,173 @@ export class PaymentComponent implements AfterViewInit {
   isProcessing = false;
   paypalButtonRendered = false;
 
-  constructor(public cartService: CartService) { }
+  addresses: AddressDto | null = null;
+  localCart: CartDto | null = null; // Local copy of cart data
+  shippingDto: ShippingDto | null = null;
+
+  constructor(private router: Router, private route: ActivatedRoute, private auth: AuthService,
+    private toastr: ToastrService, private payPalService: PaypalService, private cartService: CartService,
+    private addressService: AddressService, private shippingService: ShippingService
+
+  ) { }
+
+  clientId: string = '';
+
+  // async ngOnInit() {
+
+  //   if (!this.hasRole('Buyer')) {
+  //     this.router.navigate(['/login']);
+  //   }
+
+  //   this.route.queryParams.subscribe(params => {
+  //     const addressId = params['id'];
+
+  //     if (!addressId || isNaN(+addressId)) {
+  //       this.router.navigate(['/checkout/address']);
+  //       return;
+  //     }
+  //     await this.loadAddressDetails(addressId);
+  //     console.log('Valid address ID:', addressId);
+  //   });
+
+  //   await this.loadInitialCart();
+  //   await this.loadShipping(this.addresses?.city);
+
+  // }
+
+
+  // async loadInitialCart() {
+  //   if (this.hasRole("Buyer")) {
+  //     await this.cartService.getCart().subscribe(cart => {
+  //       this.localCart = cart; // Store initial copy locally
+  //     });
+  //   }
+  // }
+
+  // get cart(): CartDto | null {
+  //   return this.localCart ? { ...this.localCart } : null; // Return read-only copy
+  // }
+
+  // // In your component
+  // async loadAddressDetails(addressId: number) {
+  //   await this.addressService.getById(addressId).subscribe({
+  //     next: (address) => {
+  //       console.log('Address details:', address);
+  //       this.addresses = address;
+  //     },
+  //     error: (err) => {
+  //       console.error('Error loading address:', err);
+  //       alert(err.error?.message || 'Could not load address details');
+  //     }
+  //   });
+  // }
+
+  // async loadShipping(city: string) {
+  //   // Example component usage
+  //   await this.shippingService.getByCity(city).subscribe({
+  //     next: (shippingInfo) => {
+  //       console.log('Shipping details:', shippingInfo);
+  //       this.shippingDto = shippingInfo;
+  //     },
+  //     error: (err) => {
+  //       console.error('Error fetching shipping info:', err);
+  //     }
+  //   });
+
+  // }
+
+
+
+  // ... other imports
+
+  async ngOnInit() {
+    if (!this.hasRole('Buyer')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    try {
+      // Convert Observable to Promise with firstValueFrom
+      const params = await firstValueFrom(this.route.queryParams);
+      const addressId = params['id'];
+
+      if (!addressId || isNaN(+addressId)) {
+        this.router.navigate(['/checkout/address']);
+        return;
+      }
+
+      await this.loadAddressDetails(addressId);
+      console.log('Valid address ID:', addressId);
+
+      await this.loadInitialCart();
+
+      if (this.addresses?.city) {
+        await this.loadShipping(this.addresses.city);
+      }
+    } catch (error) {
+      console.error('Initialization error:', error);
+      // Handle error appropriately
+    }
+  }
+
+  async loadInitialCart() {
+    if (this.hasRole("Buyer")) {
+      try {
+        const cart = await firstValueFrom(this.cartService.getCart());
+        this.localCart = cart;
+      } catch (err) {
+        console.error('Error loading cart:', err);
+        // Handle error
+      }
+    }
+  }
+
+  async loadAddressDetails(addressId: number) {
+    try {
+      const address = await firstValueFrom(this.addressService.getById(addressId));
+      console.log('Address details:', address);
+      this.addresses = address;
+    } catch (err) {
+      console.error('Error loading address:', err);
+      this.router.navigate(['/checkout/address']);
+    }
+  }
+
+  async loadShipping(city: string) {
+    try {
+      const shippingInfo = await firstValueFrom(
+        this.shippingService.getByCity(city)
+      );
+      console.log('Shipping details:', shippingInfo);
+      this.shippingDto = shippingInfo;
+    } catch (err) {
+      console.error('Error fetching shipping info:', err);
+      // Handle error (e.g., show error message)
+    }
+  }
+
+
+
+  get cart(): CartDto | null {
+    return this.localCart ? { ...this.localCart } : null; // Return read-only copy
+  }
 
   async ngAfterViewInit(): Promise<void> {
     this.loadStripe();
   }
 
-  async loadStripe(): Promise<void> {
-    // In a real app, you would:
-    // 1. Load Stripe.js from their CDN
-    // 2. Initialize with your publishable key
-    // 3. Create card element
-    // Mock implementation for demonstration:
-    // if (typeof Stripe !== 'undefined') {
-    //   this.stripe = Stripe('pk_test_your_publishable_key');
-    //   this.stripeElements = this.stripe.elements();
-    //   this.cardElement = this.stripeElements.create('card');
-    //   this.cardElement.mount('#card-element');
-    // }
+  get selectedPaymentMethod(): string {
+    return this.selectedMethod;
   }
+
+  set selectedPaymentMethod(value: string) {
+    this.selectedMethod = value;
+
+    if (value === 'paypal') {
+      setTimeout(() => this.renderPayPalButton(), 0);
+    }
+  }
+
 
   async handlePayment(): Promise<void> {
     if (this.isProcessing) return;
@@ -76,6 +233,71 @@ export class PaymentComponent implements AfterViewInit {
       console.error('Payment error:', error);
       this.isProcessing = false;
     }
+  }
+
+  private async renderPayPalButton() {
+    if (this.paypalButtonRendered) return;
+
+    this.paypalButtonRendered = true;
+
+    try {
+      this.clientId = this.payPalService.clientId;
+
+      const paypal = await this.payPalService.loadPayPal(this.clientId);
+
+      if (!paypal || !paypal.Buttons) {
+        console.error('PayPal SDK failed to load');
+        return;
+      }
+
+      paypal.Buttons({
+        createOrder: (data: any, actions: any) => {
+          return actions.order.create({
+            purchase_units: [{ amount: { value: 700 } }]
+          });
+        },
+        onApprove: async (data: any, actions: any) => {
+          const order = await actions.order.capture();
+          console.log('Payment captured:', order);
+          // // window.location.href = `/success?orderId=${data.orderID}`;
+          // window.location.href = `/profile/bookingHistory`;
+          this.toastr.success('Payment successful!');
+          setTimeout(() => {
+            window.location.href = `/gopl`;
+          }, 2500);
+        },
+        onError: (err: any) => {
+          // console.error('PayPal Error:', err);
+          this.toastr.error('Payment failed. Please try again.');
+        }
+      }).render('#paypal-button-container');
+
+    } catch (error) {
+      console.error('Error initializing PayPal:', error);
+    }
+  }
+
+
+  completeOrder(): void {
+    console.log('Order completed with payment method:', this.selectedMethod);
+    // this.cartService.clearCart();
+    // In a real app, you would navigate to confirmation page
+    // this.router.navigate(['/checkout/confirmation']);
+  }
+
+
+  async loadStripe(): Promise<void> {
+    // In a real app, you would:
+    // 1. Load Stripe.js from their CDN
+    // 2. Initialize with your publishable key
+    // 3. Create card element
+    // Mock implementation for demonstration:
+    // if (typeof Stripe !== 'undefined') {
+    //   this.stripe = Stripe('pk_test_your_publishable_key');
+    //   this.stripeElements = this.stripe.elements();
+    //   this.cardElement = this.stripeElements.create('card');
+    //   this.cardElement.mount('#card-element');
+    // }
   }
 
   async processStripePayment(): Promise<void> {
@@ -108,55 +330,16 @@ export class PaymentComponent implements AfterViewInit {
     }
   }
 
-  private renderPayPalButton(): void {
-    if (this.paypalButtonRendered) return;
 
-    // This would be your actual PayPal button implementation
-    // For demonstration, we'll just set the flag
-    this.paypalButtonRendered = true;
-
-    // In a real implementation, you would:
-    // 1. Load PayPal script if not already loaded
-    // 2. Render the button
-    // Example:
-    /*
-    paypal.Buttons({
-      createOrder: (data, actions) => {
-        return actions.order.create({
-          purchase_units: [{
-            amount: {
-              value: (this.cartService.getSubtotal() + 50).toFixed(2)
-            }
-          }]
-        });
-      },
-      onApprove: (data, actions) => {
-        return actions.order.capture().then(details => {
-          this.completeOrder();
-        });
-      },
-      onError: (err) => {
-        console.error('PayPal error:', err);
-      }
-    }).render('#paypal-button-container');
-    */
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
   }
 
-  get selectedPaymentMethod(): string {
-    return this.selectedMethod;
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
   }
 
-  set selectedPaymentMethod(value: string) {
-    this.selectedMethod = value;
-    if (value === 'paypal') {
-      setTimeout(() => this.renderPayPalButton(), 0);
-    }
-  }
-
-  completeOrder(): void {
-    console.log('Order completed with payment method:', this.selectedMethod);
-    this.cartService.clearCart();
-    // In a real app, you would navigate to confirmation page
-    // this.router.navigate(['/checkout/confirmation']);
+  hasUser() {
+    return this.auth.isAuthenticated();
   }
 }

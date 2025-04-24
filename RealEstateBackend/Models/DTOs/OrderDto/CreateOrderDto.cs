@@ -7,8 +7,11 @@ namespace RealEstate.Models.DTOs.OrderDto
 {
     public class CreateOrderDto
     {
-        public int PaymentId { get; set; }
-        public int BuyerId { get; set; }
+        public int? PaymentId { get; set; }
+        
+        [Column(TypeName = "decimal(18,2)")]
+        [NonNegative]
+        public decimal DeliveryFees { get; set; }
         public int AddressId { get; set; }
     }
 }

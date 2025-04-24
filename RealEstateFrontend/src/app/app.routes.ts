@@ -128,14 +128,14 @@ export const routes: Routes = [
   { path: 'MainChat', component: MainChatComponent, title: "Main Chat" },
 
   //---------------------------------------------------------------------------------------
-  { path: 'home/products', component: PHomeComponent, title: "Products Home Page" },
-  { path: 'products', component: ViewAllComponent, title: "Products" },
+  { path: 'products', component: PHomeComponent, title: "Products Home Page" },
+  { path: 'products/all', component: ViewAllComponent, title: "Products" },
   { path: 'products/:id', component: ProductDetailsComponent, title: "Product Details" },
 
 
   //---------------------------------------------------------------------------------------
-  { path: 'home/properties', component: PropertyHomeComponent, title: "Properties Home Page " },
-  { path: 'properties', component: PropertiesPageComponent, title: "Properties" },
+  { path: 'properties', component: PropertyHomeComponent, title: "Properties Home Page " },
+  { path: 'properties/all', component: PropertiesPageComponent, title: "Properties" },
   { path: 'properties/:id', component: PropertyDetailsComponent, title: "Property Details" },
 
   //---------------------------------------------------------------------------------------

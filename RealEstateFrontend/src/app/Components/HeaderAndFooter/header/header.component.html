@@ -42,11 +42,17 @@
   <nav class="primary-nav">
     <ul>
       <li *ngFor="let item of navItems">
+        <!-- [routerLinkActiveOptions]="{ exact: true }" -->
+        <!-- <a [routerLink]="item.link" class="nav-link" routerLinkActive="active">
+          <i [class]="item.icon"></i>
+          <span style="font-size: 1.1rem;">{{ item.label }}</span>
+        </a> -->
         <a [routerLink]="item.link" class="nav-link" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }">
+          [routerLinkActiveOptions]="item.link === '/' ? { exact: true } : { exact: false }">
           <i [class]="item.icon"></i>
           <span style="font-size: 1.1rem;">{{ item.label }}</span>
         </a>
+
       </li>
     </ul>
   </nav>
@@ -122,14 +128,15 @@
             <span><i class="bi bi-cash-stack text-caffe"></i> Total:</span>
             <span class="text-muted fw-semibold">{{ cart?.totalPrice | currency:'EGP ' }}</span>
           </div>
-          <button class="viewCart-btn" routerLink="/checkout">View Cart</button>
-          <button class="checkout-btn mb-4" routerLink="/checkout">Proceed to Checkout</button>
+          <button class="viewCart-btn" routerLink="/checkout/cart" (click)="toggleCart()">View Cart</button>
+          <button class="checkout-btn mb-4" routerLink="/checkout/address" (click)="toggleCart()">Proceed to
+            Checkout</button>
         </div>
       </div>
 
       <ng-template #emptyCardFooter>
         <div class="cart-footer">
-          <button class="checkout-btn mb-4" routerLink="/checkout">Continue Shopping</button>
+          <button class="checkout-btn mb-4" routerLink="/">Continue Shopping</button>
         </div>
       </ng-template>
     </div>

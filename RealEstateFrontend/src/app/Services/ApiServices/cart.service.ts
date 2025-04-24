@@ -10,7 +10,6 @@ export interface CartDto {
   totalPrice: number;
   isDeleted: boolean;
   buyerId?: number;
-  selectedAddressId?: number;
   orderItemDtos?: OrderItemDto[];
 }
 
