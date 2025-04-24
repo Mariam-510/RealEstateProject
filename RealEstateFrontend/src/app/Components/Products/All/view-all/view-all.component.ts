@@ -242,17 +242,19 @@ export class ViewAllComponent {
     this.applyFilters();
   }
 
-  nextImage(productId: number): void {
+  nextImage(productId: number) {
     const product = this.products.find(p => p.id === productId);
-    if (product && this.currentImageIndices[productId] < product.productimage.length - 1) {
-      this.currentImageIndices[productId]++;
+    if (product) {
+      this.currentImageIndices[productId] =
+        (this.currentImageIndices[productId] + 1) % product.productimage.length;
     }
   }
 
-  prevImage(productId: number): void {
+  prevImage(productId: number) {
     const product = this.products.find(p => p.id === productId);
-    if (product && this.currentImageIndices[productId] > 0) {
-      this.currentImageIndices[productId]--;
+    if (product) {
+      this.currentImageIndices[productId] =
+        (this.currentImageIndices[productId] - 1 + product.productimage.length) % product.productimage.length;
     }
   }
 

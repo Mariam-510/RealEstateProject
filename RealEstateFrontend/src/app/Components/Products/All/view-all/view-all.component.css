@@ -20,7 +20,7 @@
 }
 
 .cardHeader:hover .navImgBtn {
-  opacity: 0.70;
+  opacity: 0.7;
   z-index: 1002;
 }
 
@@ -171,7 +171,7 @@
 }
 
 .category-nav .nav-link.active::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -283,22 +283,53 @@
     opacity: 0.5;
   }
 
-  .out-of-stock-overlay {
+  /* .out-of-stock-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg,
+        transparent 45%,
+        rgba(255, 0, 0, 0.3) 46%,
+        rgba(255, 0, 0, 0.3) 54%,
+        transparent 55%);
+  } */
+
+  /* .out-of-stock-overlay {
     position: absolute;
     inset: 0;
     overflow: hidden;
   }
 
-  .out-of-stock-overlay::before {
+  .out-of-stock-overlay::before,
+  .out-of-stock-overlay::after {
     content: "";
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 12%;
-    height: 100%;
-    background: rgba(0, 0, 0);
+    width: 10%;
+    height: 140%;
+    background: rgba(0, 0, 0, 0.6);
+    transform: translate(-50%, -50%);
+  }
+
+  .out-of-stock-overlay::before {
     transform: translate(-50%, -50%) rotate(45deg);
   }
+
+  .out-of-stock-overlay::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  } */
+
+  .out-of-stock-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg,
+        transparent 44%,
+        white 45%,
+        rgba(255, 0, 0, 0.8) 46%,
+        rgba(255, 0, 0, 0.8) 54%,
+        white 55%,
+        transparent 56%);
+}
 }
 
 .status-overlay {
@@ -316,7 +347,40 @@
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-
 .pagination {
   cursor: pointer;
+}
+
+/* aaaaaaa */
+
+.card-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.btn-link {
+  transition: opacity 0.2s ease;
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.text-dark.fs-4 {
+  font-weight: 600;
+  color: #2a2a2a !important;
+}
+
+.hover-shadow-md {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+  }
+}
+
+.badge {
+  font-size: 0.85em;
+  font-weight: 500;
 }

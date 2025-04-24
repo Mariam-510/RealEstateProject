@@ -1230,7 +1230,8 @@ section {
     border: 1px solid #4a2c2a;
   }
 
-  .out-of-stock-overlay {
+
+   /* .out-of-stock-overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(45deg,
@@ -1239,6 +1240,20 @@ section {
         rgba(255, 0, 0, 0.3) 54%,
         transparent 55%);
 
-  }
+  } */
+
+  .out-of-stock-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg,
+        transparent 44%,
+        white 45%,
+        rgba(255, 0, 0, 0.8) 46%,
+        rgba(255, 0, 0, 0.8) 54%,
+        white 55%,
+        transparent 56%);
+}
+
 
 }
+
