@@ -49,6 +49,7 @@ import { AddSubscriptionplanComponent } from './Components/Admin/add-subscriptio
 import { ViewAllComponent } from './Components/Products/All/view-all/view-all.component';
 import { TViewAllProductsComponent } from './Components/Products/ToBeEdited/t-view-all-products/t-view-all-products.component';
 import { ApprovePropertyComponent } from './Components/Admin/approve-property/approve-property.component';
+import { BookAppointmentComponent } from './Components/Appointment/book-appointment/book-appointment.component';
 
 //----------------------------------------------------------------------------------------
 
@@ -152,6 +153,8 @@ export const routes: Routes = [
     ],
   },
 
+  //---------------------------------------------------------------------------------------
+  {path:'book',component:BookAppointmentComponent,title:"Book Appointment"},
   //---------------------------------------------------------------------------------------
   { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
   { path: "t", component: TViewAllProductsComponent, title: "t" },
