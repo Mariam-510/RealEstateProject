@@ -18,6 +18,7 @@ using RealEstate.Models.Dtos.ShippingDto;
 using RealEstate.Models.Dtos.SubscriptionPlanDto;
 using RealEstate.Models.Dtos.ProductStockDto;
 using RealEstate.Models.DTOs.Category;
+using RealEstate.Models.Dtos.PaymentDto;
 
 
 namespace RealEstate.Mapping
@@ -169,7 +170,20 @@ namespace RealEstate.Mapping
 
             //------------------------------------------------------------------------------------------------
 
-            //CreateMap<Product, ProductDTO>().ReverseMap();
+            CreateMap<Payment, PaymentDto>()
+                .ForMember(dest => dest.PaymentMethod,
+                           opt => opt.MapFrom(src => src.PaymentMethod.ToString()))
+                .ForMember(dest => dest.PaidAt,
+                           opt => opt.MapFrom(src => src.PaidAt.ToString("yyyy-MM-dd HH:mm:ss"))) // Or another format if preferred
+                .ReverseMap()
+                .ForMember(dest => dest.PaymentMethod,
+                           opt => opt.MapFrom(src => Enum.Parse<PaymentMethod>(src.PaymentMethod)))
+                .ForMember(dest => dest.PaidAt,
+                           opt => opt.MapFrom(src => DateTime.Parse(src.PaidAt)));
+
+            //------------------------------------------------------------------------------------------------
+
+            //C
 
             //CreateMap<Product, ProductDTOShow>().ReverseMap();
 
