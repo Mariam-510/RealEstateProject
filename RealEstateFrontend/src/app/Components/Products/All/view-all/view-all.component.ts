@@ -72,6 +72,7 @@ export class ViewAllComponent {
     this.maxPrice = Math.max(...this.products.map(p => p.price));
     this.sliderOptions.ceil = this.maxPrice;
     this.updateRatingOptions();
+    console.log(this.minPrice);
 
     this.products.forEach(product => {
       this.currentImageIndices[product.id] = 0;

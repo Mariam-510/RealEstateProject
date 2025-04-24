@@ -21,6 +21,7 @@ export interface OrderResponseDto {
   buyerId: number | null;
   addressId: number | null;
   paymentId: number | null;
+  paymentMethod: string | null;
 }
 
 @Injectable({
@@ -36,6 +37,12 @@ export class OrderService {
     return this.http.post<OrderResponseDto>(
       `${this.apiUrl}/placeOrder`,
       orderData
+    );
+  }
+
+  getById(id: number): Observable<OrderResponseDto> {
+    return this.http.get<OrderResponseDto>(
+      `${this.apiUrl}/getById/${id}`
     );
   }
 
