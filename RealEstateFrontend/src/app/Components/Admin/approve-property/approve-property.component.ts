@@ -3,7 +3,10 @@ import { CommonModule } from '@angular/common';
 import { PropertyDto } from '../../../Service/shared.service';
 import { ToastrService } from '../../../Services/toastr.service';
 // Import Modal from bootstrap
-import { Modal } from 'bootstrap';
+// import { Modal } from bootstrap;
+
+declare var bootstrap: any; // Required for Bootstrap modal handling
+
 @Component({
   selector: 'app-approve-property',
   standalone: true,
@@ -14,7 +17,7 @@ import { Modal } from 'bootstrap';
 export class ApprovePropertyComponent {
   isPDFModalOpen = false;
   @ViewChild('pdfModal') pdfModal!: ElementRef;
-  private modalInstance?: Modal;
+  private modalInstance?: any;
 
   properties: PropertyDto[] = [
     {
@@ -239,9 +242,9 @@ export class ApprovePropertyComponent {
     },
   ];
 
-  constructor(private toastr: ToastrService) {}
+  constructor(private toastr: ToastrService) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   approveProperty(property: PropertyDto): void {
     // Mock approval since PropertyService is not available
@@ -262,11 +265,22 @@ export class ApprovePropertyComponent {
     this.toastr.success('Contract downloaded successfully');
   }
 
-  showModal(): void {
-    if (!this.modalInstance) {
-      this.modalInstance = new Modal(this.pdfModal.nativeElement);
+  // showModal(): void {
+  //   if (!this.modalInstance) {
+  //     this.modalInstance = new Modal(this.pdfModal.nativeElement);
+  //   }
+  //   this.modalInstance.show();
+  // }
+
+  ngAfterViewInit(): void {
+    if (this.pdfModal?.nativeElement) {
+      // Initialize using the global bootstrap object
+      this.modalInstance = new bootstrap.Modal(this.pdfModal.nativeElement);
     }
-    this.modalInstance.show();
   }
- 
+
+  showModal(): void {
+    this.modalInstance?.show();
+  }
+
 }

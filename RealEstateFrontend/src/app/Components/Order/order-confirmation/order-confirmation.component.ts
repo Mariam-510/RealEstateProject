@@ -2,7 +2,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { OrderService } from '../../../Services/ApiServices/order.service';
+import { OrderResponseDto, OrderService } from '../../../Services/ApiServices/order.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 
 @Component({
@@ -13,15 +13,10 @@ import { AuthService } from '../../../Services/ApiServices/auth.service';
   styleUrls: ['./order-confirmation.component.css']
 })
 export class OrderConfirmationComponent {
-  order = {
-    id: '12345',
-    date: new Date(),
-    total: 415.00,
-    paymentMethod: 'Credit Card',
-    estimatedDelivery: new Date(Date.now() + 3600 * 1000 * 2) // 2 hours from now
-  };
 
   orderId: number = 0;
+
+  order: OrderResponseDto | null = null;
 
   constructor(private route: ActivatedRoute, private router: Router, private auth: AuthService,
     private orderService: OrderService) { }
@@ -39,6 +34,22 @@ export class OrderConfirmationComponent {
       console.error('No order ID found in query parameters');
       this.router.navigate(['/']);
     }
+
+    this.loadOrder(this.orderId);
+
+  }
+
+  private loadOrder(id: number) {
+    this.orderService.getById(id).subscribe({
+      next: (order) => {
+        this.order = order;
+        console.log('Order loaded:', order);
+      },
+      error: (err) => {
+        console.error('Failed to load order:', err);
+        // Handle error (show message, redirect, etc.)
+      }
+    });
   }
 
   hasRole(requiredRole: string) {

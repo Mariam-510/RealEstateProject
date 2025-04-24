@@ -50,7 +50,6 @@ import { ViewAllComponent } from './Components/Products/All/view-all/view-all.co
 import { TViewAllProductsComponent } from './Components/Products/ToBeEdited/t-view-all-products/t-view-all-products.component';
 import { ApprovePropertyComponent } from './Components/Admin/approve-property/approve-property.component';
 
-
 //----------------------------------------------------------------------------------------
 
 export const routes: Routes = [
@@ -67,7 +66,7 @@ export const routes: Routes = [
       { path: 'addProduct', component: AddProductComponent, title: "Add Product" },
       { path: "addCatgory", component: AddCategoryComponent, title: "Add Category" },
       { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscription Plan" },
-      { path: 'ap', component: ApprovePropertyComponent, pathMatch: 'full' },
+      { path: 'approve', component: ApprovePropertyComponent, pathMatch: 'full' },
     ]
   },
 

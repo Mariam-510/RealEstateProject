@@ -16,5 +16,6 @@ namespace RealEstate.Models.DTOs.OrderDto
         public int? BuyerId { get; set; }
         public int? AddressId { get; set; }
         public int? PaymentId { get; set; }
+        public string? PaymentMethod { get; set; }
     }
 }

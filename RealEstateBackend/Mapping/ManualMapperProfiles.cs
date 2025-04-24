@@ -60,7 +60,9 @@ namespace RealEstate.Mapping
                 IsDeleted = order.IsDeleted,
                 BuyerId = order.BuyerId,
                 AddressId = order.AddressId,
-                PaymentId = order.PaymentId
+                PaymentId = order.PaymentId,
+                PaymentMethod = order.Payment?.PaymentMethod.ToString() ?? null,
+
             };
         }
 

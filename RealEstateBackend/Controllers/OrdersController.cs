@@ -62,6 +62,7 @@ namespace RealEstate.Controllers
 
         [HttpGet]
         [Route("getById/{id}")]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> GetById(int id)
         {
             var order = await _orderRepository.GetByIdAsync(id);
