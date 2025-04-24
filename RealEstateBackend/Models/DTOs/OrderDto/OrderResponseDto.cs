@@ -8,8 +8,8 @@ namespace RealEstate.Models.DTOs.OrderDto
     public class OrderResponseDto
     {
         public int Id { get; set; }
-        public DateTime OrderDate { get; set; }
-        public OrderStatus Status { get; set; }
+        public string OrderDate { get; set; }
+        public string Status { get; set; }
         public decimal SubTotal { get; set; }
         public decimal DeliveryFees { get; set; }
         public bool IsDeleted { get; set; }

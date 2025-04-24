@@ -8,7 +8,7 @@ export interface ReviewResponseDto {
   id: number;
   rating: number;
   comment?: string;
-  date: Date;  // Will be ISO string from C# DateTime
+  date: string;  // Will be ISO string from C# DateTime
   buyerId?: number;
   buyerFName?: string;
   buyerLName?: string;

@@ -12,7 +12,7 @@ namespace RealEstate.Models.DTOs.ReviewDto
 
         public string? Comment { get; set; }
 
-        public DateTime Date { get; set; }
+        public string Date { get; set; }
 
         public int? BuyerId { get; set; }
         

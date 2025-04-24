@@ -10,6 +10,7 @@ import { CartDto, CartService } from '../../../Services/ApiServices/cart.service
 import { API_CONFIG } from '../../../app.config';
 import { ShippingDto, ShippingService } from '../../../Services/ApiServices/shipping.service';
 import { firstValueFrom } from 'rxjs';
+import { CreateOrderDto, OrderService } from '../../../Services/ApiServices/order.service';
 
 @Component({
   selector: 'app-payment',
@@ -49,84 +50,17 @@ export class PaymentComponent implements OnInit, AfterViewInit {
   isProcessing = false;
   paypalButtonRendered = false;
 
-  addresses: AddressDto | null = null;
+  address: AddressDto | null = null;
   localCart: CartDto | null = null; // Local copy of cart data
   shippingDto: ShippingDto | null = null;
 
   constructor(private router: Router, private route: ActivatedRoute, private auth: AuthService,
     private toastr: ToastrService, private payPalService: PaypalService, private cartService: CartService,
-    private addressService: AddressService, private shippingService: ShippingService
+    private addressService: AddressService, private shippingService: ShippingService, private orderService: OrderService
 
   ) { }
 
   clientId: string = '';
-
-  // async ngOnInit() {
-
-  //   if (!this.hasRole('Buyer')) {
-  //     this.router.navigate(['/login']);
-  //   }
-
-  //   this.route.queryParams.subscribe(params => {
-  //     const addressId = params['id'];
-
-  //     if (!addressId || isNaN(+addressId)) {
-  //       this.router.navigate(['/checkout/address']);
-  //       return;
-  //     }
-  //     await this.loadAddressDetails(addressId);
-  //     console.log('Valid address ID:', addressId);
-  //   });
-
-  //   await this.loadInitialCart();
-  //   await this.loadShipping(this.addresses?.city);
-
-  // }
-
-
-  // async loadInitialCart() {
-  //   if (this.hasRole("Buyer")) {
-  //     await this.cartService.getCart().subscribe(cart => {
-  //       this.localCart = cart; // Store initial copy locally
-  //     });
-  //   }
-  // }
-
-  // get cart(): CartDto | null {
-  //   return this.localCart ? { ...this.localCart } : null; // Return read-only copy
-  // }
-
-  // // In your component
-  // async loadAddressDetails(addressId: number) {
-  //   await this.addressService.getById(addressId).subscribe({
-  //     next: (address) => {
-  //       console.log('Address details:', address);
-  //       this.addresses = address;
-  //     },
-  //     error: (err) => {
-  //       console.error('Error loading address:', err);
-  //       alert(err.error?.message || 'Could not load address details');
-  //     }
-  //   });
-  // }
-
-  // async loadShipping(city: string) {
-  //   // Example component usage
-  //   await this.shippingService.getByCity(city).subscribe({
-  //     next: (shippingInfo) => {
-  //       console.log('Shipping details:', shippingInfo);
-  //       this.shippingDto = shippingInfo;
-  //     },
-  //     error: (err) => {
-  //       console.error('Error fetching shipping info:', err);
-  //     }
-  //   });
-
-  // }
-
-
-
-  // ... other imports
 
   async ngOnInit() {
     if (!this.hasRole('Buyer')) {
@@ -149,8 +83,8 @@ export class PaymentComponent implements OnInit, AfterViewInit {
 
       await this.loadInitialCart();
 
-      if (this.addresses?.city) {
-        await this.loadShipping(this.addresses.city);
+      if (this.address?.city) {
+        await this.loadShipping(this.address.city);
       }
     } catch (error) {
       console.error('Initialization error:', error);
@@ -174,7 +108,7 @@ export class PaymentComponent implements OnInit, AfterViewInit {
     try {
       const address = await firstValueFrom(this.addressService.getById(addressId));
       console.log('Address details:', address);
-      this.addresses = address;
+      this.address = address;
     } catch (err) {
       console.error('Error loading address:', err);
       this.router.navigate(['/checkout/address']);
@@ -193,8 +127,6 @@ export class PaymentComponent implements OnInit, AfterViewInit {
       // Handle error (e.g., show error message)
     }
   }
-
-
 
   get cart(): CartDto | null {
     return this.localCart ? { ...this.localCart } : null; // Return read-only copy
@@ -278,11 +210,28 @@ export class PaymentComponent implements OnInit, AfterViewInit {
   }
 
 
-  completeOrder(): void {
-    console.log('Order completed with payment method:', this.selectedMethod);
-    // this.cartService.clearCart();
-    // In a real app, you would navigate to confirmation page
-    // this.router.navigate(['/checkout/confirmation']);
+  async completeOrder() {
+    await this.handlePlaceOrder();
+  }
+
+  async handlePlaceOrder() {
+    const orderData: CreateOrderDto = {
+      paymentId: null,
+      deliveryFees: this.shippingDto?.deliveryFees ?? 0,
+      addressId: this.address?.id ?? 0
+    };
+
+    try {
+      const response = await firstValueFrom(this.orderService.placeOrder(orderData));
+      console.log('Order placed successfully:', response);
+
+      this.cartService.notifyCartUpdated();
+      this.router.navigate(['/checkout/confirmation']);
+
+    } catch (error) {
+      console.error('Error placing order:', error);
+      // Handle error (show error message)
+    }
   }
 
 

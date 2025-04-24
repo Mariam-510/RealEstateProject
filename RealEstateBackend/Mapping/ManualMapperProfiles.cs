@@ -53,8 +53,8 @@ namespace RealEstate.Mapping
             return new OrderResponseDto
             {
                 Id = order.Id,
-                OrderDate = order.OrderDate,
-                Status = order.Status,
+                OrderDate = order.OrderDate.ToString(),
+                Status = order.Status.ToString(),
                 SubTotal = order.SubTotal,
                 DeliveryFees = order.DeliveryFees,
                 IsDeleted = order.IsDeleted,
@@ -74,6 +74,7 @@ namespace RealEstate.Mapping
                 Id = review.Id,
                 Rating = review.Rating,
                 Comment = review.Comment,
+                Date = review.Date.ToString(),
                 ProductId = review.ProductId,
                 BuyerId = review.BuyerId,
                 BuyerFName = review.Buyer.FirstName,
