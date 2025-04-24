@@ -111,7 +111,7 @@ namespace RealEstate.Controllers
 
                         if (cart.OrderItems != null)
                         {
-                            foreach (var orderItem in cart.OrderItems)
+                            foreach (var orderItem in cart.OrderItems.ToList())
                             {
                                 var product = await _productRepository.GetByIdAsync((int) orderItem.ProductId);
 
