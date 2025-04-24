@@ -1,0 +1,126 @@
+<div class="container-fluid justify-content-center">
+<div class="row min-vh-100 align-items-center no-gutters">
+    <!-- Right Property Section -->
+    <div class=" col-lg-6  col-12  property-section">
+      <div class="property-details px-2">
+    
+    <div class="sticky-top ">
+      <h2 class="mb-4 text-dark-caffe  text-center appointment-title">You're scheduling to view</h2>
+      
+      <!-- Property Images Carousel -->
+      <div class="property-carousel mb-1">
+        <!-- Main Carousel -->
+        <div class="carousel-main position-relative mb-3">
+          <div class="carousel-inner rounded-3">
+            <div *ngFor="let img of images; let i = index" 
+                 class="carousel-item" 
+                 [class.active]="activeImageIndex === i">
+              <img [src]="img.main" 
+                   class="d-block w-100" 
+                   alt="Property image {{i + 1}}">
+            </div>
+          </div>
+          <button class="carousel-control prev" (click)="prevImage()">❮</button>
+          <button class="carousel-control next" (click)="nextImage()">❯</button>
+        </div>
+
+        <!-- Thumbnail Carousel -->
+        <div class="carousel-thumbnails">
+          <div class="thumbnails-scroll no-scroll">
+            <div *ngFor="let img of images; let i = index" 
+                 class="thumbnail-item" 
+                 [class.active]="activeImageIndex === i"
+                 (click)="setActiveImage(i)">
+              <img [src]="img.thumb" 
+                   class="img-thumbnail" 
+                   alt="Thumbnail {{i + 1}}">
+            </div>
+          </div>
+        </div>
+      </div>
+
+          <!-- Property Info -->
+          <div class="property-info mb-3">
+            <h2 class="mb-3">Modern Downtown Loft</h2>
+            <div class="d-flex gap-3 align-items-center">
+              <p *ngIf="selectedDate" class="detail-item m-0">
+                <i class="bi bi-calendar me-2"></i>
+                {{ selectedDate | date: 'mediumDate' }}
+              </p>
+              <p *ngIf="selectedTime" class="detail-item m-0">
+                <i class="bi bi-clock me-2"></i>
+                {{ selectedTime }}
+              </p>
+            </div>
+          </div>
+          <!-- Seller Info -->
+          <div class="seller-info bg-white px-3 py-2 rounded-3 shadow-sm">
+            <div class="d-flex align-items-center mb-3">
+              <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D" alt="Seller avatar" 
+                   class="rounded-circle me-3" width="50" height="50">
+              <div>
+                <h5 class="mb-0">John Smith</h5>
+                <small class="text-muted">Licensed Realtor</small>
+              </div>
+            </div>
+           
+          </div>
+        </div>
+      </div>
+         
+    </div>
+    <!-- Left Content Section -->
+    <div class="col-5 section d-flex justify-content-center min-vh-100">
+      <div class="main-container" style="margin-left: 0.5rem;">
+        <!-- Date & Time Picker Section -->
+        <div class="row">
+          <!-- Unified Title -->
+          <div class="col-12">
+            <h2 class="text-center  appointment-title">Schedule Your Appointment</h2>
+          </div>
+        
+     <!-- Date Picker -->
+<!-- Date Picker -->
+<div class="col-12 pt-2">
+  <div class="date-container">
+    <h3 class="mb-3">Select Date</h3>
+    <div class="date-cards-grid pt-2 pb-2 px-1 row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+      <div 
+        *ngFor="let day of days" 
+        class="col card date-card py-3 text-center"
+        [class.active]="selectedDate === day.date"
+        [class.hovered]="hoveredDate === day.date"
+        (click)="selectDate(day)"
+        (mouseenter)="hoveredDate = day.date"
+        (mouseleave)="hoveredDate = null">
+        <div class="text-muted small">{{ day.dayOfWeek }}</div>
+        <div class="fw-bold fs-3">{{ day.day }}</div>
+        <div class="text-uppercase small">{{ day.month }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Time Picker -->
+<div class="time-picker-container col-12 mt-4 pt-5">
+  <h3 class="picker-heading mb-3">Select Time</h3>
+  <div class="time-input-wrapper">
+    <input type="time" 
+           class="form-control time-input"
+           [(ngModel)]="timeValue"
+           (change)="onTimeChange()">
+  </div>
+</div>
+
+
+        </div>
+        
+    
+      </div>
+    </div>
+
+    <!-- Right Property Section -->
+
+    
+  </div>
+</div>
