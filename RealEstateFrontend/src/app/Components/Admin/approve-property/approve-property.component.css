@@ -168,3 +168,29 @@
 #pdfPreviewModal .modal-footer {
   border-top: 1px solid #dee2e6;
 }
+
+
+/* PDF Preview Section Styles */
+.pdf-preview {
+  position: relative;
+}
+
+.pdf-preview iframe {
+  width: 100%;
+  border: 1px solid rgba(195, 142, 121, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.pdf-preview iframe:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pdf-preview .btn {
+  transition: all 0.2s ease;
+}
+
+.pdf-preview .btn:hover {
+  background-color: #a57865 !important;
+  transform: translateY(-1px);
+}
