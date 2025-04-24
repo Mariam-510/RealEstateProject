@@ -48,6 +48,7 @@ import { ForgetPasswordSendCodeComponent } from './Components/Authentication/for
 import { AddReviewComponent } from './Components/Order/add-review/add-review.component';
 import { AllReviewComponent } from './Components/Buyer/all-review/all-review.component';
 import { AddSubscriptionplanComponent } from './Components/Admin/add-subscriptionplan/add-subscriptionplan.component';
+import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
 
 //----------------------------------------------------------------------------------------
 
@@ -88,6 +89,8 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
+      { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "Viall all Appointment" },
+
     ]
   },
 
