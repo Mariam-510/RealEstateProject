@@ -46,9 +46,13 @@ import { ForgetPasswordSendCodeComponent } from './Components/Authentication/for
 import { AddReviewComponent } from './Components/Order/add-review/add-review.component';
 import { AllReviewComponent } from './Components/Buyer/all-review/all-review.component';
 import { AddSubscriptionplanComponent } from './Components/Admin/add-subscriptionplan/add-subscriptionplan.component';
+<<<<<<< HEAD
+import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
+=======
 import { ViewAllComponent } from './Components/Products/All/view-all/view-all.component';
 import { TViewAllProductsComponent } from './Components/Products/ToBeEdited/t-view-all-products/t-view-all-products.component';
 
+>>>>>>> 90501d58c02cfc105f21bb303d20b7e24eb7f49c
 
 //----------------------------------------------------------------------------------------
 
@@ -89,6 +93,8 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
+      { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "Viall all Appointment" },
+
     ]
   },
 

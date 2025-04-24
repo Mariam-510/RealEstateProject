@@ -5,15 +5,17 @@
     background: #f8f9fa;
   }
   
+ 
   .sidebar {
     /* width: 300px; */
-    max-height: 410px;
+    max-height: 28vw;
     position: fixed;
     left: 0;
     top: 0;
     overflow-y: auto;
     transition: width 0.3s ease-in-out;
   }
+  
   
   .sidebar.collapsed {
     width: 80px;

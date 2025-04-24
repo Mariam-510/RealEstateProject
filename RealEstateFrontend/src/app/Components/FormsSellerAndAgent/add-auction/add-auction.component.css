@@ -1,8 +1,6 @@
 .new-auction-page {
-    background-color: #f8f9fa;
-    min-height: calc(100vh - 140px);
-    padding-top: 20px;
-  }
+     min-height: calc(100vh - 140px);
+   }
   
   .form-control:focus,
   .form-select:focus {

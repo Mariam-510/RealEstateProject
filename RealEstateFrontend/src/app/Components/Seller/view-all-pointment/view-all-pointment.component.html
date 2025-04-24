@@ -1,0 +1,115 @@
+<div class="mt-5 ms-5">
+    <h2 class="fw-bold"><span style="font-size: 0.9em;">📆</span> All Appointments</h2>
+    <nav aria-label="breadcrumb mb-0">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item mb-0">
+                <p class="text-muted mb-0">Seller</p>
+            </li>
+            <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">All Appointments</li>
+        </ol>
+    </nav>
+</div>
+
+<!-- Filter Tabs -->
+<div class="d-flex mb-4 mt-5 ms-4">
+    <a *ngFor="let link of propertyLinks" href="#" (click)="setActive(link, $event)" [ngClass]="{
+               'active-tab': link === activeLink, 
+               'text-muted': link !== activeLink
+           }" class="text-decoration-none px-4 py-3 text-caffe">
+        {{ link }}
+        <span *ngIf="link === activeLink" class="active-indicator"></span>
+    </a>
+</div>
+
+<div class="row">
+    <div *ngFor="let appointment of filteredappoinments" class="col-12">
+        <div class="card border-0 shadow-sm hover-shadow transition-all ms-4 mb-4 position-relative">
+            <div class="card-body p-0">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <img [src]="'/propertyImages/6.jpg'" class="img-fluid"
+                            style="width: 100%; height: 220px; object-fit: cover;">
+                    </div>
+
+                    <div class="col-md-5">
+                        <h5 class="card-title fw-bold ">{{appointment.Property.name}}</h5>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-geo-alt text-caffe me-2"></i>
+                                <span class="text-muted">{{ appointment.Property.Address }}</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-clock text-caffe me-2"></i>
+                                <span class="text-muted">
+                                    {{ appointment.ScheduledTime | date: 'dd MMM, y, h:mm:ss a' }}
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i [ngClass]="{
+                                        'bi bi-camera-video': appointment.Type === 'Virtual',
+                                        'bi  bi-building ': appointment.Type === 'InPerson'
+                                      }" class="me-2 text-caffe"></i>
+                                <span class="text-muted">{{ appointment.Type }}</span>
+                            </div>
+                            <div class="bg-light rounded-3 w-75 mt-1 mb-1">
+                                <div class="d-flex align-items-center">
+                                    <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
+                                        alt="Seller avatar" class="rounded-circle me-3" width="50" height="50">
+                                    <div>
+                                        <h5 class="mb-0">{{appointment.Buyer.Name}}</h5>
+                                        <small class="text-muted">Licensed Realtor</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status & Actions -->
+                    <div class="col-md-3 d-flex flex-column justify-content-between position-relative"
+                        style="min-height: 185px;">
+                        <!-- Status Badge -->
+                        <div class="text-end">
+                            <span class="badge rounded-pill fs-6 py-2 px-3" 
+                            [ngClass]="{
+                              'text-warning': appointment.Status === 'Pending',
+                              'text-caffe': appointment.Status === 'Confirmed',
+                              'text-danger': appointment.Status === 'Cancelled',
+                              'text-success': appointment.Status === 'Completed'
+                               }">
+                                {{ appointment.Status }}
+                            </span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="mt-auto text-end">
+                            <div *ngIf="appointment.Status === 'Pending'" class="d-flex justify-content-end gap-2">
+                                <button (click)="updateStatus(appointment, 'Cancelled')" class="btn btn-outline-danger">
+                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                </button>
+                                <button (click)="updateStatus(appointment, 'Confirmed')" class="btn btn-success me-3">
+                                    <i class="bi bi-check-circle me-1"></i> Approve
+                                </button>
+                            </div>
+                            <div *ngIf="appointment.Status === 'Confirmed'" class="d-flex justify-content-end gap-2">
+                                <button (click)="updateStatus(appointment, 'Cancelled')" class="btn btn-outline-danger ">
+                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                </button>
+                                <button (click)="updateStatus(appointment, 'Completed')" class="btn btn-primary me-3">
+                                    <i class="bi bi-check-circle me-1"></i>  Completed
+                                </button>
+                              
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Empty State -->
+<div *ngIf="appointments.length > 0 && filteredappoinments.length === 0" class="text-center py-5">
+    <h3 class="fw-bold text-danger mb-3 mt-5">No Matching Appointments</h3>
+    <p class="text-muted mb-4">Try another filters to find what you're looking for.</p>
+</div>
