@@ -14,7 +14,7 @@ namespace RealEstate.Models.DTOs.Product
         public double AverageRating { get; set; }
         public int NumberOfReviews { get; set; }
         public bool IsDeleted { get; set; }
-        public DateTime? DateAdded { get; set; }
+        public DateTime DateAdded { get; set; }
         public int CategoryID { get; set; }
         public string CategoryName { get; set; }
         public List<string> Productimage { get; set; }

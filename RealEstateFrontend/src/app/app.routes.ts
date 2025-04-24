@@ -31,9 +31,7 @@ import { SellerProfileComponent } from './Components/Seller/seller-profile/selle
 import { DashboardComponent } from './Components/Seller/dashboard/dashboard.component';
 import { PaymentComponent } from './Components/Payments/payment/payment.component';
 import { PropertyDetailsComponent } from './Components/Properties/Details/property-details/property-details.component';
-import { CategoryComponent } from './Components/Products/ToBeEdited/category/category.component';
 import { PHomeComponent } from './Components/Products/Home/p-home/p-home.component';
-import { CatSliderComponent } from './Components/Products/Home/Sliders/cat-slider/cat-slider.component';
 import { AuctionHomeComponent } from './Components/Auction/Home/auction-home/auction-home.component';
 import { ProductDetailsComponent } from './Components/Products/Details/product-details/product-details.component';
 import { AboutComponent } from './Components/AboutAndNotFound/about/about.component';
@@ -48,7 +46,13 @@ import { ForgetPasswordSendCodeComponent } from './Components/Authentication/for
 import { AddReviewComponent } from './Components/Order/add-review/add-review.component';
 import { AllReviewComponent } from './Components/Buyer/all-review/all-review.component';
 import { AddSubscriptionplanComponent } from './Components/Admin/add-subscriptionplan/add-subscriptionplan.component';
+<<<<<<< HEAD
 import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
+=======
+import { ViewAllComponent } from './Components/Products/All/view-all/view-all.component';
+import { TViewAllProductsComponent } from './Components/Products/ToBeEdited/t-view-all-products/t-view-all-products.component';
+
+>>>>>>> 90501d58c02cfc105f21bb303d20b7e24eb7f49c
 
 //----------------------------------------------------------------------------------------
 
@@ -65,7 +69,7 @@ export const routes: Routes = [
       { path: 'viewAllOrder', component: ViewAllOrderComponent, title: "View All Order" },
       { path: 'addProduct', component: AddProductComponent, title: "Add Product" },
       { path: "addCatgory", component: AddCategoryComponent, title: "Add Category" },
-      { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscriptionplan" },
+      { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscription Plan" },
 
     ]
   },
@@ -128,6 +132,7 @@ export const routes: Routes = [
 
   //---------------------------------------------------------------------------------------
   { path: 'home/products', component: PHomeComponent, title: "Products Home Page" },
+  { path: 'products', component: ViewAllComponent, title: "Products" },
   { path: 'products/:id', component: ProductDetailsComponent, title: "Product Details" },
 
 
@@ -155,11 +160,9 @@ export const routes: Routes = [
 
   //---------------------------------------------------------------------------------------
   { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
+  { path: "t", component: TViewAllProductsComponent, title: "t" },
   { path: "**", component: NotFoundComponent },
 
-
-  //----------------------------------------------------------------------------------------
-  { path: 'products/category/:id', component: CategoryComponent },
 
   //----------------------------------------------------------------------------------------
 

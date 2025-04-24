@@ -20,10 +20,10 @@ export class GoogleAndPaypalComponent implements OnInit {
 
   async ngOnInit() {
 
-    this.currentUser = this._authService.currentUser;
-    this._authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-    });
+    // this.currentUser = this._authService.currentUser;
+    // this._authService.currentUser$.subscribe(user => {
+    //   this.currentUser = user;
+    // });
 
 
     try {
@@ -65,7 +65,7 @@ export class GoogleAndPaypalComponent implements OnInit {
 
 
   googleLogin() {
-    this._authService.googleLogin();
+    // this._authService.googleLogin();
   }
 
 }

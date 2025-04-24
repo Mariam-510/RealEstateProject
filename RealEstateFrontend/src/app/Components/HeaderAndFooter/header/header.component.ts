@@ -2,22 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, effect, ElementRef, HostListener, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { SharedService } from '../../../Services/shared.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SignUpRoleComponentComponent } from '../../Authentication/sign-up-role-component/sign-up-role-component.component';
-
-interface User {
-  name: string;
-  email: string;
-  avatar: string;
-}
-
-interface CartItem {
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
+import { AuthService, User } from '../../../Services/ApiServices/auth.service';
+import { API_CONFIG } from '../../../app.config';
+import { CartDto, CartService } from '../../../Services/ApiServices/cart.service';
+import { catchError, Observable, of, startWith, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -27,16 +17,68 @@ interface CartItem {
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
-  constructor(private elRef: ElementRef, private _shared: SharedService, private router: Router, private dialog: MatDialog) { }
+  // constructor(private elRef: ElementRef, private auth: AuthService,
+  //   private router: Router, private dialog: MatDialog, private cartService: CartService) { }
 
+  cart$: Observable<CartDto | null>;
+
+  constructor(private elRef: ElementRef, private auth: AuthService,
+    private router: Router, private dialog: MatDialog, private cartService: CartService) {
+    // Initialize cart$ after dependencies are injected
+    this.cart$ = this.cartService.cartUpdated$.pipe(
+      startWith(null),
+      switchMap(() => {
+        if (this.hasRole("Buyer")) {
+          return this.cartService.getCart().pipe(
+            catchError(() => of(null))
+          );
+        }
+        return of(null);
+      })
+    );
+
+    // console.log(this.cart$);
+    // this.cart$.subscribe(cart => {
+    //   if (cart) {
+    //     console.log(cart.orderItemDtos); // Access property on emitted value
+    //   }
+    // });
+  }
+
+  cartCall() {
+    this.cart$ = this.cartService.cartUpdated$.pipe(
+      startWith(null),
+      switchMap(() => {
+        if (this.hasRole("Buyer")) {
+          return this.cartService.getCart().pipe(
+            catchError(() => of(null))
+          );
+        }
+        return of(null);
+      })
+    );
+  }
+
+  clearCart() {
+    this.cartService.clearCart().subscribe({
+      next: (response) => {
+        console.log('Cart cleared:', response.message);
+        console.log('Updated cart:', response.cartDto);
+        this.cartService.notifyCartUpdated(); // Update UI components
+      },
+      error: (err) => {
+        console.error('Error clearing cart:', err);
+      }
+    });
+  }
+
+  apiConfig = API_CONFIG;
+  cart: CartDto | null = null;
   showMobileNav = false;
   showUserMenu = false;
-  isLoggedIn = false; // Set this based on auth state
   wishlistCount = 0;
-  cartCount = 0;
   showCart = false;
   showCartBackdrop = false;
-  cartTotal = 0;
 
   isRouteActive(routePath: string): boolean {
     return this.router.url === routePath;
@@ -50,45 +92,41 @@ export class HeaderComponent implements OnInit, OnDestroy {
     { label: 'About', link: '/about', icon: 'bi bi-info-circle-fill' }
   ];
 
-  cartItems: CartItem[] = [
-    {
-      name: 'Modern Sofadddddddddd ddddddddd xdddddddddddddddddaaaaaaaaaaaaa',
-      price: 200,
-      quantity: 1,
-      image: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
-    },
-    {
-      name: 'Modern Sofadddddddddd ddddddddd xdddddddddddddddddaaaaaaaaaaaaa',
-      price: 200,
-      quantity: 1,
-      image: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
-    },
-    {
-      name: 'Modern Sofadddddddddd ddddddddd xdddddddddddddddddaaaaaaaaaaaaa',
-      price: 200,
-      quantity: 1,
-      image: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg'
-    },
-    {
-      name: 'Coffee Table',
-      price: 200,
-      quantity: 2,
-      image: 'https://denovofurniture.pk/wp-content/uploads/2024/06/Opulence-New-5.jpg'
-    }
-  ];
+  image: string = 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg';
 
-  currentUser: User = {
-    name: "HAAAAAAAAAAAA",
-    email: "haaa@gmail.com",
-    avatar: "https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg"
-  }
-
-  // currentUser: User | null = null;
+  loggedInUser!: User | undefined;
 
   ngOnInit() {
     document.addEventListener('click', this.onClickOutside.bind(this));
-    this.updateCartTotal();
-    this.updateCartCount(); // Initialize cart count
+
+    this.auth.currentUser$.subscribe(user => {
+      this.loggedInUser = user;
+      // Trigger initial load
+      this.cartService.notifyCartUpdated();
+    });
+  }
+
+
+  handleLogout() {
+    this.closeMenus();
+    this.auth.logout();
+    this.loggedInUser = undefined;
+    this.cartService.notifyCartUpdated(); // <-- Add this line
+    this.cartCall();
+    console.log(this.loggedInUser);
+    console.log(this.auth.isAuthenticated());
+  }
+
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  openSigUPDialog(): void {
+    this.dialog.open(SignUpRoleComponentComponent);
   }
 
   ngOnDestroy() {
@@ -126,42 +164,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.showCartBackdrop = false;
   }
 
-  private updateCartCount() {
-    // this.cartCount = this.cartItems.reduce((total, item) => total + item.quantity, 0);
-    this.cartCount = this.cartItems.length;
-  }
-
-  increaseQuantity(item: any) {
-    item.quantity++;
-    this.updateCartTotal();
-    this.updateCartCount();
-  }
-
-  decreaseQuantity(item: any) {
-    if (item.quantity > 1) {
-      item.quantity--;
-      this.updateCartTotal();
-      this.updateCartCount();
-    }
-  }
-
-  private updateCartTotal() {
-    this.cartTotal = this.cartItems.reduce((total, item) =>
-      total + (item.price * item.quantity), 0);
-  }
-
-  handleAuth(type: 'login' | 'register') {
-    // Implement auth logic
-    console.log(`Auth type: ${type}`);
-    this.closeMenus();
-  }
-
-  handleLogout() {
-    // Implement logout logic
-    this.isLoggedIn = false;
-    this.closeMenus();
-  }
-
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
     if (!this.elRef.nativeElement.contains(event.target)) {
@@ -169,7 +171,5 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  openSigUPDialog(): void {
-    this.dialog.open(SignUpRoleComponentComponent);
-  }
+
 }

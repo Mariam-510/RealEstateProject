@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit,ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AccountService } from '../../../Services/ApiServices/account.service';
-import {  } from '@angular/core';
+import { } from '@angular/core';
 
 @Component({
   selector: 'app-send-code',
@@ -82,7 +82,7 @@ export class SendCodeComponent implements OnInit {
   onInput(event: Event, index: number) {
     const input = event.target as HTMLInputElement;
     input.value = input.value.replace(/\D/g, '');
-    
+
     if (index < this.codeArray.length - 1 && input.value) {
       const inputsArray = this.codeInputs.toArray();
       inputsArray[index + 1]?.nativeElement.focus();
@@ -101,7 +101,7 @@ export class SendCodeComponent implements OnInit {
     if (allowedKeys.includes(event.key)) {
       return;
     }
-  
+
     if (!/^\d$/.test(event.key)) {
       event.preventDefault();
     }
@@ -109,12 +109,12 @@ export class SendCodeComponent implements OnInit {
   handlePaste(event: ClipboardEvent, startIndex: number) {
     event.preventDefault();
     const clipboardData = event.clipboardData?.getData('text/plain') || '';
-    const digits = clipboardData.replace(/\D/g, '').split(''); 
-    
+    const digits = clipboardData.replace(/\D/g, '').split('');
+
     for (let i = 0; i < digits.length && startIndex + i < this.codeArray.length; i++) {
       this.codeArray[startIndex + i] = digits[i];
     }
-    
+
     const lastFilledIndex = Math.min(startIndex + digits.length - 1, this.codeArray.length - 1);
     const inputs = document.querySelectorAll<HTMLInputElement>('input[type="text"]');
     if (inputs[lastFilledIndex]) {

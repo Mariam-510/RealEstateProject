@@ -10,8 +10,8 @@ namespace RealEstate.Repositories
         Task<Wishlist?> UpdatePropertyAsync(int BuyerID, int propertyID, bool isDeleted);
         Task<List<Property?>> GetAllPropertyByBuyerIDAsync(int BuyerID);
         Task<List<Product?>> GetAllProductByBuyerIDAsync(int BuyerID);
-        Task<Wishlist?> GettByBuyerAndProductIdAsync(int productID, int BuyerID);
-        Task<Wishlist?> GettByBuyerAndpropertyIdAsync(int propertyID, int BuyerID);
+        Task<Wishlist?> GetByBuyerAndProductIdAsync(int productID, int BuyerID);
+        Task<Wishlist?> GetByBuyerAndpropertyIdAsync(int propertyID, int BuyerID);
 
     }
 }

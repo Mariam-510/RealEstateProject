@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Models.Dtos.CartDto;
@@ -29,9 +30,35 @@ namespace RealEstate.Controllers
 
 
         [HttpGet("{id}")]
+        [Authorize(Roles ="Buyer")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var cart = await CartRepository.GetByIdAsync(id);
+
+            if (cart == null)
+            {
+                return NotFound();
+            }
+
+            var cartDto = Mapper.Map<CartDto>(cart);
+
+            return Ok(cartDto);
+        }
+
+
+        [HttpGet()]
+        [Route("Buyer")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> GetByBuyerId()
+        {
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
+            var cart = await CartRepository.GetByBuyerIdAsync(buyerId);
 
             if (cart == null)
             {
@@ -78,11 +105,19 @@ namespace RealEstate.Controllers
 
 
         [HttpPut]
-        [Route("ClearCart/{cartId}")]
-        public async Task<IActionResult> ClearCart(int cartId)
+        [Route("ClearCart")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> ClearCart()
         {
+            string buyerIdStr = User.FindFirst("userId")?.Value;
 
-            var cart = await CartRepository.GetByIdAsync(cartId);
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
+            var cart = await CartRepository.GetByBuyerIdAsync(buyerId);
+            
             if (cart == null)
             {
                 return NotFound(new { message = "Cart not found" });

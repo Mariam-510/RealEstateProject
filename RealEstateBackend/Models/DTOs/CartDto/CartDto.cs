@@ -17,6 +17,6 @@ namespace RealEstate.Models.Dtos.CartDto
 
         public int? SelectedAddressId { get; set; }
 
-        public ICollection<OrderItemDto.OrderItemDto>? OrderItemDtos { get; set; }
+        public ICollection<OrderItemDto.OrderItemDto> OrderItemDtos { get; set; } = new List<OrderItemDto.OrderItemDto>();
     }
 }

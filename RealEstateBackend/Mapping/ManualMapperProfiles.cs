@@ -70,10 +70,14 @@ namespace RealEstate.Mapping
         {
             return new ReviewResponseDto
             {
+                Id = review.Id,
                 Rating = review.Rating,
                 Comment = review.Comment,
                 ProductId = review.ProductId,
-                BuyerId = review.BuyerId
+                BuyerId = review.BuyerId,
+                BuyerFName = review.Buyer.FirstName,
+                BuyerLName = review.Buyer.LastName,
+                BuyerImageUrl = review.Buyer.Account?.ImageUrl
             };
         }
 
@@ -162,7 +166,6 @@ namespace RealEstate.Mapping
             return new Wishlist
             {
 
-                BuyerId = wishlistproductDTO.BuyerId,
                 ProductId = wishlistproductDTO.ProductId,
             };
         }
@@ -172,7 +175,6 @@ namespace RealEstate.Mapping
             return new Wishlist
             {
 
-                BuyerId = wishlistpropertyDTO.BuyerId,
                 PropertyId = wishlistpropertyDTO.PropertyID,
             };
         }

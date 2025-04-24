@@ -10,7 +10,7 @@ namespace RealEstate.Repositories
         Task<List<Product>> GetAllAsync(string? Name=null, string? SortPrice = null, string? Category=null, string? SortRate = null);
         Task<List<Product>> GetAllProductByCategoryID(int Category);
         Task<Product?> GetByIdAsync(int id);
-        Task CalculateAverageRating(int? productId);
+        Task<double> CalculateAverageRating(int? productId);
 
         //some change
     }

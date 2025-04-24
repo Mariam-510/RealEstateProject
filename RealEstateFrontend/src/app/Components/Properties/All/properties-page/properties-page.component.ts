@@ -124,7 +124,7 @@ export class PropertiesPageComponent implements OnInit, AfterViewInit {
     this.sliderOptions = {
       floor: this.minPrice,
       ceil: this.maxPrice,
-      translate: (value: number) => `${value.toLocaleString()} EGP`
+      translate: (value: number) => `EGP ${value.toLocaleString()}`
     };
 
     this.sliderOptionsSpace = {

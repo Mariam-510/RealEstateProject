@@ -37,10 +37,30 @@ namespace RealEstate.Controllers
             return Ok(response);
         }
 
+        [HttpGet]
+        [Route("ByProduct/{productId}")]
+        public async Task<ActionResult> GetAllByProduct(int productId)
+        {
+            var existingProduct = await _productRepository.GetByIdAsync(productId);
+            if (existingProduct == null)
+                return NotFound("Buyer not found!");
+
+            var reviews = await _reviewRepository.GetAllByProductAsync(productId);
+
+            var response = reviews.Select(r => r.ReviewResponseDto()).ToList();
+
+            return Ok(response);
+        }
+
         [HttpPost]
         [Route("Create")]
         public async Task<ActionResult> Create(ReviewDto reviewDto)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (reviewDto == null)
                 return BadRequest("Invalid review data!");
 
