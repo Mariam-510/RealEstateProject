@@ -20,7 +20,7 @@
         </div>
 
         <!-- Messages Container -->
-        <div class="card-body messages-container">
+        <div class="card-body messages-container" #messagesContainer>
             <!-- Date Separator -->
             <div class="date-separator text-center mb-3">
                 <span class="badge bg-light-brown text-brown">
@@ -28,8 +28,7 @@
                 </span>
             </div>
 
-            <div *ngFor="let msg of messages" class="message-wrapper">
-                <div class="d-flex mb-3" [ngClass]="msg.sent ? 'justify-content-end' : 'justify-content-start'">
+            <div *ngFor="let msg of messages; trackBy: trackByMessage" class="message-wrapper">                <div class="d-flex mb-3" [ngClass]="msg.sent ? 'justify-content-end' : 'justify-content-start'">
                     <!-- Receiver Image -->
                     <img *ngIf="!msg.sent"
                         [src]="msg.profileImg || 'assets/default-user.png'"
@@ -40,11 +39,23 @@
 
                     <div class="d-flex flex-column" [ngClass]="msg.sent ? 'align-items-end' : 'align-items-start'">
                         <div class="d-flex align-items-start" [ngClass]="{'flex-row-reverse': msg.sent}">
-                            <!-- Message Bubble -->
-                            <div [ngClass]="msg.sent ? 'sent-message' : 'received-message'"
-                                class="message-bubble position-relative">
-                                <p class="mb-0">{{ msg.text }}</p>
-                            </div>
+                               <!-- Message Bubble -->
+                    <div class="message-bubble-with-meta" [ngClass]="{
+                        'sent-message': msg.sent,
+                        'received-message': !msg.sent
+                      }">
+                      <p class="mb-1">{{ msg.text }}</p>
+                      <div class="bubble-meta text-muted small d-flex justify-content-end align-items-center gap-1">
+                        <span>{{ msg.time | date:'shortTime' }}</span>
+                        <span *ngIf="msg.sent" class="status-indicator" [ngClass]="getStatusClass(msg.status)">
+                          <i *ngIf="msg.status === 'Read'" class="bi bi-check2-all"></i>
+                          <i *ngIf="msg.status === 'Delivered'" class="bi bi-check2"></i>
+                          <i *ngIf="msg.status === 'Sent'" class="bi bi-check"></i>
+                          <i *ngIf="msg.status === 'Pending'" class="bi bi-clock-history"></i>
+                          <i *ngIf="msg.status === 'Rejected'" class="bi bi-x-circle"></i>
+                        </span>
+                      </div>
+                    </div>
 
                             <!-- Sender Image -->
                             <img *ngIf="msg.sent"
@@ -56,7 +67,7 @@
                         </div>
 
                         <!-- Message Metadata -->
-                        <div class="message-metadata d-flex justify-content-between w-100 small mt-1">
+                        <!-- <div class="message-metadata d-flex justify-content-between w-100 small mt-1">
                             <span class="text-muted" *ngIf="!msg.sent">
                                 {{ msg.time | date:'shortTime' }}
                             </span>
@@ -71,7 +82,7 @@
                                     
                                 </span>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -80,16 +91,11 @@
         <!-- Footer Section -->
         <div class="card-footer text-muted p-3">
             <div class="input-group">
-                <input type="text" 
-                     class="form-control" 
-                     [(ngModel)]="newMessage"
-                     (keyup.enter)="sendMessage()"
-                     placeholder="Type your message...">
-                <button class="btn btn-brown" 
-                        type="button" 
-                        (click)="sendMessage()">
-                    <i class="bi bi-send-fill"></i>
-                </button>
+                <textarea class="form-control" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()"
+                placeholder="Type your message..." rows="1"></textarea>
+              <button class="btn btn-brown" (click)="sendMessage()">
+                <i class="bi bi-send-fill"></i>
+              </button>
             </div>
         </div>
     </div>

@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AfterViewChecked, ElementRef, ViewChild,AfterViewInit } from '@angular/core';
+
 enum MessageStatus {
   Pending = 'Pending',
   Sent = 'Sent',
@@ -20,7 +22,26 @@ enum ConversationStatus {
   Active = 'Active',
   Closed = 'Closed'
 }
+interface Message {
+  text: string;
+  sent: boolean;
+  time: Date;
+  status: MessageStatus;
+  senderId: string;
+}
 
+interface Chat {
+  id: number;
+  status: ConversationStatus;
+  otherUser: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+  messages: Message[];
+  unread: number;
+  lastMessageTime: Date;
+}
 
 @Component({
   selector: 'app-main-chat',
@@ -28,11 +49,64 @@ enum ConversationStatus {
   templateUrl: './main-chat.component.html',
   styleUrl: './main-chat.component.css'
 })
-export class MainChatComponent {
-  selectedChat: any = null;
+export class MainChatComponent  implements AfterViewChecked ,AfterViewInit{
+  @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
+ 
+
+  private shouldScroll = true;
+
+  ngAfterViewInit() {
+    this.scrollToBottom(true); // Force initial scroll
+  }
+
+  ngAfterViewChecked() {
+    this.checkScrollPosition();
+  }
+
+  private checkScrollPosition() {
+    const element = this.messagesContainer?.nativeElement;
+    if (element) {
+      const isAtBottom = element.scrollHeight - element.clientHeight <= element.scrollTop + 50; // Increased threshold
+      this.shouldScroll = isAtBottom;
+    }
+  }
+  private scrollToBottom(force = false) {
+    try {
+      if (this.messagesContainer?.nativeElement && this.selectedChat) {
+        const element = this.messagesContainer.nativeElement;
+        if (force || this.shouldScroll) {
+          setTimeout(() => {
+            // Immediate scroll without animation
+            element.style.scrollBehavior = 'auto';
+            element.scrollTop = element.scrollHeight;
+            element.style.scrollBehavior = '';
+          }, 0);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+
+
+selectChat(chat: Chat) {
+  this.selectedChat = chat;
+  this.newMessage = '';
+  chat.unread = 0;
   
-  // Sample chats data
-  chats = [
+  // Force immediate scroll without animation
+  setTimeout(() => {
+    const element = this.messagesContainer?.nativeElement;
+    if (element) {
+      element.style.scrollBehavior = 'auto'; // Disable smooth scrolling
+      element.scrollTop = element.scrollHeight;
+      element.style.scrollBehavior = ''; // Reset to default
+    }
+  }, 0); // Zero delay after change detection
+}
+  selectedChat: Chat | null = null;
+  chats: Chat[] = [
     {
       id: 1,
       status: ConversationStatus.Active,
@@ -41,39 +115,40 @@ export class MainChatComponent {
         name: 'John Buyer',
         avatar: 'https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-8.webp'
       },
-      lastMessage: {
-        text: "Hello, I'm interested in this property...",
-        sent: true,
-        time: new Date(Date.now() - 3600000), // 1 hour ago
-        status: MessageStatus.Read,
-      },
+      messages: [
+        {
+          text: "Hello, I'm interested in this property...",
+          sent: true,
+          time: new Date(Date.now() - 3600000),
+          status: MessageStatus.Read,
+          senderId: '456'
+        }
+      ],
       unread: 0,
       lastMessageTime: new Date(Date.now() - 3600000)
     },
     {
       id: 2,
-      status: ConversationStatus.Pending,
+      status: ConversationStatus.Active,
       otherUser: {
-        id: '124',
-        name: 'Alice Smith',
-        avatar: 'https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-1.webp'
+        id: '200',
+        name: 'Ahmed Buyer',
+        avatar: 'https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-8.webp'
       },
-      lastMessage: {
-        text: "When can we schedule a viewing?",
-        sent: false,
-        time: new Date(Date.now() - 7200000), // 2 hours ago
-        status: MessageStatus.Delivered,
-      },
-      unread: 2,
-      lastMessageTime: new Date(Date.now() - 7200000)
+      messages: [
+        {
+          text: "Alooooooooooooooooooooooooooooooooooooooooooo",
+          sent: true,
+          time: new Date(Date.now() - 3600000),
+          status: MessageStatus.Sent,
+          senderId: '456'
+        }
+      ],
+      unread: 0,
+      lastMessageTime: new Date(Date.now() - 3600000)
     },
-    // Add more chats...
   ];
-  selectChat(chat: any) {
-    this.selectedChat = chat;
-    // Mark as read when selected
-    chat.unread = 0;
-  }
+  
 
   isChatVisible = false;
   newMessage = '';
@@ -94,16 +169,6 @@ export class MainChatComponent {
     },
     initiator: UserRole.Buyer
   };
-  messages = [
-    {
-      text: "Hello, I'm interested in this property...",
-    sent: true,
-    time: new Date(),
-    status: MessageStatus.Read,
-    senderId: 'buyer-123',  // ✅ Starts with 'buyer'
-    conversationId: 1
-    }
-  ];
 
   toggle() {
     this.isChatVisible = !this.isChatVisible;
@@ -150,47 +215,42 @@ export class MainChatComponent {
   //   });
   // }
   sendMessage() {
-    if (!this.selectedChat || !this.newMessage.trim()) return;
+    const currentChat = this.selectedChat;
+    if (!currentChat || !this.newMessage.trim()) return;
 
-    if (!this.newMessage.trim()) return;
-  
-    if (this.currentUser.role === UserRole.Buyer && 
-        this.activeConversation.status === ConversationStatus.Pending) {
-      this.activeConversation.status = ConversationStatus.Pending;
-    }
-  
-    if ([UserRole.Seller, UserRole.Agent].includes(this.currentUser.role)) {
-      if (this.activeConversation.status !== ConversationStatus.Active) return;
-    }
-  
-    this.messages.push({
+    const newMsg: Message = {
       text: this.newMessage,
       sent: this.currentUser.role === UserRole.Buyer,
       time: new Date(),
       status: MessageStatus.Sent,
       senderId: this.currentUser.id,
-      conversationId: this.activeConversation.id
-    });
-  
+    };
+
+    currentChat.messages.push(newMsg);
+    currentChat.lastMessageTime = new Date();
     this.newMessage = '';
-  
-    // Simulate delivery
+    this.scrollToBottom(true);
+
+    // Simulate delivery and reply
     setTimeout(() => {
-      const sentMessage = this.messages.find(m => m.status === MessageStatus.Sent);
-      if (sentMessage) sentMessage.status = MessageStatus.Delivered;
+      newMsg.status = MessageStatus.Delivered;
+      this.scrollToBottom();
     }, 1500);
-  
-    // Simulate reply
+
     setTimeout(() => {
-      this.messages.push({
-        text: 'Thanks for your message! I will get back to you shortly.',
-        sent: false,
-        time: new Date(),
-        status: MessageStatus.Read,
-        senderId: this.activeConversation.otherUser.id,
-        conversationId: this.activeConversation.id
-      });
+      const replyMsg: Message = {
+  text: 'Thanks for your message! I will get back to you shortly.',
+  sent: false,
+  time: new Date(),
+  status: MessageStatus.Delivered, // not Read
+  senderId: currentChat.otherUser.id,
+};
+
+      currentChat.messages.push(replyMsg);
+      if(currentChat!=this.selectedChat)
+      currentChat.unread=1;
+      currentChat.lastMessageTime = new Date();
+      this.scrollToBottom();
     }, 3000);
   }
-  
 }

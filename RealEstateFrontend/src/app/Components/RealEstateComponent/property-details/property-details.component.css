@@ -756,3 +756,27 @@ height: fit-content;
 .custumBottomBorder {
   border-bottom: 2.5px solid rgba(195, 142, 121, 0.1);
 }
+/* Default state */
+.btn-caffe-tertiary {
+  background-color: transparent;
+  color: #4a2c2a;
+  border: 1px solid #4a2c2a;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Hover state (optional) */
+.btn-caffe-tertiary:hover {
+  background-color: #f3e5dc; 
+  color: #4a2c2a;
+}
+
+/* Selected (active) state - persists after click */
+.btn-check:checked + .btn-caffe-tertiary {
+  background-color: #c38e79;
+  color: white;
+  border-color: #c38e79;
+
+
+  /* background-color: #f3e5dc; 
+  color: #4a2c2a; */
+}
