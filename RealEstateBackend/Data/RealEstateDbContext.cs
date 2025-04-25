@@ -61,6 +61,18 @@ namespace RealEstate.Data
             DbInitializer.SeedRoles(builder);
 
             //----------------------------------------------------------------------------------
+            //SeedRoles
+            DbInitializer.SeedAdmins(builder);
+
+            //----------------------------------------------------------------------------------
+            //SeedRoles
+            DbInitializer.SeedSellers(builder);
+
+            //----------------------------------------------------------------------------------
+            //SeedRoles
+            DbInitializer.SeedAgents(builder);
+
+            //----------------------------------------------------------------------------------
             //SeedCategories
             DbInitializer.SeedCategories(builder);
 
@@ -74,7 +86,7 @@ namespace RealEstate.Data
 
             //----------------------------------------------------------------------------------
             //SeedProperties
-            //DbInitializer.SeedProperties(builder);
+            DbInitializer.SeedProperties(builder);
 
             //----------------------------------------------------------------------------------
             //SeedSubscriptionPlans
