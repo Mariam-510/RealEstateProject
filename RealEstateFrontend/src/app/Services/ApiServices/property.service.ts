@@ -34,6 +34,6 @@ export class PropertyService {
 
   getAllProperties(): Observable<PropertyDTO[]> {
     
-    return this.http.get<PropertyDTO[]>(`${this.apiUrl}/GetAll`);
+    return this.http.get<PropertyDTO[]>(`${this.apiUrl}`);
   }
 }
