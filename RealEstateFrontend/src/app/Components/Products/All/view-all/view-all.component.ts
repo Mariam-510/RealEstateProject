@@ -1,6 +1,6 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
 import { FormsModule } from '@angular/forms';
 import { ProductDTO, ProductFilters, ProductService } from '../../../../Services/ApiServices/product.service';
@@ -8,7 +8,8 @@ import { API_CONFIG } from '../../../../app.config';
 import { AuthService } from '../../../../Services/ApiServices/auth.service';
 import { WishListService } from '../../../../Services/ApiServices/wish-list.service';
 import { ToastrService } from '../../../../Services/toastr.service';
-
+import { FilterService } from '../../../../Services/filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-view-all',
@@ -16,7 +17,7 @@ import { ToastrService } from '../../../../Services/toastr.service';
   templateUrl: './view-all.component.html',
   styleUrl: './view-all.component.css'
 })
-export class ViewAllComponent {
+export class ViewAllComponent implements OnInit, OnDestroy {
 
   apiConfig = API_CONFIG;
 
@@ -30,19 +31,16 @@ export class ViewAllComponent {
     { id: 'grid', icon: 'bi-grid' },
     { id: 'list', icon: 'bi-list' },
   ];
-
-  // Filters
-  searchQuery = '';
-  selectedCondition: string | boolean = '';
-  selectedCategory = '';
-  selectedRating = 0;
-  minPrice = 0;
-  maxPrice = 1000000;
-  // isColorListVisible = false;
   openedProductId: number | null = null;
 
-  // Sorting & View
-  sortBy = '';
+  // Filters
+  selectedCategory: string = '';
+  selectedCondition: string = '';
+  selectedRating: number = 0;
+  minPrice: number = 0;
+  maxPrice: number = 1000000;
+  sortBy: string = '';
+  searchQuery: string = '';
 
   sliderOptions: Options = {
     floor: 0,
@@ -57,35 +55,145 @@ export class ViewAllComponent {
 
   isSticky: boolean = false;
 
+  private filterSub!: Subscription;
+
   constructor(private elRef: ElementRef, private productService: ProductService,
     private cdr: ChangeDetectorRef, private toastr: ToastrService, private auth: AuthService,
-    private wishListService: WishListService,
-  ) { }
+    private wishListService: WishListService, private route: ActivatedRoute, private filterService: FilterService) { }
 
   async ngOnInit() {
-
     await this.loadProducts();
+    this.initializeComponent();
+    this.setupFilterSubscription();
+  }
 
-    console.log(this.products);
-
+  private initializeComponent() {
     this.minPrice = Math.min(...this.products.map(p => p.price));
     this.maxPrice = Math.max(...this.products.map(p => p.price));
-    this.sliderOptions.ceil = this.maxPrice;
-    this.updateRatingOptions();
-    console.log(this.minPrice);
+
+    this.sliderOptions = {
+      ...this.sliderOptions,
+      floor: this.minPrice,
+      ceil: this.maxPrice
+    };
 
     this.products.forEach(product => {
       this.currentImageIndices[product.id] = 0;
     });
-
-    this.sliderOptions = {
-      floor: this.minPrice,
-      ceil: this.maxPrice,
-      translate: (value: number) => `${value.toLocaleString()} EGP`
-    };
-
-    this.applyFilters();
   }
+
+
+  private setupFilterSubscription() {
+    this.filterService.currentFilters.subscribe(filters => {
+      this.selectedCategory = filters.category;
+      this.selectedCondition = filters.condition;
+      this.selectedRating = filters.rating;
+      this.minPrice = filters.minPrice;
+      this.maxPrice = filters.maxPrice;
+      this.sortBy = filters.sortBy;
+      this.applyFilters(); // Add this line to refresh filters
+    });
+  }
+
+
+  applyFilters(): void {
+    this.filteredProducts = this.products
+      .filter(product => {
+        const matchesSearch = !this.searchQuery ||
+          product.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+
+        const matchesCondition = this.selectedCondition === '' ||
+          (!product.isUsed && this.selectedCondition === 'new') || (product.isUsed && this.selectedCondition === 'used');
+        const matchesCategory = !this.selectedCategory ||
+          product.categoryName.toLowerCase() === this.selectedCategory.toLowerCase();
+        const matchesPrice = product.price >= this.minPrice &&
+          product.price <= this.maxPrice;
+        const matchesRating = this.selectedRating === 0 ||
+          (product.averageRating >= this.selectedRating &&
+            product.averageRating < (this.selectedRating + 1));
+
+        return matchesSearch && matchesCondition &&
+          matchesCategory && matchesPrice && matchesRating;
+      })
+      .sort((a, b) => {
+        switch (this.sortBy) {
+          case 'priceAsc': return a.price - b.price;
+          case 'priceDesc': return b.price - a.price;
+          case 'ratingDesc': return b.averageRating - a.averageRating;
+          // case 'ratingAsc': return a.averageRating - b.averageRating;
+          case 'dateNewest': return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
+          case 'dateOldest': return new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime();
+          // case 'stock': return (b.quantity ? 1 : 0) - (a.quantity ? 1 : 0);
+          case 'limitedStock':
+            // Show items with low stock first (1-4 items), then in stock, then out of stock
+            const aStockStatus = this.getStockPriority(a);
+            const bStockStatus = this.getStockPriority(b);
+            return bStockStatus - aStockStatus || a.quantity - b.quantity;
+
+          default: return 0;
+        }
+      });
+
+    this.currentPage = 1;
+    this.cdr.detectChanges(); // Force DOM update
+  }
+  // Add helper method
+  private getStockPriority(product: any): number {
+    if (product.quantity === 0) return 0; // Out of stock
+    if (product.quantity <= 4) return 2; // Limited stock
+    return 1; // In stock
+  }
+
+
+  // Update toggle methods
+  toggleCategory(category: string): void {
+    const newCategory = category;
+    this.filterService.updateFilters({ category: newCategory });
+  }
+
+  toggleProductCondition(condition: string): void {
+    const newCondition = condition === this.selectedCondition ? '' : condition as 'used' | 'new';
+    this.filterService.updateFilters({ condition: newCondition });
+  }
+
+  toggleRating(rating: number): void {
+    const newRating = this.selectedRating === rating ? 0 : rating;
+    this.filterService.updateFilters({ rating: newRating });
+  }
+
+  updateSort(sortType: string): void {
+    const newSort = this.sortBy === sortType ? '' : sortType;
+    this.filterService.updateFilters({ sortBy: newSort });
+  }
+
+  // Update price handling
+  updatePrice(): void {
+    this.filterService.updateFilters({
+      minPrice: this.minPrice,
+      maxPrice: this.maxPrice
+    });
+  }
+  clearFilters(): void {
+    this.filterService.resetFilters();
+    this.searchQuery = '';
+  }
+
+  onPriceChange(): void {
+    this.filterService.updateFilters({
+      minPrice: this.minPrice,
+      maxPrice: this.maxPrice
+    });
+    this.cdr.detectChanges(); // Force DOM update
+  }
+
+  ngOnDestroy() {
+    this.filterService.resetFilters();
+    if (this.filterSub) {
+      this.filterSub.unsubscribe();
+    }
+  }
+
+  //---------------------------------------------------------------------------------------------
 
   async loadProducts(filters?: ProductFilters) {
     try {
@@ -98,30 +206,21 @@ export class ViewAllComponent {
   }
 
 
-  get currentCategoryCount(): number {
-    if (!this.selectedCategory) return this.products.length;
-    const category = this.categoriesWithCounts.find(c => c.name === this.selectedCategory);
-    return category ? category.count : 0;
-  }
+  // Add productConditions array
+  productConditions = [
+    { label: 'All Conditions', value: '' },
+    { label: 'New', value: 'new' },
+    { label: 'Used', value: 'used' }
+  ];
 
-  get productConditions() {
-    return [
-      { label: 'All Conditions', value: '', count: this.products.length },
-      { label: 'Used', value: 'Used', count: this.products.filter(p => p.isUsed === true).length },
-      { label: 'New', value: 'New', count: this.products.filter(p => p.isUsed === false).length }
-    ];
-  }
 
-  get ratings() {
-    return [
-      { value: 0, label: 'All Ratings' },
-      { value: 5, label: '5 Stars', icon: 'bi-star-fill' },
-      { value: 4, label: '4 Stars', icon: 'bi-star-fill' },
-      { value: 3, label: '3 Stars', icon: 'bi-star-fill' },
-      { value: 2, label: '2 Stars', icon: 'bi-star-fill' },
-      { value: 1, label: '1 Star', icon: 'bi-star-fill' }
-    ];
-  }
+  ratings = [
+    { value: 5, label: '5 Stars', icon: 'bi-star-fill' },
+    { value: 4, label: '4 Stars', icon: 'bi-star-fill' },
+    { value: 3, label: '3 Stars', icon: 'bi-star-fill' },
+    { value: 2, label: '2 Stars', icon: 'bi-star-fill' },
+    { value: 1, label: '1 Star', icon: 'bi-star-fill' }
+  ];
 
   updateRatingOptions(): void {
     const ratingCounts = new Map<number, number>();
@@ -133,46 +232,23 @@ export class ViewAllComponent {
 
   }
 
-  // Filtering & Sorting
-  applyFilters(): void {
-    this.filteredProducts = this.products
-      .filter(product => {
-        const matchesSearch = !this.searchQuery ||
-          product.name.toLowerCase().includes(this.searchQuery.toLowerCase());
-
-        const matchesCondition = this.selectedCondition === '' || product.isUsed === this.selectedCondition;
-        const matchesCategory = !this.selectedCategory || product.categoryName.toLowerCase() === this.selectedCategory.toLowerCase();
-        const matchesPrice = product.price >= this.minPrice && product.price <= this.maxPrice;
-        const matchesRating = this.selectedRating === 0 || (product.averageRating >= this.selectedRating && product.averageRating < (this.selectedRating + 1));
-
-        return matchesSearch && matchesCondition && matchesCategory && matchesPrice && matchesRating;
-      })
-      .sort((a, b) => {
-        switch (this.sortBy) {
-          case 'priceAsc': return a.price - b.price;
-          case 'priceDesc': return b.price - a.price;
-          case 'dateNewest': return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
-          case 'dateOldest': return new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime();
-          default: return 0;
-        }
-      });
-
-    this.currentPage = 1;
-  }
-
   // Getters
-  get categoriesWithCounts() {
+  get categoryNames(): string[] {
     const counts = new Map<string, number>();
     this.products.forEach(p => {
       counts.set(p.categoryName, (counts.get(p.categoryName) || 0) + 1);
     });
-    return Array.from(counts.entries()).map(([name, count]) => ({ name, count }));
+    return Array.from(counts.keys());
   }
 
   getSortLabel(value: string): string {
     switch (value) {
       case 'priceAsc': return 'Price: Low to High';
       case 'priceDesc': return 'Price: High to Low';
+      case 'ratingDesc': return 'Rating: High to Low';
+      // case 'ratingAsc': return 'Rating: Low to High';
+      // case 'stock': return 'In Stock First';
+      case 'limitedStock': return 'Limited Stock First';
       case 'dateNewest': return 'Newest First';
       case 'dateOldest': return 'Oldest First';
       default: return '';
@@ -184,28 +260,6 @@ export class ViewAllComponent {
     return rating ? rating.label : '';
   }
 
-  // UI Handlers
-  toggleCategory(category: string): void {
-    this.selectedCategory = this.selectedCategory === category ? '' : category;
-    this.applyFilters();
-  }
-
-  toggleRating(rating: number): void {
-    this.selectedRating = this.selectedRating === rating ? 0 : rating;
-    this.applyFilters();
-  }
-
-  toggleProductCondition(type: string): void {
-    this.selectedCondition = type === 'Used' ? true : type === 'New' ? false : '';
-    this.applyFilters();
-  }
-
-  // toggleWishList(productId: number): void {
-  //   const product = this.products.find(p => p.id === productId);
-  //   if (product) {
-  //     product.isFavorite = !product.isFavorite;
-  //   }
-  // }
 
   // In your component
   toggleWishList(product: any) {
@@ -229,18 +283,6 @@ export class ViewAllComponent {
 
   toggleColorList(productId: number): void {
     this.openedProductId = this.openedProductId === productId ? null : productId;
-  }
-
-  clearFilters(): void {
-    this.searchQuery = '';
-    this.selectedCondition = '';
-    this.selectedCategory = '';
-    this.selectedRating = 0;
-    this.updateRatingOptions();
-    this.minPrice = Math.min(...this.products.map(p => p.price));
-    this.maxPrice = Math.max(...this.products.map(p => p.price));
-    this.sortBy = '';
-    this.applyFilters();
   }
 
   nextImage(productId: number) {

@@ -22,7 +22,7 @@
   margin: 3rem;
 }
 
-.aa{
+.aa {
   top: 35%
 }
 
@@ -41,7 +41,8 @@
 }
 
 .form-select:hover {
-  background-color: #333 !important; /* Slightly lighter dark */
+  background-color: #333 !important;
+  /* Slightly lighter dark */
   /* border-color: #888; */
   cursor: pointer;
 }
@@ -60,57 +61,59 @@
 
 @media (max-width: 768px) {
   .carousel-img {
-      height: 400px;
+    height: 400px;
   }
 
   .square-control {
-      margin: 1rem;
-      width: 2rem;
-      height: 2rem;
+    margin: 1rem;
+    width: 2rem;
+    height: 2rem;
   }
 
   .carousel-caption h1 {
-      font-size: 1.5rem;
-      position: relative;
-      top: -100px;
+    font-size: 1.5rem;
+    position: relative;
+    top: -100px;
   }
 
   .carousel-caption p {
-      font-size: 1rem;
-      position: relative;
-      top: -100px;
+    font-size: 1rem;
+    position: relative;
+    top: -100px;
   }
 
   .aa {
-      position: relative;
-      width: 80% !important;
-      top: 10% !important;
-      z-index: 1;
+    position: relative;
+    width: 80% !important;
+    top: 10% !important;
+    z-index: 1;
   }
 }
 
-.dropdown-item:hover
-{
+.dropdown-item:hover {
   background-color: #c38e79;
 }
 
 ::ng-deep .ngx-slider .ngx-slider-pointer {
-  background-color: #c38e79 !important; /* For pointer/handle color */
+  background-color: #c38e79 !important;
+  /* For pointer/handle color */
 }
 
 ::ng-deep .ngx-slider .ngx-slider-selection {
-  background-color: #c38e79 !important; /* For selection bar color */
+  background-color: #c38e79 !important;
+  /* For selection bar color */
 }
 
 ::ng-deep .ngx-slider .ngx-slider-pointer::after {
-  background-color: white !important; /* For small circle in pointers */
+  background-color: white !important;
+  /* For small circle in pointers */
 }
 
-::ng-deep .ngx-slider-span{
+::ng-deep .ngx-slider-span {
   color: white !important;
 }
 
-.rating:hover{
+.rating:hover {
   background-color: #c38e79;
 }
 
@@ -118,193 +121,190 @@
 /*  */
 
 .category-box {
-    width: 200px;
-    flex-shrink: 0;
-  }
-  
-  .category-img {
-    width: 100%;
-    height: 150px;
-    border-radius: 12px;
-    object-fit: cover;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-  }
-  
-  .category-img:hover {
-    transform: scale(1.03);
-  }
-  
-  .section-underline {
-    width: 10rem;
-    height: 3px;
-    background-color: #c38e79;
-    margin-top: -1rem;
-  }
-  
-  .carousel-btn {
-    position: absolute;
-    top: 40%;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-  
-  .carousel-btn.left {
-    left: -40px;
-  }
-  
-  .carousel-btn.right {
-    right: -40px;
-  }
-  
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .featured
-  {
-    transition: all 0.3s ease;
-  }
-  
-  .featured:hover
-  {
-    transform: translateY(-8px);
-  }
-  
-  .navImgBtn
-  {
-    opacity: 0;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 3;
-  }
-  
-  .cardHeader:hover .navImgBtn
-  {
-    opacity: 0.60;
-    z-index: 1;
-  }
-  
-  /* add to card */
-  /* From Uiverse.io by vinodjangid07 */ 
-  .CartBtn {
-    width: 140px;
-    height: 30px;
-    /* border-radius: 12px; */
-    border: none;
-    /* background-color: #c38e79; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition-duration: .5s;
-    overflow: hidden;
-    /* box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.103); */
-    position: relative;
-  }
-  
-  .IconContainer {
-    position: absolute;
-    left: -50px;
-    width: 30px;
-    height: 30px;
-    background-color: transparent;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    z-index: 2;
-    transition-duration: .5s;
-  }
-  
-  .icon {
-    border-radius: 1px;
-  }
-  
-  .text {
-    height: 100%;
-    width: fit-content;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    z-index: 1;
-    transition-duration: .5s;
-    font-size: 1.04em;
-    font-weight: 600;
-    margin-top: 1rem;
-  }
-  
-  .CartBtn:hover .IconContainer {
-    transform: translateX(58px);
-    border-radius: 40px;
-    transition-duration: .5s;
-  }
-  
-  .CartBtn:hover .text {
-    transform: translate(10px,0px);
-    transition-duration: .5s;
-  }
-  
-  .CartBtn:active {
-    transform: scale(0.95);
-    transition-duration: .5s;
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.category-img {
+  width: 100%;
+  height: 150px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.category-img:hover {
+  transform: scale(1.03);
+}
+
+.section-underline {
+  width: 10rem;
+  height: 3px;
+  background-color: #c38e79;
+  margin-top: -1rem;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 40%;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.carousel-btn.left {
+  left: -40px;
+}
+
+.carousel-btn.right {
+  right: -40px;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.featured {
+  transition: all 0.3s ease;
+}
+
+.featured:hover {
+  transform: translateY(-8px);
+}
+
+.navImgBtn {
+  opacity: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 3;
+}
+
+.cardHeader:hover .navImgBtn {
+  opacity: 0.60;
+  z-index: 1;
+}
+
+/* add to card */
+/* From Uiverse.io by vinodjangid07 */
+.CartBtn {
+  width: 140px;
+  height: 30px;
+  /* border-radius: 12px; */
+  border: none;
+  /* background-color: #c38e79; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition-duration: .5s;
+  overflow: hidden;
+  /* box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.103); */
+  position: relative;
+}
+
+.IconContainer {
+  position: absolute;
+  left: -50px;
+  width: 30px;
+  height: 30px;
+  background-color: transparent;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 2;
+  transition-duration: .5s;
+}
+
+.icon {
+  border-radius: 1px;
+}
+
+.text {
+  height: 100%;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 1;
+  transition-duration: .5s;
+  font-size: 1.04em;
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+.CartBtn:hover .IconContainer {
+  transform: translateX(58px);
+  border-radius: 40px;
+  transition-duration: .5s;
+}
+
+.CartBtn:hover .text {
+  transform: translate(10px, 0px);
+  transition-duration: .5s;
+}
+
+.CartBtn:active {
+  transform: scale(0.95);
+  transition-duration: .5s;
+}
+
+.color-swatch {
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: default;
+  position: relative;
+}
+
+.color-swatch:hover {
+  transform: scale(1.05);
+}
+
+.color-swatch-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #4a2c2a;
+}
+
+.color-swatch-num:hover {
+  transform: scale(1.05);
+}
+
+.color-swatch {
+  width: 40px;
+  height: 40px;
+  transition: transform 0.2s;
+  position: relative;
+
+  &.out-of-stock {
+    opacity: 0.5;
   }
 
-  .color-swatch {
-    width: 35px;
-    height: 35px;
-    border-radius: 8px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    cursor: default;
-    position: relative;
-  }
-  
-  .color-swatch:hover {
-    transform: scale(1.05);
-  }
-  
-  .color-swatch-num {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    font-size: 0.85rem;
-    color: #4a2c2a;
-  }
-  
-  .color-swatch-num:hover {
-    transform: scale(1.05);
-  }
-
-  .color-swatch {
-    width: 40px;
-    height: 40px;
-    transition: transform 0.2s;
-    position: relative;
-  
-    &.out-of-stock {
-      opacity: 0.5;
-    }
-  
-    /* .out-of-stock-overlay {
+  /* .out-of-stock-overlay {
       position: absolute;
       inset: 0;
       background: linear-gradient(45deg,
@@ -313,8 +313,8 @@
           rgba(255, 0, 0, 0.3) 54%,
           transparent 55%);
     } */
-  
-    /* .out-of-stock-overlay {
+
+  /* .out-of-stock-overlay {
       position: absolute;
       inset: 0;
       overflow: hidden;
@@ -330,7 +330,7 @@
         rgba(255, 0, 0, 0.8) 54%,
         white 55%,
         transparent 56%);
-}
+  }
 }
 
 .color-swatch-num {
@@ -355,4 +355,9 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1002;
   animation: fadeIn 0.2s ease-in-out;
+}
+
+
+.linkProducts {
+  cursor: pointer;
 }
