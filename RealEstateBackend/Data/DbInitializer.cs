@@ -48,6 +48,228 @@ namespace RealEstate.Data
         }
 
         //----------------------------------------------------------------------------------------------------
+        public static void SeedAdmins(ModelBuilder modelBuilder)
+        {
+            var adminAccountId = "80d9c265-64a3-4520-9b0f-164d5bfc6afa";
+            //Seed Account
+            modelBuilder.Entity<Account>().HasData(
+                new Account
+                {
+                    Id = adminAccountId,
+                    UserName = "admin1@gmail.com",
+                    NormalizedUserName = "ADMIN1@GMAIL.COM",
+                    Email = "admin1@gmail.com",
+                    NormalizedEmail = "ADMIN1@GMAIL.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = "", //Admin@123
+                    SecurityStamp = "52a4b8bd-9804-45d3-9125-32df5869fab8",
+                    ConcurrencyStamp = "53f4f840-6448-4fbb-ab15-9ac7eb688f7c",
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0,
+                    CreatedAt = DateTime.Now,
+                    ImageUrl = null,
+                });
+
+            //Assign Role to Admin Account
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    UserId = adminAccountId,
+                    RoleId = AdminRoleId
+                });
+
+            //Seed Admin
+            modelBuilder.Entity<Admin>().HasData(
+                new Admin
+                {
+                    Id = 1,
+                    Name = "Admin",
+                    IsDeleted = false,
+                    AccountId = adminAccountId
+                });
+        }
+
+        //----------------------------------------------------------------------------------------------------
+        public static void SeedSellers(ModelBuilder modelBuilder)
+        {
+            var seller1AccountId = "06f38ad4-75e6-4073-bbb7-27fa233fc984";
+            //Seed Account
+            modelBuilder.Entity<Account>().HasData(
+                new Account
+                {
+                    Id = seller1AccountId,
+                    UserName = "seller1@gmail.com",
+                    NormalizedUserName = "SELLER1@GMAIL.COM",
+                    Email = "seller1@gmail.com",
+                    NormalizedEmail = "SELLER1@GMAIL.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = "", //Seller@123
+                    SecurityStamp = "7d9f2418-7525-473d-9c67-458e58a3479e",
+                    ConcurrencyStamp = "eda25df4-eded-4471-9713-8eefc79cca15",
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0,
+                    CreatedAt = DateTime.Now,
+                    ImageUrl = null,
+                });
+
+            //Assign Role to Seller Account
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    UserId = seller1AccountId,
+                    RoleId = SellerRoleId
+                });
+
+            //Seed Seller
+            modelBuilder.Entity<Seller>().HasData(
+                new Seller
+                {
+                    Id = 1,
+                    FirstName = "Sara",
+                    LastName = "Ahmed",
+                    IsDeleted = false,
+                    AccountId = seller1AccountId
+                });
+
+            //------------------------------------------------------------------------------------
+            var seller2AccountId = "0ac5ea06-31b9-4007-8a23-3b8d844117d4";
+            //Seed Account
+            modelBuilder.Entity<Account>().HasData(
+                new Account
+                {
+                    Id = seller2AccountId,
+                    UserName = "seller2@gmail.com",
+                    NormalizedUserName = "SELLER2@GMAIL.COM",
+                    Email = "seller2@gmail.com",
+                    NormalizedEmail = "SELLER2GMAIL.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = "", //Seller@123
+                    SecurityStamp = "22056678-0f49-4dd3-90d9-7900650e6866",
+                    ConcurrencyStamp = "4b7b82e1-5bd1-4a3f-9a5f-70e47698855c",
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0,
+                    CreatedAt = DateTime.Now,
+                    ImageUrl = null,
+                });
+
+            //Assign Role to Seller Account
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    UserId = seller2AccountId,
+                    RoleId = SellerRoleId
+                });
+
+            //Seed Seller
+            modelBuilder.Entity<Seller>().HasData(
+                new Seller
+                {
+                    Id = 2,
+                    FirstName = "Mohamed",
+                    LastName = "Ali",
+                    IsDeleted = false,
+                    AccountId = seller2AccountId
+                });
+        }
+
+
+        //----------------------------------------------------------------------------------------------------
+        public static void SeedAgents(ModelBuilder modelBuilder)
+        {
+            var agent1AccountId = "68a09f7c-5690-47b7-b777-13672d28e7f0";
+            //Seed Account
+            modelBuilder.Entity<Account>().HasData(
+                new Account
+                {
+                    Id = agent1AccountId,
+                    UserName = "agent1@gmail.com",
+                    NormalizedUserName = "AGENT1@GMAIL.COM",
+                    Email = "agent1@gmail.com",
+                    NormalizedEmail = "AGENT1@GMAIL.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = "", //Agent@123
+                    SecurityStamp = "4fb21c71-8dba-4d10-b866-b3e5586cc6c7",
+                    ConcurrencyStamp = "4fb21c71-8dba-4d10-b866-b3e5586cc6c7",
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0,
+                    CreatedAt = DateTime.Now,
+                    ImageUrl = null,
+                });
+
+            //Assign Role to Admin Account
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    UserId = agent1AccountId,
+                    RoleId = AgentRoleId
+                });
+
+            //Seed Admin
+            modelBuilder.Entity<Agent>().HasData(
+                new Agent
+                {
+                    Id = 1,
+                    Name = "Agent1",
+                    CommercialRegister = "123456",
+                    ApprovalStatus = ApprovalStatus.Approved,
+                    IsDeleted = false,
+                    AccountId = agent1AccountId
+                });
+
+            //----------------------------------------------------------
+            var agent2ccountId = "90641f7b-3433-4f0f-bbfc-655fa74c201a";
+            //Seed Account
+            modelBuilder.Entity<Account>().HasData(
+                new Account
+                {
+                    Id = agent2ccountId,
+                    UserName = "agent2@gmail.com",
+                    NormalizedUserName = "AGENT2@GMAIL.COM",
+                    Email = "agent2@gmail.com",
+                    NormalizedEmail = "AGENT2@GMAIL.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = "", //Agent@123
+                    SecurityStamp = "90641f7b-3433-4f0f-bbfc-655fa74c201a",
+                    ConcurrencyStamp = "90641f7b-3433-4f0f-bbfc-655fa74c201a",
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0,
+                    CreatedAt = DateTime.Now,
+                    ImageUrl = null,
+                });
+
+            //Assign Role to Admin Account
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    UserId = agent2ccountId,
+                    RoleId = AgentRoleId
+                });
+
+            //Seed Admin
+            modelBuilder.Entity<Agent>().HasData(
+                new Agent
+                {
+                    Id = 2,
+                    Name = "Agent2",
+                    CommercialRegister = "789101",
+                    ApprovalStatus = ApprovalStatus.Approved,
+                    IsDeleted = false,
+                    AccountId = agent2ccountId
+                });
+        }
+
+
+        //----------------------------------------------------------------------------------------------------
         public static void SeedCategories(ModelBuilder modelBuilder)
         {
             var categories = new List<Category>
@@ -196,7 +418,7 @@ namespace RealEstate.Data
                     BedRooms = 2,
                     BathRooms = 2,
                     Space = 110.00m,
-                    AgentId = 1,
+                    AgentId = null,
                     SellerId = 1,
                     Images = new List<string> { "PropertyImages/1-1.jpg", "PropertyImages/1-2.jpg","PropertyImages/1-3.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
