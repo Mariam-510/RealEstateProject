@@ -198,8 +198,10 @@ namespace RealEstate.Data
                     Space = 110.00m,
                     AgentId = 1,
                     SellerId = 1,
-                    Images = new List<string> { "PropertyImages/1-1.jpg", "PropertyImages/1-2.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Approved
+                    Images = new List<string> { "PropertyImages/1-1.jpg", "PropertyImages/1-2.jpg","PropertyImages/1-3.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
+                    AddedDate = new DateTime(2025, 1, 15), // Static date
+
                 },
 
                 // Property 2
@@ -218,8 +220,11 @@ namespace RealEstate.Data
                     Space = 240.00m,
                     AgentId = 2,
                     SellerId = 2,
-                    Images = new List<string> { "PropertyImages/2-1.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Pending
+                    Images = new List<string> { "PropertyImages/2-1.jpg", "PropertyImages/2-2.jpg", "PropertyImages/2-3.jpg",
+                    "PropertyImages/2-4.jpg","PropertyImages/2-5.jpg"},
+                    ApprovalStatus = PropertyApprovalStatus.Pending,
+                    AddedDate = new DateTime(2025, 2, 15), // Static date
+
                 },
 
                 // Property 3 (Villa)
@@ -238,8 +243,10 @@ namespace RealEstate.Data
                     Space = 480.00m,
                     AgentId = 1,
                     SellerId = 3,
-                    Images = new List<string> { "PropertyImages/3-1.jpg", "PropertyImages/3-2.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Approved
+                    Images = new List<string> { "PropertyImages/3-1.jpg", "PropertyImages/3-2.jpg", "PropertyImages/3-3.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
+                    AddedDate = new DateTime(2025, 3, 3), // Static date
+
                 },
 
                 // Property 4 (Studio)
@@ -258,8 +265,13 @@ namespace RealEstate.Data
                     Space = 45.00m,
                     AgentId = 3,
                     SellerId = 4,
-                    Images = new List<string> { "PropertyImages/4-1.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Approved
+                    Images = new List<string> { "PropertyImages/4-1.jpg",
+                        "PropertyImages/4-2.jpg", 
+                        "PropertyImages/4-3.jpg",
+                        "PropertyImages/4-4.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
+                    AddedDate = new DateTime(2024, 12, 12), // Static date
+
                 },
 
                 // Property 5 (Penthouse)
@@ -278,8 +290,11 @@ namespace RealEstate.Data
                     Space = 320.00m,
                     AgentId = 2,
                     SellerId = 5,
-                    Images = new List<string> { "PropertyImages/5-1.jpg", "PropertyImages/5-2.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Approved
+                    Images = new List<string> { "PropertyImages/5-1.jpg", "PropertyImages/5-2.jpg",
+                    "PropertyImages/5-3.jpg","PropertyImages/5-4.jpg"},
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
+                    AddedDate = new DateTime(2025, 1, 17), // Static date
+
                 },
 
                 // Property 6 (Duplex)
@@ -298,8 +313,11 @@ namespace RealEstate.Data
                     Space = 180.00m,
                     AgentId = 4,
                     SellerId = 6,
-                    Images = new List<string> { "PropertyImages/6-1.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Pending
+                    Images = new List<string> { "PropertyImages/6-1.jpg", "PropertyImages/6-2.jpg",
+                    "PropertyImages/6-3.jpg","PropertyImages/6-4.jpg","PropertyImages/6-5.jpg"},
+                    ApprovalStatus = PropertyApprovalStatus.Pending,
+                    AddedDate = new DateTime(2025, 4, 8) // Static date
+
                 },
 
                 // Property 7 (Townhouse)
@@ -318,8 +336,10 @@ namespace RealEstate.Data
                     Space = 280.00m,
                     AgentId = 5,
                     SellerId = 7,
-                    Images = new List<string> { "PropertyImages/7-1.jpg", "PropertyImages/7-2.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Approved
+                    Images = new List<string> { "PropertyImages/7-1.jpg", "PropertyImages/7-2.jpg", "PropertyImages/7-3.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
+                    AddedDate = new DateTime(2024, 10, 23) // Static date
+
                 },
 
                 // Property 8 (Mansion)
@@ -338,8 +358,10 @@ namespace RealEstate.Data
                     Space = 1200.00m,
                     AgentId = 1,
                     SellerId = 8,
-                    Images = new List<string> { "PropertyImages/8-1.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Approved
+                    Images = new List<string> { "PropertyImages/8-1.jpg", "PropertyImages/8-2.jpg", "PropertyImages/8-3.jpg", "PropertyImages/8-4.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
+                    AddedDate = new DateTime(2024, 11, 27) // Static date
+
                 },
 
                 // Property 9 (Apartment)
@@ -358,8 +380,10 @@ namespace RealEstate.Data
                     Space = 65.00m,
                     AgentId = 3,
                     SellerId = 9,
-                    Images = new List<string> { "PropertyImages/9-1.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Rejected
+                    Images = new List<string> { "PropertyImages/9-1.jpg", "PropertyImages/9-2.jpg", "PropertyImages/9-3.jpg", "PropertyImages/9-4.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Rejected,
+                    AddedDate = new DateTime(2025, 4, 20) // Static date
+
                 },
 
                 // Property 10 (House)
@@ -378,8 +402,10 @@ namespace RealEstate.Data
                     Space = 150.00m,
                     AgentId = 4,
                     SellerId = 10,
-                    Images = new List<string> { "PropertyImages/10-1.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Pending
+                    Images = new List<string> { "PropertyImages/10-1.jpg", "PropertyImages/10-2.jpg", "PropertyImages/10-3.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Pending,
+                    AddedDate = new DateTime(2025, 3, 8) // Static date
+
                 },
 
                 // Property 11 (Villa)
@@ -398,8 +424,10 @@ namespace RealEstate.Data
                     Space = 300.00m,
                     AgentId = 5,
                     SellerId = 11,
-                    Images = new List<string> { "PropertyImages/11-1.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Approved
+                    Images = new List<string> { "PropertyImages/11-1.jpg", "PropertyImages/11-2.jpg", "PropertyImages/11-3.jpg", "PropertyImages/11-4.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
+                    AddedDate = new DateTime(2025, 1, 2) // Static date
+
                 },
 
                 // Property 12 (Studio)
@@ -418,8 +446,10 @@ namespace RealEstate.Data
                     Space = 35.00m,
                     AgentId = 2,
                     SellerId = 12,
-                    Images = new List<string> { "PropertyImages/12-1.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Approved
+                    Images = new List<string> { "PropertyImages/12-1.jpg", "PropertyImages/12-2.jpg" , "PropertyImages/12-3.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
+                    AddedDate = new DateTime(2025, 1, 7) // Static date
+
                 },
 
                 // Property 13 (Penthouse)
@@ -438,8 +468,10 @@ namespace RealEstate.Data
                     Space = 160.00m,
                     AgentId = 1,
                     SellerId = 13,
-                    Images = new List<string> { "PropertyImages/13-1.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Approved
+                    Images = new List<string> { "PropertyImages/13-1.jpg", "PropertyImages/13-2.jpg", "PropertyImages/13-3.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
+                    AddedDate = new DateTime(2024, 11, 11) // Static date
+
                 },
 
                 // Property 14 (Townhouse)
@@ -458,8 +490,10 @@ namespace RealEstate.Data
                     Space = 210.00m,
                     AgentId = 3,
                     SellerId = 14,
-                    Images = new List<string> { "PropertyImages/14-1.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Approved
+                    Images = new List<string> { "PropertyImages/14-1.jpg", "PropertyImages/14-2.jpg" , "PropertyImages/14-3.jpg", "PropertyImages/14-4.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
+                    AddedDate = new DateTime(2025, 3, 7) // Static date
+
                 },
 
                 // Property 15 (Mansion)
@@ -478,8 +512,10 @@ namespace RealEstate.Data
                     Space = 2500.00m,
                     AgentId = 5,
                     SellerId = 15,
-                    Images = new List<string> { "PropertyImages/15-1.jpg", "PropertyImages/15-2.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Pending
+                    Images = new List<string> { "PropertyImages/15-1.jpg", "PropertyImages/15-2.jpg", "PropertyImages/15-3.jpg", "PropertyImages/15-4.jpg" },
+                    ApprovalStatus = PropertyApprovalStatus.Pending,
+                    AddedDate = new DateTime(2025, 4, 4) // Static date
+
                 }
             );
         }
