@@ -61,14 +61,14 @@ namespace RealEstate.Data
                     Email = "admin1@gmail.com",
                     NormalizedEmail = "ADMIN1@GMAIL.COM",
                     EmailConfirmed = true,
-                    PasswordHash = "", //Admin@123
+                    PasswordHash = "AQAAAAIAAYagAAAAEKfvX/zOYDc1MKNush8f9i13YnBN5qouubCluBQAIfkaUUgtOehMdxzX3tldGff7NQ==", //Admin@123
                     SecurityStamp = "52a4b8bd-9804-45d3-9125-32df5869fab8",
                     ConcurrencyStamp = "53f4f840-6448-4fbb-ab15-9ac7eb688f7c",
                     PhoneNumberConfirmed = false,
                     TwoFactorEnabled = false,
                     LockoutEnabled = true,
                     AccessFailedCount = 0,
-                    CreatedAt = DateTime.Now,
+                    CreatedAt = new DateTime(2025, 4, 25),
                     ImageUrl = null,
                 });
 
@@ -105,14 +105,14 @@ namespace RealEstate.Data
                     Email = "seller1@gmail.com",
                     NormalizedEmail = "SELLER1@GMAIL.COM",
                     EmailConfirmed = true,
-                    PasswordHash = "", //Seller@123
+                    PasswordHash = "AQAAAAIAAYagAAAAEJ2vKB9pVu+kAI0d8+Xt2RggHvQLal3U78bJ0nqnXJtuDth5uAdpho+qxz3THEX7uw==", //Seller@123
                     SecurityStamp = "7d9f2418-7525-473d-9c67-458e58a3479e",
                     ConcurrencyStamp = "eda25df4-eded-4471-9713-8eefc79cca15",
                     PhoneNumberConfirmed = false,
                     TwoFactorEnabled = false,
                     LockoutEnabled = true,
                     AccessFailedCount = 0,
-                    CreatedAt = DateTime.Now,
+                    CreatedAt = new DateTime(2025, 4, 25),
                     ImageUrl = null,
                 });
 
@@ -147,14 +147,14 @@ namespace RealEstate.Data
                     Email = "seller2@gmail.com",
                     NormalizedEmail = "SELLER2GMAIL.COM",
                     EmailConfirmed = true,
-                    PasswordHash = "", //Seller@123
+                    PasswordHash = "AQAAAAIAAYagAAAAEJ2vKB9pVu+kAI0d8+Xt2RggHvQLal3U78bJ0nqnXJtuDth5uAdpho+qxz3THEX7uw==", //Seller@123
                     SecurityStamp = "22056678-0f49-4dd3-90d9-7900650e6866",
                     ConcurrencyStamp = "4b7b82e1-5bd1-4a3f-9a5f-70e47698855c",
                     PhoneNumberConfirmed = false,
                     TwoFactorEnabled = false,
                     LockoutEnabled = true,
                     AccessFailedCount = 0,
-                    CreatedAt = DateTime.Now,
+                    CreatedAt = new DateTime(2025, 4, 25),
                     ImageUrl = null,
                 });
 
@@ -178,7 +178,6 @@ namespace RealEstate.Data
                 });
         }
 
-
         //----------------------------------------------------------------------------------------------------
         public static void SeedAgents(ModelBuilder modelBuilder)
         {
@@ -193,14 +192,14 @@ namespace RealEstate.Data
                     Email = "agent1@gmail.com",
                     NormalizedEmail = "AGENT1@GMAIL.COM",
                     EmailConfirmed = true,
-                    PasswordHash = "", //Agent@123
+                    PasswordHash = "AQAAAAIAAYagAAAAEJMNkPaJE4aQaV5B7+cNfDs6MlmhV5T6TE/aPHIEFeLJT3GtYcXKCdhtbp3H23of3g==", //Agent@123
                     SecurityStamp = "4fb21c71-8dba-4d10-b866-b3e5586cc6c7",
                     ConcurrencyStamp = "4fb21c71-8dba-4d10-b866-b3e5586cc6c7",
                     PhoneNumberConfirmed = false,
                     TwoFactorEnabled = false,
                     LockoutEnabled = true,
                     AccessFailedCount = 0,
-                    CreatedAt = DateTime.Now,
+                    CreatedAt = new DateTime(2025, 4, 25),
                     ImageUrl = null,
                 });
 
@@ -236,14 +235,14 @@ namespace RealEstate.Data
                     Email = "agent2@gmail.com",
                     NormalizedEmail = "AGENT2@GMAIL.COM",
                     EmailConfirmed = true,
-                    PasswordHash = "", //Agent@123
+                    PasswordHash = "AQAAAAIAAYagAAAAEJMNkPaJE4aQaV5B7+cNfDs6MlmhV5T6TE/aPHIEFeLJT3GtYcXKCdhtbp3H23of3g==", //Agent@123
                     SecurityStamp = "90641f7b-3433-4f0f-bbfc-655fa74c201a",
                     ConcurrencyStamp = "90641f7b-3433-4f0f-bbfc-655fa74c201a",
                     PhoneNumberConfirmed = false,
                     TwoFactorEnabled = false,
                     LockoutEnabled = true,
                     AccessFailedCount = 0,
-                    CreatedAt = DateTime.Now,
+                    CreatedAt = new DateTime(2025, 4, 25),
                     ImageUrl = null,
                 });
 
@@ -267,7 +266,6 @@ namespace RealEstate.Data
                     AccountId = agent2ccountId
                 });
         }
-
 
         //----------------------------------------------------------------------------------------------------
         public static void SeedCategories(ModelBuilder modelBuilder)
@@ -440,7 +438,7 @@ namespace RealEstate.Data
                     BedRooms = 4,
                     BathRooms = 3,
                     Space = 240.00m,
-                    AgentId = 2,
+                    AgentId = null,
                     SellerId = 2,
                     Images = new List<string> { "PropertyImages/2-1.jpg", "PropertyImages/2-2.jpg", "PropertyImages/2-3.jpg",
                     "PropertyImages/2-4.jpg","PropertyImages/2-5.jpg"},
@@ -464,7 +462,7 @@ namespace RealEstate.Data
                     BathRooms = 5,
                     Space = 480.00m,
                     AgentId = 1,
-                    SellerId = 3,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/3-1.jpg", "PropertyImages/3-2.jpg", "PropertyImages/3-3.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 3, 3), // Static date
@@ -485,8 +483,8 @@ namespace RealEstate.Data
                     BedRooms = 1,
                     BathRooms = 1,
                     Space = 45.00m,
-                    AgentId = 3,
-                    SellerId = 4,
+                    AgentId = 1,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/4-1.jpg",
                         "PropertyImages/4-2.jpg", 
                         "PropertyImages/4-3.jpg",
@@ -511,7 +509,7 @@ namespace RealEstate.Data
                     BathRooms = 3,
                     Space = 320.00m,
                     AgentId = 2,
-                    SellerId = 5,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/5-1.jpg", "PropertyImages/5-2.jpg",
                     "PropertyImages/5-3.jpg","PropertyImages/5-4.jpg"},
                     ApprovalStatus = PropertyApprovalStatus.Approved,
@@ -533,11 +531,11 @@ namespace RealEstate.Data
                     BedRooms = 2,
                     BathRooms = 2,
                     Space = 180.00m,
-                    AgentId = 4,
-                    SellerId = 6,
+                    AgentId = 2,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/6-1.jpg", "PropertyImages/6-2.jpg",
                     "PropertyImages/6-3.jpg","PropertyImages/6-4.jpg","PropertyImages/6-5.jpg"},
-                    ApprovalStatus = PropertyApprovalStatus.Pending,
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 4, 8) // Static date
 
                 },
@@ -556,8 +554,8 @@ namespace RealEstate.Data
                     BedRooms = 4,
                     BathRooms = 3,
                     Space = 280.00m,
-                    AgentId = 5,
-                    SellerId = 7,
+                    AgentId = 1,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/7-1.jpg", "PropertyImages/7-2.jpg", "PropertyImages/7-3.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2024, 10, 23) // Static date
@@ -578,10 +576,10 @@ namespace RealEstate.Data
                     BedRooms = 8,
                     BathRooms = 7,
                     Space = 1200.00m,
-                    AgentId = 1,
-                    SellerId = 8,
+                    AgentId = null,
+                    SellerId = 1,
                     Images = new List<string> { "PropertyImages/8-1.jpg", "PropertyImages/8-2.jpg", "PropertyImages/8-3.jpg", "PropertyImages/8-4.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Approved,
+                    ApprovalStatus = PropertyApprovalStatus.Pending,
                     AddedDate = new DateTime(2024, 11, 27) // Static date
 
                 },
@@ -600,10 +598,10 @@ namespace RealEstate.Data
                     BedRooms = 1,
                     BathRooms = 1,
                     Space = 65.00m,
-                    AgentId = 3,
-                    SellerId = 9,
+                    AgentId = null,
+                    SellerId = 2,
                     Images = new List<string> { "PropertyImages/9-1.jpg", "PropertyImages/9-2.jpg", "PropertyImages/9-3.jpg", "PropertyImages/9-4.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Rejected,
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 4, 20) // Static date
 
                 },
@@ -622,10 +620,10 @@ namespace RealEstate.Data
                     BedRooms = 3,
                     BathRooms = 2,
                     Space = 150.00m,
-                    AgentId = 4,
-                    SellerId = 10,
+                    AgentId = null,
+                    SellerId = 2,
                     Images = new List<string> { "PropertyImages/10-1.jpg", "PropertyImages/10-2.jpg", "PropertyImages/10-3.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Pending,
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 3, 8) // Static date
 
                 },
@@ -644,10 +642,10 @@ namespace RealEstate.Data
                     BedRooms = 4,
                     BathRooms = 3,
                     Space = 300.00m,
-                    AgentId = 5,
-                    SellerId = 11,
+                    AgentId = null,
+                    SellerId = 1,
                     Images = new List<string> { "PropertyImages/11-1.jpg", "PropertyImages/11-2.jpg", "PropertyImages/11-3.jpg", "PropertyImages/11-4.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Approved,
+                    ApprovalStatus = PropertyApprovalStatus.Pending,
                     AddedDate = new DateTime(2025, 1, 2) // Static date
 
                 },
@@ -667,7 +665,7 @@ namespace RealEstate.Data
                     BathRooms = 1,
                     Space = 35.00m,
                     AgentId = 2,
-                    SellerId = 12,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/12-1.jpg", "PropertyImages/12-2.jpg" , "PropertyImages/12-3.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 1, 7) // Static date
@@ -689,7 +687,7 @@ namespace RealEstate.Data
                     BathRooms = 2,
                     Space = 160.00m,
                     AgentId = 1,
-                    SellerId = 13,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/13-1.jpg", "PropertyImages/13-2.jpg", "PropertyImages/13-3.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2024, 11, 11) // Static date
@@ -710,8 +708,8 @@ namespace RealEstate.Data
                     BedRooms = 3,
                     BathRooms = 2,
                     Space = 210.00m,
-                    AgentId = 3,
-                    SellerId = 14,
+                    AgentId = 2,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/14-1.jpg", "PropertyImages/14-2.jpg" , "PropertyImages/14-3.jpg", "PropertyImages/14-4.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 3, 7) // Static date
@@ -732,10 +730,10 @@ namespace RealEstate.Data
                     BedRooms = 10,
                     BathRooms = 8,
                     Space = 2500.00m,
-                    AgentId = 5,
-                    SellerId = 15,
+                    AgentId = null,
+                    SellerId = 1,
                     Images = new List<string> { "PropertyImages/15-1.jpg", "PropertyImages/15-2.jpg", "PropertyImages/15-3.jpg", "PropertyImages/15-4.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Pending,
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 4, 4) // Static date
 
                 }
