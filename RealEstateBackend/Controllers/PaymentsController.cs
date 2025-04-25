@@ -86,77 +86,96 @@ namespace RealEstate.Controllers
         [HttpPost("create-stripe-checkout-session")]
         public async Task<IActionResult> CreateStripeCheckoutSessionAsync([FromQuery] decimal amount)
         {
-
-            CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+            if (!int.TryParse(buyerIdStr, out int buyerId))
             {
-                Amount = amount,
-                BuyerId = null, // Replace with actual buyer ID
-                OrderId = null // Replace with actual order ID
-            };
-            var metadata = new Dictionary<string, string>
-    {
-        { "OrderId", request.OrderId.ToString() },
-        { "BuyerId", request.BuyerId.ToString() }
-    };
+                return Unauthorized("Buyer not found.");
+            }
 
             try
             {
                 var session = _stripeService.CreateCheckoutSession(
-                    request.Amount,
-                    $"https://localhost:4200/payment-success?sessionId={{CHECKOUT_SESSION_ID}}",
-                    //"https://localhost:4200/payment-cancelled",
-                    "https://facebook.com",
-                    metadata
+                    amount,
+                    $"https://localhost:7184/api/Payments/payment-success?sessionId={{CHECKOUT_SESSION_ID}}", // Success URL                   
+                    "https://localhost:7184/payment-cancelled", // Cancel URL,
+                    new Dictionary<string, string>
+                    {
+                { "buyerId", buyerIdStr } // Store buyerId in metadata
+                    }
                 );
 
-                await PaymentSuccess(session.Id);
                 return Ok(new { url = session.Url, sessionId = session.Id });
             }
             catch
             {
                 return BadRequest("Payment was unsuccessful");
             }
-
-
         }
 
-
-        [HttpGet("payment-success")]
-        public async Task<IActionResult> PaymentSuccess([FromQuery] string sessionId)
+        [HttpGet("verify-stripe-payment")]
+        public async Task<IActionResult> VerifyStripePayment([FromQuery] string sessionId)
         {
+            var sessionService = new SessionService();
+            var session = await sessionService.GetAsync(sessionId);
+
+            if (session.PaymentStatus != "paid")
+            {
+                return BadRequest("Payment not completed");
+            }
 
             string buyerIdStr = User.FindFirst("userId")?.Value;
-
             if (!int.TryParse(buyerIdStr, out int buyerId))
             {
                 return Unauthorized("Buyer not found.");
             }
 
-            //Retrieve the session from Stripe
-            var sessionService = new SessionService();
-
-            var session = await sessionService.GetAsync(sessionId);
-
-
-            // Get the amount paid (convert back from cents to dollars)
             var amount = session.AmountTotal / 100m;
-
 
             var payment = new Payment
             {
                 Amount = (decimal)amount,
                 PaidAt = DateTime.UtcNow,
                 PaymentMethod = Models.Domains.PaymentMethod.Stripe,
-                //OrderId = int.Parse(session.Metadata["OrderId"]), // if stored in metadata
-                BuyerId = buyerId   // if stored in metadata
+                BuyerId = buyerId
             };
 
-            // Save to database
             await _paymentRepository.AddAsync(payment);
 
-            // Redirect to a success page in your Angular app
-            return Ok();
+            return Ok(new
+            {
+                success = true,
+                paymentId = payment.Id,
+                amount = payment.Amount
+            });
+        }
 
+
+        [HttpGet("payment-success")]
+        public async Task<IActionResult> PaymentSuccess([FromQuery] string sessionId)
+        {
+            var sessionService = new SessionService();
+            var session = await sessionService.GetAsync(sessionId);
+
+            // Get buyerId from metadata
+            if (!session.Metadata.TryGetValue("buyerId", out string buyerIdStr) ||
+                !int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found in session metadata.");
+            }
+
+            var amount = session.AmountTotal / 100m;
+
+            var payment = new Payment
+            {
+                Amount = (decimal)amount,
+                PaidAt = DateTime.UtcNow,
+                PaymentMethod = Models.Domains.PaymentMethod.Stripe,
+                BuyerId = buyerId
+            };
+
+            await _paymentRepository.AddAsync(payment);
+
+            return Ok();
         }
 
 

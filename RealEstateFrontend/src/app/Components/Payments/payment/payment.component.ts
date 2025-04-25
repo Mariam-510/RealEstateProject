@@ -13,6 +13,7 @@ import { firstValueFrom } from 'rxjs';
 import { CreateOrderDto, OrderService } from '../../../Services/ApiServices/order.service';
 import { PaymentDto, PaymentService } from '../../../Services/ApiServices/payment.service';
 
+
 @Component({
   selector: 'app-payment',
   standalone: true,
@@ -64,6 +65,8 @@ export class PaymentComponent implements OnInit, AfterViewInit {
   clientId: string = '';
 
   async ngOnInit() {
+    await this.checkStripeReturn();
+
     if (!this.hasRole('Buyer')) {
       this.router.navigate(['/login']);
       return;
@@ -346,4 +349,77 @@ export class PaymentComponent implements OnInit, AfterViewInit {
   hasUser() {
     return this.auth.isAuthenticated();
   }
+
+
+  async initiateStripeCheckout() {
+    if (this.isProcessing) return;
+    this.isProcessing = true;
+  
+    try {
+      const amount = (this.localCart?.totalPrice ?? 0) + (this.shippingDto?.deliveryFees ?? 0);
+      const response = await this.paymentService.createStripeCheckoutSession(amount).toPromise();
+      
+      if (response?.url) {
+        // Store session ID and order details for verification after return
+        localStorage.setItem('stripe_session_id', response.sessionId);
+        localStorage.setItem('pending_order', JSON.stringify({
+          addressId: this.address?.id,
+          deliveryFees: this.shippingDto?.deliveryFees
+        }));
+        
+        // Redirect to Stripe checkout
+        window.location.href = response.url;
+      } else {
+        throw new Error('No URL returned from Stripe');
+      }
+    } catch (error) {
+      console.error('Stripe checkout error:', error);
+      this.toastr.error('Failed to initiate Stripe payment');
+      this.isProcessing = false;
+    }
+  }
+
+  async checkStripeReturn() {
+    const url = new URL(window.location.href);
+    const sessionId = url.searchParams.get('sessionId');
+    
+    if (sessionId) {
+      this.isProcessing = true;
+      try {
+        // Verify the payment with your backend
+        const verification = await this.paymentService.verifyStripePayment(sessionId).toPromise();
+        
+        if (verification?.success) {
+          // Retrieve pending order details
+          const pendingOrderStr = localStorage.getItem('pending_order') || '{}';
+          const pendingOrder = JSON.parse(pendingOrderStr);
+          
+          // Complete the order
+          const orderData: CreateOrderDto = {
+            paymentId: verification.paymentId,
+            deliveryFees: pendingOrder.deliveryFees || this.shippingDto?.deliveryFees || 0,
+            addressId: pendingOrder.addressId || this.address?.id || 0
+          };
+  
+          const response = await firstValueFrom(this.orderService.placeOrder(orderData));
+          this.cartService.notifyCartUpdated();
+          
+          // Clean up
+          localStorage.removeItem('stripe_session_id');
+          localStorage.removeItem('pending_order');
+          
+          // Redirect to home or confirmation page
+          this.router.navigate(['/home']);
+          this.toastr.success('Payment and order completed successfully!');
+        }
+      } catch (error) {
+        console.error('Payment verification failed:', error);
+        this.toastr.error('Payment verification failed');
+        this.router.navigate(['/checkout/payment']);
+      } finally {
+        this.isProcessing = false;
+      }
+    }
+  }
+  
 }
