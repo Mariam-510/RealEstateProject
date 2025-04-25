@@ -181,6 +181,7 @@
 
 .service-image {
   height: 250px;
+  background-image: url('https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg');
   background-size: cover;
   background-position: center;
   transition: transform 0.3s ease;
@@ -369,10 +370,6 @@
 }
 
 /* Testimonials */
-.testimonials {
-  padding: 80px 20px;
-  background-color: #e8d6ce;
-}
 
 .testimonial-container {
   max-width: 1000px;
@@ -386,7 +383,7 @@
   background-color: white;
   border-radius: 10px;
   padding: 30px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .testimonial-header {
@@ -422,15 +419,15 @@
 
 .testimonial-quote::before,
 .testimonial-quote::after {
-  content: '"';
+  content: ' " ';
   color: #c38e79;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: bold;
 }
 
 /* Inspiration Gallery (Replacement for Blog Section) */
 .inspiration-gallery {
-  padding: 80px 20px;
+  /* padding: 80px 20px; */
   background-color: #fff;
 }
 
@@ -572,9 +569,11 @@
   color: #c38e79;
 }
 
+/* signup-section */
+
 .signup-section {
   padding: 100px 20px;
-  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/api/placeholder/1600/600') no-repeat center center;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1') no-repeat center center;
   background-size: cover;
   text-align: center;
   color: white;
@@ -599,7 +598,9 @@
 .trust {
   text-align: center;
   padding: 4rem 10%;
-  background: #f8f8f8;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/7.jpg') no-repeat center center;
+  background-size: cover;
+
 }
 
 .stats {
@@ -611,7 +612,7 @@
 
 .number {
   font-size: 2.5rem;
-  color: #c38e79;
+  color: white;
   margin: 0;
 }
 
@@ -643,4 +644,72 @@
 .read-more {
   color: #c38e79;
   text-decoration: none;
+}
+
+
+/* feedback section */
+
+.feedback-section {
+  display: flex;
+  /* gap: 10px; */
+  justify-content: center;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  text-align: center;
+  /* border-radius: 8px; */
+  /* max-width: 800px; */
+  /* margin: 1rem auto; */
+}
+
+.feedback-ratings, .feedback-form {
+  /* flex: 1; */
+  padding: 1rem;
+}
+
+.star-rating {
+  font-size: 1.5rem;
+  color: #ddd;
+  cursor: pointer;
+}
+
+.star-rating span {
+  transition: color 0.2s;
+}
+
+.star-rating span:hover,
+.star-rating span:hover ~ span {
+  color: #ffd700;
+}
+
+.star-rating span.active {
+  color: #ffc107;
+}
+
+.feedback-form textarea {
+  width: 100%;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.submit-btn {
+  background: #007bff;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.submit-btn:hover {
+  background: #0056b3;
+}
+
+@media (max-width: 600px) {
+  .feedback-section {
+    flex-direction: column;
+  }
 }
