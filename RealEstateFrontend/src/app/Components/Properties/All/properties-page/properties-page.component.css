@@ -142,6 +142,29 @@
   display: none !important;
 }
 
+::ng-deep .ngx-slider .ngx-slider-pointer {
+  background-color: #c38e79 !important;
+  /* For pointer/handle color */
+}
+
+::ng-deep .ngx-slider .ngx-slider-selection {
+  background-color: #c38e79 !important;
+  /* For selection bar color */
+}
+
+::ng-deep .ngx-slider .ngx-slider-pointer::after {
+  background-color: white !important;
+  /* For small circle in pointers */
+}
+
+::ng-deep .ngx-slider-span {
+  color: white !important;
+}
+
+.rating:hover {
+  background-color: #c38e79;
+}
+
 /* ----------------------------------------------------------------- */
 .font-heading {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;

@@ -23,7 +23,7 @@ export interface ProductDTO {
   averageRating: number;
   numberOfReviews: number;
   isDeleted: boolean;
-  dateAdded: Date;
+  dateAdded: string;
   categoryID: number;
   categoryName: string;
   productimage: string[];

@@ -1,615 +1,604 @@
 <!-- slider -->
 <div id="carouselExampleIndicators" class="carousel slide position-relative">
-    <div class="carousel-indicators">
-        <button *ngFor="let slide of slides; let i = index" type="button" [class.active]="i === activeSlide"
-            (click)="setActiveSlide(i)" data-bs-target="#carouselExampleIndicators"
-            [attr.aria-current]="i === activeSlide" [attr.aria-label]="'Slide ' + (i + 1)" style="width: 5rem"></button>
-    </div>
+  <div class="carousel-indicators">
+    <button *ngFor="let slide of slides; let i = index" type="button" [class.active]="i === activeSlide"
+      (click)="setActiveSlide(i)" data-bs-target="#carouselExampleIndicators" [attr.aria-current]="i === activeSlide"
+      [attr.aria-label]="'Slide ' + (i + 1)" style="width: 5rem"></button>
+  </div>
 
-    <div class="carousel-inner">
-        <div *ngFor="let slide of slides; let i = index" class="carousel-item" [class.active]="i === activeSlide">
-            <img [src]="slide.imageUrl" class="d-block w-100 carousel-img" [alt]="slide.alt" />
-            <div class="carousel-caption">
-                <h1 class="fw-bold">{{ slide.title }}</h1>
-                <p class="fs-5 mb-4">{{ slide.subtitle }}</p>
+  <div class="carousel-inner">
+    <div *ngFor="let slide of slides; let i = index" class="carousel-item" [class.active]="i === activeSlide">
+      <img [src]="slide.imageUrl" class="d-block w-100 carousel-img" [alt]="slide.alt" />
+      <div class="carousel-caption">
+        <h1 class="fw-bold">{{ slide.title }}</h1>
+        <p class="fs-5 mb-4">{{ slide.subtitle }}</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="carousel-control-prev square-control" type="button" (click)="prev()">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next square-control" type="button" (click)="next()">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+
+  <div class="aa position-absolute start-50 translate-middle-x text-white w-100 px-3">
+    <div class="bg-dark bg-opacity-75 rounded-3 p-4 mx-auto" style="max-width: 1100px">
+      <!-- First Row -->
+      <div class="row g-2">
+        <!-- Category Filter -->
+        <div class="col-md">
+          <div class="dropdown">
+            <button class="form-select text-start d-flex justify-content-between align-items-center"
+              style="height: 3rem;" data-bs-toggle="dropdown">
+              <span>{{ selectedCategory || 'All Categories' }}</span>
+            </button>
+            <div class="dropdown-menu dropdown-filter p-3 w-100 bg-dark" style="max-height: 150px; overflow-y: auto;">
+              <div class="dropdown-item text-white" (click)="toggleCategory('All Categories')">
+                All Categories
+              </div>
+              <div *ngFor="let cat of categories" class="dropdown-item text-white" (click)="toggleCategory(cat.name)">
+                {{ cat.name }}
+              </div>
             </div>
+          </div>
         </div>
-    </div>
 
-    <button class="carousel-control-prev square-control" type="button" (click)="prev()">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next square-control" type="button" (click)="next()">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
-
-    <div class="aa position-absolute start-50 translate-middle-x text-white w-100 px-3">
-        <div class="bg-dark bg-opacity-75 rounded-3 p-4 mx-auto" style="max-width: 1100px">
-            <!-- First Row -->
-            <div class="row g-2">
-                <!-- Category Filter -->
-                <div class="col-md">
-                    <div class="dropdown">
-                        <button class="form-select text-start d-flex justify-content-between align-items-center"
-                            style="height: 3rem;" data-bs-toggle="dropdown">
-                            <span>{{ selectedCategory || 'All Categories' }}</span>
-                        </button>
-                        <div class="dropdown-menu dropdown-filter p-3 w-100 bg-dark"
-                            style="max-height: 150px; overflow-y: auto;">
-                            <div class="dropdown-item text-white" (click)="toggleCategory('All Categories')">
-                                All Categories
-                            </div>
-                            <div *ngFor="let cat of categories" class="dropdown-item text-white"
-                                (click)="toggleCategory(cat.name)">
-                                {{ cat.name }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- State Filter -->
-                <div class="col-md">
-                    <div class="dropdown">
-                        <button class="form-select text-start d-flex justify-content-between align-items-center"
-                            style="height: 3rem;" data-bs-toggle="dropdown">
-                            <span>{{ selectedState || 'All Conditions' }}</span>
-                        </button>
-                        <div class="dropdown-menu dropdown-filter p-3 w-100 bg-dark">
-                            <div class="dropdown-item text-white" (click)="toggleState('All Conditions')">
-                                All Conditions
-                            </div>
-                            <div class="dropdown-item text-white" (click)="toggleState('New')">
-                                New
-                            </div>
-                            <div class="dropdown-item text-white" (click)="toggleState('Used')">
-                                Used
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <!-- State Filter -->
+        <div class="col-md">
+          <div class="dropdown">
+            <button class="form-select text-start d-flex justify-content-between align-items-center"
+              style="height: 3rem;" data-bs-toggle="dropdown">
+              <span>{{ selectedState || 'All Conditions' }}</span>
+            </button>
+            <div class="dropdown-menu dropdown-filter p-3 w-100 bg-dark">
+              <div class="dropdown-item text-white" (click)="toggleState('All Conditions')">
+                All Conditions
+              </div>
+              <div class="dropdown-item text-white" (click)="toggleState('New')">
+                New
+              </div>
+              <div class="dropdown-item text-white" (click)="toggleState('Used')">
+                Used
+              </div>
             </div>
-
-            <!-- Second Row -->
-            <div class="row g-2 mt-2">
-                <!-- Price Filter -->
-                <div class="col-md">
-                    <div class="dropdown">
-                        <button class="form-select text-start d-flex justify-content-between align-items-center"
-                            style="height: 3rem;" data-bs-toggle="dropdown" data-bs-auto-close="outside">
-                            <span>
-                                {{ minPrice || maxPrice ?
-                                (minPrice ? 'EGP ' + (minPrice | number) : '') +
-                                (maxPrice ? (minPrice ? ' - EGP ' : 'Up to EGP') + (maxPrice | number) :
-                                (minPrice ? '+' : 'Price Range')) :
-                                'Price Range' }}
-                            </span>
-                        </button>
-                        <div class="dropdown-menu p-3 w-100 bg-dark">
-                            <div class="input-group input-group-sm mb-2" (click)="$event.stopPropagation()">
-                                <span class="input-group-text bg-caffe text-white">Min</span>
-                                <input type="number" class="form-control" placeholder="0" [(ngModel)]="minPrice"
-                                    (change)="applyFilters()">
-                            </div>
-                            <div class="input-group input-group-sm mb-2" (click)="$event.stopPropagation()">
-                                <span class="input-group-text bg-caffe text-white">Max</span>
-                                <input type="number" class="form-control" placeholder="∞" [(ngModel)]="maxPrice"
-                                    (change)="applyFilters()">
-                            </div>
-                            <div (click)="$event.stopPropagation()" (mousedown)="$event.stopPropagation()"
-                                (touchstart)="$event.stopPropagation()">
-                                <ngx-slider class="custom-slider mt-5" [(value)]="minPrice" [(highValue)]="maxPrice"
-                                    [options]="sliderOptions" (userChangeEnd)="applyFilters()"></ngx-slider>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Rating Filter -->
-                <div class="col-md">
-                    <div class="dropdown">
-                        <button class="form-select text-start d-flex justify-content-between align-items-center"
-                            style="height: 3rem;" data-bs-toggle="dropdown">
-                            <span>{{ selectedRating ? selectedRating + ' Stars' : 'Rating' }}</span>
-                        </button>
-                        <div class="dropdown-menu dropdown-filter p-3 w-100 bg-dark">
-                            <div class="mb-2">
-                                <h6 class="filter-subtitle text-white">Rating</h6>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <button *ngFor="let rating of [5,4,3,2,1]" class="rating btn btn-pill text-white"
-                                        (click)="toggleRating(rating)">
-                                        <i class="bi-star-fill text-warning"></i> {{ rating }}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- <div class="dropdown-menu dropdown-filter p-3 w-100 bg-dark">
-                            <div *ngFor="let rating of [5,4,3,2,1]" class="dropdown-item text-white"
-                                (click)="toggleRating(rating)">
-                                <i class="bi-star-fill text-warning"></i> {{ rating }} 
-                            </div>
-                        </div> -->
-                    </div>
-                </div>
-
-                <!-- Search Button -->
-                <div class="col-md">
-                    <button class="btn text-white bg-caffe rounded w-100" style="height: 2.9rem;" (click)="applyFilters()">
-                        <i class="bi bi-search" style="font-size: 1.1rem;"></i> <span class="ms-2" style="font-size: 1.15rem;">SEARCH</span>
-                    </button>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Second Row -->
+      <div class="row g-2 mt-2">
+        <!-- Price Filter -->
+        <div class="col-md">
+          <div class="dropdown">
+            <button class="form-select text-start d-flex justify-content-between align-items-center"
+              style="height: 3rem;" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+              <span>
+                {{ minPrice || maxPrice ?
+                (minPrice ? 'EGP ' + (minPrice | number) : '') +
+                (maxPrice ? (minPrice ? ' - EGP ' : 'Up to EGP') + (maxPrice | number) :
+                (minPrice ? '+' : 'Price Range')) :
+                'Price Range' }}
+              </span>
+            </button>
+            <div class="dropdown-menu p-3 w-100 bg-dark">
+              <div class="input-group input-group-sm mb-2" (click)="$event.stopPropagation()">
+                <span class="input-group-text bg-caffe text-white">Min</span>
+                <input type="number" class="form-control" placeholder="0" [(ngModel)]="minPrice">
+              </div>
+              <div class="input-group input-group-sm mb-2" (click)="$event.stopPropagation()">
+                <span class="input-group-text bg-caffe text-white">Max</span>
+                <input type="number" class="form-control" placeholder="∞" [(ngModel)]="maxPrice">
+              </div>
+              <div (click)="$event.stopPropagation()" (mousedown)="$event.stopPropagation()"
+                (touchstart)="$event.stopPropagation()">
+                <ngx-slider class="custom-slider mt-5" [(value)]="minPrice" [(highValue)]="maxPrice"
+                  [options]="sliderOptions"></ngx-slider>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rating Filter -->
+        <div class="col-md">
+          <div class="dropdown">
+            <button class="form-select text-start d-flex justify-content-between align-items-center"
+              style="height: 3rem;" data-bs-toggle="dropdown">
+              <span>{{ selectedRating ? selectedRating + ' Stars' : 'Rating' }}</span>
+            </button>
+            <div class="dropdown-menu dropdown-filter p-3 w-100 bg-dark">
+              <div class="mb-2">
+                <h6 class="filter-subtitle text-white">Rating</h6>
+                <div class="d-flex flex-wrap gap-2">
+                  <button *ngFor="let rating of [5,4,3,2,1]" class="rating btn btn-pill text-white"
+                    (click)="toggleRating(rating)">
+                    <i class="bi-star-fill text-warning"></i> {{ rating }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Button -->
+        <div class="col-md">
+          <button class="btn text-white bg-caffe rounded w-100" style="height: 2.9rem;" (click)="goToViewAllPage()">
+            <i class="bi bi-search" style="font-size: 1.1rem;"></i> <span class="ms-2"
+              style="font-size: 1.15rem;">SEARCH</span>
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 
 </div>
 
 <div class="container">
-    <div class="row align-items-center mt-4 pt-2">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-3">
-                <li class="breadcrumb-item d-flex align-items-center">
-                    <a href="#" class="text-decoration-none text-muted d-flex align-items-center">
-                        <i class="bi bi-house-door-fill me-2 text-caffe fs-6"></i>
-                        <span class="fw-medium fs-5">Home</span>
-                    </a>
-                </li>
-                <li class="breadcrumb-item d-flex align-items-center">
-                    <a href="#" class="text-decoration-none text-muted d-flex align-items-center">
-                        <i class="bi bi-box-seam-fill me-2 text-caffe fs-6"></i>
-                        <span class="fw-medium fs-5">Products</span>
-                    </a>
-                </li>
-            </ol>
-        </nav>
-    </div>
+  <div class="row align-items-center mt-4 pt-2">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-3">
+        <li class="breadcrumb-item d-flex align-items-center">
+          <a href="#" class="text-decoration-none text-muted d-flex align-items-center">
+            <i class="bi bi-house-door-fill me-2 text-caffe fs-6"></i>
+            <span class="fw-medium fs-5">Home</span>
+          </a>
+        </li>
+        <li class="breadcrumb-item d-flex align-items-center">
+          <a href="#" class="text-decoration-none text-muted d-flex align-items-center">
+            <i class="bi bi-box-seam-fill me-2 text-caffe fs-6"></i>
+            <span class="fw-medium fs-5">Products</span>
+          </a>
+        </li>
+      </ol>
+    </nav>
+  </div>
 </div>
 
 <app-cat-slider></app-cat-slider>
 
 <!-- new arrivals products -->
 <div class="container my-5" style="width: 87%">
-    <h2 class="text-center fw-bold mb-4">New Arrivals</h2>
-    <div class="section-underline mx-auto mb-4"></div>
+  <h2 class="text-center fw-bold mb-4">New Arrivals</h2>
+  <div class="section-underline mx-auto mb-4"></div>
 
-    <div class="position-relative">
-        <button class="carousel-btn left" [disabled]="!canScrollLeftProduct" (click)="scrollLeft()">
-            <i class="bi bi-chevron-left"></i>
-        </button>
+  <div class="position-relative">
+    <button class="carousel-btn left" [disabled]="!canScrollLeftProduct" (click)="scrollLeft()">
+      <i class="bi bi-chevron-left"></i>
+    </button>
 
-        <div class="hide-scrollbar d-flex overflow-auto gap-3 px-2" #slider (scroll)="checkScroll()">
+    <div class="hide-scrollbar d-flex overflow-auto gap-3 px-2" #slider (scroll)="checkScroll()">
 
-            @for(product of recentProducts; track product.id)
-            {
-            <div class="card flex-shrink-0" style="width: 19.3rem; position: relative;">
-                <div class="cardHeader position-relative">
+      @for(product of recentProducts; track product.id)
+      {
+      <div class="card flex-shrink-0" style="width: 19.3rem; position: relative;">
+        <div class="cardHeader position-relative">
 
-        
-                    <span class="badge position-absolute bg-dark bg-opacity-50 fw-semibold top-0 start-0 m-2 z-2"
-                      style="font-size: 0.88rem;">
-                      {{ product.categoryName }}
-                    </span>
-        
-                    <div class="position-absolute top-0 end-0 m-2 z-2 d-flex gap-2">
-                      <a *ngIf="hasRoleOrNoUser('Buyer')" (click)="toggleWishList(product)" class="d-inline-block"
-                        style="cursor: pointer;" role="button">
-                        <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;">
-                          <i class="bi" [ngClass]="{
+
+          <span class="badge position-absolute bg-dark bg-opacity-50 fw-semibold top-0 start-0 m-2 z-2"
+            style="font-size: 0.88rem;">
+            {{ product.categoryName }}
+          </span>
+
+          <div class="position-absolute top-0 end-0 m-2 z-2 d-flex gap-2">
+            <a *ngIf="hasRoleOrNoUser('Buyer')" (click)="toggleWishList(product)" class="d-inline-block"
+              style="cursor: pointer;" role="button">
+              <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;">
+                <i class="bi" [ngClass]="{
                                 'bi-heart-fill text-danger': product?.isFavorite && hasUser(),
                                 'bi-heart text-white': !product?.isFavorite || !hasUser()
                               }"></i>
-                        </span>
-                      </a>
-        
-                      <a *ngIf="product.quantity > 0 && hasRoleOrNoUser('Buyer')" [routerLink]="['/products', product.id]"
-                        style="cursor: pointer;">
-                        <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;"><i class="bi bi-cart3"></i></span>
-                      </a>
-                    </div>
-        
-        
-                    <!-- Image Carousel -->
-                    <div class="position-relative overflow-hidden">
-                      <a [routerLink]="['/products', product.id]" class="d-block" style="position: relative;">
-                        <img [src]="apiConfig.apiUrl + product.productimage[currentImageIndices[product.id]]"
-                          alt="{{ product.name }} - Image {{ currentImageIndices[product.id] + 1 }}" class="img-fluid w-100"
-                          style="height: 255px; object-fit: cover; transition: transform 0.3s ease;" loading="lazy">
-        
-        
-                        <div *ngIf="product.quantity == 0"
-                          class="status-overlay d-flex align-items-center justify-content-center position-absolute">
-                          <div class="status-text text-white text-uppercase fw-bold bg-caffe"
-                            style="font-size: 1.5rem; padding: 0.1rem 0.6rem; border-radius: 4px;">
-                            SOLD OUT
-                          </div>
-                        </div>
-                      </a>
-        
-                      <!-- Navigation buttons -->
-                      <div
-                        class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-between px-2"
-                        style="pointer-events: none;">
-                        <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
-                          (click)="prevImage(product.id); $event.stopPropagation()">
-                          <i class="bi bi-chevron-left"></i>
-                        </button>
-                        <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
-                          (click)="nextImage(product.id); $event.stopPropagation()">
-                          <i class="bi bi-chevron-right"></i>
-                        </button>
-                      </div>
-        
-                      <!-- Image counter -->
-                      <div class="position-absolute bottom-0 m-2 px-2 py-1 bg-dark bg-opacity-50 text-white rounded small z-2">
-                        <i class="bi bi-images me-1"></i>{{ currentImageIndices[product.id] + 1 }}/{{
-                        product.productimage.length }}
-                      </div>
-                    </div>
-        
-                  </div>
+              </span>
+            </a>
 
-                  <div class="card-body p-2">
-        
-                    <h5 class="card-title mb-1">
-                      {{ product.name }}
-                    </h5>
-        
-                    <!-- Colors -->
-                    <div class="d-flex gap-2 flex-wrap my-3">
-                      <!-- First 7 colors -->
-                      <div *ngFor="let productStockDto of product.productStockDtos?.slice(0,4); let i = index"
-                        class="color-swatch hover-scale rounded-5" [class.selected]="i === 0"
-                        [style.background]="productStockDto.color" [class.out-of-stock]="productStockDto.quantity === 0">
-        
-                        <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
-                      </div>
-        
-                      <!-- Enhanced remaining colors container -->
-                      <div *ngIf="(product.productStockDtos?.length ??0) > 4" class="position-relative d-inline-block">
-                        <div
-                          class="color-swatch-num mt-1 d-flex align-items-center justify-content-center position-relative fw-semibold"
-                          (click)="toggleColorList(product.id)">
-        
-                          + {{ (product.productStockDtos?.length ?? 0) - 4 }} more
-                        </div>
-        
-                        <!-- Hidden color list that appears on hover -->
-                        <div class="color-hover-container" *ngIf="openedProductId === product.id">
-                          <div class="d-flex gap-2 flex-column justify-content-center p-2">
-                            <div *ngFor="let productStockDto of product.productStockDtos?.slice(4)"
-                              class="color-swatch rounded-5" [style.background]="productStockDto.color">
-        
-                              <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-        
-                    <div class="d-flex justify-content-between align-items-center">
-                      <span class="fw-semibold text-muted" style="font-size: 1.25rem;">EGP {{ product.price | number }}</span>
-                      <span class=" badge text-white" [style.background-color]="product.isUsed ? '#de8332' : '#2a5f8b'">
-                        {{ product.isUsed ? 'Used' : 'New' }}
-                      </span>
-                    </div>
-        
-                    <div class="d-flex justify-content-between align-items-center mt-2">
-                      <div class="text-warning small">
-                        <ng-container *ngFor="let star of [].constructor(5); let i = index">
-                          <i class="star bi" [ngClass]="{
+            <a *ngIf="product.quantity > 0 && hasRoleOrNoUser('Buyer')" [routerLink]="['/products', product.id]"
+              style="cursor: pointer;">
+              <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;"><i class="bi bi-cart3"></i></span>
+            </a>
+          </div>
+
+
+          <!-- Image Carousel -->
+          <div class="position-relative overflow-hidden">
+            <a [routerLink]="['/products', product.id]" class="d-block" style="position: relative;">
+              <img [src]="apiConfig.apiUrl + product.productimage[currentImageIndices[product.id]]"
+                alt="{{ product.name }} - Image {{ currentImageIndices[product.id] + 1 }}" class="img-fluid w-100"
+                style="height: 255px; object-fit: cover; transition: transform 0.3s ease;" loading="lazy">
+
+
+              <div *ngIf="product.quantity == 0"
+                class="status-overlay d-flex align-items-center justify-content-center position-absolute">
+                <div class="status-text text-white text-uppercase fw-bold bg-caffe"
+                  style="font-size: 1.5rem; padding: 0.1rem 0.6rem; border-radius: 4px;">
+                  SOLD OUT
+                </div>
+              </div>
+            </a>
+
+            <!-- Navigation buttons -->
+            <div
+              class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-between px-2"
+              style="pointer-events: none;">
+              <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
+                (click)="prevImage(product.id); $event.stopPropagation()">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
+                (click)="nextImage(product.id); $event.stopPropagation()">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+
+            <!-- Image counter -->
+            <div class="position-absolute bottom-0 m-2 px-2 py-1 bg-dark bg-opacity-50 text-white rounded small z-2">
+              <i class="bi bi-images me-1"></i>{{ currentImageIndices[product.id] + 1 }}/{{
+              product.productimage.length }}
+            </div>
+          </div>
+
+        </div>
+
+        <div class="card-body p-2">
+
+          <h5 class="card-title mb-1">
+            {{ product.name }}
+          </h5>
+
+          <!-- Colors -->
+          <div class="d-flex gap-2 flex-wrap my-3">
+            <!-- First 7 colors -->
+            <div *ngFor="let productStockDto of product.productStockDtos?.slice(0,4); let i = index"
+              class="color-swatch hover-scale rounded-5" [class.selected]="i === 0"
+              [style.background]="productStockDto.color" [class.out-of-stock]="productStockDto.quantity === 0">
+
+              <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+            </div>
+
+            <!-- Enhanced remaining colors container -->
+            <div *ngIf="(product.productStockDtos?.length ??0) > 4" class="position-relative d-inline-block">
+              <div
+                class="color-swatch-num mt-1 d-flex align-items-center justify-content-center position-relative fw-semibold"
+                (click)="toggleColorList(product.id)">
+
+                + {{ (product.productStockDtos?.length ?? 0) - 4 }} more
+              </div>
+
+              <!-- Hidden color list that appears on hover -->
+              <div class="color-hover-container" *ngIf="openedProductId === product.id">
+                <div class="d-flex gap-2 flex-column justify-content-center p-2">
+                  <div *ngFor="let productStockDto of product.productStockDtos?.slice(4)" class="color-swatch rounded-5"
+                    [style.background]="productStockDto.color">
+
+                    <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="fw-semibold text-muted" style="font-size: 1.25rem;">EGP {{ product.price | number }}</span>
+            <span class=" badge text-white" [style.background-color]="product.isUsed ? '#de8332' : '#2a5f8b'">
+              {{ product.isUsed ? 'Used' : 'New' }}
+            </span>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <div class="text-warning small">
+              <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                <i class="star bi" [ngClass]="{
                                                     'bi-star-fill': i < Math.floor(product.averageRating),
                                                     'bi-star-half': i === Math.floor(product.averageRating) && product.averageRating % 1 !== 0,
                                                     'bi-star': i >= Math.ceil(product.averageRating)
                                                     }">
-                          </i>
-                        </ng-container>
-                      </div>
-                      <small class="text-muted">{{ product.numberOfReviews }} Reviews</small>
-                    </div>
-        
-                    <!-- </a> -->
-                  </div>
+                </i>
+              </ng-container>
             </div>
-            }
+            <small class="text-muted">{{ product.numberOfReviews }} Reviews</small>
+          </div>
 
+          <!-- </a> -->
         </div>
+      </div>
+      }
 
-        <!-- [ngClass]="{'disabled': !canScrollRightProduct}" -->
-        <button class="carousel-btn right" [disabled]="!canScrollRightProduct" (click)="scrollRight()">
-            <i class="bi bi-chevron-right"></i>
-        </button>
     </div>
 
-    <div class="text-end mt-3 text-center">
-        <a [routerLink]="['/category', 2]" class="btn text-white mx-1 mb-2 rounded-3 fw-bold"
-            style="background-color: #c38e79">
-            View More <i class="bi bi-arrow-right ms-2"></i>
-        </a>
-    </div>
+    <!-- [ngClass]="{'disabled': !canScrollRightProduct}" -->
+    <button class="carousel-btn right" [disabled]="!canScrollRightProduct" (click)="scrollRight()">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+
+  <div class="text-end mt-3 text-center">
+    <button class="btn text-white mx-1 mb-2 rounded-3 fw-bold" style="background-color: #c38e79"
+      (click)="newProductView()">
+      View More <i class="bi bi-arrow-right ms-2"></i>
+    </button>
+  </div>
 
 </div>
 
 <!-- img + desc -->
 <div class="container my-5">
 
-    <h2 class="text-center fw-bold mb-4">Cozy. Stylish. Yours.</h2>
-    <div class="section-underline mx-auto mb-4"></div>
+  <h2 class="text-center fw-bold mb-4">Cozy. Stylish. Yours.</h2>
+  <div class="section-underline mx-auto mb-4"></div>
 
-    <div class="d-flex flex-column flex-lg-row align-items-center justify-content-between">
+  <div class="d-flex flex-column flex-lg-row align-items-center justify-content-between">
 
-        <div class="me-lg-5 mb-4 mb-lg-0" style="width: 120vw; height: 60vh; overflow: hidden; border-radius: 12px;">
-            <img src="https://www.mocka.com.au/cdn/shop/files/T04028_HiRes_01.jpg?v=1728479772&width=2040"
-                alt="Showroom" class="w-100 h-100 object-fit-cover rounded" />
-        </div>
-
-
-        <div class="w-100 w-lg-50 text-center text-lg-start px-3">
-            <h2 class="text-center fw-light mb-3">Timeless Comfort, Modern Style.</h2>
-            <p class="text-center fw-bold mb-2">Your home deserves style, warmth, and lasting comfort.</p>
-            <p class="text-center text-muted mb-4">
-                Explore furniture designed to elevate your everyday living.
-            </p>
-            <!-- <a [routerLink]="['/products', 1]" class="btn text-center text-white me-2 mb-2" style="background-color: #c38e79;">Shop New Arrivals</a> -->
-            <div class="d-flex justify-content-center">
-                <a [routerLink]="['/products']" class="btn w-75 text-white rounded w-50 mb-2"
-                    style="background-color: #c38e79;">
-                    Furnish Your Space
-                </a>
-            </div>
-        </div>
+    <div class="me-lg-5 mb-4 mb-lg-0" style="width: 120vw; height: 60vh; overflow: hidden; border-radius: 12px;">
+      <img src="https://www.mocka.com.au/cdn/shop/files/T04028_HiRes_01.jpg?v=1728479772&width=2040" alt="Showroom"
+        class="w-100 h-100 object-fit-cover rounded" />
     </div>
+
+
+    <div class="w-100 w-lg-50 text-center text-lg-start px-3">
+      <h2 class="text-center fw-light mb-3">Timeless Comfort, Modern Style.</h2>
+      <p class="text-center fw-bold mb-2">Your home deserves style, warmth, and lasting comfort.</p>
+      <p class="text-center text-muted mb-4">
+        Explore furniture designed to elevate your everyday living.
+      </p>
+      <!-- <a [routerLink]="['/products', 1]" class="btn text-center text-white me-2 mb-2" style="background-color: #c38e79;">Shop New Arrivals</a> -->
+      <div class="d-flex justify-content-center">
+        <a [routerLink]="['/products/all']" class="btn w-75 text-white rounded w-50 mb-2"
+          style="background-color: #c38e79;">
+          Furnish Your Space
+        </a>
+      </div>
+    </div>
+  </div>
 
 </div>
 
 <!-- featured now -->
 <div class="container my-5">
-    <h2 class="text-center fw-bold mb-4">Featured Now</h2>
-    <div class="section-underline mx-auto mb-4"></div>
+  <h2 class="text-center fw-bold mb-4">Featured Now</h2>
+  <div class="section-underline mx-auto mb-4"></div>
 
-    <!-- <div class="text-end mt-4">
+  <!-- <div class="text-end mt-4">
     <a [routerLink]="['/category', 2]" class="btn btn-outline-dark mx-1 mb-4 rounded-3 fw-bold">
       View More <i class="bi bi-arrow-right ms-2"></i>
     </a>
   </div> -->
 
-    <!-- style="gap: 10rem;" -->
-    <div class="row gap-5 justify-content-evenly">
+  <!-- style="gap: 10rem;" -->
+  <div class="row justify-content-between ">
 
-        <div class="featured col-10 col-sm-6 col-md-4 col-lg-3">
-            <div class="mx-auto text-center" style="width: 26vw;">
-                <div class="rounded-4 overflow-hidden" style="height: 85vh;">
-                    <a [routerLink]="['/products', 1]">
-                        <img src="https://denovofurniture.pk/wp-content/uploads/2024/06/Opulence-New-5.jpg"
-                            class="w-100 h-100 object-fit-cover rounded" alt="New Favourites">
-                    </a>
-                </div>
-                <h5 class="mt-3 fw-normal"><i class="bi bi-megaphone me-2"></i>Brand New Products</h5>
-                <p class="text-muted small mb-0">Fresh styles just landed!</p>
-                <!-- <p class="text-muted small mt-2">
-          Discover our latest collection of premium furniture, blending modern design with exceptional comfort. 
+    <div class="featured col-10 col-sm-6 col-md-4 col-lg-4">
+      <div class="mx-auto text-center" style="width: 25vw;">
+        <div class="rounded-4 overflow-hidden" style="height: 75vh;">
+          <a (click)=" NewProductView($event)">
+            <img src="https://denovofurniture.pk/wp-content/uploads/2024/06/Opulence-New-5.jpg"
+              class="w-100 h-100 object-fit-cover rounded linkProducts" alt="New Favourites">
+          </a>
+        </div>
+        <h5 class="mt-3 fw-normal"><i class="bi bi-megaphone me-2"></i>Brand New Products</h5>
+        <p class="text-muted small mb-0">Fresh styles just landed!</p>
+        <!-- <p class="text-muted small mt-2">
+          Discover our latest collection of premium furniture, blending modern design with exceptional comfort.
           Fresh styles for every room in your home.
         </p> -->
-            </div>
-        </div>
-        <div class="featured col-10 col-sm-6 col-md-4 col-lg-3">
-            <div class="mx-auto text-center" style="width: 26vw;">
-                <div class="rounded-4 overflow-hidden" style="height: 85vh;">
-                    <a [routerLink]="['/products', 1]">
-                        <img src="https://wasilaah.com/cdn/shop/products/IMG_9996.jpg?v=1679343647&width=2048"
-                            class="w-100 h-100 object-fit-cover rounded" alt="New Favourites">
-                    </a>
-                </div>
-                <h5 class="mt-3 fw-normal"><i class="bi bi-arrow-repeat me-2"></i>Used Products</h5>
-                <p class="text-muted small mb-0">Gently used, quality checked and eco-friendly choices!</p>
-            </div>
-        </div>
-        <div class="featured col-10 col-sm-6 col-md-4 col-lg-3">
-            <div class="mx-auto text-center" style="width: 26vw;">
-                <div class="rounded-4 overflow-hidden" style="height: 85vh;">
-                    <a [routerLink]="['/products', 1]">
-                        <img src="https://babymore.co.uk/wp-content/uploads/2023/02/Mona-2-Piece-Room-Set-GREY-1-scaled.jpg"
-                            class="w-100 h-100 object-fit-cover rounded" alt="New Favourites">
-                    </a>
-                </div>
-                <h5 class="mt-3 fw-normal"><i class="bi bi-clock me-2"></i>Limited Products</h5>
-                <p class="text-muted small mb-0">Don't miss out, selling fast!</p>
-            </div>
-        </div>
-
-
+      </div>
     </div>
+    <div class="featured col-10 col-sm-6 col-md-4 col-lg-4">
+      <div class="mx-auto text-center" style="width: 25vw;">
+        <div class="rounded-4 overflow-hidden" style="height: 75vh;">
+          <a (click)="UsedProductView($event)">
+            <img src="https://wasilaah.com/cdn/shop/products/IMG_9996.jpg?v=1679343647&width=2048"
+              class="w-100 h-100 object-fit-cover rounded linkProducts" alt="New Favourites">
+          </a>
+        </div>
+        <h5 class="mt-3 fw-normal"><i class="bi bi-arrow-repeat me-2"></i>Used Products</h5>
+        <p class="text-muted small mb-0">Gently used, quality checked and eco-friendly choices!</p>
+      </div>
+    </div>
+    <div class="featured col-10 col-sm-6 col-md-4 col-lg-4">
+      <div class="mx-auto text-center" style="width: 25vw;">
+        <div class="rounded-4 overflow-hidden" style="height: 75vh;">
+          <a (click)="limitedProductView($event)">
+            <img src="https://babymore.co.uk/wp-content/uploads/2023/02/Mona-2-Piece-Room-Set-GREY-1-scaled.jpg"
+              class="w-100 h-100 object-fit-cover rounded linkProducts" alt="New Favourites">
+          </a>
+        </div>
+        <h5 class="mt-3 fw-normal"><i class="bi bi-clock me-2"></i>Limited Products</h5>
+        <p class="text-muted small mb-0">Don't miss out, selling fast!</p>
+      </div>
+    </div>
+
+
+  </div>
 </div>
 
 <!-- top rated products -->
-<div class="container my-5" style="width: 87%">
-    <h2 class="text-center fw-bold mb-4">Top Rated Products</h2>
-    <div class="section-underline mx-auto mb-4"></div>
+<div class="container my-1" style="width: 87%">
+  <h2 class="text-center fw-bold mb-4">Top Rated Products</h2>
+  <div class="section-underline mx-auto mb-4"></div>
 
-    <div class="position-relative">
-        <button class="carousel-btn left" [disabled]="!canScrollLeftTopRatedProduct"
-            (click)="scrollLeftTopRatedProduct()">
-            <i class="bi bi-chevron-left"></i>
-        </button>
+  <div class="position-relative">
+    <button class="carousel-btn left" [disabled]="!canScrollLeftTopRatedProduct" (click)="scrollLeftTopRatedProduct()">
+      <i class="bi bi-chevron-left"></i>
+    </button>
 
-        <div class="hide-scrollbar d-flex overflow-auto gap-3 px-2" #topRatedSlider
-            (scroll)="checkScrollTopRatedProduct()">
+    <div class="hide-scrollbar d-flex overflow-auto gap-3 px-2" #topRatedSlider (scroll)="checkScrollTopRatedProduct()">
 
-            @for(product of topRatedProducts; track product.id)
-            {
-            <div class="card flex-shrink-0" style="width: 19.3rem; position: relative;">
-                <div class="cardHeader position-relative">
+      @for(product of topRatedProducts; track product.id)
+      {
+      <div class="card flex-shrink-0" style="width: 19.3rem; position: relative;">
+        <div class="cardHeader position-relative">
 
-                    <!-- Category Badge -->
-                    <!-- <span class="badge bg-dark bg-opacity-50 position-absolute top-0 start-0 m-2 z-2"
+          <!-- Category Badge -->
+          <!-- <span class="badge bg-dark bg-opacity-50 position-absolute top-0 start-0 m-2 z-2"
                         style="font-size: 0.88rem;">
                         {{ product.categoryName }}
                     </span> -->
-        
-                    <span class="badge position-absolute bg-dark bg-opacity-50 fw-semibold top-0 start-0 m-2 z-2"
-                        style="font-size: 0.88rem;">
-                        {{ product.categoryName }}
-                    </span>
-        
-                    <div class="position-absolute top-0 end-0 m-2 z-2 d-flex gap-2">
-                        <!-- Wishlist Button -->
-                        <a *ngIf="hasRoleOrNoUser('Buyer')" (click)="toggleWishList(product)" class="d-inline-block"
-                        style="cursor: pointer;" role="button">
-                        <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;">
-                            <!-- <i class="bi {{ product.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart text-white' }}"></i> -->
-                            <i class="bi" [ngClass]="{
+
+          <span class="badge position-absolute bg-dark bg-opacity-50 fw-semibold top-0 start-0 m-2 z-2"
+            style="font-size: 0.88rem;">
+            {{ product.categoryName }}
+          </span>
+
+          <div class="position-absolute top-0 end-0 m-2 z-2 d-flex gap-2">
+            <!-- Wishlist Button -->
+            <a *ngIf="hasRoleOrNoUser('Buyer')" (click)="toggleWishList(product)" class="d-inline-block"
+              style="cursor: pointer;" role="button">
+              <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;">
+                <!-- <i class="bi {{ product.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart text-white' }}"></i> -->
+                <i class="bi" [ngClass]="{
                                 'bi-heart-fill text-danger': product?.isFavorite && hasUser(),
                                 'bi-heart text-white': !product?.isFavorite || !hasUser()
                                 }"></i>
-                        </span>
-                        </a>
-        
-                        <!-- Add to Cart Button -->
-                        <a *ngIf="product.quantity > 0 && hasRoleOrNoUser('Buyer')" [routerLink]="['/products', product.id]"
-                        style="cursor: pointer;">
-                        <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;"><i class="bi bi-cart3"></i></span>
-                        </a>
-                    </div>
-        
-                    <!-- <a (click)="shareItem(product)" style="cursor: pointer;">
+              </span>
+            </a>
+
+            <!-- Add to Cart Button -->
+            <a *ngIf="product.quantity > 0 && hasRoleOrNoUser('Buyer')" [routerLink]="['/products', product.id]"
+              style="cursor: pointer;">
+              <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;"><i class="bi bi-cart3"></i></span>
+            </a>
+          </div>
+
+          <!-- <a (click)="shareItem(product)" style="cursor: pointer;">
                                     <span class="badge bg-dark bg-opacity-50 position-absolute end-0 m-2 z-2"
                                         style="font-size: 0.8rem;"><i class="bi bi-share fs-5"></i></span>
                                 </a> -->
-        
-        
-                    <!-- Image Carousel -->
-                    <div class="position-relative overflow-hidden">
-                        <a [routerLink]="['/products', product.id]" class="d-block" style="position: relative;">
-                        <img [src]="apiConfig.apiUrl + product.productimage[currentImageIndices[product.id]]"
-                            alt="{{ product.name }} - Image {{ currentImageIndices[product.id] + 1 }}" class="img-fluid w-100"
-                            style="height: 255px; object-fit: cover; transition: transform 0.3s ease;" loading="lazy">
-        
-        
-                        <div *ngIf="product.quantity == 0"
-                            class="status-overlay d-flex align-items-center justify-content-center position-absolute">
-                            <div class="status-text text-white text-uppercase fw-bold bg-caffe"
-                            style="font-size: 1.5rem; padding: 0.1rem 0.6rem; border-radius: 4px;">
-                            SOLD OUT
-                            </div>
-                        </div>
-                        </a>
-        
-                        <!-- Navigation buttons -->
-                        <div
-                        class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-between px-2"
-                        style="pointer-events: none;">
-                        <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
-                            (click)="prevImage(product.id); $event.stopPropagation()">
-                            <i class="bi bi-chevron-left"></i>
-                        </button>
-                        <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
-                            (click)="nextImage(product.id); $event.stopPropagation()">
-                            <i class="bi bi-chevron-right"></i>
-                        </button>
-                        </div>
-        
-                        <!-- Image counter -->
-                        <div class="position-absolute bottom-0 m-2 px-2 py-1 bg-dark bg-opacity-50 text-white rounded small z-2">
-                        <i class="bi bi-images me-1"></i>{{ currentImageIndices[product.id] + 1 }}/{{
-                        product.productimage.length }}
-                        </div>
-                    </div>
-        
-                    </div>
 
-                    <div class="card-body p-2">
-                    <!-- <a [routerLink]="['/products', product.id]" class="d-block text-decoration-none"
+
+          <!-- Image Carousel -->
+          <div class="position-relative overflow-hidden">
+            <a [routerLink]="['/products', product.id]" class="d-block" style="position: relative;">
+              <img [src]="apiConfig.apiUrl + product.productimage[currentImageIndices[product.id]]"
+                alt="{{ product.name }} - Image {{ currentImageIndices[product.id] + 1 }}" class="img-fluid w-100"
+                style="height: 255px; object-fit: cover; transition: transform 0.3s ease;" loading="lazy">
+
+
+              <div *ngIf="product.quantity == 0"
+                class="status-overlay d-flex align-items-center justify-content-center position-absolute">
+                <div class="status-text text-white text-uppercase fw-bold bg-caffe"
+                  style="font-size: 1.5rem; padding: 0.1rem 0.6rem; border-radius: 4px;">
+                  SOLD OUT
+                </div>
+              </div>
+            </a>
+
+            <!-- Navigation buttons -->
+            <div
+              class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-between px-2"
+              style="pointer-events: none;">
+              <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
+                (click)="prevImage(product.id); $event.stopPropagation()">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
+                (click)="nextImage(product.id); $event.stopPropagation()">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+
+            <!-- Image counter -->
+            <div class="position-absolute bottom-0 m-2 px-2 py-1 bg-dark bg-opacity-50 text-white rounded small z-2">
+              <i class="bi bi-images me-1"></i>{{ currentImageIndices[product.id] + 1 }}/{{
+              product.productimage.length }}
+            </div>
+          </div>
+
+        </div>
+
+        <div class="card-body p-2">
+          <!-- <a [routerLink]="['/products', product.id]" class="d-block text-decoration-none"
                         style="position: relative; color: inherit;"> -->
-        
-                    <h5 class="card-title mb-1">
-                        {{ product.name }}
-                    </h5>
-                    <!-- <p class="card-text text-muted small mb-2" style="min-height: 42px;">
+
+          <h5 class="card-title mb-1">
+            {{ product.name }}
+          </h5>
+          <!-- <p class="card-text text-muted small mb-2" style="min-height: 42px;">
                                     {{ product.description.length > 60 ? (product.description | slice:0:60) + '...' :
                                     product.description }}
                                 </p> -->
-        
-                    <!-- Colors -->
-                    <div class="d-flex gap-2 flex-wrap my-3">
-                        <!-- First 7 colors -->
-                        <div *ngFor="let productStockDto of product.productStockDtos?.slice(0,4); let i = index"
-                        class="color-swatch hover-scale rounded-5" [class.selected]="i === 0"
-                        [style.background]="productStockDto.color" [class.out-of-stock]="productStockDto.quantity === 0">
-        
-                        <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
-                        </div>
-        
-                        <!-- Enhanced remaining colors container -->
-                        <div *ngIf="(product.productStockDtos?.length ??0) > 4" class="position-relative d-inline-block">
-                        <div
-                            class="color-swatch-num mt-1 d-flex align-items-center justify-content-center position-relative fw-semibold"
-                            (click)="toggleColorList(product.id)">
-        
-                            + {{ (product.productStockDtos?.length ?? 0) - 4 }} more
-                        </div>
-        
-                        <!-- Hidden color list that appears on hover -->
-                        <div class="color-hover-container" *ngIf="openedProductId === product.id">
-                            <div class="d-flex gap-2 flex-column justify-content-center p-2">
-                            <div *ngFor="let productStockDto of product.productStockDtos?.slice(4)"
-                                class="color-swatch rounded-5" [style.background]="productStockDto.color">
-        
-                                <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-        
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-semibold text-muted" style="font-size: 1.25rem;">EGP {{ product.price | number }}</span>
-                        <span class=" badge text-white" [style.background-color]="product.isUsed ? '#de8332' : '#2a5f8b'">
-                        {{ product.isUsed ? 'Used' : 'New' }}
-                        </span>
-                    </div>
-        
-                    <div class="d-flex justify-content-between align-items-center mt-2">
-                        <div class="text-warning small">
-                        <ng-container *ngFor="let star of [].constructor(5); let i = index">
-                            <i class="star bi" [ngClass]="{
+
+          <!-- Colors -->
+          <div class="d-flex gap-2 flex-wrap my-3">
+            <!-- First 7 colors -->
+            <div *ngFor="let productStockDto of product.productStockDtos?.slice(0,4); let i = index"
+              class="color-swatch hover-scale rounded-5" [class.selected]="i === 0"
+              [style.background]="productStockDto.color" [class.out-of-stock]="productStockDto.quantity === 0">
+
+              <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+            </div>
+
+            <!-- Enhanced remaining colors container -->
+            <div *ngIf="(product.productStockDtos?.length ??0) > 4" class="position-relative d-inline-block">
+              <div
+                class="color-swatch-num mt-1 d-flex align-items-center justify-content-center position-relative fw-semibold"
+                (click)="toggleColorList(product.id)">
+
+                + {{ (product.productStockDtos?.length ?? 0) - 4 }} more
+              </div>
+
+              <!-- Hidden color list that appears on hover -->
+              <div class="color-hover-container" *ngIf="openedProductId === product.id">
+                <div class="d-flex gap-2 flex-column justify-content-center p-2">
+                  <div *ngFor="let productStockDto of product.productStockDtos?.slice(4)" class="color-swatch rounded-5"
+                    [style.background]="productStockDto.color">
+
+                    <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="fw-semibold text-muted" style="font-size: 1.25rem;">EGP {{ product.price | number }}</span>
+            <span class=" badge text-white" [style.background-color]="product.isUsed ? '#de8332' : '#2a5f8b'">
+              {{ product.isUsed ? 'Used' : 'New' }}
+            </span>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <div class="text-warning small">
+              <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                <i class="star bi" [ngClass]="{
                                                     'bi-star-fill': i < Math.floor(product.averageRating),
                                                     'bi-star-half': i === Math.floor(product.averageRating) && product.averageRating % 1 !== 0,
                                                     'bi-star': i >= Math.ceil(product.averageRating)
                                                     }">
-                            </i>
-                        </ng-container>
-                        </div>
-                        <small class="text-muted">{{ product.numberOfReviews }} Reviews</small>
-                    </div>
-        
-                    <!-- </a> -->
-                    </div>
+                </i>
+              </ng-container>
             </div>
-            }
+            <small class="text-muted">{{ product.numberOfReviews }} Reviews</small>
+          </div>
 
+          <!-- </a> -->
         </div>
+      </div>
+      }
 
-        <button class="carousel-btn right" [disabled]="!canScrollRightTopRatedProduct"
-            (click)="scrollRightTopRatedProduct()">
-            <i class="bi bi-chevron-right"></i>
-        </button>
     </div>
 
-    <div class="text-end mt-3 text-center">
-        <a [routerLink]="['/category', 2]" class="btn text-white mx-1 mb-2 rounded-3 fw-bold"
-            style="background-color: #c38e79">
-            View More <i class="bi bi-arrow-right ms-2"></i>
-        </a>
-    </div>
+    <button class="carousel-btn right" [disabled]="!canScrollRightTopRatedProduct"
+      (click)="scrollRightTopRatedProduct()">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+
+  <div class="text-end mt-3 text-center">
+    <button class="btn text-white mx-1 mb-2 rounded-3 fw-bold" style="background-color: #c38e79"
+      (click)="TopProductView()">
+      View More <i class="bi bi-arrow-right ms-2"></i>
+    </button>
+  </div>
 
 </div>
 
-<div class="container my-5 py-5 text-center">
-    <h3 class="text-center fw-bold mb-4">Ready to Elevate Your Space?</h3>
-    <div class="section-underline mx-auto mb-4"></div>
+<div class="container mb-3 py-5 text-center">
+  <h3 class="text-center fw-bold mb-4">Ready to Elevate Your Space?</h3>
+  <div class="section-underline mx-auto mb-4"></div>
 
-    <p class="text-muted mb-4">Find the perfect blend of comfort and style for every corner of your home.</p>
-    <a [routerLink]="['/products']" class="btn text-white px-4 py-2" style="background-color: #c38e79;">
-        Explore the Full Collection
-    </a>
+  <p class="text-muted mb-4">Find the perfect blend of comfort and style for every corner of your home.</p>
+  <a [routerLink]="['/products/all']" class="btn text-white px-4 py-2" style="background-color: #c38e79;">
+    Explore the Full Collection
+  </a>
 </div>

@@ -15,6 +15,7 @@ export interface OrderResponseDto {
   id: number;
   orderDate: string;         // ISO 8601 format (e.g., "2023-10-05T12:34:56Z")
   status: string;            // Update to union type if status values are known
+  statusNum: number;            // Update to union type if status values are known
   subTotal: number;
   deliveryFees: number;
   isDeleted: boolean;
@@ -44,6 +45,10 @@ export class OrderService {
     return this.http.get<OrderResponseDto>(
       `${this.apiUrl}/getById/${id}`
     );
+  }
+
+  getAllByBuyer(): Observable<OrderResponseDto[]> {
+    return this.http.get<OrderResponseDto[]>(`${this.apiUrl}/buyer`);
   }
 
 }

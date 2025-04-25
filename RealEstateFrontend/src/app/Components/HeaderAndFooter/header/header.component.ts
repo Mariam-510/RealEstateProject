@@ -85,7 +85,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   navItems = [
-    { label: 'Home', link: '/', icon: 'bi bi-house-fill' },
+    { label: 'Home', link: '/home', icon: 'bi bi-house-fill' },
     { label: 'Properties', link: '/properties', icon: 'bi bi-building-fill' },
     { label: 'Furniture', link: '/products', icon: 'bi bi-lamp-fill' },
     { label: 'Auctions', link: '/auctions', icon: 'bi bi-hammer' },
