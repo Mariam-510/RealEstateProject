@@ -103,8 +103,8 @@
 
               <button
                 class="btn btn-stripe w-100 py-2 mb-3"
-                (click)="initiateStripeCheckout()"
                 [disabled]="isProcessing"
+                (click)="handlePayment()"
               >
                 <span *ngIf="!isProcessing">
                   <i class="bi bi-credit-card me-2"></i> Pay with Card

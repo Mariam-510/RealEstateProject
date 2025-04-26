@@ -19,17 +19,24 @@ namespace RealEstate.Controllers
     [ApiController]
     public class PaymentsController : ControllerBase
     {
-        private readonly StripeService _stripeService;
         private readonly PayPalService _paypalService;
         private readonly IPaymentRepository _paymentRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly StripeService _stripeService;
+        private readonly CartService _cartService;
         public IMapper Mapper { get; }
+        private readonly IConfiguration _configuration;
 
-        public PaymentsController(StripeService stripeService, IPaymentRepository paymentRepository, PayPalService paypalService, IMapper Mapper)
+        public PaymentsController(IPaymentRepository paymentRepository, PayPalService paypalService, IMapper Mapper, StripeService stripeService,CartService cartService, IConfiguration configuration, IOrderRepository orderRepository)
         {
-            _stripeService = stripeService;
             _paymentRepository = paymentRepository;
+            _orderRepository = orderRepository;
             _paypalService = paypalService;
             this.Mapper = Mapper;
+            _stripeService = stripeService;
+            _cartService = cartService;
+
+            _configuration = configuration;
         }
 
 
@@ -60,163 +67,113 @@ namespace RealEstate.Controllers
         }
 
 
-        //---------------------------------------------------------------------------------------------------
-
-
-        //Old version
-        //[HttpPost("create-payment-intent")]
-        //public async Task<IActionResult> CreatePaymentIntent([FromBody] decimal amount)
-        //{
-        //    var paymentIntent = await _stripeService.CreatePaymentIntentAsync(amount);
-
-        //    var payment = new Payment
-        //    {
-        //        Amount = amount,
-        //        PaymentMethod = Models.Domains.PaymentMethod.Stripe,
-        //        //StripePaymentIntentId = paymentIntent.Id,
-        //        PaidAt = DateTime.UtcNow,
-        //    };
-
-        //    await _paymentRepository.AddAsync(payment);
-
-        //    return Ok(new { clientSecret = paymentIntent.ClientSecret });
-        //}
-
-
-        [HttpPost("create-stripe-checkout-session")]
-        public async Task<IActionResult> CreateStripeCheckoutSessionAsync([FromQuery] decimal amount)
+        // PaymentsController.cs
+        [HttpPost("Stripe")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> CreateStripePayment([FromBody] decimal amount)
         {
             string buyerIdStr = User.FindFirst("userId")?.Value;
+
             if (!int.TryParse(buyerIdStr, out int buyerId))
             {
                 return Unauthorized("Buyer not found.");
             }
 
-            try
+            var payment = new Payment
             {
-                var session = _stripeService.CreateCheckoutSession(
-                    amount,
-                    $"https://localhost:7184/api/Payments/payment-success?sessionId={{CHECKOUT_SESSION_ID}}", // Success URL                   
-                    "https://localhost:7184/payment-cancelled", // Cancel URL,
-                    new Dictionary<string, string>
-                    {
-                { "buyerId", buyerIdStr } // Store buyerId in metadata
-                    }
-                );
+                Amount = amount,
+                PaymentMethod = Models.Domains.PaymentMethod.Stripe,
+                PaidAt = DateTime.Now,
+                BuyerId = buyerId
+            };
 
-                return Ok(new { url = session.Url, sessionId = session.Id });
-            }
-            catch
-            {
-                return BadRequest("Payment was unsuccessful");
-            }
+            payment = await _paymentRepository.AddAsync(payment);
+
+            var paymentDto = Mapper.Map<PaymentDto>(payment);
+
+            return Ok(paymentDto);
         }
 
-        [HttpGet("verify-stripe-payment")]
-        public async Task<IActionResult> VerifyStripePayment([FromQuery] string sessionId)
+        [HttpPost("Stripe/CreateSession")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> CreateStripeSession([FromBody] decimal amount)
         {
-            var sessionService = new SessionService();
-            var session = await sessionService.GetAsync(sessionId);
-
-            if (session.PaymentStatus != "paid")
-            {
-                return BadRequest("Payment not completed");
-            }
-
             string buyerIdStr = User.FindFirst("userId")?.Value;
+
             if (!int.TryParse(buyerIdStr, out int buyerId))
             {
                 return Unauthorized("Buyer not found.");
             }
 
-            var amount = session.AmountTotal / 100m;
-
+            // Step 1: Create a Payment record
             var payment = new Payment
             {
-                Amount = (decimal)amount,
-                PaidAt = DateTime.UtcNow,
+                Amount = amount,
                 PaymentMethod = Models.Domains.PaymentMethod.Stripe,
+                PaidAt = DateTime.Now, // not paid yet!
                 BuyerId = buyerId
             };
+            payment = await _paymentRepository.AddAsync(payment);
 
-            await _paymentRepository.AddAsync(payment);
-
-            return Ok(new
+            // Step 2: Create an Order record (you need an IOrderRepository probably)
+            var order = new Order
             {
-                success = true,
-                paymentId = payment.Id,
-                amount = payment.Amount
-            });
+                BuyerId = buyerId,
+                PaymentId = payment.Id,
+                Status = OrderStatus.Pending, // or whatever you use
+                OrderDate = DateTime.Now,
+            };
+            order = await _orderRepository.CreateAsync(order);
+
+            // Step 3: Clear the cart and transfer items to the order
+            await _cartService.ClearCart(buyerId, order.Id);
+
+            var successUrl = $"{_configuration["ClientUrl"]}/checkout/confirmation";
+            var cancelUrl = $"{_configuration["ClientUrl"]}/checkout/payment";
+
+            var session = await _stripeService.CreateCheckoutSessionAsync(amount, successUrl, cancelUrl);
+
+            return Ok(new { sessionId = session.Id });
         }
 
 
-        [HttpGet("payment-success")]
-        public async Task<IActionResult> PaymentSuccess([FromQuery] string sessionId)
+        [HttpPost("Stripe/Webhook")]
+        [AllowAnonymous]
+        public async Task<IActionResult> StripeWebhook()
         {
-            var sessionService = new SessionService();
-            var session = await sessionService.GetAsync(sessionId);
+            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+            var stripeEvent = EventUtility.ConstructEvent(
+                json,
+                Request.Headers["Stripe-Signature"],
+                _configuration["Stripe:WebhookSecret"]
+            );
 
-            // Get buyerId from metadata
-            if (!session.Metadata.TryGetValue("buyerId", out string buyerIdStr) ||
-                !int.TryParse(buyerIdStr, out int buyerId))
+            if (stripeEvent.Type == "checkout.session.completed")
             {
-                return Unauthorized("Buyer not found in session metadata.");
+                var session = stripeEvent.Data.Object as Session;
+                // Here you could add additional processing if needed
             }
-
-            var amount = session.AmountTotal / 100m;
-
-            var payment = new Payment
-            {
-                Amount = (decimal)amount,
-                PaidAt = DateTime.UtcNow,
-                PaymentMethod = Models.Domains.PaymentMethod.Stripe,
-                BuyerId = buyerId
-            };
-
-            await _paymentRepository.AddAsync(payment);
 
             return Ok();
         }
 
 
-        //[HttpPost("create-paypal-order")]
-        //public async Task<IActionResult> CreatePayPalOrder([FromQuery] decimal amount)
-        //{
-        //    try
-        //    {
-        //        var orderId = await _paypalService.CreateOrderAsync(amount);
+        [HttpPost("Stripe/VerifySession")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> VerifyStripeSession([FromBody] string sessionId)
+        {
+            var isValid = await _stripeService.VerifySessionAsync(sessionId);
+            if (!isValid)
+            {
+                return BadRequest("Payment not completed");
+            }
 
-        //        // Assume PayPal will redirect to success URL with orderId
-        //        var redirectUrl = $"https://localhost:4200/paypal-success?orderId={orderId}";
-        //        return Ok(new { url = redirectUrl, orderId });
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest("Failed to create PayPal order.");
-        //    }
-        //}
-
-        //[HttpGet("paypal-success")]
-        //public async Task<IActionResult> PayPalSuccess([FromQuery] string orderId)
-        //{
-        //    var result = await _paypalService.VerifyPaymentAsync(orderId);
-
-        //    if (result.IsSuccess)
-        //    {
-        //        var payment = new Payment
-        //        {
-        //            Amount = result.Amount,
-        //            PaymentMethod = Models.Domains.PaymentMethod.PayPal,
-        //            PaidAt = DateTime.UtcNow,
-        //            // Add orderId, buyerId, etc. if needed
-        //        };
-
-        //        await _paymentRepository.AddAsync(payment);
-        //    }
+            return Ok();
+        }
 
 
-        //    return Ok("Payment recorded.");
-        //}
+
+
 
 
 

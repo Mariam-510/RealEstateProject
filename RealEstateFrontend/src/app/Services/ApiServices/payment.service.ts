@@ -23,20 +23,19 @@ export class PaymentService {
     return this.http.post<PaymentDto>(`${this.apiUrl}/PayPal`, amount);
   }
 
-  createStripeCheckoutSession(
-    amount: number
-  ): Observable<{ url: string; sessionId: string }> {
-    return this.http.post<{ url: string; sessionId: string }>(
-      `${this.apiUrl}/create-stripe-checkout-session?amount=${amount}`,
-      {}
-    );
+  createStripeSession(amount: number): Observable<{ sessionId: string }> {
+    return this.http.post<{ sessionId: string }>(`${this.apiUrl}/Stripe/CreateSession`, amount);
   }
 
-  verifyStripePayment(
-    sessionId: string
-  ): Observable<{ success: boolean; paymentId: number }> {
-    return this.http.get<{ success: boolean; paymentId: number }>(
-      `${this.apiUrl}/verify-stripe-payment?sessionId=${sessionId}`
+  createStripePayment(amount: number): Observable<PaymentDto> {
+    return this.http.post<PaymentDto>(`${this.apiUrl}/Stripe`, amount);
+  } 
+  
+  verifyStripeSession(sessionId: string): Observable<PaymentDto> {
+    return this.http.post<PaymentDto>(
+      `${this.apiUrl}/Stripe/VerifySession`,
+      { sessionId }
     );
   }
-}
+  
+} 
