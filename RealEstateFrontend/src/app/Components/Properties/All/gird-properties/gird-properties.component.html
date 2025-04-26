@@ -26,15 +26,16 @@
               <i class="bi bi-share" [ngClass]="{ 'fs-5': viewMode === 'grid3', 'fs-6': viewMode !== 'grid3' }"></i>
             </button>
 
-            <button class="btn  btn-icon shadow-sm border-0 d-flex align-items-center justify-content-center" [ngClass]="{
+            <button *ngIf="hasRoleOrNoUser('Buyer')"
+              class="btn  btn-icon shadow-sm border-0 d-flex align-items-center justify-content-center" [ngClass]="{
                   'btn-sm': viewMode !== 'grid3',
                   'p-2': viewMode === 'grid3'
                 }" (click)="$event.stopPropagation(); toggleFavorite(property)">
               <i class="bi" [ngClass]="{
                      'fs-5': viewMode === 'grid3',
                      'fs-6': viewMode !== 'grid3',
-                     'bi-heart-fill text-danger': property.isFavorite,
-                     'bi-heart text-white': !property.isFavorite
+                     'bi-heart-fill text-danger': property.isFavorite && hasUser(),
+                     'bi-heart text-white': !property.isFavorite || !hasUser()
                    }"></i>
             </button>
           </div>
@@ -52,13 +53,15 @@
               </div>
 
               <!-- Status Overlay -->
-              <div *ngIf="property.status === 'Sold'"
-                class="status-overlay d-flex align-items-center justify-content-center position-absolute">
-                <div class="status-text text-white text-uppercase fw-bold bg-caffe"
-                  style="font-size: 1.5rem; padding: 0.1rem 0.6rem; border-radius: 4px;">
-                  SOLD
+              <a [routerLink]="['/properties', property.id]">
+                <div *ngIf="property.status === 'Sold'"
+                  class="status-overlay d-flex align-items-center justify-content-center position-absolute">
+                  <div class="status-text text-white text-uppercase fw-bold bg-caffe"
+                    style="font-size: 1.5rem; padding: 0.1rem 0.6rem; border-radius: 4px;">
+                    SOLD
+                  </div>
                 </div>
-              </div>
+              </a>
               <div
                 class="image-counter position-absolute bottom-0 start-0 m-2 bg-dark bg-opacity-50 text-white rounded px-2 py-1 small fs-6">
                 <i class="bi bi-images me-1"></i>
@@ -76,10 +79,14 @@
                   </span>
                 </div>
 
+
                 <div *ngFor="let img of property.images; let i = index" class="carousel-item" [class.active]="i === 0">
-                  <img [src]="img" class="d-block w-100 property-img rounded-0"
-                    [alt]="'Image ' + (i+1) + ' of ' + property.title">
+                  <a [routerLink]="['/properties', property.id]">
+                    <img [src]="apiConfig.apiUrl + img" class="d-block w-100 property-img rounded-0"
+                      [alt]="'Image ' + (i+1) + ' of ' + property.title">
+                  </a>
                 </div>
+
               </div>
               <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#carousel-' + property.id"
                 data-bs-slide="prev">
@@ -118,188 +125,202 @@
         <!-- Property Details -->
         <div class="property-details p-3 flex-grow-1 d-flex flex-column">
 
-          <!-- Price & Type -->
-          <div class="d-flex justify-content-between align-items-center mb-2">
+          <a [routerLink]="['/properties', property.id]"
+            style="text-decoration: inherit; color: inherit; cursor: pointer;">
 
-            <!-- Price and Calculations -->
-            <div class="d-flex gap-2">
+            <!-- Price & Type -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
 
-              <h5 class="text-caffe mb-1 fw-bold">
-                EGP {{ property.price | number:'1.0-0' }}
-              </h5>
+              <!-- Price and Calculations -->
+              <div class="d-flex gap-2">
 
-              <div class="text-muted small" *ngIf="property.type === 'Rent'">
-                (per month)
+                <h5 class="text-caffe mb-1 fw-bold">
+                  EGP {{ property.price | number:'1.0-0' }}
+                </h5>
+
+                <div class="text-muted small" *ngIf="property.type === 'Rent'">
+                  (per month)
+                </div>
+
+                <div class="text-muted small" *ngIf="property.type === 'Sell' && property.space">
+                  ({{ (property.price / property.space) | number:'1.0-0' }} EGP/m²)
+                </div>
               </div>
 
-              <div class="text-muted small" *ngIf="property.type === 'Sell' && property.space">
-                ({{ (property.price / property.space) | number:'1.0-0' }} EGP/m²)
+              <!-- Type Badge -->
+              <div *ngIf="viewMode === 'grid3'" class="d-flex align-items-center gap-2">
+                <span *ngIf="property.type === 'Sell'" class="text-uppercase badge sell-badge fs-6">
+                  <i class="bi bi-house-door"></i> For Sale
+                </span>
+                <span *ngIf="property.type === 'Rent'" class="text-uppercase badge rent-badge fs-6">
+                  <i class="bi bi-building"></i> For Rent
+                </span>
               </div>
+
             </div>
 
-            <!-- Type Badge -->
-            <div *ngIf="viewMode === 'grid3'" class="d-flex align-items-center gap-2">
-              <span *ngIf="property.type === 'Sell'" class="text-uppercase badge sell-badge fs-6">
-                <i class="bi bi-house-door"></i> For Sale
-              </span>
-              <span *ngIf="property.type === 'Rent'" class="text-uppercase badge rent-badge fs-6">
-                <i class="bi bi-building"></i> For Rent
-              </span>
+            <!-- Title -->
+            <h6 class="mb-2 text-muted" title="{{ property.title }}">{{ property.title }}</h6>
+
+            <!-- Location -->
+            <div class="d-flex align-items-center gap-2 text-muted mb-2 mt-1">
+              <i class="bi bi-geo-alt-fill fs-6 text-caffe"></i>
+              <span class="text-secondary fst-italic" title="{{ property.location }}">{{ property.location }}</span>
             </div>
 
-          </div>
 
-          <!-- Title -->
-          <h6 class="mb-2 text-muted" title="{{ property.title }}">{{ property.title }}</h6>
+            <!-- Features -->
+            <div class="d-flex justify-content-between text-muted small mb-1" [class.flex-row]="viewMode === 'grid4'">
 
-          <!-- Location -->
-          <div class="d-flex align-items-center gap-2 text-muted mb-2 mt-1">
-            <i class="bi bi-geo-alt-fill fs-6 text-caffe"></i>
-            <span class="text-secondary fst-italic" title="{{ property.location }}">{{ property.location }}</span>
-          </div>
-
-
-          <!-- Features -->
-          <div class="d-flex justify-content-between text-muted small mb-1" [class.flex-row]="viewMode === 'grid4'">
-
-            <div [ngClass]="{
+              <div [ngClass]="{
                                 'd-flex align-items-center': viewMode === 'grid3',
                                 'mb-2 text-center': viewMode === 'grid4'
                               }">
-              <div class="bg-light rounded-circle p-2 mb-1">
-                <svg aria-hidden="true" loading="lazy" width="25" height="25" viewBox="0 0 55 55" fill="#c38e79">
-                  <rect width="14.3925" height="8.2243" rx="4.11215" transform="matrix(-1 0 0 1 44.7196 17.9346)"
-                    fill="#c38e79">
-                  </rect>
-                  <rect width="14.3925" height="8.2243" rx="4.11215" transform="matrix(-1 0 0 1 24.6729 17.9346)"
-                    fill="#c38e79">
-                  </rect>
-                  <path
-                    d="M0.916664 33.0296H1.83333V30.2796C1.83574 28.4593 2.915 26.813 4.58333 26.0849V11.9462C4.58356 11.5819 4.79943 11.2523 5.13333 11.1066C4.77571 10.5334 4.58528 9.87182 4.58333 9.19624C4.58333 7.17121 6.22497 5.52957 8.25 5.52957C10.275 5.52957 11.9167 7.17121 11.9167 9.19624C11.9129 9.8418 11.7369 10.4746 11.407 11.0296H43.593C43.2631 10.4746 43.0871 9.8418 43.0833 9.19624C43.0833 7.17121 44.725 5.52957 46.75 5.52957C48.775 5.52957 50.4167 7.17121 50.4167 9.19624C50.4147 9.87182 50.2243 10.5334 49.8667 11.1066C50.2006 11.2523 50.4164 11.5819 50.4167 11.9462V26.0849C52.085 26.813 53.1643 28.4593 53.1667 30.2796V33.0296H54.0833C54.5896 33.0296 55 33.44 55 33.9462V46.7796C55 47.2858 54.5896 47.6962 54.0833 47.6962H53.1667V52.2796C53.1667 52.7858 52.7562 53.1962 52.25 53.1962H48.5833C48.0771 53.1962 47.6667 52.7858 47.6667 52.2796V47.6962H7.33333V52.2796C7.33333 52.7858 6.92289 53.1962 6.41666 53.1962H2.75C2.24377 53.1962 1.83333 52.7858 1.83333 52.2796V47.6962H0.916664C0.410435 47.6962 0 47.2858 0 46.7796V33.9462C0 33.44 0.410435 33.0296 0.916664 33.0296ZM8.25 7.36291C7.23743 7.36291 6.41666 8.18367 6.41666 9.19624C6.41666 10.2088 7.23743 11.0296 8.25 11.0296C9.26257 11.0296 10.0833 10.2088 10.0833 9.19624C10.0833 8.18367 9.26257 7.36291 8.25 7.36291ZM46.75 7.36291C45.7374 7.36291 44.9167 8.18367 44.9167 9.19624C44.9167 10.2088 45.7374 11.0296 46.75 11.0296C47.7626 11.0296 48.5833 10.2088 48.5833 9.19624C48.5833 8.18367 47.7626 7.36291 46.75 7.36291ZM48.5833 12.8629H6.41666V25.6962H10.1072C9.50056 24.9076 9.16999 23.9413 9.16666 22.9462V21.1129C9.16964 18.5829 11.22 16.5326 13.75 16.5296H21.0833C23.6133 16.5326 25.6637 18.5829 25.6667 21.1129V22.9462C25.6633 23.9413 25.3328 24.9076 24.7262 25.6962H30.2738C29.6672 24.9076 29.3367 23.9413 29.3333 22.9462V21.1129C29.3363 18.5829 31.3867 16.5326 33.9167 16.5296H41.25C43.78 16.5326 45.8304 18.5829 45.8333 21.1129V22.9462C45.83 23.9413 45.4994 24.9076 44.8928 25.6962H48.5833V12.8629ZM11 21.1129V22.9462C11 24.465 12.2312 25.6962 13.75 25.6962H21.0833C22.6021 25.6962 23.8333 24.465 23.8333 22.9462V21.1129C23.8333 19.5941 22.6021 18.3629 21.0833 18.3629H13.75C12.2312 18.3629 11 19.5941 11 21.1129ZM31.1667 21.1129V22.9462C31.1667 24.465 32.3979 25.6962 33.9167 25.6962H41.25C42.7688 25.6962 44 24.465 44 22.9462V21.1129C44 19.5941 42.7688 18.3629 41.25 18.3629H33.9167C32.3979 18.3629 31.1667 19.5941 31.1667 21.1129ZM51.3333 30.2796C51.3333 28.7608 50.1021 27.5296 48.5833 27.5296H6.41666C4.89786 27.5296 3.66666 28.7608 3.66666 30.2796V33.0296H51.3333V30.2796ZM49.5 51.3629H51.3333V47.6962H49.5V51.3629ZM3.66666 51.3629H5.5V47.6962H3.66666V51.3629ZM1.83333 45.8629H53.1667V34.8629H1.83333V45.8629Z"
-                    fill="black"></path>
-                  <path
-                    d="M46.75 42.1963H50.4167C50.9229 42.1963 51.3333 42.6067 51.3333 43.1129C51.3333 43.6191 50.9229 44.0296 50.4167 44.0296H46.75C46.2438 44.0296 45.8333 43.6191 45.8333 43.1129C45.8333 42.6067 46.2438 42.1963 46.75 42.1963Z"
-                    fill="black"></path>
-                  <path
-                    d="M4.58334 42.1963H43.0833C43.5896 42.1963 44 42.6067 44 43.1129C44 43.6191 43.5896 44.0296 43.0833 44.0296H4.58334C4.07711 44.0296 3.66667 43.6191 3.66667 43.1129C3.66667 42.6067 4.07711 42.1963 4.58334 42.1963Z"
-                    fill="black"></path>
-                </svg>
+                <div class="bg-light rounded-circle p-2 mb-1">
+                  <svg aria-hidden="true" loading="lazy" width="25" height="25" viewBox="0 0 55 55" fill="#c38e79">
+                    <rect width="14.3925" height="8.2243" rx="4.11215" transform="matrix(-1 0 0 1 44.7196 17.9346)"
+                      fill="#c38e79">
+                    </rect>
+                    <rect width="14.3925" height="8.2243" rx="4.11215" transform="matrix(-1 0 0 1 24.6729 17.9346)"
+                      fill="#c38e79">
+                    </rect>
+                    <path
+                      d="M0.916664 33.0296H1.83333V30.2796C1.83574 28.4593 2.915 26.813 4.58333 26.0849V11.9462C4.58356 11.5819 4.79943 11.2523 5.13333 11.1066C4.77571 10.5334 4.58528 9.87182 4.58333 9.19624C4.58333 7.17121 6.22497 5.52957 8.25 5.52957C10.275 5.52957 11.9167 7.17121 11.9167 9.19624C11.9129 9.8418 11.7369 10.4746 11.407 11.0296H43.593C43.2631 10.4746 43.0871 9.8418 43.0833 9.19624C43.0833 7.17121 44.725 5.52957 46.75 5.52957C48.775 5.52957 50.4167 7.17121 50.4167 9.19624C50.4147 9.87182 50.2243 10.5334 49.8667 11.1066C50.2006 11.2523 50.4164 11.5819 50.4167 11.9462V26.0849C52.085 26.813 53.1643 28.4593 53.1667 30.2796V33.0296H54.0833C54.5896 33.0296 55 33.44 55 33.9462V46.7796C55 47.2858 54.5896 47.6962 54.0833 47.6962H53.1667V52.2796C53.1667 52.7858 52.7562 53.1962 52.25 53.1962H48.5833C48.0771 53.1962 47.6667 52.7858 47.6667 52.2796V47.6962H7.33333V52.2796C7.33333 52.7858 6.92289 53.1962 6.41666 53.1962H2.75C2.24377 53.1962 1.83333 52.7858 1.83333 52.2796V47.6962H0.916664C0.410435 47.6962 0 47.2858 0 46.7796V33.9462C0 33.44 0.410435 33.0296 0.916664 33.0296ZM8.25 7.36291C7.23743 7.36291 6.41666 8.18367 6.41666 9.19624C6.41666 10.2088 7.23743 11.0296 8.25 11.0296C9.26257 11.0296 10.0833 10.2088 10.0833 9.19624C10.0833 8.18367 9.26257 7.36291 8.25 7.36291ZM46.75 7.36291C45.7374 7.36291 44.9167 8.18367 44.9167 9.19624C44.9167 10.2088 45.7374 11.0296 46.75 11.0296C47.7626 11.0296 48.5833 10.2088 48.5833 9.19624C48.5833 8.18367 47.7626 7.36291 46.75 7.36291ZM48.5833 12.8629H6.41666V25.6962H10.1072C9.50056 24.9076 9.16999 23.9413 9.16666 22.9462V21.1129C9.16964 18.5829 11.22 16.5326 13.75 16.5296H21.0833C23.6133 16.5326 25.6637 18.5829 25.6667 21.1129V22.9462C25.6633 23.9413 25.3328 24.9076 24.7262 25.6962H30.2738C29.6672 24.9076 29.3367 23.9413 29.3333 22.9462V21.1129C29.3363 18.5829 31.3867 16.5326 33.9167 16.5296H41.25C43.78 16.5326 45.8304 18.5829 45.8333 21.1129V22.9462C45.83 23.9413 45.4994 24.9076 44.8928 25.6962H48.5833V12.8629ZM11 21.1129V22.9462C11 24.465 12.2312 25.6962 13.75 25.6962H21.0833C22.6021 25.6962 23.8333 24.465 23.8333 22.9462V21.1129C23.8333 19.5941 22.6021 18.3629 21.0833 18.3629H13.75C12.2312 18.3629 11 19.5941 11 21.1129ZM31.1667 21.1129V22.9462C31.1667 24.465 32.3979 25.6962 33.9167 25.6962H41.25C42.7688 25.6962 44 24.465 44 22.9462V21.1129C44 19.5941 42.7688 18.3629 41.25 18.3629H33.9167C32.3979 18.3629 31.1667 19.5941 31.1667 21.1129ZM51.3333 30.2796C51.3333 28.7608 50.1021 27.5296 48.5833 27.5296H6.41666C4.89786 27.5296 3.66666 28.7608 3.66666 30.2796V33.0296H51.3333V30.2796ZM49.5 51.3629H51.3333V47.6962H49.5V51.3629ZM3.66666 51.3629H5.5V47.6962H3.66666V51.3629ZM1.83333 45.8629H53.1667V34.8629H1.83333V45.8629Z"
+                      fill="black"></path>
+                    <path
+                      d="M46.75 42.1963H50.4167C50.9229 42.1963 51.3333 42.6067 51.3333 43.1129C51.3333 43.6191 50.9229 44.0296 50.4167 44.0296H46.75C46.2438 44.0296 45.8333 43.6191 45.8333 43.1129C45.8333 42.6067 46.2438 42.1963 46.75 42.1963Z"
+                      fill="black"></path>
+                    <path
+                      d="M4.58334 42.1963H43.0833C43.5896 42.1963 44 42.6067 44 43.1129C44 43.6191 43.5896 44.0296 43.0833 44.0296H4.58334C4.07711 44.0296 3.66667 43.6191 3.66667 43.1129C3.66667 42.6067 4.07711 42.1963 4.58334 42.1963Z"
+                      fill="black"></path>
+                  </svg>
+                </div>
+
+                <span [ngClass]="{ 'fs-6': viewMode === 'grid3', 'fs-7': viewMode !== 'grid3' }">
+                  {{ property.bedRooms }} Beds
+                </span>
               </div>
 
-              <span [ngClass]="{ 'fs-6': viewMode === 'grid3', 'fs-7': viewMode !== 'grid3' }">
-                {{ property.bedrooms }} Beds
-              </span>
-            </div>
-
-            <div [ngClass]="{
+              <div [ngClass]="{
                                 'd-flex align-items-center': viewMode === 'grid3',
                                 'mb-2 text-center': viewMode === 'grid4'
                               }">
-              <div class="bg-light rounded-circle p-2 mb-1">
-                <svg aria-hidden="true" loading="lazy" width="25" height="25" viewBox="0 0 55 55" fill="#c38e79">
-                  <path
-                    d="M42 31L9.25385 30.7586L9 29.3103L9.50769 28.1034L11.2846 27.6207H13.0615L14.3308 25.931L16.1077 25.4483L18.3923 25.931L19.1538 25.6897L20.1692 24.9655L21.1846 24.2414L23.2154 24L24.9923 24.7241L26.5154 24H28.2923L30.3231 24.9655L31.3385 25.931H31.8462L33.6231 25.6897L35.4 25.931L37.1769 27.3793L38.1923 27.6207H39.9692L41.2385 29.3103L42 31Z"
-                    fill="#c38e79"></path>
-                  <path
-                    d="M48.8723 30.6559V7.62263C48.8723 3.98637 45.914 1.02805 42.2777 1.02805C38.6414 1.02805 35.6831 3.98637 35.6831 7.62263V9.37503C34.33 9.59883 33.2945 10.7765 33.2945 12.1921V12.7114C33.2945 13.4272 33.8768 14.0095 34.5927 14.0095H41.343C42.0589 14.0095 42.6412 13.4272 42.6412 12.7114V12.1921C42.6412 10.813 41.6584 9.65907 40.3564 9.39362V7.62263C40.3564 6.56324 41.2183 5.70138 42.2777 5.70138C43.3371 5.70138 44.1989 6.56324 44.1989 7.62263V23.9793C44.1989 24.4094 44.5476 24.7582 44.9778 24.7582C45.4081 24.7582 45.7567 24.4094 45.7567 23.9793V7.62263C45.7567 5.70428 44.196 4.1436 42.2777 4.1436C40.3593 4.1436 38.7986 5.70428 38.7986 7.62263V9.33619H37.2409V7.62263C37.2409 4.84533 39.5004 2.58582 42.2777 2.58582C45.055 2.58582 47.3145 4.84533 47.3145 7.62263V30.522H45.7567V27.6141C45.7567 27.184 45.4081 26.8352 44.9778 26.8352C44.5476 26.8352 44.1989 27.184 44.1989 27.6141V30.522H42.6396C42.606 28.5206 40.997 26.896 39.023 26.8871C38.647 26.8862 38.2785 26.9406 37.9238 27.0513C37.1124 25.5566 35.523 24.6024 33.8138 24.6024C33.0982 24.6024 32.3907 24.7673 31.7524 25.0811C30.8795 23.8013 29.455 23.0446 27.8942 23.0446C26.9155 23.0446 25.9862 23.3411 25.1941 23.9042C24.402 23.3411 23.4727 23.0446 22.4939 23.0446C20.9331 23.0446 19.5085 23.8014 18.6357 25.0811C17.9974 24.7673 17.2899 24.6024 16.5744 24.6024C14.8652 24.6024 13.2757 25.5567 12.4644 27.0513C12.1098 26.9406 11.7406 26.8889 11.3654 26.8871C9.39115 26.8959 7.78227 28.5206 7.74863 30.522H6.44882C5.16043 30.522 4.11215 31.5701 4.11215 32.8586V33.3779C4.11215 34.3932 4.76341 35.2591 5.66993 35.5806V38.882C5.66993 43.8927 9.74632 47.9691 14.757 47.9691H15.0166V48.7479C15.0166 49.1775 14.6672 49.5268 14.2377 49.5268H13.5107C12.2224 49.5268 11.1741 50.575 11.1741 51.8635C11.1741 53.152 12.2224 54.2002 13.5107 54.2002H14.757C17.4769 54.2002 19.6899 51.9872 19.6899 49.2672V47.9691H21.9747C22.4049 47.9691 22.7535 47.6203 22.7535 47.1902C22.7535 46.76 22.4049 46.4113 21.9747 46.4113H14.757C10.6053 46.4113 7.22771 43.0337 7.22771 38.882V35.7145H12.4203V40.6475C12.4203 41.6496 13.2356 42.4649 14.2377 42.4649H18.911C19.9131 42.4649 20.7284 41.6496 20.7284 40.6475V35.7145H47.3145V38.882C47.3145 43.0337 43.9369 46.4113 39.7852 46.4113H25.6095C25.1792 46.4113 24.8306 46.76 24.8306 47.1902C24.8306 47.6203 25.1792 47.9691 25.6095 47.9691H34.8523V49.2672C34.8523 51.9872 37.0653 54.2002 39.7852 54.2002H41.0315C42.3198 54.2002 43.3681 53.152 43.3681 51.8635C43.3681 50.575 42.3198 49.5268 41.0315 49.5268H40.3045C39.875 49.5268 39.5256 49.1775 39.5256 48.7479V47.9691H39.7852C44.7959 47.9691 48.8723 43.8927 48.8723 38.882V35.5806C49.7788 35.2591 50.43 34.3933 50.43 33.3779V32.8586C50.43 31.8433 49.7788 30.9775 48.8723 30.6559ZM41.0834 12.1921V12.4517H34.8523V12.1921C34.8523 11.4763 35.4346 10.894 36.1504 10.894H39.7852C40.5011 10.894 41.0834 11.4763 41.0834 12.1921ZM18.1321 49.2672C18.1321 51.1282 16.6181 52.6424 14.757 52.6424H13.5107C13.0812 52.6424 12.7319 52.293 12.7319 51.8635C12.7319 51.434 13.0812 51.0846 13.5107 51.0846H14.2377C15.5261 51.0846 16.5744 50.0364 16.5744 48.7479V47.9691H18.1321V49.2672ZM40.3045 51.0846H41.0315C41.461 51.0846 41.8104 51.434 41.8104 51.8635C41.8104 52.293 41.461 52.6424 41.0315 52.6424H39.7852C37.9241 52.6424 36.4101 51.1282 36.4101 49.2672V47.9691H37.9678V48.7479C37.9678 50.0364 39.0161 51.0846 40.3045 51.0846ZM11.3723 28.4449H11.3822C11.6395 28.4449 11.8904 28.4913 12.1278 28.5828C12.7528 28.8235 13.4727 28.5347 13.7667 27.9249C14.2835 26.8529 15.3856 26.1602 16.5744 26.1602C17.1063 26.1602 17.6311 26.2965 18.0922 26.5545C18.7037 26.8966 19.4679 26.6971 19.8315 26.1002C20.4027 25.1624 21.398 24.6024 22.4939 24.6024C23.1899 24.6024 23.8485 24.8273 24.3978 25.2528C24.8669 25.6162 25.5216 25.616 25.9901 25.2529C26.5397 24.8273 27.1982 24.6024 27.8942 24.6024C28.9902 24.6024 29.9855 25.1624 30.5567 26.1003C30.9203 26.6972 31.6846 26.8969 32.2961 26.5545C32.7571 26.2965 33.2818 26.1602 33.8138 26.1602C35.0026 26.1602 36.1046 26.8529 36.6214 27.9249C36.9153 28.5348 37.6353 28.8234 38.2603 28.5828C38.4978 28.4913 38.7486 28.4449 39.006 28.4449H39.0159C40.1351 28.4498 41.0471 29.3761 41.0803 30.522H9.30786C9.34099 29.3761 10.2531 28.4499 11.3723 28.4449ZM6.44882 34.1568C6.01929 34.1568 5.66993 33.8074 5.66993 33.3779V32.8586C5.66993 32.4291 6.01929 32.0797 6.44882 32.0797H12.4203V34.1568H6.44882ZM18.911 40.9071H14.2377C14.0945 40.9071 13.9781 40.7906 13.9781 40.6475V32.0797H19.1707V40.6475C19.1707 40.7906 19.0542 40.9071 18.911 40.9071ZM48.8723 33.3779C48.8723 33.8074 48.5229 34.1568 48.0934 34.1568H20.7284V32.0797H48.0934C48.5229 32.0797 48.8723 32.4291 48.8723 32.8586V33.3779Z"
-                    fill="black"></path>
-                  <circle cx="34.5" cy="20.5" r="2" fill="#c38e79" stroke="black"></circle>
-                  <circle cx="25.5" cy="17.5" r="2" fill="#c38e79" stroke="black"></circle>
-                  <circle cx="15.5" cy="20.5" r="2" fill="#c38e79" stroke="black"></circle>
-                </svg>
+                <div class="bg-light rounded-circle p-2 mb-1">
+                  <svg aria-hidden="true" loading="lazy" width="25" height="25" viewBox="0 0 55 55" fill="#c38e79">
+                    <path
+                      d="M42 31L9.25385 30.7586L9 29.3103L9.50769 28.1034L11.2846 27.6207H13.0615L14.3308 25.931L16.1077 25.4483L18.3923 25.931L19.1538 25.6897L20.1692 24.9655L21.1846 24.2414L23.2154 24L24.9923 24.7241L26.5154 24H28.2923L30.3231 24.9655L31.3385 25.931H31.8462L33.6231 25.6897L35.4 25.931L37.1769 27.3793L38.1923 27.6207H39.9692L41.2385 29.3103L42 31Z"
+                      fill="#c38e79"></path>
+                    <path
+                      d="M48.8723 30.6559V7.62263C48.8723 3.98637 45.914 1.02805 42.2777 1.02805C38.6414 1.02805 35.6831 3.98637 35.6831 7.62263V9.37503C34.33 9.59883 33.2945 10.7765 33.2945 12.1921V12.7114C33.2945 13.4272 33.8768 14.0095 34.5927 14.0095H41.343C42.0589 14.0095 42.6412 13.4272 42.6412 12.7114V12.1921C42.6412 10.813 41.6584 9.65907 40.3564 9.39362V7.62263C40.3564 6.56324 41.2183 5.70138 42.2777 5.70138C43.3371 5.70138 44.1989 6.56324 44.1989 7.62263V23.9793C44.1989 24.4094 44.5476 24.7582 44.9778 24.7582C45.4081 24.7582 45.7567 24.4094 45.7567 23.9793V7.62263C45.7567 5.70428 44.196 4.1436 42.2777 4.1436C40.3593 4.1436 38.7986 5.70428 38.7986 7.62263V9.33619H37.2409V7.62263C37.2409 4.84533 39.5004 2.58582 42.2777 2.58582C45.055 2.58582 47.3145 4.84533 47.3145 7.62263V30.522H45.7567V27.6141C45.7567 27.184 45.4081 26.8352 44.9778 26.8352C44.5476 26.8352 44.1989 27.184 44.1989 27.6141V30.522H42.6396C42.606 28.5206 40.997 26.896 39.023 26.8871C38.647 26.8862 38.2785 26.9406 37.9238 27.0513C37.1124 25.5566 35.523 24.6024 33.8138 24.6024C33.0982 24.6024 32.3907 24.7673 31.7524 25.0811C30.8795 23.8013 29.455 23.0446 27.8942 23.0446C26.9155 23.0446 25.9862 23.3411 25.1941 23.9042C24.402 23.3411 23.4727 23.0446 22.4939 23.0446C20.9331 23.0446 19.5085 23.8014 18.6357 25.0811C17.9974 24.7673 17.2899 24.6024 16.5744 24.6024C14.8652 24.6024 13.2757 25.5567 12.4644 27.0513C12.1098 26.9406 11.7406 26.8889 11.3654 26.8871C9.39115 26.8959 7.78227 28.5206 7.74863 30.522H6.44882C5.16043 30.522 4.11215 31.5701 4.11215 32.8586V33.3779C4.11215 34.3932 4.76341 35.2591 5.66993 35.5806V38.882C5.66993 43.8927 9.74632 47.9691 14.757 47.9691H15.0166V48.7479C15.0166 49.1775 14.6672 49.5268 14.2377 49.5268H13.5107C12.2224 49.5268 11.1741 50.575 11.1741 51.8635C11.1741 53.152 12.2224 54.2002 13.5107 54.2002H14.757C17.4769 54.2002 19.6899 51.9872 19.6899 49.2672V47.9691H21.9747C22.4049 47.9691 22.7535 47.6203 22.7535 47.1902C22.7535 46.76 22.4049 46.4113 21.9747 46.4113H14.757C10.6053 46.4113 7.22771 43.0337 7.22771 38.882V35.7145H12.4203V40.6475C12.4203 41.6496 13.2356 42.4649 14.2377 42.4649H18.911C19.9131 42.4649 20.7284 41.6496 20.7284 40.6475V35.7145H47.3145V38.882C47.3145 43.0337 43.9369 46.4113 39.7852 46.4113H25.6095C25.1792 46.4113 24.8306 46.76 24.8306 47.1902C24.8306 47.6203 25.1792 47.9691 25.6095 47.9691H34.8523V49.2672C34.8523 51.9872 37.0653 54.2002 39.7852 54.2002H41.0315C42.3198 54.2002 43.3681 53.152 43.3681 51.8635C43.3681 50.575 42.3198 49.5268 41.0315 49.5268H40.3045C39.875 49.5268 39.5256 49.1775 39.5256 48.7479V47.9691H39.7852C44.7959 47.9691 48.8723 43.8927 48.8723 38.882V35.5806C49.7788 35.2591 50.43 34.3933 50.43 33.3779V32.8586C50.43 31.8433 49.7788 30.9775 48.8723 30.6559ZM41.0834 12.1921V12.4517H34.8523V12.1921C34.8523 11.4763 35.4346 10.894 36.1504 10.894H39.7852C40.5011 10.894 41.0834 11.4763 41.0834 12.1921ZM18.1321 49.2672C18.1321 51.1282 16.6181 52.6424 14.757 52.6424H13.5107C13.0812 52.6424 12.7319 52.293 12.7319 51.8635C12.7319 51.434 13.0812 51.0846 13.5107 51.0846H14.2377C15.5261 51.0846 16.5744 50.0364 16.5744 48.7479V47.9691H18.1321V49.2672ZM40.3045 51.0846H41.0315C41.461 51.0846 41.8104 51.434 41.8104 51.8635C41.8104 52.293 41.461 52.6424 41.0315 52.6424H39.7852C37.9241 52.6424 36.4101 51.1282 36.4101 49.2672V47.9691H37.9678V48.7479C37.9678 50.0364 39.0161 51.0846 40.3045 51.0846ZM11.3723 28.4449H11.3822C11.6395 28.4449 11.8904 28.4913 12.1278 28.5828C12.7528 28.8235 13.4727 28.5347 13.7667 27.9249C14.2835 26.8529 15.3856 26.1602 16.5744 26.1602C17.1063 26.1602 17.6311 26.2965 18.0922 26.5545C18.7037 26.8966 19.4679 26.6971 19.8315 26.1002C20.4027 25.1624 21.398 24.6024 22.4939 24.6024C23.1899 24.6024 23.8485 24.8273 24.3978 25.2528C24.8669 25.6162 25.5216 25.616 25.9901 25.2529C26.5397 24.8273 27.1982 24.6024 27.8942 24.6024C28.9902 24.6024 29.9855 25.1624 30.5567 26.1003C30.9203 26.6972 31.6846 26.8969 32.2961 26.5545C32.7571 26.2965 33.2818 26.1602 33.8138 26.1602C35.0026 26.1602 36.1046 26.8529 36.6214 27.9249C36.9153 28.5348 37.6353 28.8234 38.2603 28.5828C38.4978 28.4913 38.7486 28.4449 39.006 28.4449H39.0159C40.1351 28.4498 41.0471 29.3761 41.0803 30.522H9.30786C9.34099 29.3761 10.2531 28.4499 11.3723 28.4449ZM6.44882 34.1568C6.01929 34.1568 5.66993 33.8074 5.66993 33.3779V32.8586C5.66993 32.4291 6.01929 32.0797 6.44882 32.0797H12.4203V34.1568H6.44882ZM18.911 40.9071H14.2377C14.0945 40.9071 13.9781 40.7906 13.9781 40.6475V32.0797H19.1707V40.6475C19.1707 40.7906 19.0542 40.9071 18.911 40.9071ZM48.8723 33.3779C48.8723 33.8074 48.5229 34.1568 48.0934 34.1568H20.7284V32.0797H48.0934C48.5229 32.0797 48.8723 32.4291 48.8723 32.8586V33.3779Z"
+                      fill="black"></path>
+                    <circle cx="34.5" cy="20.5" r="2" fill="#c38e79" stroke="black"></circle>
+                    <circle cx="25.5" cy="17.5" r="2" fill="#c38e79" stroke="black"></circle>
+                    <circle cx="15.5" cy="20.5" r="2" fill="#c38e79" stroke="black"></circle>
+                  </svg>
+                </div>
+
+                <span [ngClass]="{ 'fs-6': viewMode === 'grid3', 'fs-7': viewMode !== 'grid3' }">{{property.bathRooms}}
+                  Baths</span>
               </div>
 
-              <span [ngClass]="{ 'fs-6': viewMode === 'grid3', 'fs-7': viewMode !== 'grid3' }">{{property.bathrooms}}
-                Baths</span>
-            </div>
-
-            <div [ngClass]="{
+              <div [ngClass]="{
                                 'd-flex align-items-center': viewMode === 'grid3',
                                 'mb-2 text-center': viewMode === 'grid4'
                               }">
 
-              <div class="bg-light rounded-circle p-2 mb-1">
-                <svg aria-hidden="true" loading="lazy" width="25" height="25" viewBox="0 0 55 55" fill="none">
-                  <path d="M15 51.5H3.5V24.5H18V16" stroke="black" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round">
-                  </path>
-                  <path d="M18 12V4.5H50.5V37.5" stroke="black" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round">
-                  </path>
-                  <path d="M50.5 41V51.5H18.5" stroke="black" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round">
-                  </path>
-                  <path d="M21 8V24.5H32.5V28H28.5" stroke="black" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round">
-                  </path>
-                  <path d="M25.5 28H21V34H18V28H7.5V48H17.5V43.5H21.5V48H47V28H42.5V24.5H47V8H21" stroke="black"
-                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <mask id="path-6-inside-1_202_99" fill="white">
-                    <rect x="33" y="8" width="11" height="13" rx="1"></rect>
-                  </mask>
-                  <rect x="33" y="8" width="11" height="13" rx="1" fill="#c38e79" stroke="black" stroke-width="2.4"
-                    mask="url(#path-6-inside-1_202_99)"></rect>
-                  <mask id="path-7-inside-2_202_99" fill="white">
-                    <rect x="33" y="8" width="11" height="5" rx="1"></rect>
-                  </mask>
-                  <rect x="33" y="8" width="11" height="5" rx="1" fill="#c38e79" stroke="black" stroke-width="2.4"
-                    mask="url(#path-7-inside-2_202_99)"></rect>
-                  <mask id="path-8-inside-3_202_99" fill="white">
-                    <path d="M21 11H26C26.5523 11 27 11.4477 27 12V21C27 21.5523 26.5523 22 26 22H21V11Z"></path>
-                  </mask>
-                  <path d="M21 11H26C26.5523 11 27 11.4477 27 12V21C27 21.5523 26.5523 22 26 22H21V11Z" fill="#c38e79"
-                    stroke="black" stroke-width="2.4" mask="url(#path-8-inside-3_202_99)"></path>
-                  <mask id="path-9-inside-4_202_99" fill="white">
-                    <rect x="7" y="31" width="6" height="14" rx="1"></rect>
-                  </mask>
-                  <rect x="7" y="31" width="6" height="14" rx="1" fill="#c38e79" stroke="black" stroke-width="2.4"
-                    mask="url(#path-9-inside-4_202_99)"></rect>
-                  <mask id="path-10-inside-5_202_99" fill="white">
-                    <rect x="29" y="44" width="15" height="4" rx="0.5"></rect>
-                  </mask>
-                  <rect x="29" y="44" width="15" height="4" rx="0.5" fill="#c38e79" stroke="black" stroke-width="2"
-                    mask="url(#path-10-inside-5_202_99)"></rect>
-                  <mask id="path-11-inside-6_202_99" fill="white">
-                    <rect x="30" y="40" width="4" height="5" rx="0.5"></rect>
-                  </mask>
-                  <rect x="30" y="40" width="4" height="5" rx="0.5" fill="#c38e79" stroke="black" stroke-width="2"
-                    mask="url(#path-11-inside-6_202_99)"></rect>
-                  <mask id="path-12-inside-7_202_99" fill="white">
-                    <rect x="39" y="40" width="4" height="5" rx="0.5"></rect>
-                  </mask>
-                  <rect x="39" y="40" width="4" height="5" rx="0.5" fill="#c38e79" stroke="black" stroke-width="2"
-                    mask="url(#path-12-inside-7_202_99)"></rect>
-                  <mask id="path-13-inside-8_202_99" fill="white">
-                    <rect x="33" y="41" width="7" height="4" rx="0.5"></rect>
-                  </mask>
-                  <rect x="33" y="41" width="7" height="4" rx="0.5" fill="#c38e79" stroke="black" stroke-width="2"
-                    mask="url(#path-13-inside-8_202_99)"></rect>
-                  <line x1="38.5" y1="12" x2="38.5" y2="9" stroke="black"></line>
-                  <path d="M22 43L28 36" stroke="black" stroke-width="1.2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                  </path>
-                  <path d="M42 28L35 33" stroke="black" stroke-width="1.2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                  </path>
-                </svg>
+                <div class="bg-light rounded-circle p-2 mb-1">
+                  <svg aria-hidden="true" loading="lazy" width="25" height="25" viewBox="0 0 55 55" fill="none">
+                    <path d="M15 51.5H3.5V24.5H18V16" stroke="black" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round">
+                    </path>
+                    <path d="M18 12V4.5H50.5V37.5" stroke="black" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round">
+                    </path>
+                    <path d="M50.5 41V51.5H18.5" stroke="black" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round">
+                    </path>
+                    <path d="M21 8V24.5H32.5V28H28.5" stroke="black" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round">
+                    </path>
+                    <path d="M25.5 28H21V34H18V28H7.5V48H17.5V43.5H21.5V48H47V28H42.5V24.5H47V8H21" stroke="black"
+                      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <mask id="path-6-inside-1_202_99" fill="white">
+                      <rect x="33" y="8" width="11" height="13" rx="1"></rect>
+                    </mask>
+                    <rect x="33" y="8" width="11" height="13" rx="1" fill="#c38e79" stroke="black" stroke-width="2.4"
+                      mask="url(#path-6-inside-1_202_99)"></rect>
+                    <mask id="path-7-inside-2_202_99" fill="white">
+                      <rect x="33" y="8" width="11" height="5" rx="1"></rect>
+                    </mask>
+                    <rect x="33" y="8" width="11" height="5" rx="1" fill="#c38e79" stroke="black" stroke-width="2.4"
+                      mask="url(#path-7-inside-2_202_99)"></rect>
+                    <mask id="path-8-inside-3_202_99" fill="white">
+                      <path d="M21 11H26C26.5523 11 27 11.4477 27 12V21C27 21.5523 26.5523 22 26 22H21V11Z"></path>
+                    </mask>
+                    <path d="M21 11H26C26.5523 11 27 11.4477 27 12V21C27 21.5523 26.5523 22 26 22H21V11Z" fill="#c38e79"
+                      stroke="black" stroke-width="2.4" mask="url(#path-8-inside-3_202_99)"></path>
+                    <mask id="path-9-inside-4_202_99" fill="white">
+                      <rect x="7" y="31" width="6" height="14" rx="1"></rect>
+                    </mask>
+                    <rect x="7" y="31" width="6" height="14" rx="1" fill="#c38e79" stroke="black" stroke-width="2.4"
+                      mask="url(#path-9-inside-4_202_99)"></rect>
+                    <mask id="path-10-inside-5_202_99" fill="white">
+                      <rect x="29" y="44" width="15" height="4" rx="0.5"></rect>
+                    </mask>
+                    <rect x="29" y="44" width="15" height="4" rx="0.5" fill="#c38e79" stroke="black" stroke-width="2"
+                      mask="url(#path-10-inside-5_202_99)"></rect>
+                    <mask id="path-11-inside-6_202_99" fill="white">
+                      <rect x="30" y="40" width="4" height="5" rx="0.5"></rect>
+                    </mask>
+                    <rect x="30" y="40" width="4" height="5" rx="0.5" fill="#c38e79" stroke="black" stroke-width="2"
+                      mask="url(#path-11-inside-6_202_99)"></rect>
+                    <mask id="path-12-inside-7_202_99" fill="white">
+                      <rect x="39" y="40" width="4" height="5" rx="0.5"></rect>
+                    </mask>
+                    <rect x="39" y="40" width="4" height="5" rx="0.5" fill="#c38e79" stroke="black" stroke-width="2"
+                      mask="url(#path-12-inside-7_202_99)"></rect>
+                    <mask id="path-13-inside-8_202_99" fill="white">
+                      <rect x="33" y="41" width="7" height="4" rx="0.5"></rect>
+                    </mask>
+                    <rect x="33" y="41" width="7" height="4" rx="0.5" fill="#c38e79" stroke="black" stroke-width="2"
+                      mask="url(#path-13-inside-8_202_99)"></rect>
+                    <line x1="38.5" y1="12" x2="38.5" y2="9" stroke="black"></line>
+                    <path d="M22 43L28 36" stroke="black" stroke-width="1.2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                    </path>
+                    <path d="M42 28L35 33" stroke="black" stroke-width="1.2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                    </path>
+                  </svg>
+                </div>
+
+                <span [ngClass]="{ 'fs-6': viewMode === 'grid3', 'fs-7': viewMode !== 'grid3' }">{{property.space}}
+                  m²</span>
               </div>
 
-              <span [ngClass]="{ 'fs-6': viewMode === 'grid3', 'fs-7': viewMode !== 'grid3' }">{{property.space}}
-                m²</span>
             </div>
-
-          </div>
+          </a>
 
           <!-- User & Actions -->
           <div class="footer d-flex border-top pt-3 justify-content-between align-items-center">
 
             <div class="d-flex align-items-center" [class.ms-2]="viewMode === 'grid4'">
-              <img src="propertyImages/user.jpeg" class="rounded-circle me-2" width="40" height="40" alt="Agent">
+              <!-- <img *ngIf="property.userImage" [src]="apiConfig.apiUrl + property.userImage" class="rounded-circle me-2"
+                width="40" height="40" alt="Agent"> -->
+
+              <ng-container *ngIf="property.userImage; else defaultIcon">
+                <img [src]="apiConfig.apiUrl + property.userImage" alt="User" class="rounded-circle me-2" width="40"
+                  height="40" alt="Agent">
+              </ng-container>
+
+              <ng-template #defaultIcon>
+                <i class="bi bi-person-circle text-brown me-2" style="font-size: 2.5rem;"></i>
+              </ng-template>
 
               <div>
                 <small class="d-block text-caffe fw-bold"
                   [ngClass]="{ 'fs-6': viewMode === 'grid3', 'fs-7': viewMode !== 'grid3' }">
-                  John Doe
+                  {{property.userName}}
                   <i [ngClass]="property.agentId ? 'bi-patch-check' : 'bi-house-door'" class="text-caffe"></i>
                 </small>
                 <small class="text-secondary fst-italic"
@@ -311,12 +332,14 @@
             </div>
 
             <div class="d-flex gap-2 mt-2">
-              <button *ngIf="property.status !== 'Auctioned'" class="btn btn-sm bg-caffe text-white px-4 fw-semibold"
-                [disabled]="property.status === 'Sold'" style="font-size: 1.04rem;"
+              <!-- [disabled]="property.status === 'Sold'" -->
+
+              <a [routerLink]="['/properties', property.id]" *ngIf="property.status === 'Available'"
+                class="btn btn-sm bg-caffe text-white px-4 fw-semibold" style="font-size: 1.04rem;"
                 [ngStyle]="{ 'width': viewMode === 'grid3' ? '9rem' : 'auto' }">
                 <i class="bi bi-chat-dots me-2" [class.me-2]="viewMode !== 'grid4'"></i>
                 <span *ngIf="viewMode !== 'grid4'">Inquire</span>
-              </button>
+              </a>
 
 
               <button *ngIf="property.status === 'Auctioned'"

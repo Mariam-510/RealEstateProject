@@ -11,14 +11,17 @@ export interface FilterState {
   sortBy: string;  // Add sortBy to the state
 }
 
-@Injectable({ providedIn: 'root' })
-export class FilterService {
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ProductFilterService {
   private defaultFilters: FilterState = {
     category: '',
     condition: '',
     rating: 0,
     minPrice: 0,
-    maxPrice: 1000000,
+    maxPrice: Number.MAX_SAFE_INTEGER,
     sortBy: ''
   };
 

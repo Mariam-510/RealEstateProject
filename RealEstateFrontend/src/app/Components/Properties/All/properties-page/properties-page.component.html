@@ -77,14 +77,14 @@
         <nav class="nav category-nav">
           <button class="nav-link p-0 pb-2 position-relative" [class.active]="!selectedCategory"
             (click)="toggleCategory('')">
-            <span class="d-flex align-items-center gap-2 text-muted" style="font-size: 1.3rem;">
+            <span class="d-flex align-items-center text-muted" style="font-size: 1.3rem;">
               <span class="fw-medium">All Categories</span>
             </span>
           </button>
           <!-- style="color: #4a2c2a;" -->
-          <button *ngFor="let cat of categoriesWithCounts" class="nav-link p-0 pb-2 position-relative"
+          <button *ngFor="let cat of categoriesName()" class="nav-link p-0 pb-2 position-relative"
             [class.active]="selectedCategory === cat.name" (click)="toggleCategory(cat.name)">
-            <span class="d-flex align-items-center gap-2 text-muted" style="font-size: 1.3rem;">
+            <span class="d-flex align-items-center text-muted" style="font-size: 1.3rem;">
               <span class="fw-medium text-capitalize">{{ cat.name }}</span>
             </span>
           </button>
@@ -105,7 +105,7 @@
     <div [style.width]="isSticky ? '25%' : '25%'">
       <div class="input-group search-bar rounded-4 overflow-hidden">
         <input type="search" class="form-control border-0 px-4 fs-6 no-focus-shadow"
-          placeholder="Search by name or location..." [(ngModel)]="searchQuery" (input)="applyFilters()">
+          placeholder="Search by name or location..." [(ngModel)]="searchQuery" (input)="togglesearch(searchQuery)">
         <button class="btn btn-custom px-3 fs-6" type="button">
           <i class="bi bi-search text-white" style="font-size: 1.2rem;"></i>
         </button>
@@ -127,7 +127,7 @@
             </div>
           </div>
           <div class="row g-2">
-            <div *ngFor="let cat of categoriesWithCounts">
+            <div *ngFor="let cat of categoriesName()">
               <div class="dropdown-item" (click)="toggleCategory(cat.name)"
                 [class.active]="selectedCategory === cat.name">
                 <div class="d-flex justify-content-between">
@@ -150,7 +150,7 @@
         </button>
         <div class="dropdown-menu dropdown-filter p-3 w-100">
           <div class="row g-2">
-            <div *ngFor="let type of propertyTypes" class="col-12">
+            <div *ngFor="let type of propertyTypes()" class="col-12">
               <div class="dropdown-item" (click)="togglePropertyType(type.value)"
                 [class.active]="selectedType === type.value">
                 <div class="d-flex justify-content-between">
@@ -174,39 +174,35 @@
         <div class="dropdown-menu dropdown-filter p-3 w-100">
           <div class="row g-2">
             <div class="col-12">
-              <div class="dropdown-item" (click)="sortBy = ''; applyFilters()" [class.active]="!sortBy">
+              <div class="dropdown-item" (click)="updateSort('')" [class.active]="!sortBy">
                 <div class="d-flex justify-content-between">
                   <span>Sort By</span>
                 </div>
               </div>
             </div>
             <div class="col-12">
-              <div class="dropdown-item" (click)="sortBy = 'priceAsc'; applyFilters()"
-                [class.active]="sortBy === 'priceAsc'">
+              <div class="dropdown-item" (click)="updateSort('priceAsc')" [class.active]="sortBy === 'priceAsc'">
                 <div class="d-flex justify-content-between">
                   <span>Price: Low to High</span>
                 </div>
               </div>
             </div>
             <div class="col-12">
-              <div class="dropdown-item" (click)="sortBy = 'priceDesc'; applyFilters()"
-                [class.active]="sortBy === 'priceDesc'">
+              <div class="dropdown-item" (click)="updateSort('priceDesc')" [class.active]="sortBy === 'priceDesc'">
                 <div class="d-flex justify-content-between">
                   <span>Price: High to Low</span>
                 </div>
               </div>
             </div>
             <div class="col-12">
-              <div class="dropdown-item" (click)="sortBy = 'dateNewest'; applyFilters()"
-                [class.active]="sortBy === 'dateNewest'">
+              <div class="dropdown-item" (click)="updateSort('dateNewest')" [class.active]="sortBy === 'dateNewest'">
                 <div class="d-flex justify-content-between">
                   <span>Newest First</span>
                 </div>
               </div>
             </div>
             <div class="col-12">
-              <div class="dropdown-item" (click)="sortBy = 'dateOldest'; applyFilters()"
-                [class.active]="sortBy === 'dateOldest'">
+              <div class="dropdown-item" (click)="updateSort('dateOldest')" [class.active]="sortBy === 'dateOldest'">
                 <div class="d-flex justify-content-between">
                   <span>Oldest First</span>
                 </div>
@@ -229,20 +225,16 @@
           <div class="mb-3">
             <div class="input-group input-group-sm mb-2">
               <span class="input-group-text btnM fs-6">Min</span>
-              <input type="number" class="form-control" placeholder="0" [(ngModel)]="minPrice"
-                (change)="applyFilters()">
+              <input type="number" class="form-control" placeholder="0" [(ngModel)]="minPrice" (change)="updatePrice()">
             </div>
             <div class="input-group input-group-sm">
               <span class="input-group-text btnM fs-6">Max</span>
-              <input type="number" class="form-control" placeholder="∞" [(ngModel)]="maxPrice"
-                (change)="applyFilters()">
+              <input type="number" class="form-control" placeholder="∞" [(ngModel)]="maxPrice" (change)="updatePrice()">
             </div>
           </div>
 
           <ngx-slider class="custom-slider mt-0" [(value)]="minPrice" [(highValue)]="maxPrice" [options]="sliderOptions"
-            (userChangeEnd)="applyFilters()"></ngx-slider>
-
-
+            (userChangeEnd)="updatePrice()"></ngx-slider>
         </div>
       </div>
     </div>
@@ -330,7 +322,7 @@
     <app-list-properties *ngIf="viewMode === 'list'" [properties]="paginatedProperties">
     </app-list-properties>
 
-    <app-list-map-properties *ngIf="viewMode === 'map'" [properties]="filteredProperties">
+    <app-list-map-properties *ngIf="viewMode === 'map'" [properties]="filteredProperties" [allProperties]="properties">
     </app-list-map-properties>
   </div>
 
@@ -385,11 +377,37 @@
 
 <div class="border-top mx-5"></div>
 
+
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+<div id="stop-scroll" class="container pb-5 pt-3">
+  <h2 class="mb-4 fw-bold text-caffe-dark text-center pt-5">Featured Auctioneers</h2>
+  <div class="section-underline mx-auto mb-4"></div>
+  <div class="d-flex justify-content-between align-items-center pt-3">
+
+
+  </div>
+
+  <!-- <div #sliderContainer class="d-flex overflow-auto pb-3 scroll-container"
+    class="d-flex gap-4 overflow-hidden hide-scrollbar" id="categoryScroll" (mouseleave)="startAutoScroll()"
+    (mouseenter)="stopAutoScroll()"> -->
+
+  <div #sliderContainer class="d-flex overflow-auto pb-3 scroll-container"
+    class="d-flex gap-4 overflow-hidden hide-scrollbar" id="categoryScroll">
+
+    <div *ngFor="let auctioneer of auctioneers" class="mx-3 flex-shrink-0" style="width: 150px;">
+      <img [src]="auctioneer.logo" [alt]="auctioneer.name" class="img-fluid d-block mx-auto"
+        style="max-height: 100px; object-fit: contain;" />
+    </div>
+  </div>
+</div>
+
+
+
+
 <!-- Featured Agents Section -->
-<div id="stop-scroll" class="row mx-2 mt-4">
+<!-- <div id="stop-scroll" class="row mx-2 mt-4">
   <div class="col-12 text-center mb-2">
 
-    <!-- <h3 class="fw-bold mb-4 text-caffe">Premium Property Assistance</h3> -->
 
     <h2 class="mb-4 fw-semibold text-center roboto-font">Premium Property Assistance</h2>
 
@@ -415,6 +433,4 @@
       </div>
     </div>
   </div>
-
-
-</div>
+</div> -->

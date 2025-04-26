@@ -1,11 +1,16 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { PropertyDto, SharedService } from '../../../../Services/shared.service';
 import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
 import { LeafletMapComponent } from '../../../Map/leaflet-map/leaflet-map.component';
+import { PropertyDTO, PropertyService } from '../../../../Services/ApiServices/property.service';
+import { API_CONFIG } from '../../../../app.config';
+import { WishListService } from '../../../../Services/ApiServices/wish-list.service';
+import { ToastrService } from '../../../../Services/toastr.service';
+import { PropertyFilterService } from '../../../../Services/property-filter.service';
+import { AuthService } from '../../../../Services/ApiServices/auth.service';
 
 @Component({
   selector: 'app-property-home',
@@ -15,20 +20,23 @@ import { LeafletMapComponent } from '../../../Map/leaflet-map/leaflet-map.compon
 })
 export class PropertyHomeComponent implements OnInit {
 
-  HomePageProperties: PropertyDto[] = [];
-  filteredProperties: PropertyDto[] = [];
+  HomePageProperties: PropertyDTO[] = [];
+  properties: PropertyDTO[] = [];
+  filteredProperties: PropertyDTO[] = [];
+  apiConfig = API_CONFIG;
+
 
   // Filters
-  searchQuery = '';
+  // searchQuery = '';
   selectedType = '';
   selectedCategory = '';
   selectedBeds: number[] = [];
   selectedBaths: number[] = [];
   selectedCity = '';
   minPrice = 0;
-  maxPrice = 1000000;
+  maxPrice = Number.MAX_SAFE_INTEGER;
   minSpace = 0;
-  maxSpace = 1000;
+  maxSpace = Number.MAX_SAFE_INTEGER;
 
   // Sorting & View
   sortBy = '';
@@ -77,23 +85,67 @@ export class PropertyHomeComponent implements OnInit {
     { label: '7+', value: 7 }
   ];
 
+  // cities = [
+  //   { name: 'New Cairo' },
+  //   { name: 'Maadi' },
+  //   { name: 'Giza' },
+  //   { name: 'Nasr City' }
+  // ];
+
   cities = [
-    { name: 'New Cairo' },
-    { name: 'Maadi' },
-    { name: 'Giza' },
-    { name: 'Nasr City' }
+    // Cairo Governorate
+    { name: 'Cairo' },          // Capital
+
+    // Alexandria Governorate
+    { name: 'Alexandria' },      // Mediterranean port city
+
+    // Giza Governorate
+    { name: 'Giza' },            // Home of the Pyramids
+    { name: '6th of October City' }, // Industrial hub
+    { name: 'Sheikh Zayed City' },   // Suburban community
+
+    // Upper Egypt
+    { name: 'Luxor' },           // Ancient Thebes
+    { name: 'Aswan' },           // Nile River city
+    { name: 'Qena' },
+    { name: 'Sohag' },
+    { name: 'Minya' },
+
+    // Delta Region
+    { name: 'Tanta' },           // Gharbia Governorate
+    { name: 'Mansoura' },        // Dakahlia Governorate
+    { name: 'Zagazig' },         // Sharqia Governorate
+    { name: 'Damietta' },        // Port city
+
+    // Sinai Peninsula
+    { name: 'Sharm El Sheikh' }, // Red Sea resort
+    { name: 'Dahab' },           // Diving destination
+    { name: 'El Arish' },        // North Sinai capital
+
+    // Red Sea Governorate
+    { name: 'Hurghada' },        // Tourist hotspot
+    { name: 'Marsa Alam' },      // Southern resort
+
+    // Canal Cities
+    { name: 'Port Said' },       // Suez Canal entrance
+    { name: 'Ismailia' },        // Suez Canal midpoint
+    { name: 'Suez' },            // Southern canal city
+
+    // Oases & Desert Cities
+    { name: 'Siwa Oasis' },      // Western Desert
+    { name: 'Bahariya Oasis' },
+    { name: 'Kharga Oasis' },
+
+    // New Cities (Under Construction)
+    { name: 'New Administrative Capital' }, // Future capital
+    { name: 'New Alamein City' }            // Mediterranean project
   ];
 
 
-  // sliderOptions: Options = {
-  //   floor: 0,
-  //   ceil: 1000000,
-  //   translate: (value: number) => `${value.toLocaleString()} EGP`
-  // };
 
   sliderOptions: Options = {
     floor: 0,
-    ceil: 1000000,
+    ceil: Number.MAX_SAFE_INTEGER,
     translate: () => '',          // Remove value labels
     hideLimitLabels: true,        // Hide default min/max labels (0 and 1,000,000)
     hidePointerLabels: true,      // Hide handle labels
@@ -107,28 +159,34 @@ export class PropertyHomeComponent implements OnInit {
     translate: (value: number) => `${value}m²`
   };
 
-  constructor(private cdr: ChangeDetectorRef, private sharedService: SharedService, private elRef: ElementRef) { }
+  constructor(private cdr: ChangeDetectorRef, private elRef: ElementRef, private toastr: ToastrService,
+    private propertyService: PropertyService, private wishListService: WishListService, private router: Router,
+    private filterService: PropertyFilterService, private auth: AuthService) { }
 
-  // featuredAgents: Agent[] = [];
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    await this.loadProperties();
+
+    // In your component
+    this.HomePageProperties = this.properties
+      .filter(property => property.status.toLowerCase() !== 'sold')
+      .sort((a, b) => new Date(b.addedDate).getTime() - new Date(a.addedDate).getTime())
+      .slice(0, 3);
+
     this.sliderStartAutoScroll();
-
-    this.HomePageProperties = this.sharedService.HomePageProperties;
 
     this.HomePageProperties.forEach(HomePageProperties => {
       this.currentImageIndices[HomePageProperties.id] = 0;
     });
 
-    this.minPrice = Math.min(...this.HomePageProperties.map(p => p.price));
-    this.maxPrice = Math.max(...this.HomePageProperties.map(p => p.price));
+    this.minPrice = Math.min(...this.properties.map(p => p.price));
+    this.maxPrice = Math.max(...this.properties.map(p => p.price));
     this.sliderOptions.ceil = this.maxPrice;
 
-    this.minSpace = Math.min(...this.HomePageProperties.map(p => p.space));
-    this.maxSpace = Math.max(...this.HomePageProperties.map(p => p.space));
+    this.minSpace = Math.min(...this.properties.map(p => p.space));
+    this.maxSpace = Math.max(...this.properties.map(p => p.space));
     this.sliderOptionsSpace.ceil = this.maxSpace;
 
-    // this.featuredAgents = this.sharedService.featuredAgents;
 
     this.sliderOptions = {
       floor: this.minPrice,
@@ -142,71 +200,52 @@ export class PropertyHomeComponent implements OnInit {
       translate: (value: number) => `${value}m²`
     };
 
-    this.applyFilters();
+    this.checkScroll();
+
   }
 
-  get currentCategoryCount(): number {
-    if (!this.selectedCategory) return this.HomePageProperties.length;
-    const category = this.categoriesWithCounts.find(c => c.name === this.selectedCategory);
-    return category ? category.count : 0;
+  // In your component
+  async loadProperties(
+    category?: string,
+    status?: string,
+    type?: string,
+    searchByLocation?: string
+  ) {
+    try {
+      this.properties = await this.propertyService.getAll(
+        category,
+        status,
+        type,
+        searchByLocation
+      ).toPromise() ?? [];
+
+      console.log('Loaded properties:', this.properties);
+      this.cdr.detectChanges(); // If using ChangeDetectorRef
+    } catch (err) {
+      console.error('Error loading properties:', err);
+      // Handle error (show message, etc.)
+    }
   }
 
-  // Filtering & Sorting
-  applyFilters(): void {
-    this.filteredProperties = this.HomePageProperties
-      .filter(property => {
-        const matchesSearch = !this.searchQuery ||
-          property.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          property.location.toLowerCase().includes(this.searchQuery.toLowerCase());
 
-        const matchesType = !this.selectedType || property.type === this.selectedType;
-        const matchesCategory = !this.selectedCategory || property.propertyCategory === this.selectedCategory;
-        const matchesPrice = property.price >= this.minPrice && property.price <= this.maxPrice;
-        const matchesSpace = property.space >= this.minSpace && property.space <= this.maxSpace;
-
-        const matchesBeds = this.selectedBeds.length === 0 || this.selectedBeds.some(b => {
-          if (b === 7) {
-            return (property.bedrooms || 0) >= 7;
-          }
-          return (property.bedrooms || 0) === b;
-        });
-
-        const matchesBaths = this.selectedBaths.length === 0 || this.selectedBaths.some(b => {
-          if (b === 7) {
-            return (property.bathrooms || 0) >= 7;
-          }
-          return (property.bathrooms || 0) === b;
-        });
-
-
-        return matchesSearch && matchesType && matchesCategory && matchesPrice && matchesBeds && matchesBaths && matchesSpace;
-      })
-      .sort((a, b) => {
-        switch (this.sortBy) {
-          case 'priceAsc': return a.price - b.price;
-          case 'priceDesc': return b.price - a.price;
-          case 'dateNewest': return new Date(b.date).getTime() - new Date(a.date).getTime();
-          case 'dateOldest': return new Date(a.date).getTime() - new Date(b.date).getTime();
-          default: return 0;
-        }
-      });
-
-    this.currentPage = 1;
-  }
-
-  // Getters
-  get categoriesWithCounts() {
-    const counts = new Map<string, number>();
-    this.HomePageProperties.forEach(p => {
-      counts.set(p.propertyCategory, (counts.get(p.propertyCategory) || 0) + 1);
-    });
-    return Array.from(counts.entries()).map(([name, count]) => ({ name, count }));
-  }
-
-  get propertyTypes() {
+  categoriesName() {
     return [
-      { label: 'For Sell', value: 'Sell', count: this.HomePageProperties.filter(p => p.type === 'Sell').length },
-      { label: 'For Rent', value: 'Rent', count: this.HomePageProperties.filter(p => p.type === 'Rent').length }
+      { name: 'Apartment' },
+      { name: 'Villa' },
+      { name: 'House' },
+      { name: 'Studio' },
+      { name: 'Penthouse' },
+      { name: 'Duplex' },
+      { name: 'Townhouse' },
+      { name: 'Mansion' }
+    ];
+  }
+
+  propertyTypes() {
+    return [
+      // { label: 'All Types', value: '', count: this.properties.length },
+      { label: 'For Sale', value: 'Sell', count: this.properties.filter(p => p.type === 'Sell').length },
+      { label: 'For Rent', value: 'Rent', count: this.properties.filter(p => p.type === 'Rent').length }
     ];
   }
 
@@ -220,57 +259,104 @@ export class PropertyHomeComponent implements OnInit {
     }
   }
 
-  get totalPages(): number {
-    return Math.ceil(this.filteredProperties.length / this.itemsPerPage);
-  }
-
-  get paginatedProperties(): PropertyDto[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.filteredProperties.slice(start, start + this.itemsPerPage);
-  }
-
   // UI Handlers
   toggleCategory(category: string): void {
-    this.selectedCategory = this.selectedCategory === category ? '' : category;
-    this.applyFilters();
+    // this.selectedCategory = category === 'All Categories' ? '' : category;
+    this.selectedCategory = category;
   }
 
   togglePropertyType(type: string): void {
-    this.selectedType = this.selectedType === type ? '' : type;
-    this.applyFilters();
+    // this.selectedType = this.selectedType === type ? '' : type;
+    // this.selectedType = type === 'All Types' ? '' : type;
+    this.selectedType = type;
   }
 
   toggleCityType(type: string): void {
-    this.selectedCity = this.selectedCity === type ? '' : type;
-    this.applyFilters();
+    // this.selectedCity = this.selectedCity === type ? '' : type;
+    // this.selectedCity = type === 'All Cities' ? '' : type;
+    this.selectedCity = type;
   }
 
   toggleBed(value: number): void {
     const index = this.selectedBeds.indexOf(value);
     index === -1 ? this.selectedBeds.push(value) : this.selectedBeds.splice(index, 1);
-    this.applyFilters();
   }
 
   toggleBath(value: number): void {
     const index = this.selectedBaths.indexOf(value);
     index === -1 ? this.selectedBaths.push(value) : this.selectedBaths.splice(index, 1);
-    this.applyFilters();
   }
 
-  clearFilters(): void {
-    this.searchQuery = '';
-    this.selectedType = '';
-    this.selectedCategory = '';
-    this.selectedCity = '';
-    this.minPrice = Math.min(...this.HomePageProperties.map(p => p.price));
-    this.maxPrice = Math.max(...this.HomePageProperties.map(p => p.price));
-    this.minSpace = Math.min(...this.HomePageProperties.map(p => p.space));
-    this.maxSpace = Math.max(...this.HomePageProperties.map(p => p.space));
-    this.selectedBeds = [];
-    this.selectedBaths = [];
-    this.sortBy = '';
-    this.applyFilters();
+  // Update navigation method
+  goToViewAll() {
+    this.filterService.updateFilters({
+      searchQuery: this.selectedCity,
+      selectedType: this.selectedType,
+      selectedCategory: this.selectedCategory,
+      selectedBeds: this.selectedBeds,
+      selectedBaths: this.selectedBaths,
+      minPrice: this.minPrice,
+      maxPrice: this.maxPrice,
+      minSpace: this.minSpace,
+      maxSpace: this.maxSpace
+    });
+
+    this.router.navigate(['/properties/all']);
   }
+
+  locationView(location: string, event: Event) {
+    event.preventDefault(); // Prevent default anchor behavior
+
+    this.filterService.updateFilters({
+      searchQuery: location
+    });
+
+    this.router.navigate(['/properties/all']);
+  }
+
+  CategoryView(cat: string, event: Event) {
+    event.preventDefault(); // Prevent default anchor behavior
+
+    this.filterService.updateFilters({
+      selectedCategory: cat
+    });
+
+    this.router.navigate(['/properties/all']);
+  }
+
+
+  SellView(event: Event) {
+    event.preventDefault(); // Prevent default anchor behavior
+
+    this.filterService.updateFilters({
+      selectedType: 'Sell'
+    });
+
+    this.router.navigate(['/properties/all']);
+  }
+
+
+  RentView(event: Event) {
+    event.preventDefault(); // Prevent default anchor behavior
+
+    this.filterService.updateFilters({
+      selectedType: 'Rent'
+    });
+
+    this.router.navigate(['/properties/all']);
+  }
+
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredProperties.length / this.itemsPerPage);
+  }
+
+  get paginatedProperties(): PropertyDTO[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredProperties.slice(start, start + this.itemsPerPage);
+  }
+
+
 
   changePage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
@@ -308,27 +394,6 @@ export class PropertyHomeComponent implements OnInit {
     }
   ];
 
-  featuredProperties = [
-    {
-      image: 'https://images.eq3.com/image-service/a0067633-232a-4dff-b0b9-bc26c0651211/Joan-Chair-30215-02-Panama-Grey-Black-Ash-Legs-Front-Web_ORIGINAL.jpg',
-      title: 'Modern Apartment',
-      location: 'London, UK',
-      price: 450000
-    },
-    {
-      image: 'https://wasilaah.com/cdn/shop/products/IMG_9996.jpg?v=1679343647&width=2048',
-      title: 'Luxury Villa',
-      location: 'Manchester, UK',
-      price: 950000
-    },
-    {
-      image: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg',
-      title: 'Cozy Studio',
-      location: 'Birmingham, UK',
-      price: 220000
-    }
-  ];
-
   locations = [
     { name: 'New Cairo', image: 'https://se-developers.com/wp-content/uploads/2021/08/F-H-Front-Back.jpg' },
     { name: 'Maadi', image: 'https://cairogossip.com/app/uploads/2020/02/caf268d7b5e3978ce944d44b6a144653.jpg' },
@@ -345,148 +410,6 @@ export class PropertyHomeComponent implements OnInit {
     { name: 'Duplex', icon: 'bi bi-houses' },
     { name: 'Townhouse', icon: 'bi bi-house-check' },
     { name: 'Mansion', icon: 'bi bi-bank' }
-  ];
-
-
-  // properties = [
-  //   {
-  //     id: 1,
-  //     title: 'Jacklinnnnnnnnn sddd dsdsd sd sd sd sdfsdf',
-  //     description: 'Upholstered King Size Bed with Tufted Headboarddddddddddddddddddddddddddd',
-  //     location: '25 El Tahrir Street, Dokki, Giza, Cairo Governorate, Egyptttttttttttttttttttttttttttttttttttttt',
-  //     beds: 3,
-  //     bathrooms: 2,
-  //     type: 'Rent',
-  //     price: 70000,
-  //     status: 'Available',
-  //     category: 'Apartment',
-  //     images: [
-  //       'https://u.realgeeks.media/songrealestate/_rgg/landscape_images/GreyandBeigeHome.jpg',
-  //       'https://images.prop24.com/331109780/Crop600x400',
-  //       'https://www.brinkpm.com/images/blog/bigstock-Luxurious-New-Construction-Hom-165493040.webp'
-  //     ],
-  //     wishlisted: true
-  //   },
-  //   {
-  //     id: 2,
-  //     title: 'Jacklinnnnnnnnn sddd dsdsd sd sd sd sdfsdf',
-  //     description: 'Upholstered King Size Bed with Tufted Headboarddddddddddddddddddddddddddd',
-  //     location: 'Building 12, South 90th Street, Fifth Settlement, New Cairo, Egypt',
-  //     beds: 3,
-  //     bathrooms: 2,
-  //     type: 'Sell',
-  //     price: 700,
-  //     status: 'Sold',
-  //     category: 'Villa',
-  //     images: [
-  //       'https://u.realgeeks.media/songrealestate/_rgg/landscape_images/GreyandBeigeHome.jpg',
-  //       'https://images.prop24.com/331109780/Crop600x400',
-  //       'https://www.brinkpm.com/images/blog/bigstock-Luxurious-New-Construction-Hom-165493040.webp'
-  //     ],
-  //     wishlisted: true
-  //   },
-  //   {
-  //     id: 3,
-  //     title: 'Jacklinnnnnnnnn sddd dsdsd sd sd sd sdfsdf',
-  //     description: 'Upholstered King Size Bed with Tufted Headboarddddddddddddddddddddddddddd',
-  //     location: 'Unit 3B, Katameya Heights, New Cairo, Cairo Governorate, Egypt',
-  //     beds: 3,
-  //     bathrooms: 2,
-  //     type: 'Sell',
-  //     price: 700,
-  //     status: 'Auctioned',
-  //     category: 'Studio',
-  //     images: [
-  //       'https://u.realgeeks.media/songrealestate/_rgg/landscape_images/GreyandBeigeHome.jpg',
-  //       'https://images.prop24.com/331109780/Crop600x400',
-  //       'https://www.brinkpm.com/images/blog/bigstock-Luxurious-New-Construction-Hom-165493040.webp'
-  //     ],
-  //     wishlisted: true
-  //   },
-  //   {
-  //     id: 4,
-  //     title: 'Jacklinnnnnnnnn sddd dsdsd sd sd sd sdfsdf',
-  //     description: 'Upholstered King Size Bed with Tufted Headboarddddddddddddddddddddddddddd',
-  //     location: 'Apartment B3-12, Porto Marina, El Alamein, North Coast, Egypt',
-  //     beds: 3,
-  //     bathrooms: 2,
-  //     type: 'Rent',
-  //     price: 70000,
-  //     status: 'Available',
-  //     category: 'Apartment',
-  //     images: [
-  //       'https://u.realgeeks.media/songrealestate/_rgg/landscape_images/GreyandBeigeHome.jpg',
-  //       'https://images.prop24.com/331109780/Crop600x400',
-  //       'https://www.brinkpm.com/images/blog/bigstock-Luxurious-New-Construction-Hom-165493040.webp'
-  //     ],
-  //     wishlisted: true
-  //   },
-  //   {
-  //     id: 5,
-  //     title: 'Jacklinnnnnnnnn sddd dsdsd sd sd sd sdfsdf',
-  //     description: 'Upholstered King Size Bed with Tufted Headboarddddddddddddddddddddddddddd',
-  //     location: 'Villa 7, El Gouna Hilltop, Hurghada, Red Sea Governorate, Egypt',
-  //     beds: 3,
-  //     bathrooms: 2,
-  //     type: 'Sell',
-  //     price: 700,
-  //     status: 'Sold',
-  //     category: 'Villa',
-  //     images: [
-  //       'https://u.realgeeks.media/songrealestate/_rgg/landscape_images/GreyandBeigeHome.jpg',
-  //       'https://images.prop24.com/331109780/Crop600x400',
-  //       'https://www.brinkpm.com/images/blog/bigstock-Luxurious-New-Construction-Hom-165493040.webp'
-  //     ],
-  //     wishlisted: true
-  //   },
-  //   {
-  //     id: 6,
-  //     title: 'Jacklinnnnnnnnn sddd dsdsd sd sd sd sdfsdf',
-  //     description: 'Upholstered King Size Bed with Tufted Headboarddddddddddddddddddddddddddd',
-  //     location: 'Flat 2, 101 Nile Street, Luxor West Bank, Luxor, Egypt',
-  //     beds: 3,
-  //     bathrooms: 2,
-  //     type: 'Sell',
-  //     price: 700,
-  //     status: 'Auctioned',
-  //     category: 'Studio',
-  //     images: [
-  //       'https://u.realgeeks.media/songrealestate/_rgg/landscape_images/GreyandBeigeHome.jpg',
-  //       'https://images.prop24.com/331109780/Crop600x400',
-  //       'https://www.brinkpm.com/images/blog/bigstock-Luxurious-New-Construction-Hom-165493040.webp'
-  //     ],
-  //     wishlisted: true
-  //   },
-  // ]
-
-  listings = [
-    {
-      img: 'https://images.dailynewsegypt.com/2024/09/real-estate-property.jpg',
-      tags: ['LISTED BY REDFIN 3 HRS AGO', '3D WALKTHROUGH'],
-      price: '$559,900',
-      beds: 5,
-      baths: 3,
-      size: '2,700 sq ft',
-      address: '4249 N Central Park Ave, Chicago, IL 60618'
-    },
-    {
-      img: 'https://u.realgeeks.media/songrealestate/_rgg/landscape_images/GreyandBeigeHome.jpg',
-      tags: ['LISTED BY REDFIN 5 HRS AGO', '3D WALKTHROUGH'],
-      price: '$429,000',
-      beds: 2,
-      baths: 2,
-      size: '1,201 sq ft',
-      address: '2317 W Wolfram St #211, Chicago, IL 60618'
-    },
-    {
-      img: 'https://u.realgeeks.media/songrealestate/_rgg/landscape_images/GreyandBeigeHome.jpg',
-      tags: ['REDFIN OPEN SAT, 1PM TO 3PM', '3D WALKTHROUGH'],
-      price: '$195,000',
-      beds: 3,
-      baths: 1.5,
-      size: '1,000 sq ft',
-      address: '1700 W Jarvis Ave Unit B, Chicago, IL 60626'
-    }
   ];
 
   sliderStartAutoScroll(): void {
@@ -557,22 +480,24 @@ export class PropertyHomeComponent implements OnInit {
     }
   }
 
-  // toggleWishList(propertyId: number) {
-  //   const property = this.properties.find(p => p.id === propertyId);
-  //   if (property) {
-  //     property.wishlisted = !property.wishlisted;
-  //   }
-  // }
 
-  addToCart(propertyId: number) {
-    const property = this.HomePageProperties.find(p => p.id === propertyId);
-    if (property) {
-      // this.cartService.addToCart(product);
-    }
-  }
+  toggleFavorite(property: PropertyDTO) {
+    // Optimistic UI update
+    const previousState = property.isFavorite;
+    property.isFavorite = !previousState;
 
-  toggleFavorite(event: any) {
-    event.isFavorite = !event.isFavorite;
+    this.wishListService.togglePropertyWishlist(property.id).subscribe({
+      next: (response) => {
+        this.toastr.success(response);
+        // Optional: Update with actual API state if needed
+      },
+      error: (err) => {
+        // Revert UI state on error
+        property.isFavorite = previousState;
+        this.toastr.error('Error updating wishlist');
+        console.error(err);
+      }
+    });
   }
 
   shareItem(item: any): void {
@@ -590,7 +515,19 @@ export class PropertyHomeComponent implements OnInit {
     }
   }
 
-  toggleMap(property: PropertyDto) {
+  toggleMap(property: PropertyDTO) {
     property.activeMap = !property.activeMap;
+  }
+
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
   }
 }

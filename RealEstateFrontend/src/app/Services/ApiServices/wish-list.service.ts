@@ -8,6 +8,10 @@ export interface WishListProductDTO {
   ProductId: number;
 }
 
+export interface WishListPropertyDTO {
+  PropertyID: number;
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -17,21 +21,22 @@ export class WishListService {
 
   constructor(private http: HttpClient) { }
 
-  // Add this method
-  // toggleProductWishlist(productId: number): Observable<string> {
-  //   const dto: WishListProductDTO = { ProductId: productId };
-  //   return this.http.post<string>(
-  //     `${this.apiUrl}/ToggleProductWishlist`,
-  //     dto,
-  //   );
-  // }
-
   toggleProductWishlist(productId: number): Observable<string> {
     const dto: WishListProductDTO = { ProductId: productId };
     return this.http.post(
       `${this.apiUrl}/ToggleProductWishlist`,
       dto,
       { responseType: 'text' }  // <--- Add this
+    );
+  }
+
+  // Updated method name and parameters for properties
+  togglePropertyWishlist(propertyId: number): Observable<string> {
+    const dto: WishListPropertyDTO = { PropertyID: propertyId };
+    return this.http.post(
+      `${this.apiUrl}/TogglePropertyWishlist`, // Match endpoint route
+      dto,
+      { responseType: 'text' }
     );
   }
 
