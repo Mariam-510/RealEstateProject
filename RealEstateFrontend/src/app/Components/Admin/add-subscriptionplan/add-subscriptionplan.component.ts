@@ -12,6 +12,7 @@ import { SubscriptionPlanService } from '../../../Services/ApiServices/subscript
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-add-subscriptionplan',
@@ -27,7 +28,8 @@ export class AddSubscriptionplanComponent {
 
   constructor(
     private subscriptionPlanService: SubscriptionPlanService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {}
 
   subscriptionForm = new FormGroup({
@@ -77,13 +79,16 @@ export class AddSubscriptionplanComponent {
     this.subscriptionPlanService.createSubscriptionPlan(planData).subscribe({
       next: (response) => {
         this.isLoading = false;
-        alert('Subscription plan added successfully!');
-        this.router.navigate(['/subscription-plans']); // Redirect to plans list
+        this.toastr.success('Subscription plan added successfully!', 'Success');
+        this.subscriptionForm.reset();
       },
       error: (error) => {
         this.isLoading = false;
         console.error('Error adding subscription plan:', error);
-        alert('Failed to add subscription plan. Please try again.');
+        this.toastr.error(
+          'Failed to add subscription plan. Please try again.',
+          'error'
+        );
       },
     });
   }
