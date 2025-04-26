@@ -33,7 +33,6 @@ export class OrderService {
 
   constructor(private http: HttpClient) { }
 
-
   placeOrder(orderData: CreateOrderDto): Observable<OrderResponseDto> {
     return this.http.post<OrderResponseDto>(
       `${this.apiUrl}/placeOrder`,

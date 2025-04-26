@@ -131,7 +131,7 @@ namespace RealEstate.Controllers
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll(string? Name = null, string? SortPrice = null, string? Category = null, string? SortQuantity = null)
-        {
+       {
 
             var ProductModelList = await _ProductRepository.GetAllAsync(Name, SortPrice, Category, SortQuantity);
             if (ProductModelList == null)
