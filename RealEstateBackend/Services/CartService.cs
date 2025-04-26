@@ -25,8 +25,10 @@ namespace RealEstate.Services
                 return; // No cart or empty cart, nothing to do
             }
 
+            var orderItems = cart.OrderItems.ToList();
+
             // Transfer all items from cart to order
-            foreach (var orderItem in cart.OrderItems)
+            foreach (var orderItem in orderItems)
             {
                 // Update each order item to remove cart association and assign to order
                 orderItem.CartId = null;

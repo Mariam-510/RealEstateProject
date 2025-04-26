@@ -93,6 +93,7 @@ export class PaymentComponent implements OnInit {
   ) {}
 
   clientId: string = '';
+  selectedAddressId: number = 0;
 
   async ngOnInit() {
     if (!this.hasRole('Buyer')) {
@@ -122,7 +123,9 @@ export class PaymentComponent implements OnInit {
         this.router.navigate(['/checkout/address']);
         return;
       }
-  
+      
+      this.selectedAddressId = +addressId;
+
       // Load address and cart data
       await this.loadAddressDetails(addressId);
       await this.loadInitialCart();
@@ -333,7 +336,7 @@ export class PaymentComponent implements OnInit {
 
       // Create a payment intent on your server
       const sessionResponse = await firstValueFrom(
-        this.paymentService.createStripeSession(amount)
+        this.paymentService.createStripeSession(amount, this.selectedAddressId)
       );
 
       // Redirect to Stripe Checkout

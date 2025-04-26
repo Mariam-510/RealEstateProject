@@ -8,6 +8,7 @@ using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos;
 using RealEstate.Models.Dtos.OrderItemDto;
 using RealEstate.Models.Dtos.PaymentDto;
+using RealEstate.Models.DTOs.PaymentDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
 using Stripe;
@@ -24,10 +25,11 @@ namespace RealEstate.Controllers
         private readonly IOrderRepository _orderRepository;
         private readonly StripeService _stripeService;
         private readonly CartService _cartService;
+        private readonly ShippingFeesService _shippingFeesService;
         public IMapper Mapper { get; }
         private readonly IConfiguration _configuration;
 
-        public PaymentsController(IPaymentRepository paymentRepository, PayPalService paypalService, IMapper Mapper, StripeService stripeService,CartService cartService, IConfiguration configuration, IOrderRepository orderRepository)
+        public PaymentsController(IPaymentRepository paymentRepository, PayPalService paypalService, IMapper Mapper, StripeService stripeService,CartService cartService, IConfiguration configuration, IOrderRepository orderRepository, ShippingFeesService shippingFeesService)
         {
             _paymentRepository = paymentRepository;
             _orderRepository = orderRepository;
@@ -35,6 +37,7 @@ namespace RealEstate.Controllers
             this.Mapper = Mapper;
             _stripeService = stripeService;
             _cartService = cartService;
+            _shippingFeesService = shippingFeesService;
 
             _configuration = configuration;
         }
@@ -96,7 +99,7 @@ namespace RealEstate.Controllers
 
         [HttpPost("Stripe/CreateSession")]
         [Authorize(Roles = "Buyer")]
-        public async Task<IActionResult> CreateStripeSession([FromBody] decimal amount)
+        public async Task<IActionResult> CreateStripeSession([FromBody] StripeSessionRequest request)
         {
             string buyerIdStr = User.FindFirst("userId")?.Value;
 
@@ -108,7 +111,7 @@ namespace RealEstate.Controllers
             // Step 1: Create a Payment record
             var payment = new Payment
             {
-                Amount = amount,
+                Amount = request.Amount,
                 PaymentMethod = Models.Domains.PaymentMethod.Stripe,
                 PaidAt = DateTime.Now, // not paid yet!
                 BuyerId = buyerId
@@ -116,12 +119,18 @@ namespace RealEstate.Controllers
             payment = await _paymentRepository.AddAsync(payment);
 
             // Step 2: Create an Order record (you need an IOrderRepository probably)
+
+            var deliveryFees = await _shippingFeesService.GetShippingFeesByAddressIdAsync(request.SelectedAddressId);
             var order = new Order
             {
                 BuyerId = buyerId,
                 PaymentId = payment.Id,
                 Status = OrderStatus.Pending, // or whatever you use
                 OrderDate = DateTime.Now,
+                AddressId = request.SelectedAddressId,
+                DeliveryFees = deliveryFees,
+                SubTotal = request.Amount - deliveryFees
+
             };
             order = await _orderRepository.CreateAsync(order);
 
@@ -131,7 +140,7 @@ namespace RealEstate.Controllers
             var successUrl = $"{_configuration["ClientUrl"]}/checkout/confirmation?orderId={order.Id}";
             var cancelUrl = $"{_configuration["ClientUrl"]}/checkout/payment";
 
-            var session = await _stripeService.CreateCheckoutSessionAsync(amount, successUrl, cancelUrl);
+            var session = await _stripeService.CreateCheckoutSessionAsync(request.Amount, successUrl, cancelUrl);
 
             return Ok(new { sessionId = session.Id });
         }
