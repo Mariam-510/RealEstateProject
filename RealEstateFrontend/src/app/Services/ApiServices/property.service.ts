@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { API_CONFIG } from '../../app.config';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface PropertyDTO {
@@ -14,13 +14,16 @@ export interface PropertyDTO {
   bedRooms: number;
   bathRooms: number;
   space: number;
-  addedDate: Date;
+  addedDate: string;
   status: string;
   images: string[];
   agentId: number | null;
   sellerId: number | null;
   contractImgUrl: string | null;
   isFavorite: boolean;
+  activeMap: boolean;
+  userName: string | null;
+  userImage: string | null;
 }
 
 @Injectable({
@@ -32,8 +35,26 @@ export class PropertyService {
 
   constructor(private http: HttpClient) { }
 
-  getAllProperties(): Observable<PropertyDTO[]> {
-    
-    return this.http.get<PropertyDTO[]>(`${this.apiUrl}`);
+  getAll(
+    category?: string,
+    status?: string,
+    type?: string,
+    searchByLocation?: string
+  ): Observable<PropertyDTO[]> {
+    // Setup HTTP parameters
+    let params = new HttpParams();
+    if (category) params = params.append('category', category);
+    if (status) params = params.append('status', status);
+    if (type) params = params.append('type', type);
+    if (searchByLocation) params = params.append('searchByLocation', searchByLocation);
+
+    // Make GET request to the endpoint
+    return this.http.get<PropertyDTO[]>(this.apiUrl, { params });
   }
+
+
+  getById(id: number): Observable<PropertyDTO> {
+    return this.http.get<PropertyDTO>(`${this.apiUrl}/${id}`);
+  }
+
 }

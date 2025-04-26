@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewCh
 import { Router, RouterModule } from '@angular/router';
 import { CategoryDTOShow, CategoryService } from '../../../../../Services/ApiServices/category.service';
 import { API_CONFIG } from '../../../../../app.config';
-import { FilterService } from '../../../../../Services/filter.service';
+import { ProductFilterService } from '../../../../../Services/product-filter.service';
 
 @Component({
   selector: 'app-cat-slider',
@@ -26,10 +26,14 @@ export class CatSliderComponent implements AfterViewInit, OnInit {
   message: string = '';
 
   constructor(private categoryService: CategoryService, private cdr: ChangeDetectorRef,
-    private filterService: FilterService, private router: Router) { }
+    private filterService: ProductFilterService, private router: Router) { }
 
   async ngOnInit() {
     await this.loadCategories();
+
+    this.categories = this.categories.sort((a, b) =>
+      a.name.localeCompare(b.name)  // Replace "name" with your actual property
+    );
   }
 
   async loadCategories() {

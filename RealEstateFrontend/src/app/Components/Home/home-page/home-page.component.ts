@@ -360,7 +360,7 @@ export class HomePageComponent implements OnInit {
     await this.loadProducts();
     this.getTopRatedProducts();
 
-    await this.loadProperties();
+    // await this.loadProperties();
     // this.propertiess = this.sharedService.properties;
     // this.products = this.sharedService.HomeProducts;
   }
@@ -375,15 +375,15 @@ export class HomePageComponent implements OnInit {
     }
   }
 
-  async loadProperties() {
-    try {
-      this.properties = await this.propertyService.getAllProperties().toPromise() ?? [];
-      console.log(this.properties);
-      this.cdr.detectChanges();
-    } catch (err) {
-      console.error('Error loading properties:', err);
-    }
-  }
+  // async loadProperties() {
+  //   try {
+  //     this.properties = await this.propertyService.getAllProperties().toPromise() ?? [];
+  //     console.log(this.properties);
+  //     this.cdr.detectChanges();
+  //   } catch (err) {
+  //     console.error('Error loading properties:', err);
+  //   }
+  // }
 
   private getTopRatedProducts(): void {
     // Sort products by averageRating descending, then by number of reviews

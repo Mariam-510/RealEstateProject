@@ -11,7 +11,7 @@ import { WishListService } from '../../../../Services/ApiServices/wish-list.serv
 import { ToastrService } from '../../../../Services/toastr.service';
 import { API_CONFIG } from '../../../../app.config';
 import { CategoryDTOShow, CategoryService } from '../../../../Services/ApiServices/category.service';
-import { FilterService } from '../../../../Services/filter.service';
+import { ProductFilterService } from '../../../../Services/product-filter.service';
 
 @Component({
   selector: 'app-p-home',
@@ -24,7 +24,7 @@ export class PHomeComponent implements OnInit, OnDestroy {
   constructor(private cdr: ChangeDetectorRef, private router: Router,
     private productService: ProductService, private categoryService: CategoryService,
     private auth: AuthService, private wishListService: WishListService,
-    private toastr: ToastrService, private filterService: FilterService) { }
+    private toastr: ToastrService, private filterService: ProductFilterService) { }
 
   apiConfig = API_CONFIG;
   products: ProductDTO[] = [];
@@ -41,7 +41,7 @@ export class PHomeComponent implements OnInit, OnDestroy {
 
   sliderOptions: Options = {
     floor: 0,
-    ceil: 1000000,
+    ceil: Number.MAX_SAFE_INTEGER,
     translate: () => '',          // Remove value labels
     hideLimitLabels: true,        // Hide default min/max labels (0 and 1,000,000)
     hidePointerLabels: true,      // Hide handle labels
@@ -80,8 +80,6 @@ export class PHomeComponent implements OnInit, OnDestroy {
       ceil: this.maxPrice,
       translate: (value: number) => `${value.toLocaleString()} EGP`
     };
-
-    this.applyFilters();
 
     this.checkScroll();
 
@@ -171,55 +169,26 @@ export class PHomeComponent implements OnInit, OnDestroy {
   selectedState: string = '';
   selectedRating: number = 0;
   minPrice = 0;
-  maxPrice = 1000000;
+  maxPrice = Number.MAX_SAFE_INTEGER;
   openedProductId: number | null = null;
 
 
   toggleCategory(category: string): void {
     this.selectedCategory = category === 'All Categories' ? '' : category;
-    // this.applyFilters();
   }
 
   toggleState(state: string): void {
     this.selectedState = state === 'All Conditions' ? '' : state;
-    // this.applyFilters();
   }
 
   toggleRating(rating: number): void {
     this.selectedRating = this.selectedRating === rating ? 0 : rating;
-    // this.applyFilters();
   }
 
   toggleColorList(productId: number): void {
     this.openedProductId = this.openedProductId === productId ? null : productId;
   }
 
-  applyFilters(): void {
-    this.filteredProducts = this.products.filter(product => {
-      const matchesCategory = !this.selectedCategory ||
-        this.categories.some(cat => cat.name === this.selectedCategory);
-
-      const matchesState = !this.selectedState ||
-        (this.selectedState === 'New' && !product.isUsed) ||
-        (this.selectedState === 'Used' && product.isUsed);
-
-      const matchesPrice = product.price >= this.minPrice &&
-        product.price <= this.maxPrice;
-
-      const matchesRating = product.averageRating >= this.selectedRating;
-
-      return matchesCategory && matchesState && matchesPrice && matchesRating;
-    });
-  }
-
-  clearFilters(): void {
-    this.selectedCategory = '';
-    this.selectedState = '';
-    this.selectedRating = 0;
-    this.minPrice = 0;
-    this.maxPrice = Number.MAX_SAFE_INTEGER;
-    this.applyFilters();
-  }
 
   goToViewAllPage() {
     this.filterService.updateFilters({

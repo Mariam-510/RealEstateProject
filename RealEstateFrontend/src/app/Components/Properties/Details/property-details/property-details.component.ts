@@ -1,116 +1,35 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, ViewChild, ElementRef, AfterViewInit, Renderer2, OnInit } from '@angular/core';
+import { Component, HostListener, ViewChild, ElementRef, AfterViewInit, Renderer2, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RecommendedComponent } from '../recommended/recommended.component';
 import { CardmapComponent } from '../cardmap/cardmap.component';
 import { PropertyDetialsLeafletMapComponent } from '../property-detials-leaflet-map/property-detials-leaflet-map.component';
 import { PropertyPhotoModalComponent } from '../property-photo-modal/property-photo-modal.component';
-import { SharedServiceService, PropertyDto } from '../../../../Services/shared-service.service';
+import { SharedServiceService } from '../../../../Services/shared-service.service';
 import { ChatmodalComponent } from '../../../Chat/chatmodal/chatmodal.component';
+import { PropertyDTO, PropertyService } from '../../../../Services/ApiServices/property.service';
+import { AuthService } from '../../../../Services/ApiServices/auth.service';
+import { WishListService } from '../../../../Services/ApiServices/wish-list.service';
+import { ToastrService } from '../../../../Services/toastr.service';
+import { lastValueFrom } from 'rxjs';
+import { API_CONFIG } from '../../../../app.config';
 
 declare var bootstrap: any; // Required for Bootstrap modal handling
 
-export interface Seller {
-  name: string;
-  imageUrl: string;
-  phone: string;
-  email: string;
-  type: 'Seller' | 'Agent';
-}
-
-export interface Property {
-  id: string;
-  title: string;
-  description: string;
-  location: string;
-  type: 'Sell' | 'Rent';
-  price: number;
-  status: 'Available' | 'Sold' | 'Auctioned';
-  propertyCategory: string;
-  area: number;
-  postedDate: number;
-  images: string[];
-  agent: {
-    id: number;
-    name: string;
-  };
-  isFavorite: boolean;
-}
 @Component({
   selector: 'app-property-details',
   imports: [
-    CommonModule,
-    RouterModule,
-    PropertyPhotoModalComponent,
-    RecommendedComponent,
-    CardmapComponent,
-    PropertyDetialsLeafletMapComponent,
-    ChatmodalComponent
+    CommonModule, RouterModule, PropertyPhotoModalComponent, RecommendedComponent, CardmapComponent,
+    PropertyDetialsLeafletMapComponent, ChatmodalComponent,
   ],
   templateUrl: './property-details.component.html',
   styleUrl: './property-details.component.css'
 })
 export class PropertyDetailsComponent implements AfterViewInit {
-  properties: PropertyDto[] = [];
   Math = Math;
-  icons = [
-    {
-      src: 'icons/Bed.svg',
-      alt: 'Bedroom Icon',
-      value: '5',
-      label: 'Bedrooms'
-    },
-    {
-      src: 'icons/Bath.svg',
-      alt: 'Bathroom Icon',
-      value: '5',
-      label: 'Bathrooms'
-    },
-    {
-      src: 'icons/Area.svg',
-      alt: 'Indoor Area Icon',
-      value: '350 SqM',
-      label: 'Indoor Area'
-    },
-    {
-      src: 'icons/Complete.svg',
-      alt: 'Completed Icon',
-      value: 'Jan 2022',
-      label: 'Completed'
-    }
-  ];
+  icons: any;
 
   showMore: boolean = false;
-  seller: Seller = {
-    name: 'Property Hills',
-    imageUrl: 'details/d2.jpg',
-    phone: '+1 234 567 8901',
-    email: 'sarah@example.com',
-    type: 'Agent',
-  };
-
-  property: Property = {
-    id: 'U921376',
-    title: "5 Bedroom Villa for sale at El Rehab Extension",
-    description: "This spacious and stylish 5-bedroom villa offers the perfect blend of luxury, comfort, and modern design. Located in a prestigious neighborhood, the villa features expansive living areas, a fully equipped gourmet kitchen, and large windows that flood the space with natural light. Each of the five bedrooms is generously sized, including a master suite with a walk-in closet and a spa-like ensuite bathroom. Outside, you'll find a beautifully landscaped garden, a private swimming pool, and ample space for entertaining guests. Ideal for families or those who love to host, this villa provides a serene retreat while being conveniently close to schools, shops, and recreational facilities.",
-    location: "6th of October",
-    type: "Sell",
-    price: 250000,
-    status: "Available",
-    propertyCategory: "Villa",
-    isFavorite: true,
-    area: 350,
-    postedDate: 7,
-    images: [
-      "details/property4.jpg",
-      "details/property5.jpg"
-    ],
-    agent: {
-      id: 5,
-      name: "Marta Lazic"
-    },
-
-  };
 
   @ViewChild(PropertyPhotoModalComponent) photosModalComp!: PropertyPhotoModalComponent;
   @ViewChild('tabLinks') tabLinks!: ElementRef;
@@ -126,19 +45,102 @@ export class PropertyDetailsComponent implements AfterViewInit {
   private lastScrollTop: number = 0;
   private navBarHeight: number = 0;
 
-  constructor(private renderer: Renderer2, private elRef: ElementRef, private sharedService: SharedServiceService) { }
+  constructor(private renderer: Renderer2, private elRef: ElementRef, private sharedService: SharedServiceService,
+    private propertyService: PropertyService, private cdr: ChangeDetectorRef, private wishListService: WishListService,
+    private auth: AuthService, private route: ActivatedRoute, private toastr: ToastrService
+  ) { }
 
   openPhotosModal() {
     this.photosModalComp.openModal();
   }
 
+  apiConfig = API_CONFIG;
+  property!: PropertyDTO | null;
+  properties: PropertyDTO[] = [];
 
-  ngOnInit(): void {
-    this.properties = this.sharedService.properties;
+  isLoading = true;
+
+  async ngOnInit() {
+    try {
+      const propertyId = Number(this.route.snapshot.paramMap.get('id'));
+      await this.loadProperty(propertyId);
+
+      // Initialize icons after property is loaded
+      this.icons = this.createIcons();
+    } catch (error) {
+      // Handle error
+    } finally {
+      this.isLoading = false;
+    }
   }
 
-  toggleFavorite(event: any) {
-    event.isFavorite = !event.isFavorite;
+  async loadProperty(id: number) {
+    try {
+      const property$ = this.propertyService.getById(id);
+      const result = await lastValueFrom(property$);
+
+      if (!result) {
+        throw new Error('Property not found');
+      }
+
+      this.property = result;
+    } catch (err) {
+      this.property = null;
+      console.error('Error loading property:', err);
+      // Consider redirecting to error page or showing message
+    }
+  }
+
+  private createIcons() {
+    return [
+      {
+        src: 'icons/Bed.svg',
+        alt: 'Bedroom Icon',
+        value: this.property?.bedRooms ?? 0,
+        label: 'Bedrooms'
+      },
+      {
+        src: 'icons/Bath.svg',
+        alt: 'Bathroom Icon',
+        value: this.property?.bathRooms ?? 0,  // Fix typo: bathRooms
+        label: 'Bathrooms'
+      },
+      {
+        src: 'icons/Area.svg',
+        alt: 'Indoor Area Icon',
+        value: this.property?.space ?? 0,
+        label: 'Indoor Area'
+      },
+      {
+        src: 'icons/Complete.svg',
+        alt: 'Completed Icon',
+        value: this.property?.addedDate,  // Keep as undefined if missing
+        label: 'Completed'
+      }
+    ];
+  }
+
+
+
+  toggleFavorite(property: PropertyDTO | null) {
+    // Optimistic UI update
+    if (property != null) {
+      const previousState = property.isFavorite;
+      property.isFavorite = !previousState;
+
+      this.wishListService.togglePropertyWishlist(property.id).subscribe({
+        next: (response) => {
+          this.toastr.success(response);
+          // Optional: Update with actual API state if needed
+        },
+        error: (err) => {
+          // Revert UI state on error
+          property.isFavorite = previousState;
+          this.toastr.error('Error updating wishlist');
+          console.error(err);
+        }
+      });
+    }
   }
 
   shareItem(item: any): void {
@@ -156,9 +158,10 @@ export class PropertyDetailsComponent implements AfterViewInit {
     }
   }
 
-  toggleMapCard(property: PropertyDto) {
+  toggleMapCard(property: PropertyDTO) {
     property.activeMap = !property.activeMap;
   }
+
   ngAfterViewInit(): void {
     console.log(scrollY);
     // Give DOM time to render completely
@@ -324,7 +327,7 @@ export class PropertyDetailsComponent implements AfterViewInit {
   locationUrl: string = 'cairo, Egypt';
 
   openShareModal() {
-    this.locationUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.property.location)}`;
+    this.locationUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.property?.location ?? '')}`;
 
     // Open Bootstrap Modal
     const modalElement = document.getElementById('shareLocationModal');
@@ -336,5 +339,18 @@ export class PropertyDetailsComponent implements AfterViewInit {
 
   copyToClipboard() {
     navigator.clipboard.writeText(this.locationUrl);
+  }
+
+
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
   }
 }

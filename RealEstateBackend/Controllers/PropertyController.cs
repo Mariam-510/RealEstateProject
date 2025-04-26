@@ -44,11 +44,8 @@ namespace RealEstate.Controllers
         }
         // GET: api/Property
         [HttpGet]
-        public async Task<IActionResult> GetAll(
-            [FromQuery] string category = null,
-            [FromQuery] string status = null,
-            [FromQuery] string type = null,
-            [FromQuery] string searchByLocation = null)
+        public async Task<IActionResult> GetAll([FromQuery] string category = null, [FromQuery] string status = null,
+            [FromQuery] string type = null,[FromQuery] string searchByLocation = null)
 
         {
             // Convert strings to enums (if valid)
@@ -68,14 +65,22 @@ namespace RealEstate.Controllers
                 }
             }
 
-            //var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(1);
-            //foreach (var dto in propertyDtos)
-            //{
-            //    if (favoriteProperties.Any(f => f.Id == dto.Id))
-            //    {
-            //        dto.IsFavorite = true;
-            //    }
-            //}
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (int.TryParse(buyerIdStr, out int buyerId))
+            {
+                var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(buyerId);
+                if (favoriteProperties != null)
+                {
+                    foreach (var dto in propertyDtos)
+                    {
+                        if (favoriteProperties.Any(f => f.Id == dto.Id))
+                        {
+                            dto.IsFavorite = true;
+                        }
+                    }
+                }
+            }
 
             return Ok(propertyDtos);
         }
@@ -183,11 +188,20 @@ namespace RealEstate.Controllers
 
             var propertyDto = _mapper.Map<PropertyDto>(property);
 
-            //var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(1);
-            //if (favoriteProperties.Any(f => f.Id == propertyDto.Id))
-            //{
-            //    propertyDto.IsFavorite = true;
-            //}
+
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (int.TryParse(buyerIdStr, out int buyerId))
+            {
+                var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(buyerId);
+                if (favoriteProperties != null)
+                {
+                    if (favoriteProperties.Any(f => f.Id == propertyDto.Id))
+                    {
+                        propertyDto.IsFavorite = true;
+                    }
+                }
+            }
 
             return Ok(propertyDto);
         }

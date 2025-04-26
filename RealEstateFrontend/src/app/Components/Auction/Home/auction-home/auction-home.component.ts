@@ -31,7 +31,7 @@ interface Auction {
   styleUrl: './auction-home.component.css'
 })
 export class AuctionHomeComponent implements OnInit, OnDestroy {
-  
+
   days: string = '12';
   hours: string = '23';
   minutes: string = '23';
@@ -49,7 +49,7 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
     futureDate.setHours(futureDate.getHours() + 23);
     futureDate.setMinutes(futureDate.getMinutes() + 23);
     futureDate.setSeconds(futureDate.getSeconds() + 35);
-    
+
     this.countDownDate = futureDate.getTime();
   }
 
@@ -71,7 +71,7 @@ getProgress(auction: Auction): number {
 
   if (now < start) return 0;
   if (now > end) return 100;
-  
+
   const elapsed = now - start;
   const totalDuration = end - start;
   return (elapsed / totalDuration) * 100;
@@ -84,7 +84,7 @@ getTimeProgress(auction: Auction): number {
 
   if (now < start) return 0; // Auction hasn't started
   if (now > end) return 100; // Auction finished
-  
+
   const totalDuration = end - start;
   const elapsed = now - start;
   const progress = (elapsed / totalDuration) * 100;
@@ -105,7 +105,7 @@ private updateAuctionsStatus(): void {
     } else {
       auction.status = 'Active';
     }
-    
+
     // Calculate progress here
     auction.timeProgress = this.getTimeProgress(auction);
   });
@@ -125,17 +125,17 @@ private updateAuctionsStatus(): void {
   private updateCountdown(): void {
     // Get today's date and time
     const now = new Date().getTime();
-    
+
     // Find the distance between now and the count down date
     const distance = this.countDownDate - now;
-    
+
     if (distance > 0) {
       // Time calculations for days, hours, minutes and seconds
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-      
+
       // Format values with leading zeros if needed
       this.days = days < 10 ? '0' + days : days.toString();
       this.hours = hours < 10 ? '0' + hours : hours.toString();
@@ -175,18 +175,18 @@ private updateAuctionsStatus(): void {
     { name: 'Top Notch Collections', logo: 'https://images.liveauctioneers.com/static/mail/images/auctioneers/featured_auctioneers_hill_368x208.jpg?quality=90&width=184' },
     { name: 'New Orleans Auction Galleries', logo: "https://images.liveauctioneers.com/static/mail/images/auctioneers/featured_auctioneer_bonhams_368x208.jpg?quality=90&width=184" }
   ];
-  
+
   setActive(selected: any) {
     this.categories.forEach(c => c.active = false);
     selected.active = true;
-    
+
     // If "All" is selected, clear category-specific filters
     if (selected.label === 'All') {
       this.applyFilters();
     } else {
       this.applyFilters();
     }
-    
+
   }
 
   selectedSortLabel = 'Sort by Starting Bid';
@@ -197,7 +197,7 @@ sortByPrice(order: 'asc' | 'desc' | 'none') {
     case 'asc':
       this.selectedSortLabel = 'High to Low';
       this.selectedSortIcon = 'bi-sort-down';
-    
+
 
       // this.displayedAuctions.sort((a, b) => a.startPrice - b.startPrice);
       break;
@@ -215,7 +215,7 @@ sortByPrice(order: 'asc' | 'desc' | 'none') {
 }
 selectedCategoryLabel: string = 'Select Category'; // Default label
 selectedCategoryIcon: string = 'bi-funnel'; // Default icon (Rent)
-  
+
 selectCategory(category: string) {
   if (category === 'rent') {
     this.selectedCategoryLabel = 'Rent';
@@ -271,7 +271,7 @@ startSlider(auction: Auction, event: MouseEvent): void {
 // auction-list.component.ts
 handleMouseMove(auction: Auction, event: MouseEvent): void {
   if (!auction.mouseStartX) return;
-  
+
   const sensitivity = 50; // Pixels needed to move for slide change
   const deltaX = event.clientX - auction.mouseStartX;
 
@@ -290,7 +290,7 @@ goToImage(auction: Auction, index: number): void {
 }
 
 nextImage(auction: Auction): void {
-  auction.currentImageIndex = 
+  auction.currentImageIndex =
     (auction.currentImageIndex + 1) % auction.images.length;
 }
 
@@ -306,7 +306,7 @@ resetSlider(auction: Auction): void {
 // --------------------------------------------------------------------------
 auctions: Auction[] = [
   {
-   
+
     images: [
       'https://images.dailynewsegypt.com/2024/09/real-estate-property.jpg',
       // 'https://unsplash.com/photos/outdoor-lamps-turned-on-XbwHrt87mQ0.jpg',
@@ -330,7 +330,7 @@ auctions: Auction[] = [
 
   },
   {
- 
+
     images: [
       'https://images.unsplash.com/photo-1534655610770-dd69616f05ff?q=80&w=2156&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D.jpg',
       // 'https://unsplash.com/photos/outdoor-lamps-turned-on-XbwHrt87mQ0.jpg',
@@ -357,7 +357,7 @@ auctions: Auction[] = [
 
   },
   {
- 
+
     images: [
       'https://images.dailynewsegypt.com/2024/09/real-estate-property.jpg',
       // 'https://unsplash.com/photos/outdoor-lamps-turned-on-XbwHrt87mQ0.jpg',
@@ -422,7 +422,7 @@ auctions: Auction[] = [
     status: "Scheduled",
     saleType: "Sell",
     // timeLeft: "5h 30m",
-    bidsCount:0,    
+    bidsCount:0,
     timeProgress: 0,
     ListedBy:"agent"
 
@@ -431,7 +431,7 @@ auctions: Auction[] = [
 
   },
   {
-  
+
     images: [
       'https://images.dailynewsegypt.com/2024/09/real-estate-property.jpg',
       // 'https://unsplash.com/photos/outdoor-lamps-turned-on-XbwHrt87mQ0.jpg',
@@ -497,7 +497,7 @@ auctions: Auction[] = [
     status: "Scheduled",
     saleType: "Sell",
     // timeLeft: "5h 30m",
-    bidsCount:0,    
+    bidsCount:0,
     timeProgress: 0,
     ListedBy:"agent"
 
@@ -506,7 +506,7 @@ auctions: Auction[] = [
 
   },
   {
-  
+
     images: [
       'https://images.dailynewsegypt.com/2024/09/real-estate-property.jpg',
       // 'https://unsplash.com/photos/outdoor-lamps-turned-on-XbwHrt87mQ0.jpg',
@@ -531,9 +531,9 @@ auctions: Auction[] = [
 
 
   },
- 
+
   // Add more mock auctions
-  
+
 ];
 getDaysLeft(endDate: Date, status: string): string {
   if (status === 'Finished') {
@@ -564,10 +564,10 @@ getElapsedTime(auction: Auction): string {
   const now = new Date().getTime();
   const start = auction.startDate.getTime();
   const end = auction.endDate.getTime();
-  
+
   if (now < start) return 'Not started';
   if (now > end) return 'Auction ended';
-  
+
   const elapsed = now - start;
   return this.formatDuration(elapsed);
 }
@@ -575,20 +575,20 @@ getElapsedTime(auction: Auction): string {
 getRemainingTime(auction: Auction): string {
   const now = new Date().getTime();
   const end = auction.endDate.getTime();
-  
+
   if (now > end) return '0h 0m';
   if (now < auction.startDate.getTime()) {
     const untilStart = auction.startDate.getTime() - now;
     return `Starts in ${this.formatDuration(untilStart)}`;
   }
-  
+
   const remaining = end - now;
   return this.formatDuration(remaining);
 }
 // Update the formatDuration method in your component
 private formatDuration(ms: number): string {
   if (ms <= 0) return '0d 0h 0m';
-  
+
   const days = Math.floor(ms / (1000 * 60 * 60 * 24));
   const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
@@ -616,9 +616,6 @@ getAuctionStatusMessage(auction: Auction): string {
 
     this.startAutoScroll();
   }
-
-
-
 
 
   // Add these variables to the component class
@@ -664,7 +661,7 @@ resumeAutoScroll(): void {
 
   @ViewChild('sliderContainer') sliderContainer!: ElementRef;
 
- 
+
   public stopAutoScroll() {
     if (this.autoScrollInterval) {
       clearInterval(this.autoScrollInterval);
@@ -713,7 +710,7 @@ applyFilters(): void {
         return true;
         case 'This week':
           const weekRange = this.getWeekRange();
-          return auction.startDate >= weekRange.start && 
+          return auction.startDate >= weekRange.start &&
                  auction.startDate <= weekRange.end;
 
         case 'Scheduled auctions':
@@ -745,7 +742,7 @@ case 'Ending Soon':
   this.currentPage = 1;
 
 
-  
+
 }
 private getWeekRange(): { start: Date, end: Date } {
   const now = new Date();

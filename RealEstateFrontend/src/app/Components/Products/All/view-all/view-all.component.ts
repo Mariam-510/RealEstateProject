@@ -8,8 +8,8 @@ import { API_CONFIG } from '../../../../app.config';
 import { AuthService } from '../../../../Services/ApiServices/auth.service';
 import { WishListService } from '../../../../Services/ApiServices/wish-list.service';
 import { ToastrService } from '../../../../Services/toastr.service';
-import { FilterService } from '../../../../Services/filter.service';
 import { Subscription } from 'rxjs';
+import { ProductFilterService } from '../../../../Services/product-filter.service';
 
 @Component({
   selector: 'app-view-all',
@@ -38,13 +38,13 @@ export class ViewAllComponent implements OnInit, OnDestroy {
   selectedCondition: string = '';
   selectedRating: number = 0;
   minPrice: number = 0;
-  maxPrice: number = 1000000;
+  maxPrice: number = Number.MAX_SAFE_INTEGER;
   sortBy: string = '';
   searchQuery: string = '';
 
   sliderOptions: Options = {
     floor: 0,
-    ceil: 1000000,
+    ceil: Number.MAX_SAFE_INTEGER,
     translate: () => '',       // Remove all value labels
     showSelectionBar: true,   // Keep the selection bar (optional)
     hideLimitLabels: true,    // Explicitly hide min/max labels
@@ -59,7 +59,7 @@ export class ViewAllComponent implements OnInit, OnDestroy {
 
   constructor(private elRef: ElementRef, private productService: ProductService,
     private cdr: ChangeDetectorRef, private toastr: ToastrService, private auth: AuthService,
-    private wishListService: WishListService, private route: ActivatedRoute, private filterService: FilterService) { }
+    private wishListService: WishListService, private filterService: ProductFilterService) { }
 
   async ngOnInit() {
     await this.loadProducts();
@@ -152,7 +152,7 @@ export class ViewAllComponent implements OnInit, OnDestroy {
   }
 
   toggleProductCondition(condition: string): void {
-    const newCondition = condition === this.selectedCondition ? '' : condition as 'used' | 'new';
+    const newCondition = condition as 'used' | 'new';
     this.filterService.updateFilters({ condition: newCondition });
   }
 
@@ -162,7 +162,7 @@ export class ViewAllComponent implements OnInit, OnDestroy {
   }
 
   updateSort(sortType: string): void {
-    const newSort = this.sortBy === sortType ? '' : sortType;
+    const newSort = sortType;
     this.filterService.updateFilters({ sortBy: newSort });
   }
 
@@ -176,6 +176,7 @@ export class ViewAllComponent implements OnInit, OnDestroy {
   clearFilters(): void {
     this.filterService.resetFilters();
     this.searchQuery = '';
+    this.applyFilters();
   }
 
   onPriceChange(): void {
@@ -238,7 +239,10 @@ export class ViewAllComponent implements OnInit, OnDestroy {
     this.products.forEach(p => {
       counts.set(p.categoryName, (counts.get(p.categoryName) || 0) + 1);
     });
-    return Array.from(counts.keys());
+    // return Array.from(counts.keys());
+    return Array.from(counts.keys()).sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: 'base' })
+    );
   }
 
   getSortLabel(value: string): string {
