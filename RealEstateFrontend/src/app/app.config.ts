@@ -8,20 +8,19 @@ import { JwtInterceptor } from './Interceptors/jwt.interceptor';
 
 // src/app/config/api.config.ts
 export const API_CONFIG = {
-  apiUrl: 'http://realestategp.runasp.net/'
+  apiUrl: 'http://realestategp.runasp.net/',
 };
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }),
-  provideRouter(routes),
-  // provideHttpClient()
-  provideHttpClient(
-    withInterceptorsFromDi()
-  ),
-  {
-    provide: HTTP_INTERCEPTORS,
-    useClass: JwtInterceptor,
-    multi: true
-  },
-  ]
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    // provideHttpClient()
+    provideHttpClient(withInterceptorsFromDi()),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true,
+    },
+  ],
 };

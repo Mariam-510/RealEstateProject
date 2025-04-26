@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -105,15 +106,6 @@ namespace RealEstate.Controllers
                     }
                 }
 
-                //var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(1);
-                //foreach (var dto in PendingPropertyDto)
-                //{
-                //    if (favoriteProperties.Any(f => f.Id == dto.Id))
-                //    {
-                //        dto.IsFavorite = true;
-                //    }
-                //}
-
                 return Ok(PendingPropertyDto); 
 
             }
@@ -123,12 +115,19 @@ namespace RealEstate.Controllers
             }
         }
 
-        [HttpGet("seller/{sellerId}")]
-        public async Task<IActionResult> GetAllBySellerId(int sellerId, [FromQuery] PropertyApprovalStatus? Status = null)
+        [HttpGet()] // Explicit route definition
+        [Route("Seller")]
+        [Authorize(Roles = "Seller")]
+
+        public async Task<IActionResult> GetAllBySellerId( [FromQuery] PropertyApprovalStatus? Status = null)
         {
-            var seller = await _sellerRepo.GetByIdAsync(sellerId);
-            if (seller == null || seller.IsDeleted)
-                return NotFound($"Seller with ID {sellerId} does not exist.");
+            string sellerIdStr = User.FindFirst("userId")?.Value;
+            Console.WriteLine(sellerIdStr);
+
+            if (!int.TryParse(sellerIdStr, out int sellerId))
+            {
+                return Unauthorized("Seller not found.");
+            }
             // Fetch properties based on approval status
             List<Property> filteredProperties = new List<Property>();
 
@@ -157,14 +156,31 @@ namespace RealEstate.Controllers
                 return NotFound("No properties found matching the specified criteria.");
             }
             var propertyDtos = _mapper.Map<List<PropertyDto>>(filteredProperties);
+            foreach (var dto in propertyDtos)
+            {
+                var contract = await _contractRepo.GetByPropertyIdAsync(dto.Id);
+                if (contract != null)
+                {
+                    dto.ContractImgUrl = contract.ImageUrl;
+                }
+            }
             return Ok(propertyDtos);
         }
 
 
-        [HttpGet("agent/{agentId}")]
-        public async Task<IActionResult> GetAllByAgentId(int agentId)
-        {
+        [HttpGet()] // Explicit route definition
+        [Route("Agent")]
+        [Authorize(Roles = "Agent")]
 
+        public async Task<IActionResult> GetAllByAgentId()
+        {
+            string agentIdStr = User.FindFirst("userId")?.Value;
+            Console.WriteLine(agentIdStr);
+
+            if (!int.TryParse(agentIdStr, out int agentId))
+            {
+                return Unauthorized("Seller not found.");
+            }
             var agent = await _agentRepo.GetByIdAsync(agentId);
             if (agent == null || agent.IsDeleted)
                 return NotFound($"Agent with ID {agentId} does not exist.");
@@ -208,46 +224,61 @@ namespace RealEstate.Controllers
 
 
         // POST: api/Property
-        [HttpPost]
+        [HttpPost("Add")]
+        [Authorize(Roles = "Seller,Agent")]
         public async Task<IActionResult> Create([FromForm] CreatePropertyDto createDto)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 try
                 {
-
                     if (!ModelState.IsValid)
                         return BadRequest(ModelState);
 
-                    Subscription subscription;
-
-                    // Validate Agent or Seller existence
-                    if (createDto.AgentId != null)
+                    if (createDto.Images == null || createDto.Images.Count < 2)
                     {
-                        var agent = await _agentRepo.GetByIdAsync(createDto.AgentId.Value);
-                        if (agent == null || agent.IsDeleted)
-                            return NotFound($"Agent with ID {createDto.AgentId} does not exist or is deleted.");
-
-                        bool availablePropertiesFlag = await _subscriptionRepo.DecreaseAvailablePropertiesByOne((int)createDto.AgentId, UserType.Agent);
-                        if (!availablePropertiesFlag)
-                        {
-                            return StatusCode(403, "Subscription limit reached. Please upgrade your plan.");
-                        }
-
+                        return BadRequest("At least two images are required.");
                     }
-                    else if (createDto.SellerId != null)
+
+                    string userIdStr = User.FindFirst("userId")?.Value;
+
+                    if (!int.TryParse(userIdStr, out int userId))
+                        return Unauthorized("User not found.");
+
+                    if (User.IsInRole("Seller"))
                     {
-                        var seller = await _sellerRepo.GetByIdAsync(createDto.SellerId.Value);
+                        var seller = await _sellerRepo.GetByIdAsync(userId);
                         if (seller == null || seller.IsDeleted)
-                            return NotFound($"Seller with ID {createDto.SellerId} does not exist or is deleted.");
+                            return NotFound($"Seller with ID {userId} does not exist or is deleted!");
+
+                        bool availablePropertiesFlag = await _subscriptionRepo.CanAddMorePropertiesAsync(userId, UserType.Seller);
+                        if (!availablePropertiesFlag)
+                            return StatusCode(403, "Subscription limit reached. Please upgrade your plan.");
+                    }
+                    else
+                    {
+                        var agent = await _agentRepo.GetByIdAsync(userId);
+                        if (agent == null || agent.IsDeleted)
+                            return NotFound($"Agent with ID {userId} does not exist or is deleted!");
+
+                        bool availablePropertiesFlag = await _subscriptionRepo.DecreaseAvailablePropertiesByOne(userId, UserType.Agent);
+                        if (!availablePropertiesFlag)
+                            return StatusCode(403, "Subscription limit reached. Please upgrade your plan.");
                     }
 
                     var property = _mapper.Map<Property>(createDto);
+                    property.SellerId = User.IsInRole("Seller") ? userId : null;
+                    property.AgentId = User.IsInRole("Agent") ? userId : null;
                     property.Type = Enum.Parse<PropertyType>(createDto.Type, true);
                     property.Status = Enum.Parse<PropertyStatus>(createDto.Status, true);
                     property.PropertyCategory = Enum.Parse<PropertyCategory>(createDto.PropertyCategory, true);
                     property.Images = new List<string>();
-                    property.ApprovalStatus = createDto.SellerId != null ? PropertyApprovalStatus.Pending : PropertyApprovalStatus.Approved;
+                    
+                    if (User.IsInRole("Seller"))
+                        property.ApprovalStatus = PropertyApprovalStatus.Pending;
+                    else
+                        property.ApprovalStatus = PropertyApprovalStatus.Approved;
+
 
                     // Handle image uploads
                     foreach (var imageFile in createDto.Images)
@@ -262,9 +293,9 @@ namespace RealEstate.Controllers
                     await _propertyRepo.AddAsync(property);
 
                     //  If created by seller, create contract
-                    if (createDto.SellerId != null)
+                    if (User.IsInRole("Seller"))
                     {
-                        var seller = await _sellerRepo.GetByIdAsync(createDto.SellerId.Value);
+                        var seller = await _sellerRepo.GetByIdAsync(userId);
                         if (seller == null || seller.IsDeleted)
                             return NotFound("Seller not found.");
 
@@ -277,82 +308,96 @@ namespace RealEstate.Controllers
                         var contract = new Contract
                         {
                             PropertyId = property.Id,
-                            SellerId = createDto.SellerId.Value,
+                            SellerId = userId,
                             ImageUrl = contractUrl
                         };
                         await _contractRepo.CreateAsync(contract);
                     }
 
                     var propertyDto = _mapper.Map<PropertyDto>(property);
-                    transactionScope.Complete();
+
+                        transactionScope.Complete();
                     return CreatedAtAction(nameof(GetAll), new { id = property.Id }, propertyDto);
                 }
                 catch (Exception ex)
                 {
-                    // Transaction will rollback automatically if Complete() isn't called
+                    transactionScope.Dispose();
                     return StatusCode(500, $"Error while creating property and contract: {ex.Message}");
                 }
             }
         }
 
-
         // PUT: api/Property/5
-        [HttpPut("{id}")]
+        [HttpPut("Update/{id}")]
+        [Authorize(Roles = "Seller,Agent")]
         public async Task<IActionResult> Update(int id, [FromForm] UpdatePropertyDto dto)
         {
-            if (dto == null)
+            try
+            {
+                if (dto == null)
                 return BadRequest("The dto field is required.");
 
-            var property = await _propertyRepo.GetByIdAsync(id);
+                string userIdStr = User.FindFirst("userId")?.Value;
 
-            if (property == null || property.IsDeleted)
-                return NotFound();
+                if (!int.TryParse(userIdStr, out int userId))
+                    return Unauthorized("User not found.");
 
-            _mapper.Map(dto, property);
-            // Manually set enums (DTO is string; domain is enum)
-            property.Type = Enum.Parse<PropertyType>(dto.Type, true);
-            property.Status = Enum.Parse<PropertyStatus>(dto.Status, true);
-            property.PropertyCategory = Enum.Parse<PropertyCategory>(dto.PropertyCategory, true);
+                var property = await _propertyRepo.GetByIdAsync(id);
 
-            // Replace existing images with new ones
-            if (dto.Images != null && dto.Images.Any())
-            {
-                // Delete all existing images
-                foreach (var oldImagePath in property.Images.ToList())
+                if (property == null || property.IsDeleted)
+                    return NotFound();
+
+                if ((User.IsInRole("Seller") && property.SellerId != userId) ||
+                    (User.IsInRole("Agent") && property.AgentId != userId))
+                    return Unauthorized("You are not authorized for this property.");
+
+                _mapper.Map(dto, property);
+                // Manually set enums (DTO is string; domain is enum)
+                property.Type = Enum.Parse<PropertyType>(dto.Type, true);
+                property.Status = Enum.Parse<PropertyStatus>(dto.Status, true);
+                property.PropertyCategory = Enum.Parse<PropertyCategory>(dto.PropertyCategory, true);
+
+                // Replace existing images with new ones
+                if (dto.Images != null && dto.Images.Any())
                 {
-                    _fileService.DeleteFile(oldImagePath);
-                }
+                    // Delete all existing images
+                    foreach (var oldImagePath in property.Images.ToList())
+                        _fileService.DeleteFile(oldImagePath);
 
-                property.Images.Clear();
+                    property.Images.Clear();
 
-                // Upload and add new images
-                foreach (var imageFile in dto.Images)
-                {
-                    var imageUrl = _fileService.UploadFile("PropertyImages", imageFile);
-                    if (!string.IsNullOrEmpty(imageUrl))
+                    // Upload and add new images
+                    foreach (var imageFile in dto.Images)
                     {
-                        property.Images.Add(imageUrl);
+                        var imageUrl = _fileService.UploadFile("PropertyImages", imageFile);
+                        if (!string.IsNullOrEmpty(imageUrl))
+                        {
+                            property.Images.Add(imageUrl);
+                        }
                     }
+
                 }
+                await _propertyRepo.UpdateAsync(property);
+                // Return updated property
+                var updatedDto = _mapper.Map<PropertyDto>(property);
+                return Ok(updatedDto);
             }
-
-            await _propertyRepo.UpdateAsync(property);
-            // Return updated property
-            var updatedDto = _mapper.Map<PropertyDto>(property);
-            return Ok(updatedDto);
-
-
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while updating the property.");
+            }
         }
 
 
-        [HttpPatch("properties/{id}/UpdateApprovalProperty")]
+        [HttpPatch("UpdateApprovalProperty/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateApprovalProperty(int id, [FromQuery] PropertyApprovalStatus Status)
         {
             var property = await _propertyRepo.GetByIdAsync(id);
+
             if (property == null)
-            {
                 return NotFound($"Property with ID {id} not found.");
-            }
+
             var seller = await _sellerRepo.GetByIdAsync(property.SellerId.Value);
             if (seller == null)
             {
@@ -402,33 +447,50 @@ namespace RealEstate.Controllers
 
             var propertyDto = _mapper.Map<PropertyDto>(property);
             return Ok(propertyDto);
-
-
         }
 
 
         // DELETE: api/Property/5
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "Seller,Agent")]
         public async Task<IActionResult> Delete(int id)
         {
-            var property = await _propertyRepo.GetByIdAsync(id);
-            if (property == null || property.IsDeleted)
-                return NotFound();
-            
-            // Check if an active auction is associated with this property
-            var auction = await _auctionRepo.GetByProprtyIdAsync(id);
-            if (auction != null && auction.Status == Status.Active && !auction.IsDeleted)
-                return BadRequest("Cannot delete the property because it has an active auction.");
-
-            if (auction != null && auction.Status == Status.Scheduled && !auction.IsDeleted)
+            try
             {
-                _auctionRepo.DeleteAsync(auction.Id);
+                string userIdStr = User.FindFirst("userId")?.Value;
+
+                if (!int.TryParse(userIdStr, out int userId))
+                    return Unauthorized("User not found.");
+
+                var property = await _propertyRepo.GetByIdAsync(id);
+                if (property == null || property.IsDeleted)
+                    return NotFound("Property not found!");
+
+                if ((User.IsInRole("Seller") && property.SellerId != userId) ||
+                    (User.IsInRole("Agent") && property.AgentId != userId))
+                    return Unauthorized("You are not authorized for this property.");
+
+                // Check if an active auction is associated with this property
+                var auction = await _auctionRepo.GetByProprtyIdAsync(id);
+                if (auction != null && auction.Status == Status.Active && !auction.IsDeleted)
+                    return BadRequest("Cannot delete the property because it has an active auction.");
+
+                using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    if (auction != null && auction.Status == Status.Scheduled && !auction.IsDeleted)
+                        await _auctionRepo.DeleteAsync(auction.Id);
+
+                    property.IsDeleted = true;
+                    await _propertyRepo.UpdateAsync(property);
+
+                    transaction.Complete();
+                }
+                return Ok(new { message = "Property soft-deleted successfully." });
             }
-
-
-            property.IsDeleted = true;
-            await _propertyRepo.UpdateAsync(property);
-            return Ok(new { message = "Property soft-deleted successfully." });
+            catch(Exception ex)
+            {
+                return StatusCode(500, "An error occurred while deleting the property.");
+            }
         }
 
 

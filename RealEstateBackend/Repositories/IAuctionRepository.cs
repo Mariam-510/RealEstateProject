@@ -14,6 +14,5 @@ namespace RealEstate.Repositories
         Task<Auction?> GetByIdAsync(int id);
         Task<Auction?> GetByProprtyIdAsync(int id);
 
-
     }
 }

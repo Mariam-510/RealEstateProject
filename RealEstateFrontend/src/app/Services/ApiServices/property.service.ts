@@ -25,7 +25,11 @@ export interface PropertyDTO {
   userName: string | null;
   userImage: string | null;
 }
-
+export enum PropertyApprovalStatus {
+  Pending,
+  Approved,
+  Rejected
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -57,4 +61,18 @@ export class PropertyService {
     return this.http.get<PropertyDTO>(`${this.apiUrl}/${id}`);
   }
 
+  // ___________________________________________________________________________
+   // New method to get properties by seller ID with optional status
+// Include Status only when a valid value is provided
+getPropertiesBySellerId(status?: PropertyApprovalStatus): Observable<PropertyDTO[]> {
+  let params = new HttpParams();
+  if (status !== undefined) {
+    params = params.append('Status', status);
+  }
+  return this.http.get<PropertyDTO[]>(`${this.apiUrl}/Seller`, { params });
+}
+
+getPropertiesByAgentId(): Observable<PropertyDTO[]> {
+  return this.http.get<PropertyDTO[]>(`${this.apiUrl}/Agent`);
+}
 }

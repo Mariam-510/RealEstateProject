@@ -8,6 +8,7 @@ using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos;
 using RealEstate.Models.Dtos.OrderItemDto;
 using RealEstate.Models.Dtos.PaymentDto;
+using RealEstate.Models.DTOs.PaymentDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
 using Stripe;
@@ -19,17 +20,26 @@ namespace RealEstate.Controllers
     [ApiController]
     public class PaymentsController : ControllerBase
     {
-        private readonly StripeService _stripeService;
         private readonly PayPalService _paypalService;
         private readonly IPaymentRepository _paymentRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly StripeService _stripeService;
+        private readonly CartService _cartService;
+        private readonly ShippingFeesService _shippingFeesService;
         public IMapper Mapper { get; }
+        private readonly IConfiguration _configuration;
 
-        public PaymentsController(StripeService stripeService, IPaymentRepository paymentRepository, PayPalService paypalService, IMapper Mapper)
+        public PaymentsController(IPaymentRepository paymentRepository, PayPalService paypalService, IMapper Mapper, StripeService stripeService,CartService cartService, IConfiguration configuration, IOrderRepository orderRepository, ShippingFeesService shippingFeesService)
         {
-            _stripeService = stripeService;
             _paymentRepository = paymentRepository;
+            _orderRepository = orderRepository;
             _paypalService = paypalService;
             this.Mapper = Mapper;
+            _stripeService = stripeService;
+            _cartService = cartService;
+            _shippingFeesService = shippingFeesService;
+
+            _configuration = configuration;
         }
 
 
@@ -60,71 +70,11 @@ namespace RealEstate.Controllers
         }
 
 
-        //---------------------------------------------------------------------------------------------------
-
-
-        //Old version
-        //[HttpPost("create-payment-intent")]
-        //public async Task<IActionResult> CreatePaymentIntent([FromBody] decimal amount)
-        //{
-        //    var paymentIntent = await _stripeService.CreatePaymentIntentAsync(amount);
-
-        //    var payment = new Payment
-        //    {
-        //        Amount = amount,
-        //        PaymentMethod = Models.Domains.PaymentMethod.Stripe,
-        //        //StripePaymentIntentId = paymentIntent.Id,
-        //        PaidAt = DateTime.UtcNow,
-        //    };
-
-        //    await _paymentRepository.AddAsync(payment);
-
-        //    return Ok(new { clientSecret = paymentIntent.ClientSecret });
-        //}
-
-
-        [HttpPost("create-stripe-checkout-session")]
-        public async Task<IActionResult> CreateStripeCheckoutSessionAsync([FromQuery] decimal amount)
+        // PaymentsController.cs
+        [HttpPost("Stripe")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> CreateStripePayment([FromBody] decimal amount)
         {
-
-            CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest
-            {
-                Amount = amount,
-                BuyerId = null, // Replace with actual buyer ID
-                OrderId = null // Replace with actual order ID
-            };
-            var metadata = new Dictionary<string, string>
-    {
-        { "OrderId", request.OrderId.ToString() },
-        { "BuyerId", request.BuyerId.ToString() }
-    };
-
-            try
-            {
-                var session = _stripeService.CreateCheckoutSession(
-                    request.Amount,
-                    $"https://localhost:4200/payment-success?sessionId={{CHECKOUT_SESSION_ID}}",
-                    //"https://localhost:4200/payment-cancelled",
-                    "https://facebook.com",
-                    metadata
-                );
-
-                await PaymentSuccess(session.Id);
-                return Ok(new { url = session.Url, sessionId = session.Id });
-            }
-            catch
-            {
-                return BadRequest("Payment was unsuccessful");
-            }
-
-
-        }
-
-
-        [HttpGet("payment-success")]
-        public async Task<IActionResult> PaymentSuccess([FromQuery] string sessionId)
-        {
-
             string buyerIdStr = User.FindFirst("userId")?.Value;
 
             if (!int.TryParse(buyerIdStr, out int buyerId))
@@ -132,72 +82,107 @@ namespace RealEstate.Controllers
                 return Unauthorized("Buyer not found.");
             }
 
-            //Retrieve the session from Stripe
-            var sessionService = new SessionService();
-
-            var session = await sessionService.GetAsync(sessionId);
-
-
-            // Get the amount paid (convert back from cents to dollars)
-            var amount = session.AmountTotal / 100m;
-
-
             var payment = new Payment
             {
-                Amount = (decimal)amount,
-                PaidAt = DateTime.UtcNow,
+                Amount = amount,
                 PaymentMethod = Models.Domains.PaymentMethod.Stripe,
-                //OrderId = int.Parse(session.Metadata["OrderId"]), // if stored in metadata
-                BuyerId = buyerId   // if stored in metadata
+                PaidAt = DateTime.Now,
+                BuyerId = buyerId
             };
 
-            // Save to database
-            await _paymentRepository.AddAsync(payment);
+            payment = await _paymentRepository.AddAsync(payment);
 
-            // Redirect to a success page in your Angular app
-            return Ok();
+            var paymentDto = Mapper.Map<PaymentDto>(payment);
 
+            return Ok(paymentDto);
+        }
+
+        [HttpPost("Stripe/CreateSession")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> CreateStripeSession([FromBody] StripeSessionRequest request)
+        {
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
+            // Step 1: Create a Payment record
+            var payment = new Payment
+            {
+                Amount = request.Amount,
+                PaymentMethod = Models.Domains.PaymentMethod.Stripe,
+                PaidAt = DateTime.Now, // not paid yet!
+                BuyerId = buyerId
+            };
+            payment = await _paymentRepository.AddAsync(payment);
+
+            // Step 2: Create an Order record (you need an IOrderRepository probably)
+
+            var deliveryFees = await _shippingFeesService.GetShippingFeesByAddressIdAsync(request.SelectedAddressId);
+            var order = new Order
+            {
+                BuyerId = buyerId,
+                PaymentId = payment.Id,
+                Status = OrderStatus.Pending, // or whatever you use
+                OrderDate = DateTime.Now,
+                AddressId = request.SelectedAddressId,
+                DeliveryFees = deliveryFees,
+                SubTotal = request.Amount - deliveryFees
+
+            };
+            order = await _orderRepository.CreateAsync(order);
+
+            // Step 3: Clear the cart and transfer items to the order
+            await _cartService.ClearCart(buyerId, order.Id);
+
+            var successUrl = $"{_configuration["ClientUrl"]}/checkout/confirmation?orderId={order.Id}";
+            var cancelUrl = $"{_configuration["ClientUrl"]}/checkout/payment";
+
+            var session = await _stripeService.CreateCheckoutSessionAsync(request.Amount, successUrl, cancelUrl);
+
+            return Ok(new { sessionId = session.Id });
         }
 
 
-        //[HttpPost("create-paypal-order")]
-        //public async Task<IActionResult> CreatePayPalOrder([FromQuery] decimal amount)
-        //{
-        //    try
-        //    {
-        //        var orderId = await _paypalService.CreateOrderAsync(amount);
+        [HttpPost("Stripe/Webhook")]
+        [AllowAnonymous]
+        public async Task<IActionResult> StripeWebhook()
+        {
+            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+            var stripeEvent = EventUtility.ConstructEvent(
+                json,
+                Request.Headers["Stripe-Signature"],
+                _configuration["Stripe:WebhookSecret"]
+            );
 
-        //        // Assume PayPal will redirect to success URL with orderId
-        //        var redirectUrl = $"https://localhost:4200/paypal-success?orderId={orderId}";
-        //        return Ok(new { url = redirectUrl, orderId });
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest("Failed to create PayPal order.");
-        //    }
-        //}
+            if (stripeEvent.Type == "checkout.session.completed")
+            {
+                var session = stripeEvent.Data.Object as Session;
+                // Here you could add additional processing if needed
+            }
 
-        //[HttpGet("paypal-success")]
-        //public async Task<IActionResult> PayPalSuccess([FromQuery] string orderId)
-        //{
-        //    var result = await _paypalService.VerifyPaymentAsync(orderId);
-
-        //    if (result.IsSuccess)
-        //    {
-        //        var payment = new Payment
-        //        {
-        //            Amount = result.Amount,
-        //            PaymentMethod = Models.Domains.PaymentMethod.PayPal,
-        //            PaidAt = DateTime.UtcNow,
-        //            // Add orderId, buyerId, etc. if needed
-        //        };
-
-        //        await _paymentRepository.AddAsync(payment);
-        //    }
+            return Ok();
+        }
 
 
-        //    return Ok("Payment recorded.");
-        //}
+        [HttpPost("Stripe/VerifySession")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> VerifyStripeSession([FromBody] string sessionId)
+        {
+            var isValid = await _stripeService.VerifySessionAsync(sessionId);
+            if (!isValid)
+            {
+                return BadRequest("Payment not completed");
+            }
+
+            return Ok();
+        }
+
+
+
+
 
 
 

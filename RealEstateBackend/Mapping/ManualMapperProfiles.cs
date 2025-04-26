@@ -197,9 +197,6 @@ namespace RealEstate.Mapping
                 EndTime = TimeZoneInfo.ConvertTime(AuctionDto.EndTime, egyptTimeZone),
                 StartPrice = AuctionDto.StartPrice,
                 PropertyId= AuctionDto.PropertyId,
-                SellerId= AuctionDto.SellerId,
-                AgentId= AuctionDto.AgentId,
-
             };
         }
 
