@@ -36,7 +36,7 @@ namespace RealEstate.Services
             },
         },
                 Mode = "payment",
-                SuccessUrl = $"{successUrl}?orderId=1",
+                SuccessUrl = $"{successUrl}",
                 CancelUrl = cancelUrl,
                 Metadata = new Dictionary<string, string>
         {

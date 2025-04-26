@@ -128,7 +128,7 @@ namespace RealEstate.Controllers
             // Step 3: Clear the cart and transfer items to the order
             await _cartService.ClearCart(buyerId, order.Id);
 
-            var successUrl = $"{_configuration["ClientUrl"]}/checkout/confirmation";
+            var successUrl = $"{_configuration["ClientUrl"]}/checkout/confirmation?orderId={order.Id}";
             var cancelUrl = $"{_configuration["ClientUrl"]}/checkout/payment";
 
             var session = await _stripeService.CreateCheckoutSessionAsync(amount, successUrl, cancelUrl);
