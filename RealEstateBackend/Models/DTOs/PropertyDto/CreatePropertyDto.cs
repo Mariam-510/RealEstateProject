@@ -42,23 +42,12 @@ namespace RealEstate.Models.DTOs.PropertyDto
         [Required]
         public string Status { get; set; }
 
-        public int? AgentId { get; set; }
-
-        public int? SellerId { get; set; }
-
         // Upload files from form
         [Required]
         public ICollection<IFormFile> Images { get; set; }
         public IFormFile? ContractFile { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            // XOR logic: Exactly one must be provided
-            if ((AgentId == null && SellerId == null) || (AgentId != null && SellerId != null))
-            {
-                yield return new ValidationResult(
-                    "Exactly one of AgentId or SellerId must be provided (not both)."
-                );
-            }
             // Enum validation
             if (!Enum.TryParse(typeof(PropertyType), Type, true, out _))
             {
