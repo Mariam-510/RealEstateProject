@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { API_CONFIG } from '../../app.config';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface PropertyDTO {
@@ -21,8 +21,13 @@ export interface PropertyDTO {
   sellerId: number | null;
   contractImgUrl: string | null;
   isFavorite: boolean;
+  activeMap: boolean;
 }
-
+export enum PropertyApprovalStatus {
+  Pending,
+  Approved,
+  Rejected
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -36,4 +41,20 @@ export class PropertyService {
     
     return this.http.get<PropertyDTO[]>(`${this.apiUrl}`);
   }
+
+
+  // ___________________________________________________________________________
+   // New method to get properties by seller ID with optional status
+// Include Status only when a valid value is provided
+getPropertiesBySellerId(status?: PropertyApprovalStatus): Observable<PropertyDTO[]> {
+  let params = new HttpParams();
+  if (status !== undefined) {
+    params = params.append('Status', status);
+  }
+  return this.http.get<PropertyDTO[]>(`${this.apiUrl}/Seller`, { params });
+}
+
+getPropertiesByAgentId(): Observable<PropertyDTO[]> {
+  return this.http.get<PropertyDTO[]>(`${this.apiUrl}/Agent`);
+}
 }

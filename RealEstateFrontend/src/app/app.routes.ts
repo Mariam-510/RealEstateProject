@@ -50,6 +50,9 @@ import { ViewAllComponent } from './Components/Products/All/view-all/view-all.co
 import { TViewAllProductsComponent } from './Components/Products/ToBeEdited/t-view-all-products/t-view-all-products.component';
 import { ApprovePropertyComponent } from './Components/Admin/approve-property/approve-property.component';
 import { BookAppointmentComponent } from './Components/Appointment/book-appointment/book-appointment.component';
+import { ViewAllPropertiesComponent } from './Components/PagesSellerAndAgent/view-all-properties/view-all-properties.component';
+import { ViewPendingPropertiesComponent } from './Components/Seller/view-pending-properties/view-pending-properties.component';
+import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist.component';
 
 //----------------------------------------------------------------------------------------
 
@@ -79,6 +82,8 @@ export const routes: Routes = [
       { path: 'dashboard', component: AgentdashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
+      {path:'Properties',component:ViewAllPropertiesComponent,title:"View All Properties"}
+
     ]
   },
 
@@ -90,6 +95,8 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
+      {path:'Properties',component:ViewAllPropertiesComponent,title:"View All Properties"},
+      {path:'PropertiesPending',component:ViewPendingPropertiesComponent,title:"View Pending Properties"}
     ]
   },
 
@@ -101,6 +108,8 @@ export const routes: Routes = [
       { path: "orders", component: OrderSummaryComponent, title: "Orders Summary" },
       { path: 'orders/:id', component: OrderDetailsComponent, title: "Order Details" },
       { path: "AllReveiw", component: AllReviewComponent, title: "AllReview" },
+      {path:'wishlist',component:WishlistComponent,title:"Wishlist"},
+
 
     ]
   },

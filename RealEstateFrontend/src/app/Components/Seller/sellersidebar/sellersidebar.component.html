@@ -23,6 +23,7 @@
               <span class="d-md-inline d-none" *ngIf="!isCollapsed">Dashboard</span>
             </a>
           </li>
+
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
               routerLink="addAuction" routerLinkActive="active">
@@ -44,9 +45,21 @@
               <span class="d-md-inline d-none" *ngIf="!isCollapsed">All Appointment</span>
             </a>
           </li>
-          
 
-     
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
+              routerLink="Properties" routerLinkActive="active">
+             <i class="bi-house me-2 text-caffe"></i>
+              <span class="d-md-inline d-none" *ngIf="!isCollapsed">All Properties</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
+              routerLink="PropertiesPending" routerLinkActive="active">
+             <i class="bi-hourglass-split me-2 text-caffe"></i>
+              <span class="d-md-inline d-none" *ngIf="!isCollapsed">Pending Properties</span>
+            </a>
+          </li>
       
       </ul>
     </div>
