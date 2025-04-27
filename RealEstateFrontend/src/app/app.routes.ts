@@ -53,6 +53,7 @@ import { BookAppointmentComponent } from './Components/Appointment/book-appointm
 import { ViewAllPropertiesComponent } from './Components/PagesSellerAndAgent/view-all-properties/view-all-properties.component';
 import { ViewPendingPropertiesComponent } from './Components/Seller/view-pending-properties/view-pending-properties.component';
 import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist.component';
+import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
 
 //----------------------------------------------------------------------------------------
 
@@ -108,6 +109,7 @@ export const routes: Routes = [
       { path: "orders", component: OrderSummaryComponent, title: "Orders Summary" },
       { path: 'orders/:id', component: OrderDetailsComponent, title: "Order Details" },
       { path: "AllReveiw", component: AllReviewComponent, title: "AllReview" },
+      {path:'FavoriteProducts',component:FavoriteProductsComponent,title:"Favorite Products"},
       {path:'wishlist',component:WishlistComponent,title:"Wishlist"},
 
 

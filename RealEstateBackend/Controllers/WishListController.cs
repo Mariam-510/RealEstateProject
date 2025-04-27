@@ -131,14 +131,21 @@ namespace RealEstate.Controllers
         }
 
 
+<<<<<<< Updated upstream
         [HttpGet("GetAllproductByBuyerIDAsync/{BuyerID}")]
         public async Task<IActionResult> GetAllPrductByBuyerIDAsync(int BuyerID)
+=======
+        [HttpGet()]
+        [Route("GetAllProductByBuyerID")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> GetAllPrductByBuyerIDAsync()
+>>>>>>> Stashed changes
         {
             List<Product>? productList = await _WishlistRepository.GetAllProductByBuyerIDAsync(BuyerID);
 
-            if (productList == null || !productList.Any())
+            if (productList == null)
             {
-                return NotFound("Buyer ID not found or no product found!");
+                return NotFound("Buyer account not found");
             }
 
             List<ProductDTOShow> productListDTO = productList.ToProductDTOShowList();
@@ -147,8 +154,16 @@ namespace RealEstate.Controllers
         }
 
 
+<<<<<<< Updated upstream
         [HttpGet("GetAllPropertyByBuyerIDAsync/{BuyerID}")]
         public async Task<IActionResult> GetAllPropertyByBuyerIDAsync(int BuyerID)
+=======
+        [HttpGet()]
+        [Route("GetAllPropertyByBuyerID")]
+
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> GetAllPropertyByBuyerIDAsync()
+>>>>>>> Stashed changes
         {
             List<Property>? propertyList = await _WishlistRepository.GetAllPropertyByBuyerIDAsync(BuyerID);
 
@@ -156,10 +171,10 @@ namespace RealEstate.Controllers
             {
                 return NotFound("Buyer ID not found!");
             }
-            if (!propertyList.Any())
-            {
-                return Ok("No properties found for this buyer.");
-            }
+            //if (!propertyList.Any())
+            //{
+            //    return Ok("No properties found for this buyer.");
+            //}
             var propertyDtos = _mapper.Map<List<PropertyDto>>(propertyList);
 
             return Ok(propertyDtos);

@@ -59,6 +59,7 @@ namespace RealEstate.Repositories
 
             return await dbcontext.Wishlists
                 .Include(W => W.Product).ThenInclude(P=>P.Category)
+                .Include(W => W.Product).ThenInclude(P => P.ProductStocks)
                 .Where(W => W.IsDeleted == false && W.BuyerId == BuyerID && W.Product != null && W.Product.IsDeleted==false)
                 .OrderByDescending(w => w.WishlistDateTime)
                 .Select(W => W.Product)
