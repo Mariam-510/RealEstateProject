@@ -1,5 +1,15 @@
 .footer-container {
+<<<<<<< Updated upstream:RealEstateFrontend/src/app/Components/footer/footer.component.css
   background: #5e3c31;
+=======
+  /* background: #5e3c31; */
+  
+  /* background: #bf856e; */
+  /* background: #987061; */
+
+  background: #987061;
+
+>>>>>>> Stashed changes:RealEstateFrontend/src/app/Components/HeaderAndFooter/footer/footer.component.css
   padding: 1rem 1rem auto;
   /* box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1); */
   margin-top: auto;
