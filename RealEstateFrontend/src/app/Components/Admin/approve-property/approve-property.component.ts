@@ -6,13 +6,15 @@ import { FormsModule } from '@angular/forms';
 import { PropertyDTO } from '../../../Services/ApiServices/property.service';
 import { API_CONFIG } from '../../../app.config';
 import { SafeUrlPipe } from '../../../Pipes/safe-url.pipe';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { Router, RouterModule } from '@angular/router';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-approve-property',
   standalone: true,
-  imports: [CommonModule, FormsModule, SafeUrlPipe],
+  imports: [CommonModule, FormsModule, SafeUrlPipe, RouterModule],
   templateUrl: './approve-property.component.html',
   styleUrls: ['./approve-property.component.css'],
 })
@@ -41,11 +43,18 @@ export class ApprovePropertyComponent {
   selectedProperty: any;
 
   constructor(
+    private router: Router,
+    private auth: AuthService,
     private propertyService: PropertyService,
     private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
+    if (!this.hasRole('Buyer')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.loadAllProperties();
   }
 
@@ -231,6 +240,17 @@ export class ApprovePropertyComponent {
     this.searchTerm = '';
     this.currentPage = 1;
     this.applyFilters();
+  }
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
   }
 
   async downloadFile(property: PropertyDTO) {

@@ -11,12 +11,13 @@ import { ProductService } from '../../../Services/ApiServices/product.service';
 import { CategoryService } from '../../../Services/ApiServices/category.service';
 import { ToastrService } from '../../../Services/toastr.service';
 
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
 
 @Component({
   selector: 'app-add-product',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './add-product.component.html',
   styleUrls: ['./add-product.component.css'],
 })
@@ -28,6 +29,7 @@ export class AddProductComponent implements OnInit {
   isLoading: boolean = false;
 
   constructor(
+    private auth: AuthService,
     private fb: FormBuilder,
     private productService: ProductService,
     private categoryService: CategoryService,
@@ -55,7 +57,24 @@ export class AddProductComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (!this.hasRole('Buyer')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.loadCategories();
+  }
+
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
   }
 
   loadCategories(): void {

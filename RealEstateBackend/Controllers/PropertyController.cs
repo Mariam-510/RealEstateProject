@@ -496,7 +496,7 @@ namespace RealEstate.Controllers
 
 
         [HttpPatch("UpdateApprovalProperty/{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateApprovalProperty(int id, [FromQuery] PropertyApprovalStatus Status)
         {
             var property = await _propertyRepo.GetByIdAsync(id);
