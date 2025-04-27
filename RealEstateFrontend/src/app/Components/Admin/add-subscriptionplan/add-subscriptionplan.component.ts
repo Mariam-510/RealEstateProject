@@ -34,7 +34,7 @@ export class AddSubscriptionplanComponent implements OnInit {
     private toastr: ToastrService
   ) {}
   ngOnInit(): void {
-    if (!this.hasRole('Buyer')) {
+    if (!this.hasRole('admin')) {
       this.router.navigate(['/login']);
       return;
     }
