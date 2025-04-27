@@ -1,15 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-view-all-pointment',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './view-all-pointment.component.html',
-  styleUrl: './view-all-pointment.component.css'
+  selector: 'app-buyer-view-all-pointment',
+  imports: [CommonModule],
+  templateUrl: './buyer-view-all-pointment.component.html',
+  styleUrl: './buyer-view-all-pointment.component.css'
 })
-export class ViewAllPointmentComponent {
+export class BuyerViewAllPointmentComponent {
   propertyLinks = ['All Appointment', 'Pending', 'Confirmed', 'Cancelled', 'Completed'];
   activeLink = 'All Appointment';
   
@@ -29,11 +27,11 @@ export class ViewAllPointmentComponent {
       Type: 'Virtual',
       Status: 'Pending',
       IsDeleted: false,
-      BuyerId: 1,
-      Buyer: {
+      SellerID: 1,
+      Seller: {
         Id: 1,
         Name: "John Doe",
-        Phone: "+02 (534) 673-1244",
+        Type: "Seller",
         Email: "john@gmail.com"
       },
       PropertyId: 101,
@@ -49,11 +47,11 @@ export class ViewAllPointmentComponent {
       ScheduledTime: new Date(2023, 5, 18, 14, 0),
       Type: 'InPerson',
       Status: 'Confirmed',
-      BuyerId: 2,
-      Buyer: {
+      SellerID: 2,
+      Seller: {
         Id: 2,
-        Name: "Jane Smith",
-        Phone: "+02 (534) 673-1244",
+        Name: "John Doe",
+        Type: "Agent",
         Email: "john@gmail.com"
       },
       PropertyId: 102,
@@ -69,11 +67,11 @@ export class ViewAllPointmentComponent {
       ScheduledTime: new Date(2023, 5, 18, 14, 0),
       Type: 'Virtual',
       Status: 'Confirmed',
-      BuyerId: 2,
-      Buyer: {
-        Id: 2,
-        Name: "Jane Smith",
-         Phone: "+02 (534) 673-1244",
+      SellerID: 3,
+      Seller: {
+        Id: 3,
+        Name: "John Doe",
+        Type: "Seller",
         Email: "john@gmail.com"
       },
       PropertyId: 102,
@@ -88,12 +86,12 @@ export class ViewAllPointmentComponent {
       Id: 1004,
       ScheduledTime: new Date(2023, 5, 18, 14, 0),
       Type: 'InPerson',
-      Status: 'Confirmed',
-      BuyerId: 2,
-      Buyer: {
-        Id: 2,
-        Name: "Jane Smith",
-        Phone: "+02 (534) 673-1244",
+      Status: 'Completed',
+      SellerID: 1,
+      Seller: {
+        Id: 1,
+        Name: "John Doe",
+        Type: "Agent",
         Email: "john@gmail.com"
       },
       PropertyId: 102,
