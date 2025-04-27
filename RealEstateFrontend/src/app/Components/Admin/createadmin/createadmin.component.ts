@@ -19,7 +19,7 @@ export class CreateadminComponent {
         Validators.pattern(/^[A-Za-z]+$/)
       ]),
       email: new FormControl('', [Validators.required, Validators.pattern(/^[\w-.]+@([\w-]+.)+[\w-]{2,4}$/)]),
-      password: new FormControl("", [
+      pass: new FormControl("", [
         Validators.required,
         Validators.minLength(6),
         Validators.maxLength(10),
@@ -31,5 +31,22 @@ export class CreateadminComponent {
       ])
     },
   );
+  Create() {
+    if (this.createAdminForm.invalid) {
+      alert('Please fill in all required fields correctly.');
+      return;
+    }
+
+    let Adminobj = {
+      Name: this.createAdminForm.value.Name,
+      email: this.createAdminForm.value.email,
+      pass: this.createAdminForm.value.pass,
+      confirmPassword: this.createAdminForm.value.confirmPassword
+    };
+
+    console.log("Admin Created SuccessFully:", Adminobj);
+
+    this.createAdminForm.reset();
+  }
 }
  
