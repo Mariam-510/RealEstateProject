@@ -53,6 +53,7 @@ import { BookAppointmentComponent } from './Components/Appointment/book-appointm
 import { ViewAllPropertiesComponent } from './Components/PagesSellerAndAgent/view-all-properties/view-all-properties.component';
 import { ViewPendingPropertiesComponent } from './Components/Seller/view-pending-properties/view-pending-properties.component';
 import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist.component';
+import { SimilarProductsComponent } from './Components/Products/Details/similar-products/similar-products.component';
 import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-all-pointment/buyer-view-all-pointment.component';
 import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
 import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
@@ -87,8 +88,6 @@ export const routes: Routes = [
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
       {path:'Properties',component:ViewAllPropertiesComponent,title:"View All Properties"},
       {path:'ViewAllAppointment',component:ViewAllPointmentComponent,title:"View All Appointment"}
-
-
     ]
   },
 
@@ -103,7 +102,6 @@ export const routes: Routes = [
       {path:'Properties',component:ViewAllPropertiesComponent,title:"View All Properties"},
       {path:'PropertiesPending',component:ViewPendingPropertiesComponent,title:"View Pending Properties"},
       {path:'ViewAllAppointment',component:ViewAllPointmentComponent,title:"View All Appointment"}
-
     ]
   },
 
@@ -118,8 +116,6 @@ export const routes: Routes = [
       {path:'FavoriteProducts',component:FavoriteProductsComponent,title:"Favorite Products"},
       {path:'wishlist',component:WishlistComponent,title:"Wishlist"},
       {path:'BuyerViewAllAppointment',component:BuyerViewAllPointmentComponent,title:"View All Appointment"}
-
-
 
     ]
   },
@@ -173,10 +169,10 @@ export const routes: Routes = [
   },
 
   //---------------------------------------------------------------------------------------
-  {path:'book',component:BookAppointmentComponent,title:"Book Appointment"},
+  { path: 'book', component: BookAppointmentComponent, title: "Book Appointment" },
   //---------------------------------------------------------------------------------------
   { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
-  { path: "t", component: TViewAllProductsComponent, title: "t" },
+  { path: "t", component: SimilarProductsComponent, title: "t" },
   { path: "**", component: NotFoundComponent },
 
 

@@ -5,7 +5,6 @@ import { RecommendedComponent } from '../recommended/recommended.component';
 import { CardmapComponent } from '../cardmap/cardmap.component';
 import { PropertyDetialsLeafletMapComponent } from '../property-detials-leaflet-map/property-detials-leaflet-map.component';
 import { PropertyPhotoModalComponent } from '../property-photo-modal/property-photo-modal.component';
-import { SharedServiceService } from '../../../../Services/shared-service.service';
 import { ChatmodalComponent } from '../../../Chat/chatmodal/chatmodal.component';
 import { PropertyDTO, PropertyService } from '../../../../Services/ApiServices/property.service';
 import { AuthService } from '../../../../Services/ApiServices/auth.service';
@@ -45,8 +44,8 @@ export class PropertyDetailsComponent implements AfterViewInit {
   private lastScrollTop: number = 0;
   private navBarHeight: number = 0;
 
-  constructor(private renderer: Renderer2, private elRef: ElementRef, private sharedService: SharedServiceService,
-    private propertyService: PropertyService, private cdr: ChangeDetectorRef, private wishListService: WishListService,
+  constructor(private renderer: Renderer2, private elRef: ElementRef, private cdr: ChangeDetectorRef,
+    private propertyService: PropertyService, private wishListService: WishListService,
     private auth: AuthService, private route: ActivatedRoute, private toastr: ToastrService
   ) { }
 
@@ -56,7 +55,6 @@ export class PropertyDetailsComponent implements AfterViewInit {
 
   apiConfig = API_CONFIG;
   property!: PropertyDTO | null;
-  properties: PropertyDTO[] = [];
 
   isLoading = true;
 
@@ -211,7 +209,7 @@ export class PropertyDetailsComponent implements AfterViewInit {
         flag = false;
         tabBar.classList.remove('sticky'); // Remove when reaching stop section
         // console.log('---------------------------------');
-        console.log('sticky remove 1');
+        // console.log('sticky remove 1');
 
       }
       else if (!scrollingDown && scrollPosition < stopPoint) {
@@ -225,7 +223,7 @@ export class PropertyDetailsComponent implements AfterViewInit {
     }
     if (scrollingDown && scrollY >= tabBarOffset && flag) {
       tabBar.classList.add('sticky');
-      console.log('sticky added 2');
+      // console.log('sticky added 2');
 
       // console.log('///////////////////////////////////////////////////');
 
@@ -233,7 +231,7 @@ export class PropertyDetailsComponent implements AfterViewInit {
     else if (!scrollingDown && scrollY <= tabBarOffset + 500) {
       flag = true;
       tabBar.classList.remove('sticky'); // Return to original position when scrolling up
-      console.log('sticky remove 2');
+      // console.log('sticky remove 2');
 
       // console.log('####################################################');
 
@@ -251,7 +249,7 @@ export class PropertyDetailsComponent implements AfterViewInit {
       // Apply fixed position when scrolled past initial position but before stop point
       if (scrollY >= cardInitialOffset + 250 && scrollY < stopPoint) {
         this.renderer.addClass(card, 'fixed-event-card');
-        console.log('fixed-event-card added');
+        // console.log('fixed-event-card added');
         this.renderer.setStyle(card, 'top', `${this.navBarHeight + 20}px`);
       }
       // Position absolute at stop point to keep it from going further
@@ -259,14 +257,14 @@ export class PropertyDetailsComponent implements AfterViewInit {
         this.renderer.removeClass(card, 'fixed-event-card');
         this.renderer.setStyle(card, 'top', `${stopPoint - card.offsetHeight - 400}px`);
 
-        console.log('fixed-event-card removed');
+        // console.log('fixed-event-card removed');
         // this.renderer.setStyle(card, 'position', 'absolute');
         // this.renderer.setStyle(card, 'top', `${stopPoint}px`);
       }
       // Return to initial position only if we're above the cardInitialOffset
       else if (scrollY < cardInitialOffset + 250) {
         this.renderer.removeClass(card, 'fixed-event-card');
-        console.log('fixed-event-card removed');
+        // console.log('fixed-event-card removed');
         this.renderer.removeStyle(card, 'position');
         this.renderer.removeStyle(card, 'top');
       }

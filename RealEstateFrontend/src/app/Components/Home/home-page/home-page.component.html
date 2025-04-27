@@ -121,8 +121,9 @@
     <div class="line-divider" style="width: 60px; height: 2px; background: #c38e79;"></div>
   </div>
   <div class="gallery-container">
-    <div *ngFor="let property of featuredProperties" class="gallery-item">
-      <div class="gallery-image position-absolute" [style.background-image]="'url(' + property.images[0] + ')'">
+    <div *ngFor="let property of properties" class="gallery-item">
+      <div [routerLink]="['/properties',property.id]" class="gallery-image position-absolute"
+        [style.background-image]="'url('  + apiConfig.apiUrl + property.images[0] + ')'">
       </div>
 
       <a *ngIf="hasRoleOrNoUser('Buyer')" (click)="togglePropertyWishList(property)" class="d-inline-block"
@@ -138,17 +139,17 @@
       <!-- <span class="badge bg-caffe position-relative top-0 start-0 m-2">{{property.type}}</span> -->
 
       <span class="badge position-relative top-0 start-0 m-2 text-white"
-        [style.background-color]="property.type === 'RENT' ? '#de8332' : '#2a5f8b'">
-        FOR {{ property.type }}
+        [style.background-color]="property.type === 'Rent' ? '#de8332' : '#2a5f8b'">
+        For {{ property.type }}
       </span>
 
 
-      <div class="gallery-overlay">
+      <div [routerLink]="['/properties',property.id]" class="gallery-overlay">
         <h3>{{ property.title }}</h3>
         <p>{{ property.location }}</p>
         <p>{{ property.price | currency:'EGP ' }}</p>
-        <p *ngIf="property.bedrooms && property.bathrooms">
-          {{ property.bedrooms }} Beds | {{ property.bathrooms }} Baths
+        <p *ngIf="property.bedRooms && property.bathRooms">
+          {{ property.bedRooms }} Beds | {{ property.bathRooms }} Baths
         </p>
       </div>
     </div>
@@ -162,15 +163,6 @@
   </div>
 </section>
 
-<section class="trust my-5">
-  <h3 class="text-white">Trusted By Thousands</h3>
-  <div class="stats">
-    <div *ngFor="let stat of stats" class="stat">
-      <p class="number">{{ stat.value }}</p>
-      <p class="text-white">{{ stat.label }}</p>
-    </div>
-  </div>
-</section>
 
 <!-- Upcoming Auctions -->
 <section class="inspiration-gallery">
@@ -213,6 +205,7 @@
   </div>
 </section>
 
+
 <!-- Home Inspiration Gallery -->
 <section class="inspiration-gallery my-5">
   <h1 class="text-center fw-bold fs-2">Top-Rated Treasures</h1>
@@ -226,8 +219,8 @@
     <div class="line-divider" style="width: 60px; height: 2px; background: #c38e79;"></div>
   </div>
   <div class="gallery-container">
-    <div *ngFor="let product of topRatedProducts" class="gallery-item">
-      <div class="gallery-image position-absolute"
+    <div *ngFor="let product of products" class="gallery-item">
+      <div [routerLink]="['/products',product.id]" class="gallery-image position-absolute"
         [style.background-image]="'url(' + apiConfig.apiUrl + product.productimage[0] + ')'">
       </div>
 
@@ -248,7 +241,7 @@
         {{ product.isUsed ? 'Used' : 'New' }}
       </span>
 
-      <div class="gallery-overlay">
+      <div [routerLink]="['/products',product.id]" class="gallery-overlay">
         <h3>{{ product.name }}</h3>
         <p>{{ product.description }}</p>
       </div>
@@ -262,6 +255,17 @@
       style="background-color: #c38e79">
       View All Products <i class="bi bi-arrow-right ms-2"></i>
     </a>
+  </div>
+</section>
+
+
+<section class="trust my-5">
+  <h3 class="text-white">Trusted By Thousands</h3>
+  <div class="stats">
+    <div *ngFor="let stat of stats" class="stat">
+      <p class="number">{{ stat.value }}</p>
+      <p class="text-white">{{ stat.label }}</p>
+    </div>
   </div>
 </section>
 

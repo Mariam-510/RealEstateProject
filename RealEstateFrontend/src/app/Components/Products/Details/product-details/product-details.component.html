@@ -1,3 +1,10 @@
+<div *ngIf="isLoading" class="text-center py-5">
+  <div class="spinner-border text-caffe" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <p class="mt-2">Loading product details...</p>
+</div>
+
 <div class="mx-3">
   <div class="row align-items-center mt-2 ms-5">
     <nav aria-label="breadcrumb">
@@ -756,9 +763,11 @@
 
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 
+<!-- Show content when loaded -->
 <div id="stop-scroll">
-  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Iusto excepturi impedit et eveniet ducimus, suscipit maxime
-  nesciunt dicta! Iure aperiam atque inventore earum modi accusantium, laboriosam quod. Aspernatur, minima in?
+  <div *ngIf="!isLoading">
+    <app-similar-products [product]="product"></app-similar-products>
+  </div>
 </div>
 
 <!-- --------------------------------------------------------------------------------------------------------------- -->
