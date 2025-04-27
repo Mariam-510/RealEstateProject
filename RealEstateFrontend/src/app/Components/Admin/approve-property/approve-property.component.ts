@@ -4,13 +4,15 @@ import { PropertyService } from '../../../Services/ApiServices/property.service'
 import { ToastrService } from '../../../Services/toastr.service';
 import { FormsModule } from '@angular/forms';
 import { PropertyDTO } from '../../../Services/ApiServices/property.service';
+import { API_CONFIG } from '../../../app.config';
+import { SafeUrlPipe } from '../../../Pipes/safe-url.pipe';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-approve-property',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SafeUrlPipe],
   templateUrl: './approve-property.component.html',
   styleUrls: ['./approve-property.component.css'],
 })
@@ -22,6 +24,7 @@ export class ApprovePropertyComponent {
   filteredProperties: PropertyDTO[] = [];
   paginatedProperties: PropertyDTO[] = [];
   isLoading = true;
+  apiConfig = API_CONFIG;
 
   // Pagination variables
   Math = Math;
@@ -33,6 +36,9 @@ export class ApprovePropertyComponent {
   statusFilter = '';
   typeFilter = '';
   searchTerm = '';
+
+  // Modal variables
+  selectedProperty: any;
 
   constructor(
     private propertyService: PropertyService,
@@ -53,7 +59,10 @@ export class ApprovePropertyComponent {
     this.isLoading = true;
     this.propertyService.getAllPropertiesUnfiltered().subscribe({
       next: (response: any) => {
-        this.properties = response;
+        // Filter to only keep properties with agentId === null
+        this.properties = response.filter(
+          (property: PropertyDTO) => property.agentId === null
+        );
         this.applyFilters();
         this.isLoading = false;
       },
@@ -70,6 +79,10 @@ export class ApprovePropertyComponent {
 
   applyFilters(): void {
     this.filteredProperties = this.properties.filter((property) => {
+      if (property.agentId !== null) {
+        return false;
+      }
+
       // Status filter
       if (this.statusFilter && this.statusFilter !== 'Filter by Status') {
         if (
@@ -156,45 +169,45 @@ export class ApprovePropertyComponent {
   }
 
   approveProperty(property: PropertyDTO): void {
-    this.propertyService
-      .updateApprovalStatus(property.id, 1)
-      .subscribe({
-        next: (response) => {
-          this.toastr.success('Property approved successfully', 'Success');
-          property.approvalStatus = 'Approved';
-          this.applyFilters();
-        },
-        error: (error) => {
-          console.error('Error approving property:', error);
-          this.toastr.error(
-            'Failed to approve property. Please try again.',
-            'Error'
-          );
-        },
-      });
+    this.propertyService.updateApprovalStatus(property.id, 1).subscribe({
+      next: (response) => {
+        this.toastr.success('Property approved successfully', 'Success');
+        property.approvalStatus = 'Approved';
+        this.applyFilters();
+      },
+      error: (error) => {
+        console.error('Error approving property:', error);
+        this.toastr.error(
+          'Failed to approve property. Please try again.',
+          'Error'
+        );
+      },
+    });
   }
 
   rejectProperty(property: PropertyDTO): void {
-    this.propertyService
-      .updateApprovalStatus(property.id, 2)
-      .subscribe({
-        next: (response) => {
-          this.toastr.success('Property rejected successfully', 'Success');
-          property.approvalStatus = 'Rejected';
-          this.applyFilters();
-        },
-        error: (error) => {
-          console.error('Error rejecting property:', error);
-          this.toastr.error(
-            'Failed to reject property. Please try again.',
-            'Error'
-          );
-        },
-      });
+    this.propertyService.updateApprovalStatus(property.id, 2).subscribe({
+      next: (response) => {
+        this.toastr.success('Property rejected successfully', 'Success');
+        property.approvalStatus = 'Rejected';
+        this.applyFilters();
+      },
+      error: (error) => {
+        console.error('Error rejecting property:', error);
+        this.toastr.error(
+          'Failed to reject property. Please try again.',
+          'Error'
+        );
+      },
+    });
   }
 
-  showModal(): void {
-    this.modalInstance?.show();
+  showModal(property: any) {
+    this.selectedProperty = property;
+
+    const modalElement = document.getElementById('pdfPreviewModal');
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
   }
 
   onStatusFilterChange(): void {
@@ -218,5 +231,26 @@ export class ApprovePropertyComponent {
     this.searchTerm = '';
     this.currentPage = 1;
     this.applyFilters();
+  }
+
+  async downloadFile(property: PropertyDTO) {
+    if (!property?.contractImgUrl) return;
+
+    const fileUrl = this.apiConfig.apiUrl + property.contractImgUrl;
+
+    try {
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'contract.pdf'; // Set a filename
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
   }
 }

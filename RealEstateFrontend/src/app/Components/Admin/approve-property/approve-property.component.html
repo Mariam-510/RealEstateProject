@@ -86,8 +86,9 @@
                   <a
                     class="btn btn-icon shadow-sm border-0 bg-dark bg-opacity-50 text-white px-2"
                     title="Download Contract"
-                    href="/TestFiles/sample.pdf"
+                    (click)="downloadFile(property)"
                     download
+                    target="_blank"
                   >
                     <i
                       class="bi bi-file-earmark-text"
@@ -121,7 +122,7 @@
                     [class.active]="i === 0"
                   >
                     <img
-                      [src]="img"
+                      [src]="apiConfig.apiUrl + img"
                       class="d-block"
                       style="width: 34vw; height: 52vh"
                       [alt]="'Image ' + (i + 1) + ' of ' + property.title"
@@ -218,7 +219,7 @@
                     <div class="d-flex align-items-center">
                       <div class="bg-light rounded-circle p-2 mb-1">
                         <img
-                          src="/images/Bed.svg"
+                          src="/icons/Bed.svg"
                           width="20"
                           height="20"
                           alt=""
@@ -230,7 +231,7 @@
                     <div class="d-flex align-items-center">
                       <div class="bg-light rounded-circle p-2 mb-1">
                         <img
-                          src="/images/Bath.svg"
+                          src="/icons/Bath.svg"
                           width="20"
                           height="20"
                           alt=""
@@ -242,7 +243,7 @@
                     <div class="d-flex align-items-center">
                       <div class="bg-light rounded-circle p-2 mb-1">
                         <img
-                          src="/images/Area.svg"
+                          src="/icons/Area.svg"
                           width="20"
                           height="20"
                           alt=""
@@ -281,14 +282,17 @@
                       <!-- PDF Preview Content -->
                       <div class="d-flex flex-column h-100">
                         <iframe
-                          src="/TestFiles/sample.pdf"
+                          [src]="
+                            apiConfig.apiUrl + property?.contractImgUrl
+                              | safeUrl
+                          "
                           class="flex-grow-1 rounded border"
                           style="min-height: 150px"
                         ></iframe>
 
                         <!-- Preview Button -->
                         <button
-                          (click)="showModal()"
+                          (click)="showModal(property)"
                           class="btn btn-sm mt-2 align-self-end"
                           style="background-color: #c38e79; color: white"
                         >
@@ -306,13 +310,24 @@
                 class="footer border-top pt-3 mt-3 d-flex justify-content-between align-items-center"
               >
                 <div class="d-flex align-items-center">
-                  <img
-                    [src]="'/images/Home/user.jpeg'"
-                    class="rounded-circle me-2"
-                    width="40"
-                    height="40"
-                    alt="Seller"
-                  />
+                  <ng-container *ngIf="property.userImage; else defaultIcon">
+                    <img
+                      [src]="apiConfig.apiUrl + property.userImage"
+                      alt="User"
+                      class="rounded-circle me-2"
+                      width="40"
+                      height="40"
+                      alt="Agent"
+                    />
+                  </ng-container>
+
+                  <ng-template #defaultIcon>
+                    <i
+                      class="bi bi-person-circle text-brown me-2"
+                      style="font-size: 2.5rem"
+                    ></i>
+                  </ng-template>
+
                   <div>
                     <small class="d-block fw-bold fs-6" style="color: #c38e79">
                       {{ property.userName || "Private Seller" }}
@@ -412,7 +427,9 @@
         </div>
         <div class="modal-body">
           <iframe
-            src="/TestFiles/sample.pdf"
+            [src]="
+              apiConfig.apiUrl + selectedProperty?.contractImgUrl | safeUrl
+            "
             width="100%"
             height="600px"
           ></iframe>
@@ -425,9 +442,13 @@
           >
             Close
           </button>
-          <a href="/TestFiles/sample.pdf" download class="btn btn-primary">
+
+          <button
+            (click)="downloadFile(selectedProperty)"
+            class="btn btn-primary"
+          >
             <i class="bi bi-download me-2"></i>Download
-          </a>
+          </button>
         </div>
       </div>
     </div>
