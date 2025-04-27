@@ -16,7 +16,9 @@ namespace RealEstate.Repositories
         {
             var orderItems = await dbContext.OrderItems
                 .Where(o => !o.IsDeleted)
-                .Include(o => o.Product).ToListAsync();
+                .Include(o => o.Product)
+                .ThenInclude(p=>p.Category)
+                .ToListAsync();
 
             await dbContext.SaveChangesAsync();
             return orderItems;
@@ -27,7 +29,9 @@ namespace RealEstate.Repositories
         {
             var orderItems = await dbContext.OrderItems
                 .Where(o => !o.IsDeleted && o.CartId == cartId)
-                .Include(o => o.Product).ToListAsync();
+                .Include(o => o.Product)
+                .ThenInclude(p => p.Category)
+                .ToListAsync();
 
             await dbContext.SaveChangesAsync();
             return orderItems;
@@ -38,7 +42,9 @@ namespace RealEstate.Repositories
         {
             var orderItems = await dbContext.OrderItems
                 .Where(o => !o.IsDeleted && o.OrderId == orderId)
-                .Include(o => o.Product).ToListAsync();
+                .Include(o => o.Product)
+                .ThenInclude(p => p.Category)
+                .ToListAsync();
 
             await dbContext.SaveChangesAsync();
             return orderItems;
@@ -50,6 +56,7 @@ namespace RealEstate.Repositories
             var orderItem = await dbContext.OrderItems
                 .Where(o => !o.IsDeleted)
                 .Include(o => o.Product)
+                .ThenInclude(p => p.Category)
                 .FirstOrDefaultAsync(orderItem => orderItem.Id == id);
 
             return orderItem;
@@ -74,6 +81,7 @@ namespace RealEstate.Repositories
         {
             var existingOrderItem = await dbContext.OrderItems
                .Include(o => o.Product)
+               .ThenInclude(p => p.Category)
                .Where(o => !o.IsDeleted)
                .FirstOrDefaultAsync(o => o.Id == orderItem.Id);
 
@@ -106,6 +114,7 @@ namespace RealEstate.Repositories
         {
             var existingOrderItem = await dbContext.OrderItems
                .Include(o => o.Product)
+               .ThenInclude(p => p.Category)
                .Where(o => !o.IsDeleted)
                .FirstOrDefaultAsync(o => o.Id == orderItem.Id);
 
@@ -127,6 +136,7 @@ namespace RealEstate.Repositories
             var orderItem = await dbContext.OrderItems
                 .Where(o=>!o.IsDeleted)
                .Include(o => o.Product)
+               .ThenInclude(p => p.Category)
                .FirstOrDefaultAsync(o => o.Id == id);
 
             if (orderItem != null)

@@ -305,7 +305,8 @@ namespace RealEstate.Controllers
                     property.SellerId = User.IsInRole("Seller") ? userId : null;
                     property.AgentId = User.IsInRole("Agent") ? userId : null;
                     property.Type = Enum.Parse<PropertyType>(createDto.Type, true);
-                    property.Status = Enum.Parse<PropertyStatus>(createDto.Status, true);
+                    //property.Status = Enum.Parse<PropertyStatus>(createDto.Status, true);
+                    property.Status = PropertyStatus.Available;
                     property.PropertyCategory = Enum.Parse<PropertyCategory>(createDto.PropertyCategory, true);
                     property.Images = new List<string>();
                     
