@@ -53,6 +53,8 @@ import { BookAppointmentComponent } from './Components/Appointment/book-appointm
 import { ViewAllPropertiesComponent } from './Components/PagesSellerAndAgent/view-all-properties/view-all-properties.component';
 import { ViewPendingPropertiesComponent } from './Components/Seller/view-pending-properties/view-pending-properties.component';
 import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist.component';
+import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-all-pointment/buyer-view-all-pointment.component';
+import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
 
 //----------------------------------------------------------------------------------------
 
@@ -82,7 +84,9 @@ export const routes: Routes = [
       { path: 'dashboard', component: AgentdashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
-      {path:'Properties',component:ViewAllPropertiesComponent,title:"View All Properties"}
+      {path:'Properties',component:ViewAllPropertiesComponent,title:"View All Properties"},
+      {path:'ViewAllAppointment',component:ViewAllPointmentComponent,title:"View All Appointment"}
+
 
     ]
   },
@@ -96,7 +100,9 @@ export const routes: Routes = [
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
       {path:'Properties',component:ViewAllPropertiesComponent,title:"View All Properties"},
-      {path:'PropertiesPending',component:ViewPendingPropertiesComponent,title:"View Pending Properties"}
+      {path:'PropertiesPending',component:ViewPendingPropertiesComponent,title:"View Pending Properties"},
+      {path:'ViewAllAppointment',component:ViewAllPointmentComponent,title:"View All Appointment"}
+
     ]
   },
 
@@ -109,6 +115,8 @@ export const routes: Routes = [
       { path: 'orders/:id', component: OrderDetailsComponent, title: "Order Details" },
       { path: "AllReveiw", component: AllReviewComponent, title: "AllReview" },
       {path:'wishlist',component:WishlistComponent,title:"Wishlist"},
+      {path:'BuyerViewAllAppointment',component:BuyerViewAllPointmentComponent,title:"View All Appointment"}
+
 
 
     ]
