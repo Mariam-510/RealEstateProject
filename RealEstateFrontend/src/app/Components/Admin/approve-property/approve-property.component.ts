@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PropertyService } from '../../../Services/ApiServices/property.service';
 import { ToastrService } from '../../../Services/toastr.service';
 import { FormsModule } from '@angular/forms';
-import { PropertyDto } from '../../../Service/shared.service';
+import { PropertyDTO } from '../../../Services/ApiServices/property.service';
 
 declare var bootstrap: any;
 
@@ -18,9 +18,16 @@ export class ApprovePropertyComponent {
   @ViewChild('pdfModal') pdfModal!: ElementRef;
   private modalInstance?: any;
 
-  properties: PropertyDto[] = [];
-  filteredProperties: any[] = [];
+  properties: PropertyDTO[] = [];
+  filteredProperties: PropertyDTO[] = [];
+  paginatedProperties: PropertyDTO[] = [];
   isLoading = true;
+
+  // Pagination variables
+  Math = Math;
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalItems = 0;
 
   // Filter variables
   statusFilter = '';
@@ -33,7 +40,7 @@ export class ApprovePropertyComponent {
   ) {}
 
   ngOnInit(): void {
-    this.loadPendingProperties();
+    this.loadAllProperties();
   }
 
   ngAfterViewInit(): void {
@@ -42,9 +49,9 @@ export class ApprovePropertyComponent {
     }
   }
 
-  loadPendingProperties(): void {
+  loadAllProperties(): void {
     this.isLoading = true;
-    this.propertyService.getPendingProperties().subscribe({
+    this.propertyService.getAllPropertiesUnfiltered().subscribe({
       next: (response: any) => {
         this.properties = response;
         this.applyFilters();
@@ -66,20 +73,20 @@ export class ApprovePropertyComponent {
       // Status filter
       if (this.statusFilter && this.statusFilter !== 'Filter by Status') {
         if (
-          this.statusFilter === 'Pending Approval'
-          // && property.approvalStatus !== 'Pending'
+          this.statusFilter === 'Pending Approval' &&
+          property.approvalStatus !== 'Pending'
         ) {
           return false;
         }
         if (
-          this.statusFilter === 'Approved'
-          // && property.approvalStatus !== 'Approved'
+          this.statusFilter === 'Approved' &&
+          property.approvalStatus !== 'Approved'
         ) {
           return false;
         }
         if (
-          this.statusFilter === 'Rejected'
-          // && property.approvalStatus !== 'Rejected'
+          this.statusFilter === 'Rejected' &&
+          property.approvalStatus !== 'Rejected'
         ) {
           return false;
         }
@@ -117,15 +124,43 @@ export class ApprovePropertyComponent {
         return 1;
       return 0;
     });
+
+    this.totalItems = this.filteredProperties.length;
+    this.updatePaginatedProperties();
   }
 
-  approveProperty(property: any): void {
+  updatePaginatedProperties(): void {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    this.paginatedProperties = this.filteredProperties.slice(
+      startIndex,
+      startIndex + this.itemsPerPage
+    );
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.updatePaginatedProperties();
+    // window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalItems / this.itemsPerPage);
+  }
+
+  get pages(): number[] {
+    const pages: number[] = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  approveProperty(property: PropertyDTO): void {
     this.propertyService
-      .updateApprovalStatus(property.id, 'Approved')
+      .updateApprovalStatus(property.id, 1)
       .subscribe({
         next: (response) => {
           this.toastr.success('Property approved successfully', 'Success');
-          // Update local property status
           property.approvalStatus = 'Approved';
           this.applyFilters();
         },
@@ -139,13 +174,12 @@ export class ApprovePropertyComponent {
       });
   }
 
-  rejectProperty(property: any): void {
+  rejectProperty(property: PropertyDTO): void {
     this.propertyService
-      .updateApprovalStatus(property.id, 'Rejected')
+      .updateApprovalStatus(property.id, 2)
       .subscribe({
         next: (response) => {
           this.toastr.success('Property rejected successfully', 'Success');
-          // Update local property status
           property.approvalStatus = 'Rejected';
           this.applyFilters();
         },
@@ -164,14 +198,17 @@ export class ApprovePropertyComponent {
   }
 
   onStatusFilterChange(): void {
+    this.currentPage = 1;
     this.applyFilters();
   }
 
   onTypeFilterChange(): void {
+    this.currentPage = 1;
     this.applyFilters();
   }
 
   onSearch(): void {
+    this.currentPage = 1;
     this.applyFilters();
   }
 
@@ -179,6 +216,7 @@ export class ApprovePropertyComponent {
     this.statusFilter = '';
     this.typeFilter = '';
     this.searchTerm = '';
+    this.currentPage = 1;
     this.applyFilters();
   }
 }
