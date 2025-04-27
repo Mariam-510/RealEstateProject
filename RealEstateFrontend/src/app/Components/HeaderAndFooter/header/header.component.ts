@@ -115,14 +115,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     console.log(this.auth.isAuthenticated());
   }
 
-  hasRole(requiredRole: string) {
-    return this.auth.hasRole(requiredRole);
-  }
-
-  hasRoleOrNoUser(requiredRole: string) {
-    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
-  }
-
   openSigUPDialog(): void {
     this.dialog.open(SignUpRoleComponentComponent);
   }
@@ -169,5 +161,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
+  }
 
 }

@@ -27,10 +27,60 @@
                 class="w-100 shadow-1-strong rounded-0" />
               <div class="overlay rounded"></div>
 
+<<<<<<< Updated upstream
               <!-- Button positioned bottom-right -->
               <button type="button" class="custom-btn position-absolute bottom-0 end-0 m-3 rounded-2 text-caffe"
                 data-bs-toggle="modal" data-bs-target="#photosModal">
                 <i class="bi bi-images me-1 pe-2 text-caffe"></i>Photos
+=======
+        </div>
+
+      </div>
+    </div>
+    <div #tabLinks class="tab-links px-5 py-3 d-flex flex-wrap justify-content-between align-items-center ">
+      <!-- Left side: Nav Links -->
+      <div class="d-flex flex-wrap gap-5">
+        <a href="#overview" (click)="scrollToSection($event, 'overview')" class="active ms-2 me-3">
+          <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+          <span class="fs-5">Overview</span>
+        </a>
+
+        <a href="#location" (click)="scrollToSection($event, 'location')" class="me-3">
+          <i class="bi bi-geo-alt-fill me-2 fs-4"></i>
+          <span class="fs-5">Location</span>
+        </a>
+
+        <a href="#PropertyDetails" (click)="scrollToSection($event, 'PropertyDetails')" class="me-3">
+          <!-- <i class="bi bi-calendar3 me-2 fs-6"></i> -->
+          <i class="bi bi-house-door-fill  me-2 fs-4"></i>
+
+          <span class="fs-5">Property Details</span>
+        </a>
+      </div>
+
+      <!-- Right side: Icons -->
+      <div class="d-flex align-items-center gap-4 pe-3">
+
+      </div>
+    </div>
+    <div class="ps-5 my-4">
+      <div class="row ">
+        <div class="position-relative end-0">
+          <!-- About this home section -->
+          <div class="col-md-8 ">
+            <div id="about-this-home" #homesection class="mb-1  rounded-3 ">
+              <div class="mb-3">
+                <!-- <i class="bi bi-house-fill me-3 fs-3 text-caffe"></i> -->
+                <i class="bi bi-info-circle-fill me-3 fs-3 text-caffe"></i>
+
+                <span class="fs-3 fw-bold heading-line">About this home</span>
+              </div>
+              <p class="lead ms-4 text-justify fw-light fst-italic" [innerHTML]="displayedDescription"></p>
+              <button *ngIf="(property?.description?.length ??0) > 200"
+                class="btn btn-light text-caffe me-2 ms-5 fw-bold" (click)="showMore = !showMore">
+                <i class="bi" [ngClass]="showMore ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                {{ showMore ? 'Show Less' : 'Show More' }}
+>>>>>>> Stashed changes
               </button>
               <app-property-photo-modal #photoModal></app-property-photo-modal>
             </div>

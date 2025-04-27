@@ -142,7 +142,12 @@ export class PropertyHomeComponent implements OnInit {
       translate: (value: number) => `${value}m²`
     };
 
+<<<<<<< Updated upstream
     this.applyFilters();
+=======
+    // this.checkScroll();
+
+>>>>>>> Stashed changes
   }
 
   get currentCategoryCount(): number {

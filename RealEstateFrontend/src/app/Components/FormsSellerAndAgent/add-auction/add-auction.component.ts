@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuctionDTO, AuctionService } from '../../../Services/ApiServices/auction.service';
 
 @Component({
   selector: 'app-add-auction',
@@ -28,7 +29,7 @@ export class AddAuctionComponent implements OnInit {
     { id: 5, name: 'Duplex in Sheikh Zayed' },
   ];
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private auctionService: AuctionService) {
     // Set minimum date to current datetime
     const now = new Date();
     this.minDate = now.toISOString().slice(0, 16);
@@ -102,19 +103,49 @@ export class AddAuctionComponent implements OnInit {
     return null;
   }
 
+  // onSubmit(): void {
+  //   // Mark all fields as touched to show errors if any
+  //   this.auctionForm.markAllAsTouched();
+
+  //   if (this.auctionForm.valid) {
+  //     const formValue = {
+  //       ...this.auctionForm.value,
+  //       startTime: new Date(this.auctionForm.value.startTime).toISOString(),
+  //       endTime: new Date(this.auctionForm.value.endTime).toISOString(),
+  //     };
+
+  //     console.log('Auction data:', formValue);
+  //     this.router.navigate(['/auctions']);
+  //   }
+  // }
+
   onSubmit(): void {
-    // Mark all fields as touched to show errors if any
     this.auctionForm.markAllAsTouched();
 
     if (this.auctionForm.valid) {
-      const formValue = {
-        ...this.auctionForm.value,
-        startTime: new Date(this.auctionForm.value.startTime).toISOString(),
-        endTime: new Date(this.auctionForm.value.endTime).toISOString(),
+      // Create properly formatted DTO
+      const auctionDto: AuctionDTO = {
+        StartTime: new Date(this.auctionForm.value.startTime),
+        EndTime: new Date(this.auctionForm.value.endTime),
+        StartPrice: this.auctionForm.value.startPrice,
+        PropertyId: this.auctionForm.value.propertyId
       };
 
-      console.log('Auction data:', formValue);
-      this.router.navigate(['/auctions']);
+      this.auctionService.createAuction(auctionDto).subscribe({
+        next: (response) => {
+          console.log('Auction created:', response);
+          this.router.navigate(['/auctions']);
+        },
+        error: (err) => {
+          console.error('Error creating auction:', err);
+          // Handle specific errors if needed
+          if (err.error?.message) {
+            alert(`Error: ${err.error.message}`);
+          } else {
+            alert('An unexpected error occurred');
+          }
+        }
+      });
     }
   }
 }
