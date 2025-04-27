@@ -1,286 +1,184 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PropertyDto } from '../../../Service/shared.service';
+import { PropertyService } from '../../../Services/ApiServices/property.service';
 import { ToastrService } from '../../../Services/toastr.service';
-// Import Modal from bootstrap
-// import { Modal } from bootstrap;
+import { FormsModule } from '@angular/forms';
+import { PropertyDto } from '../../../Service/shared.service';
 
-declare var bootstrap: any; // Required for Bootstrap modal handling
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-approve-property',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './approve-property.component.html',
   styleUrls: ['./approve-property.component.css'],
 })
 export class ApprovePropertyComponent {
-  isPDFModalOpen = false;
   @ViewChild('pdfModal') pdfModal!: ElementRef;
   private modalInstance?: any;
 
-  properties: PropertyDto[] = [
-    {
-      id: 1,
-      title: 'Apartment in Maadi',
-      description:
-        'Luxurious apartment with green view.Spacious villa with a beautiful garden.Spacious villa with a beautiful garden.',
-      location: 'Maadi, Cairo, Egypt',
-      price: 4561180,
-      type: 'Sell',
-      propertyCategory: 'Apartment',
-      status: 'Pending',
-      images: [
-        'propertyImages/1.jpg',
-        'propertyImages/2.jpg',
-        'propertyImages/1.jpg',
-        'propertyImages/2.jpg',
-      ],
-      agentId: 5,
-      bedrooms: 3,
-      bathrooms: 3,
-      space: 130,
-      isFavorite: true,
-      userImage: '',
-      userName: '',
-      date: new Date('2024-03-15'),
-      activeMap: false,
-    },
-    {
-      id: 2,
-      title: 'Apartment in Zamalek',
-      description:
-        'Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden.',
-      location: 'Zamalek, Cairo, Egypt',
-      price: 9500000,
-      type: 'Sell',
-      propertyCategory: 'Villa',
-      status: 'Pending',
-      images: ['propertyImages/3.jpg', 'propertyImages/4.jpg'],
-      sellerId: 3,
-      bedrooms: 4,
-      bathrooms: 4,
-      space: 250,
-      isFavorite: false,
-      userImage: '',
-      userName: '',
-      date: new Date('2023-11-22'),
-      activeMap: false,
-    },
-    {
-      id: 3,
-      title: 'Apartment in Giza',
-      description:
-        'Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden.',
-      location: 'Haram, Giza',
-      price: 30000,
-      type: 'Rent',
-      propertyCategory: 'Villa',
-      status: 'Auctioned',
-      images: ['propertyImages/5.jpg', 'propertyImages/6.jpg'],
-      sellerId: 3,
-      bedrooms: 5,
-      bathrooms: 4,
-      space: 250,
-      isFavorite: false,
-      userImage: '',
-      userName: '',
-      date: new Date('2024-01-10'),
-      activeMap: false,
-    },
-    {
-      id: 4,
-      title: 'Apartment in Gouna',
-      description:
-        'Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden.',
-      location: 'El Gouna Conference & Culture Center, El Gouna, Egypt',
-      price: 9500000,
-      type: 'Sell',
-      propertyCategory: 'Duplexes',
-      status: 'Pending',
-      images: ['propertyImages/3.jpg', 'propertyImages/4.jpg'],
-      sellerId: 3,
-      bedrooms: 5,
-      bathrooms: 4,
-      space: 250,
-      isFavorite: false,
-      userImage: '',
-      userName: '',
-      date: new Date('2023-09-05'),
-      activeMap: false,
-    },
-    {
-      id: 5,
-      title: 'Apartment in Bibliotheca Alexandrina',
-      description:
-        'Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden.',
-      location: 'Bibliotheca Alexandrina, Alexandria, Egypt',
-      price: 30000,
-      type: 'Rent',
-      propertyCategory: 'Twin Houses',
-      status: 'Pending',
-      images: ['propertyImages/5.jpg', 'propertyImages/6.jpg'],
-      sellerId: 3,
-      bedrooms: 8,
-      bathrooms: 4,
-      space: 250,
-      isFavorite: false,
-      userImage: '',
-      userName: '',
-      date: new Date('2024-02-28'),
-      activeMap: false,
-    },
-    {
-      id: 6,
-      title: 'Apartment in Maadi',
-      description:
-        'Luxurious apartment with green view.Spacious villa with a beautiful garden.Spacious villa with a beautiful garden.',
-      location: 'Maadi, Cairo, Egypt',
-      price: 4561180,
-      type: 'Sell',
-      propertyCategory: 'Apartment',
-      status: 'pending',
-      images: [
-        'propertyImages/1.jpg',
-        'propertyImages/2.jpg',
-        'propertyImages/1.jpg',
-        'propertyImages/2.jpg',
-      ],
-      agentId: 5,
-      bedrooms: 3,
-      bathrooms: 3,
-      space: 130,
-      isFavorite: true,
-      userImage: '',
-      userName: '',
-      date: new Date('2024-03-15'),
-      activeMap: false,
-    },
-    {
-      id: 7,
-      title: 'Apartment in Zamalek',
-      description:
-        'Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden.',
-      location: 'Zamalek, Cairo, Egypt',
-      price: 9500000,
-      type: 'Sell',
-      propertyCategory: 'Villa',
-      status: 'Pending',
-      images: ['propertyImages/3.jpg', 'propertyImages/4.jpg'],
-      sellerId: 3,
-      bedrooms: 4,
-      bathrooms: 4,
-      space: 250,
-      isFavorite: false,
-      userImage: '',
-      userName: '',
-      date: new Date('2023-11-22'),
-      activeMap: false,
-    },
-    {
-      id: 8,
-      title: 'Apartment in Giza',
-      description:
-        'Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden.',
-      location: 'Haram, Giza',
-      price: 30000,
-      type: 'Rent',
-      propertyCategory: 'Villa',
-      status: 'Pending',
-      images: ['propertyImages/5.jpg', 'propertyImages/6.jpg'],
-      sellerId: 3,
-      bedrooms: 5,
-      bathrooms: 4,
-      space: 250,
-      isFavorite: false,
-      userImage: '',
-      userName: '',
-      date: new Date('2024-01-10'),
-      activeMap: false,
-    },
-    {
-      id: 9,
-      title: 'Apartment in Gouna',
-      description:
-        'Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden.',
-      location: 'El Gouna Conference & Culture Center, El Gouna, Egypt',
-      price: 9500000,
-      type: 'Sell',
-      propertyCategory: 'Duplexes',
-      status: 'Pending',
-      images: ['propertyImages/3.jpg', 'propertyImages/4.jpg'],
-      sellerId: 3,
-      bedrooms: 5,
-      bathrooms: 4,
-      space: 250,
-      isFavorite: false,
-      userImage: '',
-      userName: '',
-      date: new Date('2023-09-05'),
-      activeMap: false,
-    },
-    {
-      id: 10,
-      title: 'Apartment in Bibliotheca Alexandrina',
-      description:
-        'Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden. Spacious villa with a beautiful garden.',
-      location: 'Bibliotheca Alexandrina, Alexandria, Egypt',
-      price: 30000,
-      type: 'Rent',
-      propertyCategory: 'Twin Houses',
-      status: 'Auctioned',
-      images: ['propertyImages/5.jpg', 'propertyImages/6.jpg'],
-      sellerId: 3,
-      bedrooms: 8,
-      bathrooms: 4,
-      space: 250,
-      isFavorite: false,
-      userImage: '',
-      userName: '',
-      date: new Date('2024-02-28'),
-      activeMap: false,
-    },
-  ];
+  properties: PropertyDto[] = [];
+  filteredProperties: any[] = [];
+  isLoading = true;
 
-  constructor(private toastr: ToastrService) { }
+  // Filter variables
+  statusFilter = '';
+  typeFilter = '';
+  searchTerm = '';
 
-  ngOnInit(): void { }
+  constructor(
+    private propertyService: PropertyService,
+    private toastr: ToastrService
+  ) {}
 
-  approveProperty(property: PropertyDto): void {
-    // Mock approval since PropertyService is not available
-    this.toastr.success('Property approved successfully');
-    property.status = 'Approved';
-    this.properties = this.properties.filter((p) => p.id !== property.id);
+  ngOnInit(): void {
+    this.loadPendingProperties();
   }
-
-  rejectProperty(property: PropertyDto): void {
-    // Mock rejection since PropertyService is not available
-    this.toastr.success('Property rejected successfully');
-    property.status = 'Rejected';
-    this.properties = this.properties.filter((p) => p.id !== property.id);
-  }
-
-  downloadContract(property: PropertyDto): void {
-    // Mock download since PropertyService is not available
-    this.toastr.success('Contract downloaded successfully');
-  }
-
-  // showModal(): void {
-  //   if (!this.modalInstance) {
-  //     this.modalInstance = new Modal(this.pdfModal.nativeElement);
-  //   }
-  //   this.modalInstance.show();
-  // }
 
   ngAfterViewInit(): void {
     if (this.pdfModal?.nativeElement) {
-      // Initialize using the global bootstrap object
       this.modalInstance = new bootstrap.Modal(this.pdfModal.nativeElement);
     }
+  }
+
+  loadPendingProperties(): void {
+    this.isLoading = true;
+    this.propertyService.getPendingProperties().subscribe({
+      next: (response: any) => {
+        this.properties = response;
+        this.applyFilters();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading properties:', error);
+        this.toastr.error(
+          'Failed to load properties. Please try again.',
+          'Error'
+        );
+        this.isLoading = false;
+      },
+    });
+  }
+
+  applyFilters(): void {
+    this.filteredProperties = this.properties.filter((property) => {
+      // Status filter
+      if (this.statusFilter && this.statusFilter !== 'Filter by Status') {
+        if (
+          this.statusFilter === 'Pending Approval'
+          // && property.approvalStatus !== 'Pending'
+        ) {
+          return false;
+        }
+        if (
+          this.statusFilter === 'Approved'
+          // && property.approvalStatus !== 'Approved'
+        ) {
+          return false;
+        }
+        if (
+          this.statusFilter === 'Rejected'
+          // && property.approvalStatus !== 'Rejected'
+        ) {
+          return false;
+        }
+      }
+
+      // Type filter
+      if (this.typeFilter && this.typeFilter !== 'Filter by Property Type') {
+        if (this.typeFilter === 'For Sale' && property.type !== 'Sell') {
+          return false;
+        }
+        if (this.typeFilter === 'For Rent' && property.type !== 'Rent') {
+          return false;
+        }
+      }
+
+      // Search term
+      if (this.searchTerm) {
+        const searchLower = this.searchTerm.toLowerCase();
+        if (
+          !property.location.toLowerCase().includes(searchLower) &&
+          !property.id.toString().includes(searchLower)
+        ) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    // Sort by approval status (Pending first)
+    this.filteredProperties.sort((a, b) => {
+      if (a.approvalStatus === 'Pending' && b.approvalStatus !== 'Pending')
+        return -1;
+      if (a.approvalStatus !== 'Pending' && b.approvalStatus === 'Pending')
+        return 1;
+      return 0;
+    });
+  }
+
+  approveProperty(property: any): void {
+    this.propertyService
+      .updateApprovalStatus(property.id, 'Approved')
+      .subscribe({
+        next: (response) => {
+          this.toastr.success('Property approved successfully', 'Success');
+          // Update local property status
+          property.approvalStatus = 'Approved';
+          this.applyFilters();
+        },
+        error: (error) => {
+          console.error('Error approving property:', error);
+          this.toastr.error(
+            'Failed to approve property. Please try again.',
+            'Error'
+          );
+        },
+      });
+  }
+
+  rejectProperty(property: any): void {
+    this.propertyService
+      .updateApprovalStatus(property.id, 'Rejected')
+      .subscribe({
+        next: (response) => {
+          this.toastr.success('Property rejected successfully', 'Success');
+          // Update local property status
+          property.approvalStatus = 'Rejected';
+          this.applyFilters();
+        },
+        error: (error) => {
+          console.error('Error rejecting property:', error);
+          this.toastr.error(
+            'Failed to reject property. Please try again.',
+            'Error'
+          );
+        },
+      });
   }
 
   showModal(): void {
     this.modalInstance?.show();
   }
 
+  onStatusFilterChange(): void {
+    this.applyFilters();
+  }
+
+  onTypeFilterChange(): void {
+    this.applyFilters();
+  }
+
+  onSearch(): void {
+    this.applyFilters();
+  }
+
+  resetFilters(): void {
+    this.statusFilter = '';
+    this.typeFilter = '';
+    this.searchTerm = '';
+    this.applyFilters();
+  }
 }

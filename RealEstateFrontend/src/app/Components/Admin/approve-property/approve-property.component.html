@@ -2,31 +2,50 @@
   <div class="container py-4">
     <h2 class="mb-4 fw-bold" style="color: #c38e79">Property Approvals</h2>
 
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-caffe" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Loading properties...</p>
+    </div>
+
     <!-- Filter Options -->
-    <div class="row mb-4">
+    <div class="row mb-4" *ngIf="!isLoading">
       <div class="col-md-4">
-        <select class="form-select">
-          <option selected>Filter by Status</option>
-          <option>Pending Approval</option>
-          <option>Approved</option>
-          <option>Rejected</option>
+        <select class="form-select" [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
+          <option value="">Filter by Status</option>
+          <option value="Pending Approval">Pending Approval</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
         </select>
       </div>
       <div class="col-md-4">
-        <select class="form-select">
-          <option selected>Filter by Property Type</option>
-          <option>For Sale</option>
-          <option>For Rent</option>
+        <select class="form-select" [(ngModel)]="typeFilter" (change)="onTypeFilterChange()">
+          <option value="">Filter by Property Type</option>
+          <option value="For Sale">For Sale</option>
+          <option value="For Rent">For Rent</option>
         </select>
       </div>
       <div class="col-md-4">
-        <input type="text" class="form-control" placeholder="Search by address or ID" />
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search by address or ID" 
+                 [(ngModel)]="searchTerm" (input)="onSearch()">
+          <button class="btn btn-outline-secondary" type="button" (click)="resetFilters()">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
       </div>
     </div>
 
+    <!-- No Properties Message -->
+    <div *ngIf="!isLoading && filteredProperties.length === 0" class="alert alert-info">
+      No properties found matching your criteria.
+    </div>
+
     <!-- Property List -->
-    <div class="row">
-      <ng-container *ngFor="let property of properties">
+    <div class="row" *ngIf="!isLoading && filteredProperties.length > 0">
+      <ng-container *ngFor="let property of filteredProperties">
         <div class="col-12 mb-4">
           <div class="property-card d-flex flex-column flex-md-row rounded shadow-sm border w-100 h-100">
             <!-- Carousel Section -->
@@ -100,11 +119,11 @@
                     </small>
                   </div>
                   <span class="badge" [ngClass]="{
-                      'bg-warning text-dark': property.status === 'Pending',
-                      'bg-success': property.status === 'Approved',
-                      'bg-danger': property.status === 'Rejected'
+                      'bg-warning text-dark': property.approvalStatus === 'Pending',
+                      'bg-success': property.approvalStatus === 'Approved',
+                      'bg-danger': property.approvalStatus === 'Rejected'
                     }">
-                    {{ property.status }}
+                    {{ property.approvalStatus }}
                   </span>
                 </div>
 
@@ -116,8 +135,7 @@
 
                   <div class="d-flex align-items-center gap-2 text-muted mb-3 mt-3">
                     <i class="bi bi-geo-alt-fill fs-6" style="color: #c38e79"></i>
-                    <span class="text-secondary fst-italic" title="{{ property.location }}">{{ property.location
-                      }}</span>
+                    <span class="text-secondary fst-italic" title="{{ property.location }}">{{ property.location }}</span>
                   </div>
 
                   <!-- Features -->
@@ -126,14 +144,14 @@
                       <div class="bg-light rounded-circle p-2 mb-1">
                         <img src="/images/Bed.svg" width="20" height="20" alt="" />
                       </div>
-                      <span class="fs-6">{{ property.bedrooms }} Beds</span>
+                      <span class="fs-6">{{ property.bedRooms }} Beds</span>
                     </div>
 
                     <div class="d-flex align-items-center">
                       <div class="bg-light rounded-circle p-2 mb-1">
                         <img src="/images/Bath.svg" width="20" height="20" alt="" />
                       </div>
-                      <span class="fs-6">{{ property.bathrooms }} Baths</span>
+                      <span class="fs-6">{{ property.bathRooms }} Baths</span>
                     </div>
 
                     <div class="d-flex align-items-center">
@@ -148,7 +166,7 @@
                   <div class="mt-3">
                     <p class="small text-muted mb-2">
                       <strong>Uploaded:</strong>
-                      {{ property.date | date : "mediumDate" }}
+                      {{ property.addedDate | date : "mediumDate" }}
                     </p>
                     <p class="small text-muted mb-2">
                       <strong>Contract Type:</strong> {{ "Standard" }}
@@ -191,13 +209,10 @@
                     <small class="d-block fw-bold fs-6" style="color: #c38e79">
                       {{ property.userName || "Private Seller" }}
                     </small>
-                    <!-- <small class="text-secondary fst-italic fs-6">
-                        {{ property.seller?.phone || 'Phone not provided' }}
-                      </small> -->
                   </div>
                 </div>
 
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2" *ngIf="property.approvalStatus === 'Pending'">
                   <button class="btn btn-danger px-3" (click)="rejectProperty(property)">
                     <i class="bi bi-x-circle me-2"></i>Reject
                   </button>

@@ -24,6 +24,7 @@ export interface PropertyDTO {
   activeMap: boolean;
   userName: string | null;
   userImage: string | null;
+  approvalStatus: PropertyApprovalStatus;
 }
 
 export enum PropertyApprovalStatus {
@@ -143,6 +144,16 @@ getPropertiesBySellerId(status?: PropertyApprovalStatus): Observable<PropertyDTO
 
 getPropertiesByAgentId(): Observable<PropertyDTO[]> {
   return this.http.get<PropertyDTO[]>(`${this.apiUrl}/Agent`);
+}
+
+getPendingProperties(): Observable<any> {
+  return this.http.get(`${this.apiUrl}/Pending`);
+}
+
+updateApprovalStatus(propertyId: number, status: string): Observable<any> {
+  return this.http.patch(`${this.apiUrl}/UpdateApprovalProperty/${propertyId}`, null, {
+    params: { Status: status }
+  });
 }
 
 }
