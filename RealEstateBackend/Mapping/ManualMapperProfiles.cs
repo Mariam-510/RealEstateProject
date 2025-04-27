@@ -55,12 +55,15 @@ namespace RealEstate.Mapping
                 Id = order.Id,
                 OrderDate = order.OrderDate.ToString(),
                 Status = order.Status.ToString(),
+                StatusNum = order.Status,
                 SubTotal = order.SubTotal,
                 DeliveryFees = order.DeliveryFees,
                 IsDeleted = order.IsDeleted,
                 BuyerId = order.BuyerId,
                 AddressId = order.AddressId,
-                PaymentId = order.PaymentId
+                PaymentId = order.PaymentId,
+                PaymentMethod = order.Payment?.PaymentMethod.ToString() ?? null,
+
             };
         }
 
@@ -96,7 +99,7 @@ namespace RealEstate.Mapping
                 Price = product.Price,
                 IsUsed = product.IsUsed,
                 IsDeleted = product.IsDeleted,
-                DateAdded = product.DateAdded,
+                DateAdded = product.DateAdded.ToString(),
                 AverageRating = product.AverageRating,
                 CategoryID = product.CategoryID ?? 0,
                 CategoryName = product.Category?.Name ?? string.Empty,

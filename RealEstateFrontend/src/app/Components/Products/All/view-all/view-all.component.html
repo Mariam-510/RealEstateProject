@@ -78,10 +78,10 @@
               <span class="fw-medium">All Categories</span>
             </span>
           </button>
-          <button *ngFor="let cat of categoriesWithCounts" class="nav-link p-0 pb-2 position-relative"
-            [class.active]="selectedCategory === cat.name" (click)="toggleCategory(cat.name)">
+          <button *ngFor="let cat of categoryNames" class="nav-link p-0 pb-2 position-relative"
+            [class.active]="selectedCategory === cat" (click)="toggleCategory(cat)">
             <span class="d-flex align-items-center gap-2 text-muted" style="font-size: 1.3rem;">
-              <span class="fw-medium text-capitalize">{{ cat.name }}</span>
+              <span class="fw-medium text-capitalize">{{ cat }}</span>
             </span>
           </button>
         </nav>
@@ -123,11 +123,10 @@
             </div>
           </div>
           <div class="row g-2">
-            <div *ngFor="let cat of categoriesWithCounts">
-              <div class="dropdown-item" (click)="toggleCategory(cat.name)"
-                [class.active]="selectedCategory === cat.name">
+            <div *ngFor="let cat of categoryNames">
+              <div class="dropdown-item" (click)="toggleCategory(cat)" [class.active]="selectedCategory === cat">
                 <div class="d-flex justify-content-between">
-                  <span class="text-truncate">{{ cat.name }}</span>
+                  <span class="text-truncate">{{ cat }}</span>
                 </div>
               </div>
             </div>
@@ -137,12 +136,12 @@
     </div>
 
     <!-- Type Filter -->
-    <div [style.width]="isSticky ? '14%' : '10%'">
+    <div [style.width]="isSticky ? '14%' : '15%'">
       <div class="dropdown">
         <button class="btn btn-filter w-100 d-flex justify-content-between align-items-center py-2 px-3 rounded-4"
           type="button" data-bs-toggle="dropdown">
-          <span class="text-truncate text-muted">{{ selectedCondition === true ? 'Used' : selectedCondition
-            === false ? 'New' : 'All Types' }}</span>
+          <span class="text-truncate text-muted">{{ selectedCondition === '' ? 'All Conditions' :
+            (selectedCondition === 'used' ? 'Used' : 'New') }}</span>
           <i class="bi bi-chevron-down ms-2 small text-caffe"></i>
         </button>
         <div class="dropdown-menu dropdown-filter p-3 w-100">
@@ -161,7 +160,7 @@
     </div>
 
     <!-- Sort Filter -->
-    <div [style.width]="isSticky ? '14%' : '14%'">
+    <div [style.width]="isSticky ? '15%' : '15%'">
       <div class="dropdown">
         <button class="btn btn-filter w-100 d-flex justify-content-between align-items-center py-2 px-3 rounded-4"
           type="button" data-bs-toggle="dropdown">
@@ -171,39 +170,64 @@
         <div class="dropdown-menu dropdown-filter p-3 w-100">
           <div class="row g-2">
             <div class="col-12">
-              <div class="dropdown-item" (click)="sortBy = ''; applyFilters()" [class.active]="!sortBy">
+              <div class="dropdown-item" (click)="updateSort('')" [class.active]="!sortBy">
                 <div class="d-flex justify-content-between">
                   <span>Sort By</span>
                 </div>
               </div>
             </div>
             <div class="col-12">
-              <div class="dropdown-item" (click)="sortBy = 'priceAsc'; applyFilters()"
-                [class.active]="sortBy === 'priceAsc'">
+              <div class="dropdown-item" (click)="updateSort('priceAsc')" [class.active]="sortBy === 'priceAsc'">
                 <div class="d-flex justify-content-between">
                   <span>Price: Low to High</span>
                 </div>
               </div>
             </div>
             <div class="col-12">
-              <div class="dropdown-item" (click)="sortBy = 'priceDesc'; applyFilters()"
-                [class.active]="sortBy === 'priceDesc'">
+              <div class="dropdown-item" (click)="updateSort('priceDesc')" [class.active]="sortBy === 'priceDesc'">
                 <div class="d-flex justify-content-between">
                   <span>Price: High to Low</span>
                 </div>
               </div>
             </div>
             <div class="col-12">
-              <div class="dropdown-item" (click)="sortBy = 'dateNewest'; applyFilters()"
-                [class.active]="sortBy === 'dateNewest'">
+              <div class="dropdown-item" (click)="updateSort('ratingDesc')" [class.active]="sortBy === 'ratingDesc'">
+                <div class="d-flex justify-content-between">
+                  <span>Rating: High to Low</span>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="col-12">
+              <div class="dropdown-item" (click)="updateSort('ratingAsc')" [class.active]="sortBy === 'ratingAsc'">
+                <div class="d-flex justify-content-between">
+                  <span>Rating: Low to High</span>
+                </div>
+              </div>
+            </div> -->
+            <!-- <div class="col-12">
+              <div class="dropdown-item" (click)="updateSort('stock')" [class.active]="sortBy === 'stock'">
+                <div class="d-flex justify-content-between">
+                  <span>In Stock First</span>
+                </div>
+              </div>
+            </div> -->
+            <div class="col-12">
+              <div class="dropdown-item" (click)="updateSort('limitedStock')"
+                [class.active]="sortBy === 'limitedStock'">
+                <div class="d-flex justify-content-between">
+                  <span>Limited Stock First</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="dropdown-item" (click)="updateSort('dateNewest')" [class.active]="sortBy === 'dateNewest'">
                 <div class="d-flex justify-content-between">
                   <span>Newest First</span>
                 </div>
               </div>
             </div>
             <div class="col-12">
-              <div class="dropdown-item" (click)="sortBy = 'dateOldest'; applyFilters()"
-                [class.active]="sortBy === 'dateOldest'">
+              <div class="dropdown-item" (click)="updateSort('dateOldest')" [class.active]="sortBy === 'dateOldest'">
                 <div class="d-flex justify-content-between">
                   <span>Oldest First</span>
                 </div>
@@ -226,25 +250,23 @@
           <div class="mb-3">
             <div class="input-group input-group-sm mb-2">
               <span class="input-group-text btnM fs-6">Min</span>
-              <input type="number" class="form-control" placeholder="0" [(ngModel)]="minPrice"
-                (change)="applyFilters()">
+              <input type="number" class="form-control" placeholder="0" [(ngModel)]="minPrice" (change)="updatePrice()">
             </div>
             <div class="input-group input-group-sm">
               <span class="input-group-text btnM fs-6">Max</span>
-              <input type="number" class="form-control" placeholder="∞" [(ngModel)]="maxPrice"
-                (change)="applyFilters()">
+              <input type="number" class="form-control" placeholder="∞" [(ngModel)]="maxPrice" (change)="updatePrice()">
             </div>
           </div>
 
           <ngx-slider class="custom-slider mt-0" [(value)]="minPrice" [(highValue)]="maxPrice" [options]="sliderOptions"
-            (userChangeEnd)="applyFilters()"></ngx-slider>
+            (userChangeEnd)="updatePrice()"></ngx-slider>
 
         </div>
       </div>
     </div>
 
     <!-- Rating Filter -->
-    <div [style.width]="isSticky ? '14%' : '15%'">
+    <div [style.width]="isSticky ? '12%' : '12%'">
       <div class="dropdown">
         <button class="btn btn-filter w-100 d-flex justify-content-between align-items-center py-2 px-3 rounded-4"
           type="button" data-bs-toggle="dropdown">
@@ -255,16 +277,21 @@
         </button>
         <div class="dropdown-menu dropdown-filter p-3 w-100">
           <div class="row g-2">
+
             <div *ngFor="let rating of ratings" class="col-12">
               <div class="dropdown-item" (click)="toggleRating(rating.value)"
                 [class.active]="selectedRating === rating.value">
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="d-flex align-items-center">
-                    <span>{{ rating.label }} <i class="bi {{rating.icon}} text-warning"></i></span>
+                    <span>
+                      {{ rating.label }}
+                      <i class="bi text-warning {{rating.icon}}"></i>
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -356,7 +383,8 @@
             <!-- Add to Cart Button -->
             <a *ngIf="product.quantity > 0 && hasRoleOrNoUser('Buyer')" [routerLink]="['/products', product.id]"
               style="cursor: pointer;">
-              <span class="badge bg-dark bg-opacity-50 position-absolute bottom-0 end-0 m-2 z-2" style="font-size: 1rem;"><i class="bi bi-cart3"></i></span>
+              <span class="badge bg-dark bg-opacity-50 position-absolute bottom-0 end-0 m-2 z-2"
+                style="font-size: 1rem;"><i class="bi bi-cart3"></i></span>
             </a>
 
 
@@ -533,10 +561,10 @@
 
                 <!-- Action Buttons -->
                 <div class="d-flex gap-2">
-                  
 
-                  <a *ngIf="product.quantity > 0 && hasRoleOrNoUser('Buyer')"
-                    [routerLink]="['/products', product.id]" class="btn btn-link text-dark p-1">
+
+                  <a *ngIf="product.quantity > 0 && hasRoleOrNoUser('Buyer')" [routerLink]="['/products', product.id]"
+                    class="btn btn-link text-dark p-1">
                     <i class="bi bi-cart-plus fs-5"></i>
                   </a>
 
@@ -611,7 +639,7 @@
       </div>
       }
     </div>
-    
+
   </div>
 
   <!-- Pagination Controls -->

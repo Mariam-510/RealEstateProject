@@ -6,14 +6,6 @@
 
         <!-- Carousel Section -->
         <div class="carousel-container position-relative">
-          <!-- Status Overlay -->
-          <div *ngIf="property.status === 'Sold'"
-            class="status-overlay d-flex align-items-center justify-content-center position-absolute w-100 h-100">
-            <div class="status-text text-white text-uppercase fw-bold bg-caffe"
-              style="font-size: 1.2rem; padding: 0.1rem 0.6rem; border-radius: 4px;">
-              SOLD
-            </div>
-          </div>
 
           <!-- Sale/Rent Badge -->
           <div *ngIf="!property.activeMap" class="position-absolute top-0 start-0 m-2">
@@ -51,12 +43,26 @@
               </span>
             </div>
 
+            <!-- Status Overlay -->
+            <a [routerLink]="['/properties', property.id]">
+              <div *ngIf="property.status === 'Sold'"
+                class="status-overlay d-flex align-items-center justify-content-center position-absolute w-100 h-100">
+                <div class="status-text text-white text-uppercase fw-bold bg-caffe"
+                  style="font-size: 1.7rem; padding: 0.1rem 0.6rem; border-radius: 4px;">
+                  SOLD
+                </div>
+              </div>
+            </a>
+
             <!-- Slides -->
             <div class="carousel-inner h-100">
               <div *ngFor="let img of property.images; let i = index" class="carousel-item h-100"
                 [class.active]="i === 0">
-                <img [src]="img" class="d-block w-100 h-100 object-fit-cover"
-                  [alt]="'Image ' + (i+1) + ' of ' + property.title">
+                <a [routerLink]="['/properties', property.id]">
+
+                  <img [src]="apiConfig.apiUrl + img" class="d-block w-100 h-100 object-fit-cover"
+                    [alt]="'Image ' + (i+1) + ' of ' + property.title">
+                </a>
               </div>
             </div>
 
@@ -111,10 +117,11 @@
                 <button class="btn btn-link text-dark p-1" (click)="$event.stopPropagation(); shareItem(property)">
                   <i class="bi bi-share fs-5"></i>
                 </button>
-                <button class="btn btn-link text-dark p-1" (click)="$event.stopPropagation(); toggleFavorite(property)">
+                <button *ngIf="hasRoleOrNoUser('Buyer')" class="btn btn-link text-dark p-1"
+                  (click)="$event.stopPropagation(); toggleFavorite(property)">
                   <i class="bi fs-5" [ngClass]="{
-                    'bi-heart-fill text-danger': property.isFavorite,
-                    'bi-heart': !property.isFavorite
+                    'bi-heart-fill text-danger': property.isFavorite && hasUser(),
+                    'bi-heart': !property.isFavorite || !hasUser()
                   }"></i>
                 </button>
               </div>
@@ -153,7 +160,7 @@
                 </div>
 
                 <span class="fs-6">
-                  {{ property.bedrooms }} Beds
+                  {{ property.bedRooms }} Beds
                 </span>
               </div>
 
@@ -173,7 +180,7 @@
                 </div>
 
                 <span class="fs-6">
-                  {{ property.bathrooms }} Baths
+                  {{ property.bathRooms }} Baths
                 </span>
               </div>
 
@@ -256,11 +263,19 @@
           <div class="footer border-top pt-2 d-flex justify-content-between align-items-center">
 
             <div class="d-flex align-items-center">
-              <img src="propertyImages/user.jpeg" class="rounded-circle me-2" width="40" height="40" alt="Agent">
+              <ng-container *ngIf="property.userImage; else defaultIcon">
+                <img [src]="apiConfig.apiUrl + property.userImage" alt="User" class="rounded-circle me-2" width="40"
+                  height="40" alt="Agent">
+              </ng-container>
+
+              <ng-template #defaultIcon>
+                <i class="bi bi-person-circle text-brown me-2" style="font-size: 2.5rem;"></i>
+              </ng-template>
 
               <div>
                 <small class="d-block text-caffe fw-bold fs-6">
-                  John Doe
+                  {{property.userName}}
+                  <i [ngClass]="property.agentId ? 'bi-patch-check' : 'bi-house-door'" class="text-caffe"></i>
                 </small>
                 <small class="text-secondary fst-italic fs-6">
                   {{ property.agentId ? 'Real Estate Agent' : 'Original Seller' }}
@@ -271,12 +286,13 @@
 
 
             <div class="d-flex gap-2 mt-2">
-              <button *ngIf="property.status !== 'Auctioned'" class="btn btn-sm bg-caffe text-white px-4 fw-semibold"
-                [disabled]="property.status === 'Sold'" style="font-size: 1.03rem; width: 9rem;">
+              <a [routerLink]="['/properties', property.id]"
+                *ngIf="hasRoleOrNoUser('Buyer') && property.status === 'Available'"
+                class="btn btn-sm bg-caffe text-white px-4 fw-semibold" style="font-size: 1.03rem; width: 9rem;">
                 <i class="bi bi-chat-dots me-2"></i>Inquire
-              </button>
+              </a>
 
-              <button *ngIf="property.status === 'Auctioned'"
+              <button *ngIf="hasRoleOrNoUser('Buyer') && property.status === 'Auctioned'"
                 class="btn btn-sm text-white position-relative fs-6 fw-semibold" style="background: rgb(255, 200, 0);">
                 <span
                   class="position-absolute top-0 start-100 translate-middle p-1 bg-dark bg-opacity-50 border border-light rounded-circle">

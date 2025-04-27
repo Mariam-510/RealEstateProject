@@ -9,47 +9,58 @@
           <div class="card-body overflow-auto p-0">
             <ul class="list-unstyled mb-0">
               <!-- Chat List Items -->
-              <li *ngFor="let chat of chats" class="p-2 border-bottom cursor-pointer chat-list-item"
-                [class.active-chat]="selectedChat?.id === chat.id" (click)="selectChat(chat)">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="d-flex flex-row" style="min-width: 0;">
-                    <img [src]="chat.otherUser.avatar" alt="avatar" class="rounded-circle me-3 shadow-1-strong"
-                      width="55">
-                    <div class="pt-1 flex-grow-1" style="min-width: 0;">
-                      <div class="d-flex justify-content-between align-items-center">
-                        <p class="fw-bold mb-0 text-truncate">{{chat.otherUser.name}}</p>
-                        <!-- In the chat list item -->
-                      </div>
-                      <div class="d-flex justify-content-between align-items-center">
-                        <p class="small text-muted mb-0 text-truncate">
-                          <span *ngIf="chat.lastMessage.sent" class="me-1">
-                            <i *ngIf="chat.lastMessage.status === 'Read'" class="bi bi-check2-all text-primary"></i>
-                            <i *ngIf="chat.lastMessage.status !== 'Read'" class="bi bi-check2"></i>
-                          </span>
-                          {{chat.lastMessage.text}}
-                        </p>
-                        <span *ngIf="chat.unread" class="badge bg-primary rounded-pill ms-2">
-                          {{chat.unread}}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
+<!-- Updated Chat List Item -->
+<li *ngFor="let chat of chats" class="p-2 border-bottom cursor-pointer chat-list-item"
+  [class.active-chat]="selectedChat?.id === chat.id" (click)="selectChat(chat)">
+  <div class="d-flex justify-content-between align-items-center">
+    <!-- Left Content -->
+    <div class="d-flex flex-row flex-grow-1" style="min-width: 0;">
+      <img [src]="chat.otherUser.avatar" alt="avatar" class="rounded-circle me-3 shadow-1-strong" width="55">
+      <div class="pt-1 flex-grow-1" style="min-width: 0;">
+        <div class="d-flex justify-content-between align-items-center">
+          <p class="fw-bold mb-0 text-truncate">{{chat.otherUser.name}}</p>
+          <span class="small text-muted text-nowrap ms-2">
+            {{chat.lastMessageTime | date:'shortDate'}}
+          </span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <p class="small text-muted mb-0 text-truncate">
+            <span *ngIf="chat.messages.length > 0 && chat.messages[chat.messages.length - 1].sent" class="me-1">
+              <i *ngIf="chat.messages[chat.messages.length - 1].status === 'Read'"
+                class="bi bi-check2-all text-primary"></i>
+              <i *ngIf="chat.messages[chat.messages.length - 1].status !== 'Read'"
+                class="bi bi-check2"></i>
+            </span>
+            {{(chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text : 'No messages')}}
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Unread Badge - Rightmost element -->
+    <span *ngIf="chat.unread" class="badge bg-brown text-white rounded-pill ms-2 align-self-start">
+      {{chat.unread}}
+    </span>
+  </div>
+</li>
             </ul>
           </div>
         </div>
       </div>
       <!-- Right Column -->
-      <div class="col-md-6 col-lg-7 col-xl-8 d-flex flex-column" *ngIf="selectedChat">
-        <div class="card flex-grow-1 d-flex flex-column justify-content-between">
 
-          <!-- 👇 Chat Header moved outside scrollable container -->
+      <!-- Right Column - Modified for data binding -->
+       
+      <div class="col-md-6 col-lg-7 col-xl-8 d-flex flex-column">
+        <ng-container *ngIf="selectedChat; else noChatSelected">
+      
+        <div class="card flex-grow-1 d-flex flex-column justify-content-between">
+          <!-- Chat Header -->
           <div class="chat-header d-flex align-items-center px-3 py-2 shadow-sm">
-            <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=600"
-              class="rounded-circle me-2 profile-img" width="40" height="40" alt="User profile">
+            <img [src]="selectedChat.otherUser.avatar" class="rounded-circle me-2 profile-img" width="40" height="40"
+              alt="User profile">
             <div>
-              <h6 class="mb-0 fw-bold">Lora</h6>
+              <h6 class="mb-0 fw-bold">{{selectedChat.otherUser.name}}</h6>
             </div>
           </div>
           <!-- Accept / Reject Buttons -->
@@ -59,7 +70,7 @@
   </div> -->
 
           <!-- 👇 Now the scrollable container starts -->
-          <div class="card-body messages-container">
+          <div class="card-body messages-container" #messagesContainer>
             <div class="date-separator text-center mb-3">
               <span class="badge bg-light-brown text-brown">
                 {{ today | date:'MMMM d, y' }}
@@ -67,7 +78,7 @@
             </div>
 
             <!-- Messages -->
-            <div *ngFor="let msg of messages" class="message-wrapper ps-4">
+            <div *ngFor="let msg of selectedChat.messages" class="message-wrapper ps-4">
               <div class="d-flex mb-3" [ngClass]="msg.sent ? 'justify-content-end' : 'justify-content-start'">
 
 
@@ -100,17 +111,37 @@
           </div>
 
           <!-- Footer -->
+          <!-- Message Input -->
           <div class="card-footer text-muted p-3">
             <div class="input-group">
               <textarea class="form-control" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()"
-                placeholder="Type your message..." rows="2" style="resize: none;"></textarea>
-              <button class="btn btn-brown" type="button" (click)="sendMessage()">
+                placeholder="Type your message..." rows="2"></textarea>
+              <button class="btn btn-brown" (click)="sendMessage()">
                 <i class="bi bi-send-fill"></i>
               </button>
             </div>
           </div>
 
         </div>
+      </ng-container>
+      <ng-template #noChatSelected>
+        <div class="card h-100 empty-state-card border-0">
+          <div class="card-body  d-flex flex-column justify-content-center align-items-center text-center p-4">
+            <div class="empty-state-content">
+              <div class=" mb-4 transition-all">
+                <i class="bi bi-chat-square-text display-3 text-brown-200"></i>
+              </div>
+              <h4 class="text-brown-600 mb-2 fw-semibold">Welcome to Messages</h4>
+              <p class="text-muted mb-3">Select a conversation from the list to view messages</p>
+              <div class="decorative-line mx-auto mb-3"></div>
+              <p class="text-brown-400 small mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                Your conversations will appear here
+              </p>
+            </div>
+          </div>
+        </div>
+      </ng-template>
       </div>
 
     </div>

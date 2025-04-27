@@ -45,11 +45,8 @@ namespace RealEstate.Controllers
         }
         // GET: api/Property
         [HttpGet]
-        public async Task<IActionResult> GetAll(
-            [FromQuery] string category = null,
-            [FromQuery] string status = null,
-            [FromQuery] string type = null,
-            [FromQuery] string searchByLocation = null)
+        public async Task<IActionResult> GetAll([FromQuery] string category = null, [FromQuery] string status = null,
+            [FromQuery] string type = null,[FromQuery] string searchByLocation = null)
 
         {
             // Convert strings to enums (if valid)
@@ -69,14 +66,22 @@ namespace RealEstate.Controllers
                 }
             }
 
-            //var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(1);
-            //foreach (var dto in propertyDtos)
-            //{
-            //    if (favoriteProperties.Any(f => f.Id == dto.Id))
-            //    {
-            //        dto.IsFavorite = true;
-            //    }
-            //}
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (int.TryParse(buyerIdStr, out int buyerId))
+            {
+                var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(buyerId);
+                if (favoriteProperties != null)
+                {
+                    foreach (var dto in propertyDtos)
+                    {
+                        if (favoriteProperties.Any(f => f.Id == dto.Id))
+                        {
+                            dto.IsFavorite = true;
+                        }
+                    }
+                }
+            }
 
             return Ok(propertyDtos);
         }
@@ -101,15 +106,6 @@ namespace RealEstate.Controllers
                     }
                 }
 
-                //var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(1);
-                //foreach (var dto in PendingPropertyDto)
-                //{
-                //    if (favoriteProperties.Any(f => f.Id == dto.Id))
-                //    {
-                //        dto.IsFavorite = true;
-                //    }
-                //}
-
                 return Ok(PendingPropertyDto); 
 
             }
@@ -119,12 +115,19 @@ namespace RealEstate.Controllers
             }
         }
 
-        [HttpGet("seller/{sellerId}")]
-        public async Task<IActionResult> GetAllBySellerId(int sellerId, [FromQuery] PropertyApprovalStatus? Status = null)
+        [HttpGet()] // Explicit route definition
+        [Route("Seller")]
+        [Authorize(Roles = "Seller")]
+
+        public async Task<IActionResult> GetAllBySellerId( [FromQuery] PropertyApprovalStatus? Status = null)
         {
-            var seller = await _sellerRepo.GetByIdAsync(sellerId);
-            if (seller == null || seller.IsDeleted)
-                return NotFound($"Seller with ID {sellerId} does not exist.");
+            string sellerIdStr = User.FindFirst("userId")?.Value;
+            Console.WriteLine(sellerIdStr);
+
+            if (!int.TryParse(sellerIdStr, out int sellerId))
+            {
+                return Unauthorized("Seller not found.");
+            }
             // Fetch properties based on approval status
             List<Property> filteredProperties = new List<Property>();
 
@@ -153,14 +156,31 @@ namespace RealEstate.Controllers
                 return NotFound("No properties found matching the specified criteria.");
             }
             var propertyDtos = _mapper.Map<List<PropertyDto>>(filteredProperties);
+            foreach (var dto in propertyDtos)
+            {
+                var contract = await _contractRepo.GetByPropertyIdAsync(dto.Id);
+                if (contract != null)
+                {
+                    dto.ContractImgUrl = contract.ImageUrl;
+                }
+            }
             return Ok(propertyDtos);
         }
 
 
-        [HttpGet("agent/{agentId}")]
-        public async Task<IActionResult> GetAllByAgentId(int agentId)
-        {
+        [HttpGet()] // Explicit route definition
+        [Route("Agent")]
+        [Authorize(Roles = "Agent")]
 
+        public async Task<IActionResult> GetAllByAgentId()
+        {
+            string agentIdStr = User.FindFirst("userId")?.Value;
+            Console.WriteLine(agentIdStr);
+
+            if (!int.TryParse(agentIdStr, out int agentId))
+            {
+                return Unauthorized("Seller not found.");
+            }
             var agent = await _agentRepo.GetByIdAsync(agentId);
             if (agent == null || agent.IsDeleted)
                 return NotFound($"Agent with ID {agentId} does not exist.");
@@ -184,11 +204,20 @@ namespace RealEstate.Controllers
 
             var propertyDto = _mapper.Map<PropertyDto>(property);
 
-            //var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(1);
-            //if (favoriteProperties.Any(f => f.Id == propertyDto.Id))
-            //{
-            //    propertyDto.IsFavorite = true;
-            //}
+
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (int.TryParse(buyerIdStr, out int buyerId))
+            {
+                var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(buyerId);
+                if (favoriteProperties != null)
+                {
+                    if (favoriteProperties.Any(f => f.Id == propertyDto.Id))
+                    {
+                        propertyDto.IsFavorite = true;
+                    }
+                }
+            }
 
             return Ok(propertyDto);
         }

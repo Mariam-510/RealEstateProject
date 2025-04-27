@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { API_CONFIG } from '../../../../app.config';
 declare var bootstrap: any; // Required for Bootstrap modal handling
 
 @Component({
@@ -11,20 +12,12 @@ declare var bootstrap: any; // Required for Bootstrap modal handling
 export class PropertyPhotoModalComponent {
 
   @ViewChild('photosModal', { static: true }) modalElement!: ElementRef;
-images: string[] = [
-    'details/d1.jpg',
-    'details/d2.jpg',
-    'details/d3.jpg',
-    'details/terras.jpg',
-    'details/d6.jpg',
-    'details/property2.jpg',
-    'details/property3.jpg',
-    'details/property4.jpg'
-  ];
+  @Input() images: string[] = [];
+  apiConfig = API_CONFIG;
   openModal() {
     const modal = new bootstrap.Modal(this.modalElement.nativeElement);
     modal.show();
-   
+
   }
 
 }

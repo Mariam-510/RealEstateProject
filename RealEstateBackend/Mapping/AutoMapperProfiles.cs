@@ -28,8 +28,30 @@ namespace RealEstate.Mapping
         public AutoMapperProfiles() 
         {
 
-            CreateMap<Property, PropertyDto>();
-            
+            //CreateMap<Property, PropertyDto>();
+
+            CreateMap<Property, PropertyDto>()
+                // Map UserName: Seller.FirstName -> Agent.FirstName
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src =>
+                    src.Seller != null
+                        ? src.Seller.FirstName + " " + src.Seller.LastName
+                        : src.Agent != null
+                            ? src.Agent.Name
+                            : null
+                ))
+                // Map UserImage: Seller.Account.Image -> Agent.Account.Image
+                .ForMember(dest => dest.UserImage, opt => opt.MapFrom(src =>
+                    src.Seller != null
+                        ? src.Seller.Account != null
+                            ? src.Seller.Account.ImageUrl
+                            : null
+                        : src.Agent != null
+                            ? src.Agent.Account != null
+                                ? src.Agent.Account.ImageUrl
+                                : null
+                            : null
+                ));
+
             CreateMap<CreatePropertyDto, Property>();
             
             CreateMap<UpdatePropertyDto, Property>()
@@ -182,8 +204,6 @@ namespace RealEstate.Mapping
                            opt => opt.MapFrom(src => DateTime.Parse(src.PaidAt)));
 
             //------------------------------------------------------------------------------------------------
-
-            //C
 
             //CreateMap<Product, ProductDTOShow>().ReverseMap();
 

@@ -131,8 +131,6 @@ namespace RealEstate.Controllers
           }
           return Ok(new { message = "Category List is :", CategoryDto });         
 
-
-
         }
 
         

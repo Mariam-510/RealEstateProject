@@ -4,10 +4,12 @@ import * as L from 'leaflet';
 import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
 import { ToastrService } from '../../../../Services/toastr.service';
-import { PropertyDto } from '../../../../Service/shared.service';
+import { PropertyDTO } from '../../../../Services/ApiServices/property.service';
+import { API_CONFIG } from '../../../../app.config';
+import { Router } from '@angular/router';
 
 type CustomMarkerOptions = L.MarkerOptions & {
-  property: PropertyDto;
+  property: PropertyDTO;
 };
 
 @Component({
@@ -19,12 +21,13 @@ type CustomMarkerOptions = L.MarkerOptions & {
 })
 // OnChanges
 export class LeafletListMapPropertiesComponent implements AfterViewInit {
-  @Input() properties: PropertyDto[] = [];
+  @Input() properties: PropertyDTO[] = [];
+  apiConfig = API_CONFIG;
   map!: L.Map;
   private viewInitialized = false;
   private markers: L.Marker[] = [];
 
-  constructor(private toastr: ToastrService, private http: HttpClient) { }
+  constructor(private toastr: ToastrService, private http: HttpClient, private router: Router) { }
 
   ngAfterViewInit(): void {
     this.viewInitialized = true;
@@ -105,6 +108,10 @@ export class LeafletListMapPropertiesComponent implements AfterViewInit {
           marker.openPopup();
         });
 
+        marker.on('click', () => {
+          this.router.navigate(['/properties', prop.id]);
+        });
+
         // Optional: Close popup on mouseout
         marker.on('mouseout', () => {
           marker.closePopup();
@@ -124,7 +131,7 @@ export class LeafletListMapPropertiesComponent implements AfterViewInit {
   }
 
 
-  private createPopupWithImages(property: PropertyDto): string {
+  private createPopupWithImages(property: PropertyDTO): string {
     return `
   <div class="map-popup p-4" style="font-family: 'Segoe UI', sans-serif; max-width: 300px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
     <div class="popup-header mb-3">
@@ -147,7 +154,7 @@ export class LeafletListMapPropertiesComponent implements AfterViewInit {
       <div class="row g-2">
         ${property.images.slice(0, 3).map(img => `
         <div class="col-4">
-          <img src="${img}" class="img-fluid rounded-2" style="height: 70px; width:70px; object-fit: cover;" alt="Property image">
+          <img src="${this.apiConfig.apiUrl + img}" class="img-fluid rounded-2" style="height: 70px; width:70px; object-fit: cover;" alt="Property image">
         </div>
         `).join('')}
       </div>
@@ -175,7 +182,7 @@ export class LeafletListMapPropertiesComponent implements AfterViewInit {
   }
 
 
-  highlightProperty(property: PropertyDto): void {
+  highlightProperty(property: PropertyDTO): void {
     const marker = this.markers.find(m => (m.options as CustomMarkerOptions).property.id === property.id);
     if (marker) {
       marker.openPopup();

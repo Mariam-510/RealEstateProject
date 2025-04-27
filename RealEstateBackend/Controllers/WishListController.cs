@@ -158,7 +158,8 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("GetAllproductByBuyerID")]
+        [HttpGet()]
+        [Route("GetAllProductByBuyerID")]
         [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> GetAllPrductByBuyerIDAsync()
         {
@@ -171,9 +172,9 @@ namespace RealEstate.Controllers
 
             List<Product>? productList = await _WishlistRepository.GetAllProductByBuyerIDAsync(buyerId);
 
-            if (productList == null || !productList.Any())
+            if (productList == null)
             {
-                return NotFound("Buyer ID not found or no product found!");
+                return NotFound("Buyer account not found");
             }
 
             List<ProductDTOShow> productListDTO = productList.ToProductDTOShowList();
@@ -182,7 +183,9 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("GetAllPropertyByBuyerID")]
+        [HttpGet()]
+        [Route("GetAllPropertyByBuyerID")]
+
         [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> GetAllPropertyByBuyerIDAsync()
         {
@@ -200,10 +203,10 @@ namespace RealEstate.Controllers
             {
                 return NotFound("Buyer ID not found!");
             }
-            if (!propertyList.Any())
-            {
-                return Ok("No properties found for this buyer.");
-            }
+            //if (!propertyList.Any())
+            //{
+            //    return Ok("No properties found for this buyer.");
+            //}
             var propertyDtos = _mapper.Map<List<PropertyDto>>(propertyList);
 
             return Ok(propertyDtos);

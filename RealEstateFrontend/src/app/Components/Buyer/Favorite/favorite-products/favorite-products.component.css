@@ -1,0 +1,260 @@
+.property-card {
+    /* height: 100%; */
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  
+  .property-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  .image-counter {
+    z-index: 2;
+    backdrop-filter: blur(2px);
+  }
+  
+  .category-badge {
+    top: 15px;
+    left: 15px;
+    z-index: 2;
+    /* font-size: 0.7rem; */
+  }
+  
+  .rent-badge {
+    color: #2a5f8b;
+    font-size: 0.85rem;
+  }
+  
+  .sell-badge {
+    color: #4a7d5e;
+    font-size: 0.85rem;
+  }
+  
+  
+  .bg-rent-badge {
+    background: #2a5f8b;
+    color: white;
+  }
+  
+  .bg-sell-badge {
+    background-color: #4a7d5e;
+    color: white;
+  }
+  
+  .status-overlay {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+  }
+  
+  .status-text {
+    letter-spacing: 2px;
+    transform: rotate(-15deg);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  
+  .property-actions {
+    top: 15px;
+    right: 15px;
+    z-index: 2;
+  }
+  
+  .btn-icon {
+    /* border-radius: 50%; */
+    width: 32px;
+    height: 32px;
+    transition: all 0.2s;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+  }
+  
+  .btn-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  /* .property-img {
+    height: 100px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+  } */
+  
+  
+  .property-card:hover .carousel-control-prev,
+  .property-card:hover .carousel-control-next {
+    opacity: 0.75;
+  }
+  
+  .carousel-control-prev,
+  .carousel-control-next {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 25px;
+    height: 25px;
+  }
+  
+  .bg-auction:hover {
+    background: #5e34a8 !important;
+    transform: translateY(-1px);
+  }
+  
+  .footer {
+    margin-top: auto;
+  }
+  
+  /* ---------------------------------------------------------------------------------- */
+  /* Card Container */
+  .property-card {
+    height: 280px;
+    /* Fixed card height */
+    min-height: 280px;
+    width: 100%;
+    overflow: hidden;
+    /* Prevent content overflow */
+  }
+  
+  /* Carousel Section */
+  .carousel-container {
+    width: 40%;
+    /* Adjust this percentage as needed */
+    flex: 0 0 40%;
+    /* Don't grow, don't shrink, fixed basis */
+    height: 100%;
+  }
+  
+  /* Image Sizing */
+  .carousel-inner,
+  .carousel-item,
+  .property-img {
+    height: 100% !important;
+    width: 100%;
+    object-fit: cover;
+    /* Maintain aspect ratio while filling container */
+  }
+  
+  /* Property Details Section */
+  .property-details {
+    flex: 1;
+    min-width: 0;
+    /* Allow text truncation */
+    height: 100%;
+    padding: 1rem;
+  }
+  
+  /* Ensure consistent image container size */
+  .carousel {
+    height: 100%;
+    width: 100%;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .property-card {
+      height: auto;
+      min-height: auto;
+    }
+  
+    .carousel-container {
+      width: 100%;
+      flex: 0 0 100%;
+      height: 250px;
+      /* Fixed mobile height */
+    }
+  }
+  
+  /* ----------------------------------------------------------------------------- */
+  
+  /* Map container styling */
+  .map-container {
+    width: 100%;
+    flex: 0 0 40%;
+    height: 100%;
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  /* Leaflet map element */
+  #map {
+    height: 100%;
+    width: 100%;
+    border-radius: inherit;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .map-container {
+      width: 100%;
+      flex: 0 0 100%;
+      height: 250px;
+    }
+  }
+  
+  /* Match hover effects */
+  .property-card:hover .map-container {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Map toggle button positioning */
+  .mapToggle {
+    z-index: 1000;
+  }
+
+  .color-swatch {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    cursor: default;
+    position: relative;
+  }
+  
+  .color-swatch:hover {
+    transform: scale(1.05);
+  }
+  
+  .color-swatch-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #4a2c2a;
+  }
+  
+  .color-swatch-num:hover {
+    transform: scale(1.05);
+  }
+  
+  .color-hover-container {
+    position: absolute;
+    top: 100%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1002;
+    animation: fadeIn 0.2s ease-in-out;
+  }
+  .page-link{
+    color:#c38e79 !important;
+  }
+.pagination .page-item.active .page-link {
+    /* border: 2px solid #4a2c2a;  */
+    border-color:#c38e79 ;
+    color:white !important;
+  }
+  

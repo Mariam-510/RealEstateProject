@@ -11,7 +11,7 @@ namespace RealEstate.Repositories
         Task<List<Property>> GetApprovedBySellerIdAsync(int sellerId);
         Task<List<Property>> GetRejectedBySellerIdAsync(int sellerId);
         Task<List<Property>> GetAllByAgentIdAsync(int agentId);
-        Task<Property> GetByIdAsync(int id);
+        Task<Property?> GetByIdAsync(int id);
         Task AddAsync(Property property);
         Task UpdateAsync(Property property);
         Task DeleteAsync(int id);

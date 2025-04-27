@@ -1,0 +1,8 @@
+.btn-check:checked+label {
+    background-color: #c38e79 !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(195, 142, 121, 0.573) !important;
+    transition: box-shadow 0.2s ease-in-out;
+  }
+  

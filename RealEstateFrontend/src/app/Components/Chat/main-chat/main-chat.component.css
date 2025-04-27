@@ -31,36 +31,40 @@
   }
   
   .messages-container {
-    height: 400px;
+    height: calc(100vh - 320px); /* Adjust based on your header/footer height */
     overflow-y: auto;
     background-color: white;
-    padding: 1rem;
+    overflow-x: hidden;
+    min-width: 0;
+    overflow-x: hidden;
+    contain: style;
+    padding: 0 8px;
+
+    min-height: 300px;
+    position: relative;
+    scroll-behavior: auto; /* Disable smooth scrolling */
+    overflow-anchor: none;
   }
   
-  .message-bubble {
-    /* max-width: 80%; */
-    padding: 12px 16px;
-    margin: 4px 0;
-    transition: all 0.2s ease;
-
-  }
+ 
   
   .sent-message {
     background-color: #e6c9bf4b;
+    /* color: white; */
     border-radius: 15px 15px 0 15px;
+      order: 1; /* Makes message bubble appear first */
     margin-right: 0.5rem;
+    align-self: flex-end;
+
 
   }
   
-  .received-message {
-    background-color: #ffffff;
-    border: 1px solid #e0d7d1;
-    border-radius: 0 15px 15px 15px;
-
-  }
+ 
   
   .message-metadata {
     font-size: 0.75rem;
+    max-width: 85%; /* Match message bubble width */
+    margin-left: auto; 
   }
   
   .card-footer .btn-brown {
@@ -81,18 +85,11 @@
     order: 2; /* Makes image appear after message */
     margin-left: 0.5rem;
 }
-.profile-img {
-    border: 2px solid #c38e79;
-}
-.sent-message {
-    background-color: #e6c9bf4b;
-    /* color: white; */
-    border-radius: 15px 15px 0 15px;
-      order: 1; /* Makes message bubble appear first */
-    margin-right: 0.5rem;
-}
+
+
 
 .received-message {
+  align-self: flex-start;
     background-color: #ffffff;
     border: 1px solid #e0d7d1;
     border-radius: 0 15px 15px 15px;
@@ -132,6 +129,7 @@
     border-radius: 4px;
 }
 .message-metadata {
+  margin-left: auto; 
     font-size: 0.75rem;
     color: #7a6a65;
 }
@@ -154,11 +152,7 @@
     }
 }
 
-.messages-container {
-    max-height: 500px; /* or any height you want */
-    overflow-y: auto;
-    position: relative;
-  }
+
 .chat-header {
     position: sticky;
     top: 0;
@@ -171,57 +165,30 @@
     line-height: 1.5; /* Improve line spacing */
 }
 .message-bubble {
-    max-width: calc(100% - 60px); /* Allow more width while maintaining spacing */
-    width: fit-content; /* Shrink to content width */
-    overflow-wrap: normal; /* Only break words when necessary */
-    word-break: normal; /* Keep normal word breaking behavior */
-    white-space: pre-wrap; /* Preserve whitespace but allow wrapping */
-  }
+  max-width: calc(100% - 50px); /* Slightly reduce available space */
+  width: fit-content;
+  min-width: 80px; /* Smaller minimum width for short messages */
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  margin: 4px 0;
+  transition: all 0.2s ease;
+
+  padding: 10px 15px;
+}
   
   /* Add this to ensure proper flex behavior */
-  .d-flex[ngClass*='justify-content-'] {
-    flex-shrink: 0; /* Prevent flex items from shrinking */
-  }
-  
-  .messages-container {
-    overflow-x: hidden;
-    min-width: 0; /* Allow content to shrink below default minimum */
-  }
-  .message-bubble {
-    max-width: calc(100% - 40px); /* Increased from 60px */
-    width: auto; /* Let content determine width */
-    min-width: 120px; /* Minimum width for small messages */
-    overflow-wrap: break-word;
-    white-space: normal; /* Allow natural wrapping */
-    word-break: normal; /* Standard word breaking */
-  }
+ 
+
+ 
   
 /* Message bubble adjustments */
-.message-bubble {
-    max-width: calc(100% - 50px); /* Slightly reduce available space */
-    width: fit-content;
-    min-width: 80px; /* Smaller minimum width for short messages */
-    overflow-wrap: break-word;
-    word-break: break-word;
-    white-space: normal;
-    padding: 10px 15px;
-  }
+
   
 
   
-  .sent-message {
-    background-color: #e6c9bf4b;
-    /* color: white; */
-    border-radius: 15px 15px 0 15px;
-      order: 1; /* Makes message bubble appear first */
-    margin-right: 0.5rem;
-}
 
-.received-message {
-    background-color: #ffffff;
-    border: 1px solid #e0d7d1;
-    border-radius: 0 15px 15px 15px;
-}
+
 
   /* Flex container adjustments */
   .message-wrapper {
@@ -235,19 +202,8 @@
     max-width: 100%;
   }
   
-  /* Container constraints */
-  .messages-container {
-    overflow-x: hidden;
-    contain: style;
-    padding: 0 8px; /* Add slight horizontal padding */
-  }
-  
-  /* Metadata alignment */
-  .message-metadata {
-    max-width: 85%; /* Match message bubble width */
-    margin-left: auto; /* For sent messages */
-  }
-  
+
+
   .received-message + .message-metadata {
     margin-left: 0.5rem; /* For received messages */
   }
@@ -264,20 +220,8 @@
 
   }
   
-  .sent-message {
-    background-color: #e6c9bf4b;
-    border-radius: 15px 15px 0 15px;
-    margin-right: 0.5rem;
-    align-self: flex-end;
-  }
-  
-  .received-message {
-    background-color: #ffffff;
-    border: 1px solid #e0d7d1;
-    border-radius: 0 15px 15px 15px;
-    align-self: flex-start;
-  }
-  
+
+
   .bubble-meta {
     font-size: 0.75rem;
     text-align: right;
@@ -289,7 +233,7 @@
   }
   
   .active-chat {
-    background-color: #f8f5f2;
+    background-color: #f8f5f2 !important;
     border-left: 3px solid #8d5c52;
   }
   .chat-list-item {
@@ -305,7 +249,103 @@
     }
   }
   
-  .active-chat {
-    background-color: #f8f5f2 !important;
-    border-left: 3px solid #8d5c52;
-  }
+ 
+.empty-state-card {
+  background-color: #fcfaf8;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  height: calc(100vh - 220px); /* Match chat container height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+
+}
+
+.empty-state-content {
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.icon-wrapper {
+  position: relative;
+  padding: 1.5rem;
+  background-color: #f8f5f2;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+
+.decorative-line {
+  width: 80px;
+  height: 2px;
+  background-color: #e0d7d1;
+}
+
+.text-brown-200 { color: #c3a997; }
+.text-brown-400 { color: #8d5c52; }
+.text-brown-600 { color: #4a2c2a; }
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+/* Hover effects */
+.empty-state-card:hover .icon-wrapper {
+  transform: translateY(-5px);
+}
+
+.empty-state-card:hover .decorative-line {
+  background-color: #c3a997;
+}
+/* Update these styles */
+.container.h-100 {
+  min-height: 100vh;
+  height: auto !important;
+}
+
+.row.h-100 {
+  min-height: calc(100vh - 2rem);
+  height: auto;
+}
+
+
+
+/* Add this new rule */
+.card-footer {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  z-index: 2;
+}
+
+
+.message-wrapper:last-child {
+  overflow-anchor: auto;
+  height: 1px;
+}
+
+.message-wrapper:last-child {
+  overflow-anchor: auto;
+}
+
+/* Add to your CSS */
+.bg-brown {
+  background-color: #8d5c52 !important;
+}
+
+/* Adjust message alignment */
+.d-flex.justify-content-between.align-items-center {
+  gap: 0.5rem;
+}
+
+.small.text-muted.text-nowrap {
+  font-size: 0.75rem;
+  color: #7a6a65 !important;
+}
+/* Add to CSS */
+.badge.bg-brown {
+  margin-right: 0.5rem;
+  min-width: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}

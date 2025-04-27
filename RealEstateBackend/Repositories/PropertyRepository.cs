@@ -19,7 +19,7 @@ namespace RealEstate.Repositories
         {
             return await _context.Properties.Where(p => !p.IsDeleted && p.ApprovalStatus == PropertyApprovalStatus.Pending)
                                   .Include(p => p.Seller)
-                                  .Include(p => p.Agent)
+                                  .ThenInclude(S => S.Contracts)
                                   .ToListAsync();
         }
         public async Task<List<Property>> GetAllBySellerIdAsync(int sellerId)
@@ -27,7 +27,8 @@ namespace RealEstate.Repositories
             return await _context.Properties
                 .Where(p => p.SellerId == sellerId && !p.IsDeleted )
                 .Include (p => p.Seller)
-                .Include(p => p.Agent)
+                .ThenInclude(p=>p.Contracts)
+                .OrderByDescending(p=>p.AddedDate)
                 .ToListAsync();
         }
 
@@ -39,14 +40,16 @@ namespace RealEstate.Repositories
                 .Include(p => p.Agent)
                 .ToListAsync();
         }
+        
         public async Task<List<Property>> GetPendingBySellerIdAsync(int sellerId)
         {
             return await _context.Properties
                 .Where(p => p.SellerId == sellerId && !p.IsDeleted && p.ApprovalStatus == PropertyApprovalStatus.Pending)
-                .Include(p => p.Seller)
+                .Include(p => p.Seller).ThenInclude(S => S.Contracts)
                 .Include(p => p.Agent)
                 .ToListAsync();
         }
+        
         public async Task<List<Property>> GetRejectedBySellerIdAsync(int sellerId)
         {
             return await _context.Properties
@@ -64,12 +67,13 @@ namespace RealEstate.Repositories
                 .Include(p => p.Agent)
                 .ToListAsync();
         }
+        
         public async Task<Property?> GetByIdAsync(int id)
         {
             return await _context.Properties
                                  .Where(p => !p.IsDeleted)
-                                  .Include(p => p.Seller)
-                                  .Include(p => p.Agent)
+                                 .Include(p => p.Seller).ThenInclude(s => s.Account)
+                                 .Include(p => p.Agent).ThenInclude(a => a.Account)
                                  .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -98,7 +102,10 @@ namespace RealEstate.Repositories
 
         public async Task<List<Property>> GetFilteredAsync(PropertyCategory? category, PropertyStatus? status, PropertyType? type, string searchByLocation)
         {
-            var query = _context.Properties.Where(p => !p.IsDeleted && p.ApprovalStatus==PropertyApprovalStatus.Approved); 
+            var query = _context.Properties
+                .Include(p => p.Seller).ThenInclude(s=>s.Account)
+                .Include(p => p.Agent).ThenInclude(a => a.Account)
+                .Where(p => !p.IsDeleted && p.ApprovalStatus==PropertyApprovalStatus.Approved); 
 
             if (!string.IsNullOrWhiteSpace(category?.ToString())) 
             {

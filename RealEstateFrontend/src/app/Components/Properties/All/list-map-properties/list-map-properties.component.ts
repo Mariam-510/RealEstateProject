@@ -1,9 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from '../../../../Services/toastr.service';
-import { PropertyDto, SharedService } from '../../../../Service/shared.service';
 import { LeafletListMapPropertiesComponent } from '../leaflet-list-map-properties/leaflet-list-map-properties.component';
+import { API_CONFIG } from '../../../../app.config';
+import { PropertyDTO, PropertyService } from '../../../../Services/ApiServices/property.service';
+import { WishListService } from '../../../../Services/ApiServices/wish-list.service';
+import { AuthService } from '../../../../Services/ApiServices/auth.service';
 
 @Component({
   selector: 'app-list-map-properties',
@@ -14,19 +17,20 @@ import { LeafletListMapPropertiesComponent } from '../leaflet-list-map-propertie
 })
 export class ListMapPropertiesComponent implements OnInit {
 
-  constructor(private sharedService: SharedService, private toastr: ToastrService) { }
+  constructor(private toastr: ToastrService, private cdr: ChangeDetectorRef,
+    private wishListService: WishListService, private auth: AuthService) { }
 
   @ViewChild(LeafletListMapPropertiesComponent) mapComponent!: LeafletListMapPropertiesComponent;
 
-  @Input() properties: PropertyDto[] = [];
+  apiConfig = API_CONFIG;
+  @Input() properties: PropertyDTO[] = [];
 
-  allProperties: PropertyDto[] = [];
+  @Input() allProperties: PropertyDTO[] = [];
 
-  ngOnInit(): void {
-    this.allProperties = this.sharedService.properties;
+  ngOnInit() {
+
   }
-
-  onPropertyHover(property: PropertyDto): void {
+  onPropertyHover(property: PropertyDTO): void {
     if (this.mapComponent) {
       this.mapComponent.highlightProperty(property);
     }
@@ -39,8 +43,23 @@ export class ListMapPropertiesComponent implements OnInit {
   }
 
 
-  toggleFavorite(event: any) {
-    event.isFavorite = !event.isFavorite;
+  toggleFavorite(property: PropertyDTO) {
+    // Optimistic UI update
+    const previousState = property.isFavorite;
+    property.isFavorite = !previousState;
+
+    this.wishListService.togglePropertyWishlist(property.id).subscribe({
+      next: (response) => {
+        this.toastr.success(response);
+        // Optional: Update with actual API state if needed
+      },
+      error: (err) => {
+        // Revert UI state on error
+        property.isFavorite = previousState;
+        this.toastr.error('Error updating wishlist');
+        console.error(err);
+      }
+    });
   }
 
   shareItem(item: any): void {
@@ -55,5 +74,17 @@ export class ListMapPropertiesComponent implements OnInit {
     } else {
       this.toastr.error(`Copy and share this: ${shareText}`);
     }
+  }
+
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
   }
 }

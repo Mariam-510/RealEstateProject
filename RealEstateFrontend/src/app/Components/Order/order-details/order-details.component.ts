@@ -16,13 +16,10 @@ export class OrderDetailsComponent {
   orderId: string = '';
   orderStatusCode: number = 0;
 
-  constructor(private route: ActivatedRoute,private dialog: MatDialog) { }
+  constructor(private dialog: MatDialog) { }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      this.orderId = params['id'];
-      this.orderStatusCode = +params['Statuscode'];
-    });
+
   }
 
   downloadInvoice(): void {
@@ -52,7 +49,7 @@ export class OrderDetailsComponent {
     doc.setTextColor(0, 0, 0);
     doc.text(`INV-${this.orderId}`, margin + 20, y);
     doc.text(new Date().toLocaleDateString(), margin + 20, y + 5);
- 
+
     y += 25;
     doc.setFillColor(240, 240, 240);
     doc.rect(margin, y - 5, pageWidth - margin * 2, 10, 'F');
@@ -73,7 +70,7 @@ export class OrderDetailsComponent {
     doc.rect(margin, y - 5, pageWidth - margin * 2, 10, 'F');
     doc.setTextColor(255, 255, 255);
     doc.text('ITEM DESCRIPTION', margin + 5, y);
-    const priceColumnX = pageWidth - margin - 5;  
+    const priceColumnX = pageWidth - margin - 5;
     doc.text('PRICE', priceColumnX, y, { align: 'right' });
 
      y += 10;
@@ -137,16 +134,16 @@ export class OrderDetailsComponent {
     });
 
 
-    doc.setFillColor(76, 175, 80);  
+    doc.setFillColor(76, 175, 80);
     doc.rect(pageWidth / 2 + 10, y - 2, 50, 8, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(8);
     doc.text(`Paid on ${paymentDate}`, pageWidth / 2 + 35, y + 3, { align: 'center' });
 
- 
+
     doc.setFontSize(10);
 
-  
+
     y = doc.internal.pageSize.getHeight() - 30;
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);

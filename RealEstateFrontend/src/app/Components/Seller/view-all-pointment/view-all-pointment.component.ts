@@ -33,8 +33,8 @@ export class ViewAllPointmentComponent {
       Buyer: {
         Id: 1,
         Name: "John Doe",
-        Phone: "+1 (555) 123-4567",
-        Email: "john@example.com"
+        Phone: "+02 (534) 673-1244",
+        Email: "john@gmail.com"
       },
       PropertyId: 101,
       Property: {
@@ -53,8 +53,8 @@ export class ViewAllPointmentComponent {
       Buyer: {
         Id: 2,
         Name: "Jane Smith",
-        Phone: "+1 (555) 987-6543",
-        Email: "jane@example.com"
+        Phone: "+02 (534) 673-1244",
+        Email: "john@gmail.com"
       },
       PropertyId: 102,
       Property: {
@@ -73,8 +73,8 @@ export class ViewAllPointmentComponent {
       Buyer: {
         Id: 2,
         Name: "Jane Smith",
-        Phone: "+1 (555) 987-6543",
-        Email: "jane@example.com"
+         Phone: "+02 (534) 673-1244",
+        Email: "john@gmail.com"
       },
       PropertyId: 102,
       Property: {
@@ -93,8 +93,8 @@ export class ViewAllPointmentComponent {
       Buyer: {
         Id: 2,
         Name: "Jane Smith",
-        Phone: "+1 (555) 987-6543",
-        Email: "jane@example.com"
+        Phone: "+02 (534) 673-1244",
+        Email: "john@gmail.com"
       },
       PropertyId: 102,
       Property: {

@@ -47,9 +47,17 @@ namespace RealEstate.Controllers
         }
 
         [HttpGet]
-        [Route("buyer/{buyerId}")]
-        public async Task<IActionResult> GetAllByBuyer(int buyerId)
+        [Route("buyer")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> GetAllByBuyer()
         {
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
             var existingBuyer = await _buyerRepository.GetByIdAsync(buyerId);
             if (existingBuyer == null)
                 return NotFound("Buyer not found!");
@@ -62,6 +70,7 @@ namespace RealEstate.Controllers
 
         [HttpGet]
         [Route("getById/{id}")]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> GetById(int id)
         {
             var order = await _orderRepository.GetByIdAsync(id);

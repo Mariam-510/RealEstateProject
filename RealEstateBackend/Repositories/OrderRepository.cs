@@ -18,6 +18,8 @@ namespace RealEstate.Repositories
             return await _context.Orders
                  .Include(o => o.Buyer)
                  .Include(o => o.OrderItems)
+                 .Include(o => o.Payment)
+                 .Include(o=> o.Address)
                  .Where(o => !o.IsDeleted)
                  .ToListAsync();
         }
@@ -38,7 +40,11 @@ namespace RealEstate.Repositories
         public async Task<Order?> GetByIdAsync(int id)
         {
             return await _context.Orders
-               .Include(o => o.Buyer)
+                .Include(o => o.Buyer)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .Include(o => o.Payment)
+                .Include(o => o.Address)
                .FirstOrDefaultAsync(o => o.Id == id && !o.IsDeleted);
         }
 

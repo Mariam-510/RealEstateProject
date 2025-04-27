@@ -92,7 +92,7 @@ export class PropertyDetialsLeafletMapComponent {
   }
 
   ngAfterViewInit(): void {
-    this.getCoordinates(this.locationName); // ✅ Convert "Maadi" to lat/lon
+    this.getCoordinates(this.locationName ?? ''); // ✅ Convert "Maadi" to lat/lon
   }
 
 
@@ -127,7 +127,7 @@ export class PropertyDetialsLeafletMapComponent {
     }
   }
   private fetchNearbyPlaces(lat: number, lon: number): void {
-    const radius = 3500; // meters
+    const radius = 4000; // meters
     const query = `
       [out:json];
       (

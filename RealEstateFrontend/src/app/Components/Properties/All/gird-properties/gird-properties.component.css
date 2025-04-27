@@ -3,7 +3,7 @@
   border-radius: 12px;
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .property-card:hover {

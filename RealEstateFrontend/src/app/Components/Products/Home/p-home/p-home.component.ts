@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
 import { CatSliderComponent } from '../Sliders/cat-slider/cat-slider.component';
-import { Product, SharedService } from '../../../../Services/shared.service';
 import { ProductDTO, ProductFilters, ProductService } from '../../../../Services/ApiServices/product.service';
 import { AuthService } from '../../../../Services/ApiServices/auth.service';
 import { WishListService } from '../../../../Services/ApiServices/wish-list.service';
 import { ToastrService } from '../../../../Services/toastr.service';
 import { API_CONFIG } from '../../../../app.config';
+import { CategoryDTOShow, CategoryService } from '../../../../Services/ApiServices/category.service';
+import { ProductFilterService } from '../../../../Services/product-filter.service';
 
 @Component({
   selector: 'app-p-home',
@@ -18,10 +19,12 @@ import { API_CONFIG } from '../../../../app.config';
   templateUrl: './p-home.component.html',
   styleUrl: './p-home.component.css'
 })
-export class PHomeComponent implements OnInit {
+export class PHomeComponent implements OnInit, OnDestroy {
 
-  constructor(private _sharedService: SharedService, private cdr: ChangeDetectorRef, private productService: ProductService,
-    private auth: AuthService, private wishListService: WishListService, private toastr: ToastrService) { }
+  constructor(private cdr: ChangeDetectorRef, private router: Router,
+    private productService: ProductService, private categoryService: CategoryService,
+    private auth: AuthService, private wishListService: WishListService,
+    private toastr: ToastrService, private filterService: ProductFilterService) { }
 
   apiConfig = API_CONFIG;
   products: ProductDTO[] = [];
@@ -38,7 +41,7 @@ export class PHomeComponent implements OnInit {
 
   sliderOptions: Options = {
     floor: 0,
-    ceil: 1000000,
+    ceil: Number.MAX_SAFE_INTEGER,
     translate: () => '',          // Remove value labels
     hideLimitLabels: true,        // Hide default min/max labels (0 and 1,000,000)
     hidePointerLabels: true,      // Hide handle labels
@@ -46,10 +49,18 @@ export class PHomeComponent implements OnInit {
     showTicksValues: false        // Remove numbers under ticks
   };
 
+
+  categories: CategoryDTOShow[] = [];
+  message: string = '';
+
   async ngOnInit() {
 
     await this.loadProducts();
+
+    await this.loadCategories();
+
     this.getRecentProducts();
+
     this.getTopRatedProducts();
 
     this.sliderStartAutoScroll();
@@ -70,7 +81,9 @@ export class PHomeComponent implements OnInit {
       translate: (value: number) => `${value.toLocaleString()} EGP`
     };
 
-    this.applyFilters();
+    this.checkScroll();
+
+    this.checkScrollTopRatedProduct();
   }
 
   async loadProducts(filters?: ProductFilters) {
@@ -83,26 +96,54 @@ export class PHomeComponent implements OnInit {
     }
   }
 
+  async loadCategories() {
+    try {
+      const response = await this.categoryService.getAllCategories().toPromise();
+      this.categories = response?.categoryDto ?? [];
+      console.log(this.categories);
+      console.log(response);
+      this.message = response?.message ?? 'No categories found';
+      this.cdr.detectChanges();
+    } catch (err) {
+      console.error('Error loading categories:', err);
+      this.message = 'Failed to load categories';
+      this.cdr.detectChanges();
+    }
+  }
+
+  //--------------------------------------------------------------------------------------------------
+  // private getRecentProducts(): void {
+  //   if (!this.products.length) return;
+
+  //   // Find the latest date
+  //   const latestDate = new Date(Math.max(...this.products.map(p => new Date(p.dateAdded).getTime())));
+
+  //   // Calculate 14 days before latest date
+  //   const cutoffDate = new Date(latestDate);
+  //   cutoffDate.setDate(latestDate.getDate() - 14);
+
+  //   // Filter and sort
+  //   this.recentProducts = this.products
+  //     .filter(product => {
+  //       const productDate = new Date(product.dateAdded);
+  //       return productDate >= cutoffDate && productDate <= latestDate;
+  //     })
+  //     .sort((a, b) => {
+  //       // Sort by most recent first (descending order)
+  //       return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
+  //     });
+  // }
+
   private getRecentProducts(): void {
     if (!this.products.length) return;
-  
-    // Find the latest date
-    const latestDate = new Date(Math.max(...this.products.map(p => new Date(p.dateAdded).getTime())));
-    
-    // Calculate 14 days before latest date
-    const cutoffDate = new Date(latestDate);
-    cutoffDate.setDate(latestDate.getDate() - 14);
-  
-    // Filter and sort
-    this.recentProducts = this.products
-      .filter(product => {
-        const productDate = new Date(product.dateAdded);
-        return productDate >= cutoffDate && productDate <= latestDate;
-      })
-      .sort((a, b) => {
-        // Sort by most recent first (descending order)
-        return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
-      });
+
+    // Sort by oldest first (ascending order)
+    const sortedProducts = [...this.products].sort((a, b) => {
+      return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
+    });
+
+    // Take first 5 items
+    this.recentProducts = sortedProducts.slice(0, 6);
   }
 
   private getTopRatedProducts(): void {
@@ -115,11 +156,153 @@ export class PHomeComponent implements OnInit {
       // If ratings are equal, sort by number of reviews
       return b.numberOfReviews - a.numberOfReviews;
     });
-  
+
     // Optional: Take only top 10 products
-    this.topRatedProducts = this.topRatedProducts.slice(0, 8);
+    this.topRatedProducts = this.topRatedProducts.slice(0, 6);
   }
 
+  //---------------------------------------------------------------------------------------------
+
+  filteredProducts: ProductDTO[] = this.products;
+
+  selectedCategory: string = '';
+  selectedState: string = '';
+  selectedRating: number = 0;
+  minPrice = 0;
+  maxPrice = Number.MAX_SAFE_INTEGER;
+  openedProductId: number | null = null;
+
+
+  toggleCategory(category: string): void {
+    this.selectedCategory = category === 'All Categories' ? '' : category;
+  }
+
+  toggleState(state: string): void {
+    this.selectedState = state === 'All Conditions' ? '' : state;
+  }
+
+  toggleRating(rating: number): void {
+    this.selectedRating = this.selectedRating === rating ? 0 : rating;
+  }
+
+  toggleColorList(productId: number): void {
+    this.openedProductId = this.openedProductId === productId ? null : productId;
+  }
+
+
+  goToViewAllPage() {
+    this.filterService.updateFilters({
+      category: this.selectedCategory,
+      condition: this.selectedState.toLowerCase(),
+      rating: this.selectedRating,
+      minPrice: this.minPrice,
+      maxPrice: this.maxPrice
+    });
+
+    this.router.navigate(['/products/all']);
+  }
+
+  newProductView() {
+    this.filterService.updateFilters({
+      sortBy: 'dateNewest'
+    });
+
+    this.router.navigate(['/products/all']);
+  }
+
+
+  TopProductView() {
+    this.filterService.updateFilters({
+      sortBy: 'ratingDesc'
+    });
+
+    this.router.navigate(['/products/all']);
+  }
+
+  limitedProductView(event: Event) {
+    event.preventDefault(); // Prevent default anchor behavior
+    this.filterService.updateFilters({
+      sortBy: 'limitedStock'
+    });
+
+    this.router.navigate(['/products/all']);
+  }
+
+
+  NewProductView(event: Event) {
+    event.preventDefault(); // Prevent default anchor behavior
+    this.filterService.updateFilters({
+      condition: 'new',
+    });
+
+    this.router.navigate(['/products/all']);
+  }
+
+  UsedProductView(event: Event) {
+    event.preventDefault(); // Prevent default anchor behavior
+    this.filterService.updateFilters({
+      condition: 'used',
+    });
+
+    this.router.navigate(['/products/all']);
+  }
+
+  ngOnDestroy() {
+    // this.filterService.resetFilters();
+  }
+
+  //--------------------------------------------------------------------------------------------
+  toggleWishList(product: any) {
+    // Optimistic UI update
+    const previousState = product.isFavorite;
+    product.isFavorite = !previousState;
+
+    this.wishListService.toggleProductWishlist(product.id).subscribe({
+      next: (response) => {
+        this.toastr.success(response);
+        // Optional: Update with actual API state if needed
+      },
+      error: (err) => {
+        // Revert UI state on error
+        product.isFavorite = previousState;
+        this.toastr.error('Error updating wishlist');
+        console.error(err);
+      }
+    });
+  }
+
+
+  shareItem(item: any): void {
+    const shareText = `Check out this product: ${item.name} - ${item.description}.
+    Category: ${item.category?.name || 'General'}
+    Price: EGP ${item.price}
+    Condition: ${item.isUsed ? 'Used' : 'New'}`;
+    if (navigator.share) {
+      navigator.share({
+        title: item.title,
+        text: shareText,
+        url: window.location.href
+      }).then(() => console.log('Shared successfully'))
+        .catch(err => console.error('Sharing failed', err));
+    } else {
+      // Fallback for browsers that don’t support navigator.share
+      console.error(`Copy and share this: ${shareText}`);
+    }
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
+  }
+
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  //-----------------------------------------------------------------------------------
 
   slides = [
     {
@@ -141,18 +324,6 @@ export class PHomeComponent implements OnInit {
       subtitle: 'Buy property and gain profit'
     }
   ];
-
-
-  categories = [
-    { id: 1, name: 'BEDS', imageUrl: 'https://www.mocka.com.au/cdn/shop/files/T04028_HiRes_01.jpg?v=1728479772&width=2040' },
-    { id: 2, name: 'SOFAS', imageUrl: 'https://denovofurniture.pk/wp-content/uploads/2024/06/Opulence-New-5.jpg' },
-    { id: 3, name: 'CHAIRS', imageUrl: 'https://images.eq3.com/image-service/a0067633-232a-4dff-b0b9-bc26c0651211/Joan-Chair-30215-02-Panama-Grey-Black-Ash-Legs-Front-Web_ORIGINAL.jpg' },
-    { id: 4, name: 'TABLES', imageUrl: 'https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg' },
-    { id: 5, name: 'TV UNITS', imageUrl: 'https://wasilaah.com/cdn/shop/products/IMG_9996.jpg?v=1679343647&width=2048' },
-    { id: 6, name: 'ROOM SETS', imageUrl: 'https://www.raneen.com/media/catalog/product/1/5/153_qj0fycqtckj854wf.jpg?optimize=high&bg-color=255,255,255&fit=bounds&height=&width=' },
-    { id: 7, name: 'BABY ROOMS', imageUrl: 'https://babymore.co.uk/wp-content/uploads/2023/02/Mona-2-Piece-Room-Set-GREY-1-scaled.jpg' },
-  ];
-
 
   sliderStartAutoScroll(): void {
     this.sliderStopAutoScroll(); // Ensure we don't have multiple subscriptions
@@ -197,62 +368,9 @@ export class PHomeComponent implements OnInit {
   canScrollLeftTopRatedProduct = false;
   canScrollRightTopRatedProduct = true;
 
-  filteredProducts: ProductDTO[] = this.products;
-
-  selectedCategory: string = '';
-  selectedState: string = '';
-  selectedRating: number = 0;
-  minPrice = 0;
-  maxPrice = 1000000;
-  openedProductId: number | null = null;
 
 
-  toggleCategory(category: string): void {
-    this.selectedCategory = category === 'All Categories' ? '' : category;
-    this.applyFilters();
-  }
-
-  toggleState(state: string): void {
-    this.selectedState = state === 'All Conditions' ? '' : state;
-    this.applyFilters();
-  }
-
-  toggleRating(rating: number): void {
-    this.selectedRating = this.selectedRating === rating ? 0 : rating;
-    this.applyFilters();
-  }
-
-  toggleColorList(productId: number): void {
-    this.openedProductId = this.openedProductId === productId ? null : productId;
-  }
-
-  applyFilters(): void {
-    this.filteredProducts = this.products.filter(product => {
-      const matchesCategory = !this.selectedCategory ||
-        this.categories.some(cat => cat.name === this.selectedCategory);
-
-      const matchesState = !this.selectedState ||
-        (this.selectedState === 'New' && !product.isUsed) ||
-        (this.selectedState === 'Used' && product.isUsed);
-
-      const matchesPrice = product.price >= this.minPrice &&
-        product.price <= this.maxPrice;
-
-      const matchesRating = product.averageRating >= this.selectedRating;
-
-      return matchesCategory && matchesState && matchesPrice && matchesRating;
-    });
-  }
-
-  clearFilters(): void {
-    this.selectedCategory = '';
-    this.selectedState = '';
-    this.selectedRating = 0;
-    this.minPrice = 0;
-    this.maxPrice = Number.MAX_SAFE_INTEGER;
-    this.applyFilters();
-  }
-
+  //--------------------------------------------------------------------------------------------
   scrollLeft() {
     this.slider.nativeElement.scrollBy({ left: -326, behavior: 'smooth' });
   }
@@ -317,67 +435,5 @@ export class PHomeComponent implements OnInit {
     }
   }
 
-  toggleWishList(product: any) {
-    // Optimistic UI update
-    const previousState = product.isFavorite;
-    product.isFavorite = !previousState;
 
-    this.wishListService.toggleProductWishlist(product.id).subscribe({
-      next: (response) => {
-        this.toastr.success(response);
-        // Optional: Update with actual API state if needed
-      },
-      error: (err) => {
-        // Revert UI state on error
-        product.isFavorite = previousState;
-        this.toastr.error('Error updating wishlist');
-        console.error(err);
-      }
-    });
-  }
-
-  addToCart(productId: number) {
-    const product = this.products.find(p => p.id === productId);
-    if (product) {
-      // this.cartService.addToCart(product);
-    }
-  }
-
-  shareItem(item: any): void {
-    const shareText = `Check out this product: ${item.name} - ${item.description}. 
-    Category: ${item.category?.name || 'General'}
-    Price: EGP ${item.price} 
-    Condition: ${item.isUsed ? 'Used' : 'New'}`;
-    if (navigator.share) {
-      navigator.share({
-        title: item.title,
-        text: shareText,
-        url: window.location.href
-      }).then(() => console.log('Shared successfully'))
-        .catch(err => console.error('Sharing failed', err));
-    } else {
-      // Fallback for browsers that don’t support navigator.share
-      console.error(`Copy and share this: ${shareText}`);
-    }
-  }
-
-  hasRoleOrNoUser(requiredRole: string) {
-    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
-  }
-
-  hasUser() {
-    return this.auth.isAuthenticated();
-  }
-
-  hasRole(requiredRole: string) {
-    return this.auth.hasRole(requiredRole);
-  }
-
-  // isNewArrival(dateAdded: Date | string): boolean {
-  //   const addedDate = new Date(dateAdded);
-  //   const currentDate = new Date();
-  //   const diffTime = currentDate.getTime() - addedDate.getTime();
-  //   const diffDays = diffTime / (1000 * 60 * 60 * 24);
-  //   return diffDays <= 7; // 7 days threshold
-  // }
 }
