@@ -53,6 +53,7 @@ import { BookAppointmentComponent } from './Components/Appointment/book-appointm
 import { ViewAllPropertiesComponent } from './Components/PagesSellerAndAgent/view-all-properties/view-all-properties.component';
 import { ViewPendingPropertiesComponent } from './Components/Seller/view-pending-properties/view-pending-properties.component';
 import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist.component';
+import { SimilarProductsComponent } from './Components/Products/Details/similar-products/similar-products.component';
 
 //----------------------------------------------------------------------------------------
 
@@ -82,7 +83,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: AgentdashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
-      {path:'Properties',component:ViewAllPropertiesComponent,title:"View All Properties"}
+      { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" }
 
     ]
   },
@@ -95,8 +96,8 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
-      {path:'Properties',component:ViewAllPropertiesComponent,title:"View All Properties"},
-      {path:'PropertiesPending',component:ViewPendingPropertiesComponent,title:"View Pending Properties"}
+      { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
+      { path: 'PropertiesPending', component: ViewPendingPropertiesComponent, title: "View Pending Properties" }
     ]
   },
 
@@ -108,7 +109,7 @@ export const routes: Routes = [
       { path: "orders", component: OrderSummaryComponent, title: "Orders Summary" },
       { path: 'orders/:id', component: OrderDetailsComponent, title: "Order Details" },
       { path: "AllReveiw", component: AllReviewComponent, title: "AllReview" },
-      {path:'wishlist',component:WishlistComponent,title:"Wishlist"},
+      { path: 'wishlist', component: WishlistComponent, title: "Wishlist" },
 
 
     ]
@@ -163,10 +164,10 @@ export const routes: Routes = [
   },
 
   //---------------------------------------------------------------------------------------
-  {path:'book',component:BookAppointmentComponent,title:"Book Appointment"},
+  { path: 'book', component: BookAppointmentComponent, title: "Book Appointment" },
   //---------------------------------------------------------------------------------------
   { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
-  { path: "t", component: TViewAllProductsComponent, title: "t" },
+  { path: "t", component: SimilarProductsComponent, title: "t" },
   { path: "**", component: NotFoundComponent },
 
 

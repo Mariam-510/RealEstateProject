@@ -200,7 +200,7 @@ export class PropertyHomeComponent implements OnInit {
       translate: (value: number) => `${value}m²`
     };
 
-    this.checkScroll();
+    // this.checkScroll();
 
   }
 

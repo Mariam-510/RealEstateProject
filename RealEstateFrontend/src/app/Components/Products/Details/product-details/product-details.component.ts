@@ -11,11 +11,12 @@ import { OrderItemService } from '../../../../Services/ApiServices/order-item.se
 import { CartService } from '../../../../Services/ApiServices/cart.service';
 import { ReviewResponseDto, ReviewService } from '../../../../Services/ApiServices/review.service';
 import { WishListService } from '../../../../Services/ApiServices/wish-list.service';
+import { SimilarProductsComponent } from "../similar-products/similar-products.component";
 
 
 @Component({
   selector: 'app-product-details',
-  imports: [CommonModule, RouterModule, NgxImageZoomModule, ZoomDirective],
+  imports: [CommonModule, RouterModule, NgxImageZoomModule, ZoomDirective, SimilarProductsComponent],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css'
 })
@@ -70,14 +71,34 @@ export class ProductDetailsComponent implements OnInit {
 
   }
 
+  // private loadProduct(id: number): void {
+  //   this.productService.getProductById(id).subscribe({
+  //     next: (response) => { // Correct type
+  //       this.product = response;
+  //       console.log(this.product)
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: (err) => {
+  //       this.toastr.error('Failed to load product');
+  //       console.error('Error loading product:', err);
+  //     }
+  //   });
+  // }
+
+  // Add loading state variable
+  isLoading: boolean = false;
+
   private loadProduct(id: number): void {
+    this.isLoading = true; // Start loading
+
     this.productService.getProductById(id).subscribe({
-      next: (response) => { // Correct type
+      next: (response) => {
         this.product = response;
-        console.log(this.product)
+        this.isLoading = false; // Stop loading on success
         this.cdr.detectChanges();
       },
       error: (err) => {
+        this.isLoading = false; // Stop loading on error
         this.toastr.error('Failed to load product');
         console.error('Error loading product:', err);
       }

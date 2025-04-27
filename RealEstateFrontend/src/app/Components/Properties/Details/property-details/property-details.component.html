@@ -59,7 +59,7 @@
     <div #tabLinks class="tab-links px-5 py-3 d-flex flex-wrap justify-content-between align-items-center ">
       <!-- Left side: Nav Links -->
       <div class="d-flex flex-wrap gap-5">
-        <a href="#overview" (click)="scrollToSection($event, 'overview')" class="active ms-2 me-3">
+        <a href="#overview" (click)="scrollToSection($event, 'overview')" class="active ms-5 me-3">
           <i class="bi bi-info-circle-fill me-2 fs-4"></i>
           <span class="fs-5">Overview</span>
         </a>
@@ -230,11 +230,13 @@
                   <!-- Buttons -->
                   <div class="custumBottomBorder mb-2"></div>
 
-                  <div *ngIf="property?.status === 'Available'" class="d-grid gap-2 pb-4">
-                    <!-- Instructional text moved above buttons -->
-                    <small class="text-brown ps-1 text-center pt-1">
-                      Select how you'd like to tour the property.
-                    </small>
+                  <div *ngIf="hasRoleOrNoUser('Buyer') && property?.status === 'Available'" class="d-grid gap-2 pb-4">
+                    <div class="alert bg-caffe-light2 d-flex align-items-center mb-2">
+                      <i class="fas fa-calendar-check me-2"></i>
+                      <div>
+                        Select how you'd like to tour the property.
+                      </div>
+                    </div>
 
                     <!-- Radio button group -->
                     <div class="btn-group pb-2" role="group" aria-label="Tour options">
@@ -250,22 +252,61 @@
                     </div>
 
                     <!-- Main action button -->
-                    <button class="btn btn-caffe-primary fw-bold fs-5 py-2 ">Request showing</button>
+                    <a class="btn btn-caffe-primary fw-bold fs-5 py-2">
+                      <i class="bi bi-calendar3 me-2"></i>Request showing
+                    </a>
+                  </div>
+
+                  <div *ngIf="!hasRoleOrNoUser('Buyer') && property?.status === 'Available'" class=" d-grid gap-2 pb-4">
+                    <div class="alert bg-caffe-light2 d-flex align-items-center mb-2">
+                      <i class="fas fa-info-circle me-2"></i>
+                      <div>
+                        This property is listed as available. Buyers can request showings through this interface.
+                      </div>
+                    </div>
+                    <!-- Add this button -->
+                    <button
+                      class="btn bg-caffe text-white fw-bold fs-5 py-2 d-flex align-items-center justify-content-center btn-caffe-primary">
+                      <i class="fas fa-check-circle me-2"></i>
+                      Available
+                    </button>
                   </div>
 
                   <div *ngIf="property?.status === 'Sold'" class="d-grid gap-2 pb-4">
-                    <!-- Instructional text moved above buttons -->
-                    <small class="text-brown ps-1 text-center pt-1">
-                      Select how you'd like to tour the property.
-                    </small>
-
-                    <!-- Main action button -->
-                    <button class="btn btn-caffe-primary fw-bold fs-5 py-2 ">Sold</button>
+                    <!-- Enhanced status indicator -->
+                    <div class="alert bg-caffe-light2 d-flex align-items-center mb-2" role="alert">
+                      <i class="fas fa-exclamation-circle me-2"></i>
+                      <div>
+                        This property has been sold. Explore similar available properties below.
+                      </div>
+                    </div>
+                    <!-- Enhanced button with disabled state and icon -->
+                    <button
+                      class="btn bg-caffe text-white fw-bold fs-5 py-2 d-flex align-items-center justify-content-center btn-caffe-primary"
+                      disabled aria-disabled="true">
+                      <i class="fas fa-handshake me-2"></i>
+                      Sold - No Longer Available
+                    </button>
                   </div>
 
+                  <!-- Auction Status Section -->
+                  <div *ngIf="property?.status === 'Auctioned'" class="d-grid gap-2 pb-4">
+                    <!-- Auction Alert -->
+                    <div class="alert bg-caffe-light2 d-flex align-items-center mb-2">
+                      <i class="fas fa-gavel me-2"></i>
+                      <div>
+                        This property is currently being auctioned. Click below to view the auction details and
+                        participate.
+                      </div>
+                    </div>
 
+                    <!-- View Auction Button -->
+                    <a class="btn btn-caffe-primary fw-bold fs-5 py-2">
+                      <i class="fas fa-gavel me-2"></i>
+                      View Auction Details
+                    </a>
 
-
+                  </div>
                 </div>
 
 
@@ -509,7 +550,7 @@
               </div>
 
               <div class="pt-4 ">
-                <button *ngIf="property?.status != 'Sold'" class="btn  bg-caffe d-inline-flex align-items-center gap-2 px-4 py-2
+                <button *ngIf="hasRoleOrNoUser('Buyer') && property?.status != 'Sold'" class="btn  bg-caffe d-inline-flex align-items-center gap-2 px-4 py-2
                              rounded-pill shadow-sm-hover transition-all
                              position-relative overflow-hidden
                              hover:bg-caffe-dark
@@ -541,8 +582,10 @@
     <hr class="mt-4">
 
   </section>
-  <section>
-    <app-recommended id="stop-scroll"></app-recommended>
+  <section id="stop-scroll">
+    <div *ngIf="!isLoading">
+      <app-recommended [property]="property"></app-recommended>
+    </div>
   </section>
 
 </div>
