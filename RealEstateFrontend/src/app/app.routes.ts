@@ -55,6 +55,7 @@ import { ViewPendingPropertiesComponent } from './Components/Seller/view-pending
 import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist.component';
 import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-all-pointment/buyer-view-all-pointment.component';
 import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
+import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
 
 //----------------------------------------------------------------------------------------
 
@@ -114,6 +115,7 @@ export const routes: Routes = [
       { path: "orders", component: OrderSummaryComponent, title: "Orders Summary" },
       { path: 'orders/:id', component: OrderDetailsComponent, title: "Order Details" },
       { path: "AllReveiw", component: AllReviewComponent, title: "AllReview" },
+      {path:'FavoriteProducts',component:FavoriteProductsComponent,title:"Favorite Products"},
       {path:'wishlist',component:WishlistComponent,title:"Wishlist"},
       {path:'BuyerViewAllAppointment',component:BuyerViewAllPointmentComponent,title:"View All Appointment"}
 
