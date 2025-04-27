@@ -3,16 +3,15 @@
     <nav aria-label="breadcrumb mb-0">
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item mb-0">
-                <p class="text-muted mb-0">Seller</p>
+                <p class="text-muted mb-0">Buyer</p>
             </li>
             <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">All Appointments</li>
         </ol>
     </nav>
 </div>
 
- 
-<div class="d-flex mb-4 mt-5 ms-4 ms-sm-3 overflow-auto py-2">
-    <div class="d-flex flex-wrap flex-m-nowrap"> 
+ <div class="d-flex mb-4 mt-5 ms-4 ms-sm-3 overflow-auto py-2">
+    <div class="d-flex flex-wrap flex-m-nowrap">  
         <a *ngFor="let link of propertyLinks" href="#" (click)="setActive(link, $event)" [ngClass]="{
                'active-tab': link === activeLink, 
                'text-muted': link !== activeLink
@@ -81,15 +80,15 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 border-start p-3 d-flex flex-column h-100">
+                    <div class="col-md-4 border-start p-3 d-flex flex-column">
 
                         <div class="d-flex align-items-center mb-2">
                             <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
                                 alt="Buyer avatar" class="rounded-circle me-2" width="50" height="50">
                             <div>
-                                <h6 class="mb-0 fw-bold small">{{appointment.Buyer.Name}}</h6>
+                                <h6 class="mb-0 fw-bold small">{{appointment.Seller.Name}}</h6>
                                 <small class="text-muted small text-truncate d-block" style="max-width: 150px;"> 
-                                    {{appointment.Buyer.Email}}</small>
+                                    {{appointment.Seller.Type}}</small>
                             </div>
                         </div>
 
@@ -115,38 +114,13 @@
                             </div>
                         </div>
 
-                        <div class="mt-2 ms-3 small text-muted text-center">
-                            <span *ngIf="appointment.Status === 'Pending'">Waiting for your approval</span>
-                            <span *ngIf="appointment.Status === 'Confirmed'">Appointment is confirmed</span>
-                        </div>
-
-
-                        <div *ngIf="appointment.Status === 'Pending'" class="d-flex gap-3 mt-2 flex-wrap">
-                            <button (click)="updateStatus(appointment, 'Confirmed')"
-                                class="btn bg-caffe btn-sm flex-grow-1 py-1 text-light hover-class"
-                                style="font-size: .99rem; min-width: 120px;">
-                                <i class="bi bi-check-circle me-1  text-light fs-6"></i> Approve
-                            </button>
+                        <div *ngIf="appointment.Status === 'Pending' ||appointment.Status === 'Confirmed'" class="d-flex justify-content-center mt-4">
                             <button (click)="updateStatus(appointment, 'Cancelled')"
-                                class="btn btn-outline-danger btn-sm flex-grow-1 py-1" style="font-size: .99rem; min-width: 120px;">
-                                <i class="bi bi-x-circle me-1 fs-6"></i> Reject
+                                class="btn btn-outline-danger w-75 mt-2 mb-2" style="font-size: .99rem;">
+                                <i class="bi bi-x-circle me-1 fs-6"></i> Cancel Appointment
                             </button>
-                        </div>
-                        <div *ngIf="appointment.Status === 'Confirmed'" class="d-flex gap-3 mt-2 flex-wrap">
-                            <button (click)="updateStatus(appointment, 'Completed')"
-                                class="btn bg-caffe btn-sm flex-grow-1 py-1 text-light" style="font-size: .99rem; min-width: 120px;">
-                                <i class="bi bi-check-circle me-1 fs-6"></i> Complete
-                            </button>
-                            <button (click)="updateStatus(appointment, 'Cancelled')"
-                                class="btn btn-outline-danger btn-sm flex-grow-1 py-1" style="font-size: .99rem; min-width: 120px;">
-                                <i class="bi bi-x-circle me-1 fs-6"></i> Cancel
-                            </button>
-                        </div>
-                        <div *ngIf="appointment.Status === 'Completed' || appointment.Status === 'Cancelled'"
-                            class="d-flex gap-1" style="visibility: hidden;font-size: .99rem;">
-                            <button class="btn btn-sm flex-grow-1" disabled style="height: 25px;"></button>
-                            <button class="btn btn-sm flex-grow-1" disabled style="height: 25px;"></button>
-                        </div>
+                       </div>
+                     
                     </div>
                 </div>
             </div>
