@@ -1,5 +1,5 @@
 <!-- Hero Slider -->
-<!-- <section class="hero-slider">
+<section class="hero-slider">
   <div class="slider-container">
     <div *ngFor="let slide of heroSlides; let i = index" class="slide" [class.active]="i === activeSlideIndex"
       [style.background-image]="'url(' + slide.image + ')'">
@@ -7,51 +7,6 @@
       <div class="slide-content z-3">
         <h1 style="font-size: 3.5rem;">{{ slide.title }}</h1>
         <p class="ms-1 fst-italic" style="font-size: 1.5rem;">{{ slide.subtitle }}</p>
-      </div>
-    </div>
-  </div>
-</section> -->
-
-<section class="hero-slider">
-  <div class="slider-container">
-    <div *ngFor="let slide of heroSlides; let i = index" class="slide" [class.active]="i === activeSlideIndex">
-      <div class="slide-bg" [style.background-image]="'url(' + slide.image + ')'"></div>
-      
-      <!-- Layered Decorative Elements -->
-      <div class="blueprint-grid"></div>
-      <div class="furniture-outline" *ngIf="slide.title.includes('Furniture')">
-        <div class="sofa-line"></div>
-        <div class="table-line"></div>
-      </div>
-      <div class="auction-timer" *ngIf="slide.title.includes('Auction')">
-        <div class="timer-progress"></div>
-      </div>
-      
-      <div class="slide-content">
-        <div class="category-label">{{ getCategory(slide.title) }}</div>
-        <h1 class="title-mask">{{ slide.title }}</h1>
-        <p class="subtitle">{{ slide.subtitle }}</p>
-        
-        <!-- Interactive Preview Cards -->
-        <div class="preview-cards">
-          <div class="preview-card" *ngFor="let item of getSampleItems(slide.title)">
-            <img [src]="item.image" class="preview-image">
-            <div class="preview-info">
-              <span class="preview-title">{{ item.title }}</span>
-              <span class="preview-price">{{ item.price }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Timeline Navigation -->
-      <div class="timeline-nav">
-        <div *ngFor="let slide of heroSlides; let i = index" 
-             class="timeline-item" 
-             [class.active]="i === activeSlideIndex"
-             (click)="setActiveSlide(i)">
-          <div class="timeline-progress"></div>
-        </div>
       </div>
     </div>
   </div>
@@ -184,8 +139,8 @@
       <!-- <span class="badge bg-caffe position-relative top-0 start-0 m-2">{{property.type}}</span> -->
 
       <span class="badge position-relative top-0 start-0 m-2 text-white"
-        [style.background-color]="property.type === 'Rent' ? '#de8332' : '#2a5f8b'">
-        For {{ property.type }}
+        [style.background-color]="property.type === 'Rent' ? '#2a5f8b' : '#4a7d5e'">
+        For {{ property.type === 'Sell' ? 'Sale' : 'Rent' }}
       </span>
 
 
