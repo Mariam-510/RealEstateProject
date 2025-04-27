@@ -1,6 +1,11 @@
 .footer-container {
   /* background: #5e3c31; */
-  background: #bf856e;
+  
+  /* background: #bf856e; */
+  /* background: #987061; */
+
+  background: #987061;
+
   padding: 1rem 1rem auto;
   /* box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1); */
   margin-top: auto;
