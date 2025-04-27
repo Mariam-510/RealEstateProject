@@ -15,13 +15,6 @@ namespace RealEstate.Repositories
             _context = context;
         }
 
-        public async Task<List<Property>> GetAllAsync()
-        {
-            return await _context.Properties.Where(p=>!p.IsDeleted && p.ApprovalStatus==PropertyApprovalStatus.Approved)
-                                  .Include(p=>p.Seller)
-                                  .Include(p=>p.Agent)
-                                  .ToListAsync();
-        }
         public async Task<List<Property>> GetAllPending()
         {
             return await _context.Properties.Where(p => !p.IsDeleted && p.ApprovalStatus == PropertyApprovalStatus.Pending)

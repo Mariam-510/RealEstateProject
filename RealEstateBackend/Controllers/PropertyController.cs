@@ -223,6 +223,41 @@ namespace RealEstate.Controllers
         }
 
 
+        [HttpGet("GetByUser")]
+        [Authorize(Roles = "Seller,Agent")]
+        public async Task<IActionResult> GetByUserId()
+        {
+            List<Property> properties;
+
+            string userIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(userIdStr, out int userId))
+                return Unauthorized("User not found.");
+
+            if (User.IsInRole("Seller"))
+            {
+                var seller = await _sellerRepo.GetByIdAsync(userId);
+                if (seller == null || seller.IsDeleted)
+                    return NotFound($"Seller with ID {userId} does not exist or is deleted!");
+
+                properties = await _propertyRepo.GetApprovedBySellerIdAsync(seller.Id);
+            }
+            else
+            {
+                var agent = await _agentRepo.GetByIdAsync(userId);
+                if (agent == null || agent.IsDeleted)
+                    return NotFound($"Agent with ID {userId} does not exist or is deleted!");
+
+                properties = await _propertyRepo.GetAllByAgentIdAsync(agent.Id);
+            }
+
+            if (properties == null || !properties.Any())
+                return NotFound($"No properties found for User with ID {userId}");
+
+            var propertyDtos = _mapper.Map<List<PropertyDto>>(properties);
+            return Ok(propertyDtos);
+        }
+
         // POST: api/Property
         [HttpPost("Add")]
         [Authorize(Roles = "Seller,Agent")]

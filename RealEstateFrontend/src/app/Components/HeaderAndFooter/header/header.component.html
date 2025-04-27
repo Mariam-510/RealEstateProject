@@ -173,23 +173,61 @@
             <!-- <p class="user-email">{{ currentUser.email }}</p> -->
             <p class="user-email">{{loggedInUser?.email ? loggedInUser?.email : 'user@gmail.com'}}</p>
           </div>
-          <a class="dropdown-item" routerLink="/user/profile">
-            <i class="bi bi-person-fill" style="color: #6e5447;"></i> Profile
-          </a>
+          
+          <div *ngIf="hasRole('Buyer')">
+            <a class="dropdown-item" routerLink="/user/profile">
+              <i class="bi bi-person-fill" style="color: #6e5447;"></i> Profile
+            </a>
+            <a class="dropdown-item" routerLink="user/wishlist">
+              <i class="bi bi-heart-fill" style="color: #6e5447;"></i> Favorites
+            </a>
+            <a class="dropdown-item" routerLink="/user/orders">
+              <i class="bi bi-receipt" style="color: #6e5447;"></i> Orders
+            </a>
+            <a class="dropdown-item" routerLink="/bids">
+              <i class="bi bi-hammer" style="color: #6e5447;"></i> Bids
+            </a>
+            <a class="dropdown-item" routerLink="/user/reviews">
+              <i class="bi bi-star-fill" style="color: #6e5447;"></i> Reviews
+            </a>
+          </div>
 
-          <a class="dropdown-item" routerLink="user/wishlist">
+          <div *ngIf="hasRole('Seller')">
+            <a class="dropdown-item" routerLink="/seller/profile">
+              <i class="bi bi-person-fill" style="color: #6e5447;"></i> Profile
+            </a>
+            <a class="dropdown-item" routerLink="/seller/dashboard">
+              <i class="bi bi-receipt" style="color: #6e5447;"></i> Dashboard
+            </a>
+            <a class="dropdown-item" routerLink="/seller/addAuction">
+              <i class="bi bi-hammer" style="color: #6e5447;"></i> Add Auction
+            </a>
+            <a class="dropdown-item" routerLink="/seller/addProperty">
+              <i class="bi bi-building-fill" style="color: #6e5447;"></i> Add Property
+            </a>
+            <a class="dropdown-item" routerLink="/seller/ViewAllAppointment">
+              <i class="bi bi-eye-fill" style="color: #6e5447;"></i> All Appointments
+            </a>
+          </div>
 
-            <i class="bi bi-heart-fill" style="color: #6e5447;"></i> Favorites
-          </a>
-          <a class="dropdown-item" routerLink="/user/orders">
-            <i class="bi bi-receipt" style="color: #6e5447;"></i> Orders
-          </a>
-          <a class="dropdown-item" routerLink="/bids">
-            <i class="bi bi-hammer" style="color: #6e5447;"></i> Bids
-          </a>
-          <a class="dropdown-item" routerLink="/user/reviews">
-            <i class="bi bi-star-fill" style="color: #6e5447;"></i> Reviews
-          </a>
+          <div *ngIf="hasRole('Agent')">
+            <a class="dropdown-item" routerLink="/agent/profile">
+              <i class="bi bi-person-fill" style="color: #6e5447;"></i> Profile
+            </a>
+            <a class="dropdown-item" routerLink="/agent/dashboard">
+              <i class="bi bi-receipt" style="color: #6e5447;"></i> Dashboard
+            </a>
+            <a class="dropdown-item" routerLink="/agent/addAuction">
+              <i class="bi bi-hammer" style="color: #6e5447;"></i> Add Auction
+            </a>
+            <a class="dropdown-item" routerLink="/agent/addProperty">
+              <i class="bi bi-building-fill" style="color: #6e5447;"></i> Add Property
+            </a>
+            <a class="dropdown-item" routerLink="/agent/ViewAllAppointment">
+              <i class="bi bi-eye-fill" style="color: #6e5447;"></i> All Appointments
+            </a>
+          </div>
+          
           <div class="dropdown-divider"></div>
           <button class="dropdown-item" (click)="handleLogout()">
             <i class="bi bi-box-arrow-right" style="color: #6e5447;"></i> Log Out

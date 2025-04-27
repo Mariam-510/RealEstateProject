@@ -339,6 +339,14 @@ export class PropertyDetailsComponent implements AfterViewInit {
     navigator.clipboard.writeText(this.locationUrl);
   }
 
+  get displayedDescription(): string {
+    if (!this.property?.description) return '';
+  
+    const desc = this.property.description;
+    const shortDesc = desc.slice(0, 200) + (desc.length > 200 ? '...' : '');
+  
+    return (this.showMore ? desc : shortDesc).replace(/\n/g, '<br>');
+  }
 
   hasRole(requiredRole: string) {
     return this.auth.hasRole(requiredRole);

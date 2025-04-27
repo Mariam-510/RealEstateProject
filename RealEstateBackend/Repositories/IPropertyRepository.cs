@@ -4,7 +4,6 @@ namespace RealEstate.Repositories
 {
     public interface IPropertyRepository
     {
-        Task<List<Property>> GetAllAsync();
         Task<List<Property>> GetFilteredAsync(PropertyCategory? category, PropertyStatus? status, PropertyType? type, string searchByLocation);
         Task<List<Property>> GetAllPending();
         Task<List<Property>> GetAllBySellerIdAsync(int sellerId);
