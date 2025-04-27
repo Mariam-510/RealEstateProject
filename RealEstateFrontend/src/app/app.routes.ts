@@ -57,6 +57,7 @@ import { SimilarProductsComponent } from './Components/Products/Details/similar-
 import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-all-pointment/buyer-view-all-pointment.component';
 import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
 import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
+import { CreateadminComponent } from './Components/Admin/createadmin/createadmin.component';
 
 //----------------------------------------------------------------------------------------
 
@@ -75,6 +76,7 @@ export const routes: Routes = [
       { path: "addCatgory", component: AddCategoryComponent, title: "Add Category" },
       { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscription Plan" },
       { path: 'approve', component: ApprovePropertyComponent, pathMatch: 'full' },
+      { path: 'createadmin', component: CreateadminComponent, pathMatch: 'full' },
     ]
   },
 
@@ -86,8 +88,8 @@ export const routes: Routes = [
       { path: 'dashboard', component: AgentdashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
-      {path:'Properties',component:ViewAllPropertiesComponent,title:"View All Properties"},
-      {path:'ViewAllAppointment',component:ViewAllPointmentComponent,title:"View All Appointment"}
+      { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
+      { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" }
     ]
   },
 
@@ -99,9 +101,9 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
-      {path:'Properties',component:ViewAllPropertiesComponent,title:"View All Properties"},
-      {path:'PropertiesPending',component:ViewPendingPropertiesComponent,title:"View Pending Properties"},
-      {path:'ViewAllAppointment',component:ViewAllPointmentComponent,title:"View All Appointment"}
+      { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
+      { path: 'PropertiesPending', component: ViewPendingPropertiesComponent, title: "View Pending Properties" },
+      { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" }
     ]
   },
 
@@ -113,9 +115,9 @@ export const routes: Routes = [
       { path: "orders", component: OrderSummaryComponent, title: "Orders Summary" },
       { path: 'orders/:id', component: OrderDetailsComponent, title: "Order Details" },
       { path: "AllReveiw", component: AllReviewComponent, title: "AllReview" },
-      {path:'FavoriteProducts',component:FavoriteProductsComponent,title:"Favorite Products"},
-      {path:'wishlist',component:WishlistComponent,title:"Wishlist"},
-      {path:'BuyerViewAllAppointment',component:BuyerViewAllPointmentComponent,title:"View All Appointment"}
+      { path: 'FavoriteProducts', component: FavoriteProductsComponent, title: "Favorite Products" },
+      { path: 'wishlist', component: WishlistComponent, title: "Wishlist" },
+      { path: 'BuyerViewAllAppointment', component: BuyerViewAllPointmentComponent, title: "View All Appointment" }
 
     ]
   },
@@ -138,7 +140,7 @@ export const routes: Routes = [
 
   //---------------------------------------------------------------------------------------
   { path: 'chat', component: ChatmodalComponent, title: "Chat" },
-  { path: 'MainChat', component: MainChatComponent, title: "Main Chat" },
+  { path: 'mainchat', component: MainChatComponent, title: "Main Chat" },
 
   //---------------------------------------------------------------------------------------
   { path: 'products', component: PHomeComponent, title: "Products Home Page" },

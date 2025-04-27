@@ -83,6 +83,7 @@ export class AuthService {
     if (isExpired) {
       this.redirectToLoginWithMessage('Session expired. Please login again.');
     }
+    this.router.navigate(['/login']);
   }
 
   private redirectToLoginWithMessage(message: string) {

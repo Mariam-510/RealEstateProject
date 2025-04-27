@@ -2,13 +2,13 @@
   <div class="d-flex flex-wrap">
     <div class="col-lg-8 col-12 pe-lg-4">
 
-      <div class="shadow-sm" *ngIf="orderStatusCode !== 4">
+      <div class="shadow-sm" *ngIf="(order?.statusNum ??0) !== 4">
         <div class="card-body mt-5">
           <div class="d-flex justify-content-between mt-4 align-items-center mb-4 pt-4 ps-4 rounded">
             <div>
               <h4 class="mb-0">
                 <i class="bi bi-receipt me-2"></i>
-                Order Number <span class="text-caffe font-weight-bold">{{ orderId }}</span>
+                Order Number <span class="text-caffe font-weight-bold">{{ order?.id }}</span>
               </h4>
             </div>
           </div>
@@ -37,8 +37,8 @@
             <ul id="progressbar-2">
               <li *ngFor="let step of [0,1,2,3]; let i = index" [ngClass]="{
           'step0': true,
-          'active': orderStatusCode < 4 && orderStatusCode >= i,
-          'completed-line': orderStatusCode < 4 && orderStatusCode > i
+          'active': (order?.statusNum ??0) < 4 && (order?.statusNum ??0) >= i,
+          'completed-line': (order?.statusNum ??0) < 4 && (order?.statusNum ??0) > i
         }" [id]="'step' + (i + 1)">
               </li>
             </ul>
@@ -47,14 +47,14 @@
       </div>
 
       <!-- Cancelled Order Message -->
-      <div class="card shadow-sm border-0 mt-5" *ngIf="orderStatusCode === 4">
+      <div class="card shadow-sm border-0 mt-5" *ngIf="(order?.statusNum ??0) === 4">
         <div class="card-body text-center" style="padding: 19px;">
           <div class="cancelled-icon mb-4">
             <i class="bi bi-x-circle-fill fs-1"></i>
           </div>
           <h3 class="fw-bold mb-3">Order Cancelled</h3>
-          <p class="text-muted mb-4">Your order {{ orderId }} has been cancelled and won't be processed.</p>
-           
+          <p class="text-muted mb-4">Your order {{ order?.id }} has been cancelled and won't be processed.</p>
+
         </div>
       </div>
 
@@ -69,15 +69,15 @@
                 <i class="bi bi-person-circle text-caffe me-3 mt-3 "></i>
                 <div>
                   <h6 class="mb-0 mt-3">Customer Name</h6>
-                  <p class="text-muted mb-0">Shahd Abdalla</p>
+                  <p class="text-muted mb-0">{{loggedInUser?.firstName + ' ' + (loggedInUser?.lastName ?? "")}}</p>
                 </div>
               </div>
 
               <div class="d-flex align-items-start mb-3">
                 <i class="bi bi-geo-alt text-caffe  me-3 mt-1"></i>
                 <div>
-                  <h6 class="mb-0">6 October, Giza, Egypt</h6>
-                  <p class="text-muted mb-0">Apartment 12, Floor 3</p>
+                  <h6 class="mb-0">{{address?.buildingNum}}, {{address?.street}},{{address?.city}}</h6>
+                  <p class="text-muted mb-0">Apartment {{address?.apartment}}, Floor {{address?.floor}}</p>
                 </div>
               </div>
 
@@ -85,7 +85,7 @@
                 <i class="bi bi-clock text-caffe  me-3 mt-1"></i>
                 <div>
                   <h6 class="mb-0">Phone Number</h6>
-                  <p class="text-muted mb-0">+20 1150211405</p>
+                  <p class="text-muted mb-0">{{address?.phoneNum}}</p>
                 </div>
               </div>
             </div>
@@ -109,11 +109,11 @@
           <div class="bg-light p-3 rounded mb-4">
             <div class="d-flex justify-content-between mb-2">
               <span class="text-muted">Subtotal</span>
-              <span class="fw-medium">600 EGP</span>
+              <span class="fw-medium">{{(order?.subTotal??0) | currency:'EGP '}}</span>
             </div>
             <div class="d-flex justify-content-between mb-2">
               <span class="text-muted">Delivery Fee</span>
-              <span class="fw-medium">100 EGP</span>
+              <span class="fw-medium">{{(order?.deliveryFees??0) | currency:'EGP '}}</span>
             </div>
             <div class="d-flex justify-content-between">
               <span class="text-muted">Discount</span>
@@ -123,7 +123,7 @@
 
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="mb-0">Total Amount</h5>
-            <h4 class="mb-0 text-caffe">700 EGP</h4>
+            <h4 class="mb-0 text-caffe">{{(order?.subTotal??0) + (order?.deliveryFees??0) | currency:'EGP '}} EGP</h4>
           </div>
 
           <hr class="my-4">
@@ -133,7 +133,7 @@
             <div class="d-flex align-items-center bg-light p-3 rounded">
               <i class="bi bi-paypal fs-3 text-caffe me-3"></i>
               <div>
-                <h6 class="mb-0">PayPal</h6>
+                <h6 class="mb-0">{{order?.paymentMethod}}</h6>
                 <small class="text-muted">Payment completed</small>
               </div>
             </div>
@@ -156,68 +156,36 @@
         <h4 class="mb-0 ">
           <i class="bi bi-box-seam me-2"></i>Order Items
         </h4>
-        <span class="badge bg-light bg-opacity-10 text-caffe p-2">3 Items</span>
+        <span class="badge bg-light bg-opacity-10 text-caffe p-2">{{orderItems?.length}} Items</span>
       </div>
 
-      <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded"
+      <div *ngFor="let item of orderItems" class="d-flex justify-content-between align-items-center mb-4 p-3 rounded"
         style="background-color: #f8f9fa;">
         <div class="d-flex align-items-center">
           <div class="position-relative">
-            <img src="/images/Home/Sofa.jpg" class="img-fluid rounded"
+            <img [src]="apiConfig.apiUrl + item.productImage" class="img-fluid rounded"
               style="width: 130px; height: 140px; object-fit: cover;">
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-caffe">
-              2
+              {{ item.quantity }}
             </span>
           </div>
           <div class="ms-3">
-            <h6 class="mb-1 fs-5">Modern Velvet Sofa</h6>
+            <h6 class="mb-1 fs-5">{{ item.productName }}</h6>
             <div>
-              <div><i class="bi bi-tag me-1 text-caffe"></i> Furniture</div>
+              <div><i class="bi bi-tag me-1 text-caffe"></i> {{ item.categoryName }}</div>
             </div>
             <div class="mt-2">
-              <button class="btn btn-sm text-caffe" style="border: none;" (click)="openReviewDialog({name:'Modern Velvet Sofa'})">
+              <button class="btn btn-sm text-caffe" style="border: none;" (click)="openReviewDialog(item)">
                 <i class="bi bi-chat-left-text me-1"></i>Add Your Review
               </button>
             </div>
           </div>
         </div>
         <div class="text-end">
-          <p class="mb-1 fw-bold fs-5">400 EGP</p>
-          <p class="text-muted small">200 EGP × 2</p>
+          <p class="mb-1 fw-bold fs-5">{{ item.price | currency:'EGP ' }}</p>
+          <p class="text-muted small">{{ item.price /item.quantity | currency:'EGP ' }} × {{ item.quantity }}</p>
         </div>
       </div>
-
-      <!-- Single Order Item -->
-      <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background-color: #f8f9fa;">
-        <div class="d-flex align-items-center">
-          <div class="position-relative">
-            <img src="/images/Home/Chair.jpg" class="img-fluid rounded"
-              style="width: 130px; height: 140px; object-fit: cover;">
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-caffe">
-              1
-            </span>
-          </div>
-
-          <div class="ms-3">
-            <h6 class="mb-1 fs-5">Ergonomic Office Chair</h6>
-            <div>
-              <div><i class="bi bi-tag me-1 text-caffe"></i> Furniture</div>
-            </div>
-            <div class="mt-2">
-              <button class="btn btn-sm text-caffe" style="border: none;" (click)="openReviewDialog({ name: 'Ergonomic Office Chair' })">
-                <i class="bi bi-chat-left-text me-1"></i>Add Your Review
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="text-end">
-          <p class="mb-1 fw-bold fs-5">200 EGP</p>
-          <p class="text-muted small">200 EGP × 1</p>
-        </div>
-      </div>
-
-
-
 
     </div>
   </div>

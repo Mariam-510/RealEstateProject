@@ -39,8 +39,8 @@ namespace RealEstate.Models.DTOs.PropertyDto
         [Required]
         public decimal Space { get; set; }
 
-        [Required]
-        public string Status { get; set; }
+        //[Required]
+        //public string Status { get; set; }
 
         // Upload files from form
         [Required]
@@ -54,10 +54,10 @@ namespace RealEstate.Models.DTOs.PropertyDto
                 yield return new ValidationResult("Invalid property Type. Allowed: Sell, Rent.", new[] { nameof(Type) });
             }
 
-            if (!Enum.TryParse(typeof(PropertyStatus), Status, true, out _))
-            {
-                yield return new ValidationResult("Invalid property Status. Allowed: Available, Sold, Auctioned.", new[] { nameof(Status) });
-            }
+            //if (!Enum.TryParse(typeof(PropertyStatus), Status, true, out _))
+            //{
+            //    yield return new ValidationResult("Invalid property Status. Allowed: Available, Sold, Auctioned.", new[] { nameof(Status) });
+            //}
 
             if (!Enum.TryParse(typeof(PropertyCategory), PropertyCategory, true, out _))
             {

@@ -29,5 +29,8 @@ namespace RealEstate.Models.Dtos.OrderItemDto
 
         public string? ProductImage { get; set; }
 
+        public string? CategoryName { get; set; }
+
+
     }
 }

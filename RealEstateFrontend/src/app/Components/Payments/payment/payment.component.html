@@ -9,19 +9,13 @@
             <div class="d-flex justify-content-between align-items-center">
               <h3><i class="bi bi-geo-alt"></i> Delivery Address</h3>
 
-              <a
-                routerLink="/checkout/address"
-                class="btn btn-outline-secondary"
-                >Change address</a
-              >
+              <a routerLink="/checkout/address" class="btn btn-outline-secondary">Change address</a>
             </div>
-            <hr
-              style="
+            <hr style="
                 border: 2px solid #c38e79;
                 margin-bottom: -5;
                 margin-top: -5;
-              "
-            />
+              " />
 
             <p class="text-muted mb-1">
               {{ address?.buildingNum }} {{ address?.street }},
@@ -44,13 +38,9 @@
 
           <div class="payment-methods">
             <div class="list-group mb-4">
-              <button
-                *ngFor="let method of paymentMethods"
-                type="button"
+              <button *ngFor="let method of paymentMethods" type="button"
                 class="list-group-item list-group-item-action d-flex flex-column align-items-start p-3"
-                [class.active]="selectedMethod === method.id"
-                (click)="selectPaymentMethod(method.id)"
-              >
+                [class.active]="selectedMethod === method.id" (click)="selectPaymentMethod(method.id)">
                 <!-- selectedMethod = method.id -->
                 <div class="d-flex w-100 align-items-center">
                   <i class="bi {{ method.icon }} me-3 fs-4"></i>
@@ -58,63 +48,43 @@
                     <h6 class="mb-0">{{ method.name }}</h6>
                     <small class="text-muted">{{ method.description }}</small>
                   </div>
-                  <i
-                    class="bi bi-check-circle-fill ms-auto"
-                    *ngIf="selectedMethod === method.id"
-                  ></i>
+                  <i class="bi bi-check-circle-fill ms-auto" *ngIf="selectedMethod === method.id"></i>
                 </div>
               </button>
             </div>
 
             <!-- Stripe Card Element (only visible when Credit Card selected) -->
             <!-- Stripe Checkout Button (only visible when Credit Card selected) -->
-            <div
-              *ngIf="selectedMethod === 'stripe'"
-              class="mb-4 p-3 border rounded"
-            >
-              <div class="d-flex align-items-center mb-3">
-                <img
-                  src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/stripe/stripe-original.svg"
-                  alt="Stripe"
-                  style="height: 30px; margin-right: 15px"
-                />
-                <div>
-                  <h6 class="mb-1">Secure Card Payment</h6>
-                  <div class="card-icons mt-2">
+            <div *ngIf="selectedMethod === 'stripe'" class="mb-4 p-3 border rounded">
+              <div class="d-flex align-items-center">
+                <!-- <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/stripe/stripe-original.svg" alt="Stripe"
+                  style="height: 30px; margin-right: 15px" /> -->
+                <i class="bi bi-stripe fs-1 me-2 text-caffe"></i>
+
+                <div class="mt-2">
+                  <h6 class="">Secure Card Payment</h6>
+                  <p class="text-muted">
+                    Please review your order before checking out with PayPal
+                  </p>
+                  <!-- <div class="card-icons mt-2">
                     <i class="bi bi-credit-card-2-front fs-5 me-2"></i>
-                    <img
-                      src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visa/visa-original.svg"
-                      alt="Visa"
-                      style="height: 20px; margin-right: 10px"
-                    />
-                    <img
-                      src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mastercard/mastercard-original.svg"
-                      alt="Mastercard"
-                      style="height: 20px; margin-right: 10px"
-                    />
-                    <img
-                      src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amex/amex-original.svg"
-                      alt="American Express"
-                      style="height: 20px"
-                    />
-                  </div>
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visa/visa-original.svg" alt="Visa"
+                      style="height: 20px; margin-right: 10px" />
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mastercard/mastercard-original.svg"
+                      alt="Mastercard" style="height: 20px; margin-right: 10px" />
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amex/amex-original.svg"
+                      alt="American Express" style="height: 20px" />
+                  </div> -->
                 </div>
               </div>
 
-              <button
-                class="btn btn-stripe w-100 py-2 mb-3"
-                [disabled]="isProcessing"
-                (click)="handlePayment()"
-              >
+              <button class="btn btn-stripe w-100 py-2 mb-3" [disabled]="isProcessing" (click)="handlePayment()">
                 <span *ngIf="!isProcessing">
                   <i class="bi bi-credit-card me-2"></i> Pay with Card
                 </span>
                 <span *ngIf="isProcessing">
                   Processing...
-                  <div
-                    class="spinner-border spinner-border-sm ms-2"
-                    role="status"
-                  >
+                  <div class="spinner-border spinner-border-sm ms-2" role="status">
                     <span class="visually-hidden">Loading...</span>
                   </div>
                 </span>
@@ -127,10 +97,7 @@
             </div>
 
             <!-- PayPal section (only visible when PayPal selected) -->
-            <div
-              *ngIf="selectedMethod === 'paypal'"
-              class="mb-4 p-3 border rounded"
-            >
+            <div *ngIf="selectedMethod === 'paypal'" class="mb-4 p-3 border rounded">
               <div class="d-flex align-items-center mb-3">
                 <!-- <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/paypal/paypal-original.svg" alt="PayPal"
                   style="height: 30px; margin-right: 15px" /> -->
@@ -165,43 +132,31 @@
                 <span>{{ shippingDto?.deliveryFees | currency : "EGP " }}</span>
               </div>
               <hr />
-              <div
-                class="d-flex justify-content-between fw-semibold text-caffe fs-5"
-              >
+              <div class="d-flex justify-content-between fw-semibold text-caffe fs-5">
                 <span>Total:</span>
                 <span>{{
                   (cart?.totalPrice ?? 0) + (shippingDto?.deliveryFees ?? 0)
-                    | currency : "USD"
-                }}</span>
+                  | currency : "USD"
+                  }}</span>
               </div>
             </div>
 
             <div class="d-flex justify-content-between">
-              <a
-                routerLink="/checkout/address"
-                class="btn btn-outline-secondary"
-              >
+              <a routerLink="/checkout/address" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-2"></i>Back
               </a>
-              <button
-                class="btn btn-primary"
-                (click)="handlePayment()"
-                [disabled]="
+              <button class="btn bg-caffe text-white border-0" (click)=" handlePayment()" [disabled]="
                   selectedMethod === 'paypal' ||
                   selectedMethod === 'stripe' ||
                   isProcessing
-                "
-              >
+                ">
                 <span *ngIf="!isProcessing">
                   Complete Order
                   <i class="bi bi-lock-fill ms-2"></i>
                 </span>
                 <span *ngIf="isProcessing">
                   Processing...
-                  <div
-                    class="spinner-border spinner-border-sm ms-2"
-                    role="status"
-                  >
+                  <div class="spinner-border spinner-border-sm ms-2" role="status">
                     <span class="visually-hidden">Loading...</span>
                   </div>
                 </span>
@@ -213,10 +168,7 @@
 
       <!-- Right Column - Order Summary -->
       <div class="col-lg-4 ps-lg-4">
-        <div
-          class="bg-white p-4 rounded shadow-sm position-sticky"
-          style="top: 10px"
-        >
+        <div class="bg-white p-4 rounded shadow-sm position-sticky" style="top: 10px">
           <h4 class="mb-3">
             <i class="bi bi-clipboard-check"></i>
             Order Summary
@@ -225,17 +177,10 @@
 
           <!-- Order Items with scroll -->
           <div class="order-items">
-            <div
-              *ngFor="let item of cart?.orderItemDtos; let last = last"
-              class="order-item"
-            >
+            <div *ngFor="let item of cart?.orderItemDtos; let last = last" class="order-item">
               <div class="d-flex justify-content-between">
                 <div class="d-flex">
-                  <img
-                    [src]="apiConfig.apiUrl + item.productImage"
-                    alt="Product image"
-                    class="me-2 product-image"
-                  />
+                  <img [src]="apiConfig.apiUrl + item.productImage" alt="Product image" class="me-2 product-image" />
                   <div>
                     <div class="item-name">
                       {{ item.productName }}
@@ -243,10 +188,7 @@
 
                     <div class="d-flex align-items-center gap-2">
                       <span>{{ item.quantity }} x</span>
-                      <div
-                        class="color-swatch rounded-5"
-                        [style.background]="item.color"
-                      ></div>
+                      <div class="color-swatch rounded-5" [style.background]="item.color"></div>
                     </div>
                   </div>
                 </div>
@@ -255,11 +197,7 @@
                 </div>
               </div>
               <div class="d-flex justify-content-center">
-                <hr
-                  width="240vw"
-                  *ngIf="!last"
-                  style="border: 1px solid #c38e79"
-                />
+                <hr width="240vw" *ngIf="!last" style="border: 1px solid #c38e79" />
               </div>
             </div>
           </div>
