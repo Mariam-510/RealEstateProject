@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Data;
 using RealEstate.Models.Domains;
+using RealEstate.Models.DTOs.PropertyDto;
 using System;
 
 namespace RealEstate.Repositories
@@ -137,6 +138,221 @@ namespace RealEstate.Repositories
 
             return await query.ToListAsync();
         }
+
+        public async Task<int> GetFilteredBySellerIdAsync(int sellerId, PropertyType? type = null, PropertyStatus? status = null)
+        {
+            var query = _context.Properties
+                .Include(p => p.Seller).ThenInclude(s => s.Account)
+                .Where(p => !p.IsDeleted && p.SellerId == sellerId && p.ApprovalStatus == PropertyApprovalStatus.Approved);
+
+            if (!string.IsNullOrWhiteSpace(type?.ToString()))
+            {
+                query = query.Where(p =>
+                    p.Type.ToString().ToLower().Contains(type.ToString().ToLower()));
+            }
+
+            if (!string.IsNullOrWhiteSpace(status?.ToString()))
+            {
+                query = query.Where(p =>
+                    p.Status.ToString().ToLower().Contains(status.ToString().ToLower()));
+            }
+
+            return await query.CountAsync();
+        }
+                         
+        public async Task<int> GetFilteredByAgentIdAsync(int agentId, PropertyType? type = null, PropertyStatus? status = null)
+        {
+            var query = _context.Properties
+                .Include(p => p.Seller).ThenInclude(s => s.Account)
+                .Where(p => !p.IsDeleted && p.AgentId == agentId);
+
+            if (!string.IsNullOrWhiteSpace(type?.ToString()))
+            {
+                query = query.Where(p =>
+                    p.Type.ToString().ToLower().Contains(type.ToString().ToLower()));
+            }
+
+            if (!string.IsNullOrWhiteSpace(status?.ToString()))
+            {
+                query = query.Where(p =>
+                    p.Status.ToString().ToLower().Contains(status.ToString().ToLower()));
+            }
+
+            return await query.CountAsync();
+        }
+
+        public async Task<decimal> GetTotalSalesBySellerID(int sellerId)
+        {
+            return await _context.Properties
+                .Where(p => p.SellerId == sellerId && p.Status == PropertyStatus.Sold && p.Type == PropertyType.Sell
+                    && p.ApprovalStatus == PropertyApprovalStatus.Approved)
+                .SumAsync(p => p.Price);
+        }
+
+        public async Task<decimal> GetTotalRentalsBySellerID(int sellerId)
+        {
+            return await _context.Properties
+                .Where(p => p.SellerId == sellerId && p.Status == PropertyStatus.Sold && p.Type == PropertyType.Rent
+                    && p.ApprovalStatus == PropertyApprovalStatus.Approved)
+                .SumAsync(p => p.Price);
+        }
+
+        public async Task<decimal> GetTotalSalesByAgentID(int agentId)
+        {
+            return await _context.Properties
+                .Where(p => p.AgentId == agentId && p.Status == PropertyStatus.Sold && p.Type == PropertyType.Sell)
+                .SumAsync(p => p.Price);
+        }
+
+        public async Task<decimal> GetTotalRentalsByAgentID(int agentId)
+        {
+            return await _context.Properties
+                .Where(p => p.AgentId == agentId && p.Status == PropertyStatus.Sold && p.Type == PropertyType.Rent)
+                .SumAsync(p => p.Price);
+        }
+
+        public async Task<(Property? Property, int WishlistCount)> GetHighestWishlistedPropertyBySellerIdAsync(int sellerId)
+        {
+            var result = await _context.Properties
+                .Where(p => p.SellerId == sellerId && !p.IsDeleted)
+                .Select(p => new
+                {
+                    Property = p,
+                    WishlistCount = p.WishlistItems.Count(w => !w.IsDeleted)
+                })
+                .OrderByDescending(x => x.WishlistCount)
+                .FirstOrDefaultAsync();
+
+            return (result?.Property, result?.WishlistCount ?? 0);
+        }
+
+        public async Task<(Property? Property, int WishlistCount)> GetHighestWishlistedPropertyByAgentIdAsync(int agentId)
+        {
+            var result = await _context.Properties
+                .Where(p => p.AgentId == agentId && !p.IsDeleted)
+                .Select(p => new
+                {
+                    Property = p,
+                    WishlistCount = p.WishlistItems.Count(w => !w.IsDeleted)
+                })
+                .OrderByDescending(x => x.WishlistCount)
+                .FirstOrDefaultAsync();
+
+            return (result?.Property, result?.WishlistCount ?? 0);
+        }
+
+        public async Task<(Property? Property, int CompletedAppointmentCount)> GetMostCompletedAppointmentsBySellerIdAsync(int sellerId)
+        {
+            var result = await _context.Properties
+                .Where(p => p.SellerId == sellerId && !p.IsDeleted)
+                .Select(p => new
+                {
+                    Property = p,
+                    CompletedCount = p.Appointments.Count(a =>
+                        a.Status == AppointmentStatus.Completed &&
+                        !a.IsDeleted)
+                })
+                .OrderByDescending(x => x.CompletedCount)
+                .FirstOrDefaultAsync();
+
+            return (result?.Property, result?.CompletedCount ?? 0);
+        }
+
+        public async Task<(Property? Property, int CompletedAppointmentCount)> GetMostCompletedAppointmentsByAgentIdAsync(int agentId)
+        {
+            var result = await _context.Properties
+                .Where(p => p.AgentId == agentId && !p.IsDeleted)
+                .Select(p => new
+                {
+                    Property = p,
+                    CompletedCount = p.Appointments.Count(a =>
+                        a.Status == AppointmentStatus.Completed &&
+                        !a.IsDeleted)
+                })
+                .OrderByDescending(x => x.CompletedCount)
+                .FirstOrDefaultAsync();
+
+            return (result?.Property, result?.CompletedCount ?? 0);
+        }
+
+        //for charttttttttt
+        public async Task<IEnumerable<CategoryRevenueDto>> GetCategoryRevenuesBySellerIdAsync(int sellerId)
+        {
+            // Fetch grouped revenue data from the database
+            var dbResults = await _context.Properties
+                .Where(p => p.SellerId == sellerId && !p.IsDeleted && p.ApprovalStatus == PropertyApprovalStatus.Approved)
+                .GroupBy(p => p.PropertyCategory)
+                .Select(g => new
+                {
+                    Category = g.Key,
+                    TotalSales = g.Where(p => p.Type == PropertyType.Sell && p.Status == PropertyStatus.Sold)
+                                 .Sum(p => p.Price),
+                    TotalRental = g.Where(p => p.Type == PropertyType.Rent && p.Status == PropertyStatus.Sold)
+                                 .Sum(p => p.Price)
+                })
+                .ToListAsync();
+
+            // Get all possible enum values for PropertyCategory
+            var allCategories = Enum.GetValues(typeof(PropertyCategory))
+                                    .Cast<PropertyCategory>();
+
+            // Merge database results with all enum categories
+            var result = allCategories
+                .Select(c => new CategoryRevenueDto
+                {
+                    Category = c,
+                    TotalSalesRevenue = dbResults.FirstOrDefault(r => r.Category == c)?.TotalSales ?? 0m,
+                    TotalRentalRevenue = dbResults.FirstOrDefault(r => r.Category == c)?.TotalRental ?? 0m
+                })
+                .ToList();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<CategoryRevenueDto>> GetCategoryRevenuesByAgentIdAsync(int agentId)
+        {
+            // Fetch grouped revenue data from the database
+            var dbResults = await _context.Properties
+                .Where(p => p.AgentId == agentId && !p.IsDeleted && p.ApprovalStatus == PropertyApprovalStatus.Approved)
+                .GroupBy(p => p.PropertyCategory)
+                .Select(g => new
+                {
+                    Category = g.Key,
+                    TotalSales = g.Where(p => p.Type == PropertyType.Sell && p.Status == PropertyStatus.Sold)
+                                 .Sum(p => p.Price),
+                    TotalRental = g.Where(p => p.Type == PropertyType.Rent && p.Status == PropertyStatus.Sold)
+                                 .Sum(p => p.Price)
+                })
+                .ToListAsync();
+
+            // Get all possible enum values for PropertyCategory
+            var allCategories = Enum.GetValues(typeof(PropertyCategory))
+                                    .Cast<PropertyCategory>();
+
+            // Merge database results with all enum categories
+            var result = allCategories
+                .Select(c => new CategoryRevenueDto
+                {
+                    Category = c,
+                    TotalSalesRevenue = dbResults.FirstOrDefault(r => r.Category == c)?.TotalSales ?? 0m,
+                    TotalRentalRevenue = dbResults.FirstOrDefault(r => r.Category == c)?.TotalRental ?? 0m
+                })
+                .ToList();
+
+            return result;
+        }
+
+
+        public async Task<List<Property>> GetAllPropertiesUnfilteredAsync()
+        {
+            return await _context.Properties
+                .Include(p => p.Seller).ThenInclude(s => s.Account)
+                .Include(p => p.Agent).ThenInclude(a => a.Account)
+                .Where(p => !p.IsDeleted) 
+                .ToListAsync();
+        }
+
+
     }
 }
    

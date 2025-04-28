@@ -10,7 +10,7 @@ namespace RealEstate.Repositories
         Task AddAsync(Appointment appointment);
         Task UpdateAsync(Appointment appointment);
         Task DeleteAsync(int id);
+        Task<IEnumerable<Appointment>> GetAppointmentsByBuyerIdAsync(int buyerId);
 
-        
     }
 }

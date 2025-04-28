@@ -1,0 +1,117 @@
+<div class="mt-5 ms-5 me-5">
+    <div>
+        <h2 class="fw-bold">
+            <span style="font-size: 0.9em;">
+                <i class="bi bi-person-check me-2 text-caffe"></i> Approve Agent
+            </span>
+        </h2>
+        <nav aria-label="breadcrumb" class="mt-2">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item mb-0">
+                    <p class="text-muted mb-0">Admin</p>
+                </li>
+                <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">Approve Agent</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row mt-4 ms-4 me-4">
+    <div class="col-md-12">
+        <div class="card border-0 mt-5">
+            <div class="card-body py-2">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex">
+                        <a href="#" *ngFor="let link of StatusLinks" (click)="setActive(link, $event)"
+                          [ngClass]="{'active-order': link === activeLink, 'text-muted': link !== activeLink}"
+                          class="me-4 text-decoration-none text-caffe" style="font-size: 1.05rem;"> {{ link }}
+                        </a>
+                    </div>
+                    <div class="text-muted">
+                        Showing {{ filteredAgents.length }} of {{ agents.length }} agents
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-3 ms-4 me-4">
+    <div class="col-md-6 col-lg-4" *ngFor="let agent of filteredAgents; let i = index">
+        <div class="card h-100 border-light shadow-sm">
+            <div class="card-body position-relative">
+                <span class="badge position-absolute top-0 end-0 mt-4 me-3 bg-caffe">                      
+                    {{ agent.status | titlecase }}
+                </span>
+                
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-caffe text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="ms-3 mt-1">
+                        <h5 class="fw-bold mb-0">{{ agent.name }}</h5>
+                        <small class="text-muted">{{ agent.timeAgo }}</small>
+                    </div>
+                </div>
+                
+                <div class="agent-details">
+                    <div class="d-flex align-items-start ms-3">
+                        <i class="bi bi-envelope text-caffe me-2 mt-2 "></i>
+                        <div>
+                          <h6 class="mb-0 mt-2">Agent Name</h6>
+                          <p class="text-muted mb-0">{{agent.name}}</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start ms-3">
+                        <i class="bi bi-file-earmark-text text-caffe me-2 mt-2"></i>
+                        <div>
+                            <h6 class="mb-0 mt-2">Commercial Register</h6>
+                            <div class="d-flex align-items-center">
+                                <p class="text-muted mb-0" [id]="'crNumber-' + i">{{ agent.crNumber }}</p>
+                                <button class="btn py-0 copy-btn text-caffe" 
+                                    [attr.data-target]="'crNumber-' + i" 
+                                    title="Copy"
+                                    (click)="copyToClipboard('crNumber-' + i)">
+                                    <i class="fa-solid fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="agent.status === 'pending'" class="mt-2 mb-2">
+                        <p class="text-muted text-center mb-0">
+                            <i class="bi bi-info-circle me-1 text-caffe"></i>
+                            You can validate CR from 
+                            <a href="https://digital.gov.eg/categories/terms/%D8%A7%D8%B3%D8%AA%D8%B9%D9%84%D8%A7%D9%85-%D8%B9%D9%86-%D8%B3%D8%AC%D9%84-%D8%AA%D8%AC%D8%A7%D8%B1%D9%8A" target="_blank">
+                                this link
+                            </a>
+                        </p>
+                    </div>                
+                </div>
+                
+                <div class="d-flex justify-content-end" *ngIf="agent.status === 'pending'">
+                    <button class="btn bg-caffe text-white me-3 mb-2 mt-2" 
+                            (click)="approveAgent(agent.id)">
+                        <i class="bi bi-check-lg"></i> Approve
+                    </button>
+                    <button class="btn text-caffe border-caffe me-3 mb-2 mt-2 "
+                            (click)="rejectAgent(agent.id)">
+                        <i class="bi bi-x-lg"></i> Reject
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-5" *ngIf="filteredAgents.length === 0">
+    <div class="col-12 text-center">
+        <div class="card-body py-5">
+            <i class="bi bi-people text-caffe mb-3" style="font-size: 5vw;"></i> 
+            <h5 style="font-size:2vw;">No Agent found</h5>
+            <p class="text-muted small" style="font-size: 18px;">There are no agents with the selected status</p>
+        </div>
+    </div>
+</div>
+
+
+ 

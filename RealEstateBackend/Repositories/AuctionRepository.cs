@@ -134,5 +134,31 @@ namespace RealEstate.Repositories
             return await dbcontext.Auctions.Where(A => A.PropertyBids.Any(P => P.BuyerId == BuyerID)).ToListAsync();
         }
 
+        public async Task<decimal?> GetHighestBidForEndedAuctionsBySellerAsync(int sellerId)
+        {
+            var currentTime = DateTime.Now;
+
+            var maxBid = await dbcontext.Auctions
+                .Where(a => a.Property != null && a.Property.SellerId == sellerId)
+                .Where(a => a.EndTime <= currentTime || a.Status == Status.Finished)
+                .SelectMany(a => a.PropertyBids)
+                .MaxAsync(b => (decimal?)b.BidAmount);
+
+            return maxBid;
+        }
+
+        public async Task<decimal?> GetHighestBidForEndedAuctionsByAgentAsync(int agentId)
+        {
+            var currentTime = DateTime.Now;
+
+            var maxBid = await dbcontext.Auctions
+                .Where(a => a.Property != null && a.Property.AgentId == agentId)
+                .Where(a => a.EndTime <= currentTime || a.Status == Status.Finished)
+                .SelectMany(a => a.PropertyBids)
+                .MaxAsync(b => (decimal?)b.BidAmount);
+
+            return maxBid;
+        }
+
     }
 }

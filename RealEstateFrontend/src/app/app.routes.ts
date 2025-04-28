@@ -27,7 +27,7 @@ import { AdmindashboardComponent } from './Components/Admin/admindashboard/admin
 import { ViewAllOrderComponent } from './Components/Admin/view-all-order/view-all-order.component';
 import { SellersidebarComponent } from './Components/Seller/sellersidebar/sellersidebar.component';
 import { SellerProfileComponent } from './Components/Seller/seller-profile/seller-profile.component';
-import { DashboardComponent } from './Components/Seller/dashboard/dashboard.component';
+import { DashboardComponent } from './Components/PagesSellerAndAgent/dashboard/dashboard.component';
 import { PaymentComponent } from './Components/Payments/payment/payment.component';
 import { PropertyDetailsComponent } from './Components/Properties/Details/property-details/property-details.component';
 import { PHomeComponent } from './Components/Products/Home/p-home/p-home.component';
@@ -53,8 +53,10 @@ import { ViewPendingPropertiesComponent } from './Components/Seller/view-pending
 import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist.component';
 import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-all-pointment/buyer-view-all-pointment.component';
 import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
-import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
 import { CreateadminComponent } from './Components/Admin/createadmin/createadmin.component';
+import { ApproveAgentComponent } from './Components/Admin/approve-agent/approve-agent.component';
+import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
+
 
 //----------------------------------------------------------------------------------------
 
@@ -72,8 +74,9 @@ export const routes: Routes = [
       { path: 'addProduct', component: AddProductComponent, title: "Add Product" },
       { path: "addCatgory", component: AddCategoryComponent, title: "Add Category" },
       { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscription Plan" },
-      { path: 'approve', component: ApprovePropertyComponent, pathMatch: 'full' },
-      { path: 'createadmin', component: CreateadminComponent, pathMatch: 'full' },
+      { path: 'approveProperty', component: ApprovePropertyComponent, title: "Approve Property"},
+      { path: "createAdmin", component: CreateadminComponent, title: "Create Admin" },
+      { path: "approveAgent", component: ApproveAgentComponent, title: "Approve Agent" },
     ]
   },
 
@@ -82,7 +85,7 @@ export const routes: Routes = [
     path: 'agent', component: AgentSideBarComponent, title: "Agent", children: [
       { path: '', redirectTo: 'profile', pathMatch: "full" },
       { path: "profile", component: AgentProfileComponent, title: "Profile" },
-      { path: 'dashboard', component: AgentdashboardComponent, title: "Dashboard" },
+      { path: 'dashboard', component: DashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
       { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
@@ -168,7 +171,9 @@ export const routes: Routes = [
   },
 
   //---------------------------------------------------------------------------------------
-  { path: 'book', component: BookAppointmentComponent, title: "Book Appointment" },
+
+  { path: 'book/:id', component: BookAppointmentComponent, title: "Book Appointment" },
+
   //---------------------------------------------------------------------------------------
   { path: "**", component: NotFoundComponent },
 

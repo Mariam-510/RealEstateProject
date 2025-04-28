@@ -1,128 +1,242 @@
-<div class="mt-5 ms-5">
-    <h2 class="fw-bold"><span style="font-size: 0.9em;"></span> Create Admin</h2>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><small class="text-muted">Admin</small></li>
-            <li class="breadcrumb-item active fw-semibold text-caffe"><small>Create New Admin</small></li>
-        </ol>
-    </nav>
+
+<div class="mt-5 ms-5 me-5">
+    <div>
+        <h2 class="fw-bold">
+            <span style="font-size: 0.9em;">
+                <i class="bi bi-person-plus-fill text-caffe"></i> Create Admin
+            </span>
+        </h2>
+        <nav aria-label="breadcrumb" class="mt-2">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item mb-0">
+                    <p class="text-muted mb-0">Admin</p>
+                </li>
+                <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">Create Admin</li>
+            </ol>
+        </nav>
+    </div>
+
 </div>
 
 <div class="new-product-page mt-4">
-    <div class="container py-4">
-        <div class="row justify-content-center">
-            <div class="col-lg-9">
-                <div class="bg-white p-4 rounded shadow">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="mb-0">Add New Admin</h3>
-                        <a routerLink="/home" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-left me-2"></i>Back
-                        </a>
-                    </div>
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <div class="bg-white p-4 rounded shadow">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0">Add New Admin</h3>
+            <a routerLink="/home" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-2"></i>Back
+            </a>
+          </div>
 
-                    <hr style="border: 2px solid #c38e79" />
+          <hr style="border: 2px solid #c38e79" />
 
-                    <form [formGroup]="createAdminForm" (ngSubmit)="Create()">
-                        <!-- Basic Information -->
- 
-                            <div class="row g-3">
-
-                                 <div class="mt-4 mb-2">
-                                    <label class="form-label fw-semibold mb-0">Name</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">
-                                            <i class="bi bi-person-fill text-caffe fs-5"></i>
-                                        </span>
-                                        <input type="text" class="form-control border-0 shadow-sm" placeholder="Enter Name"
-                                            formControlName="Name">
-                                    </div>
-                                    <div *ngIf="createAdminForm.get('Name')?.hasError('required') && createAdminForm.get('Name')?.touched"
-                                        class="text-danger small ps-2">
-                                        Name is required.
-                                    </div>
-                                    <div *ngIf="createAdminForm.get('Name')?.hasError('minlength') && createAdminForm.get('Name')?.touched"
-                                        class="text-danger small ps-2">
-                                        Name at least 3 characters.
-                                    </div>
-                                    <div *ngIf="createAdminForm.get('Name')?.hasError('pattern') && createAdminForm.get('Name')?.touched"
-                                        class="text-danger small ps-2">
-                                        Name must be characters only.
-                                    </div>
-                                </div>
-
-                                <!-- Email -->
-                                <div class="mb-2 mt-3">
-                                    <label class="form-label fw-semibold mb-0">Email</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">
-                                            <i class="bi bi-envelope text-caffe fs-5"></i>
-                                        </span>
-                                        <input type="email" class="form-control border-0 shadow-sm"
-                                            placeholder="Enter Email" formControlName="email">
-                                    </div>
-                                    <div *ngIf="createAdminForm.get('email')?.hasError('required') && createAdminForm.get('email')?.touched"
-                                        class="text-danger small ps-2">
-                                        Email is required.
-                                    </div>
-                                    <div *ngIf="createAdminForm.get('email')?.hasError('pattern') && createAdminForm.get('email')?.touched"
-                                        class="text-danger small ps-2">
-                                        Enter a valid email.
-                                    </div>
-                                </div>
-                                <div class="mb-2 mt-3">
-                                    <label class="form-label fw-semibold mb-0">Password</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">
-                                            <i class="bi bi-key text-caffe fs-5"></i>
-                                        </span>
-                                        <input type="password" class="form-control border-0 shadow-sm"
-                                            placeholder="Enter password" formControlName="pass">
-                                    </div>
-                                    <div *ngIf="createAdminForm.get('pass')?.hasError('required') && createAdminForm.get('pass')?.touched"
-                                        class="text-danger small ps-2">
-                                        Password is required.
-                                    </div>
-                                    <div *ngIf="createAdminForm.get('pass')?.hasError('minlength') && createAdminForm.get('pass')?.touched"
-                                        class="text-danger small ps-2">
-                                        Password must be at least 8 characters.
-                                    </div>
-                                    <div *ngIf="createAdminForm.get('pass')?.hasError('maxlength') && createAdminForm.get('pass')?.touched"
-                                        class="text-danger small ps-2">
-                                        Password cannot exceed 10 characters.
-                                    </div>
-                                    <div *ngIf="createAdminForm.get('pass')?.hasError('pattern') && createAdminForm.get('pass')?.touched"
-                                        class="text-danger small ps-2">
-                                        Password must contain at least one uppercase letter, one lowercase letter, one
-                                        number, and one
-                                        special character.
-                                    </div>
-
-                                    <div class="mb-4 mt-4">
-                                        <label class="form-label fw-semibold mb-0">Confirm Password</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light border-0">
-                                                <i class="bi bi-key-fill text-caffe fs-5"></i>
-                                            </span>
-                                            <input type="password" class="form-control border-0 shadow-sm"
-                                                placeholder="Enter Confirm password" formControlName="confirmPassword">
-                                        </div>
-                                        <div *ngIf="createAdminForm.get('confirmPassword')?.hasError('required') && createAdminForm.get('confirmPassword')?.touched"
-                                            class="text-danger small ps-2">
-                                            Confirm Password is required.
-                                        </div>
-                                        <div *ngIf="createAdminForm.get('pass')?.touched && createAdminForm.get('confirmPassword')?.touched && createAdminForm.get('pass')?.value !== createAdminForm.get('confirmPassword')?.value"
-                                            class="text-danger small ps-2">
-                                            Confirm Passwords do not match.
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="submit" class="mt-3 mb-1 text-light p-2 btnStyle bg-caffe w-25 mx-auto d-block">Create</button>
-
-                           </div>
- 
-                    </form>
+          <form [formGroup]="createAdminForm" (ngSubmit)="Create()">
+            <div class="row g-3">
+              <!-- Name -->
+              <div class="mt-4 mb-2">
+                <label class="form-label fw-semibold mb-0">Name</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-0">
+                    <i class="bi bi-person-fill text-caffe fs-5"></i>
+                  </span>
+                  <input
+                    type="text"
+                    class="form-control border-0 shadow-sm"
+                    placeholder="Enter Name"
+                    formControlName="Name"
+                  />
                 </div>
+                <div
+                  *ngIf="
+                    createAdminForm.get('Name')?.hasError('required') &&
+                    createAdminForm.get('Name')?.touched
+                  "
+                  class="text-danger small ps-2"
+                >
+                  Name is required.
+                </div>
+                <div
+                  *ngIf="
+                    createAdminForm.get('Name')?.hasError('minlength') &&
+                    createAdminForm.get('Name')?.touched
+                  "
+                  class="text-danger small ps-2"
+                >
+                  Name at least 3 characters.
+                </div>
+                <div
+                  *ngIf="
+                    createAdminForm.get('Name')?.hasError('pattern') &&
+                    createAdminForm.get('Name')?.touched
+                  "
+                  class="text-danger small ps-2"
+                >
+                  Name must be characters only.
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="mb-2 mt-3">
+                <label class="form-label fw-semibold mb-0">Email</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-0">
+                    <i class="bi bi-envelope text-caffe fs-5"></i>
+                  </span>
+                  <input
+                    type="email"
+                    class="form-control border-0 shadow-sm"
+                    placeholder="Enter Email"
+                    formControlName="email"
+                  />
+                </div>
+                <div
+                  *ngIf="
+                    createAdminForm.get('email')?.hasError('required') &&
+                    createAdminForm.get('email')?.touched
+                  "
+                  class="text-danger small ps-2"
+                >
+                  Email is required.
+                </div>
+                <div
+                  *ngIf="
+                    createAdminForm.get('email')?.hasError('pattern') &&
+                    createAdminForm.get('email')?.touched
+                  "
+                  class="text-danger small ps-2"
+                >
+                  Enter a valid email.
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="mb-2 mt-3">
+                <label class="form-label fw-semibold mb-0">Password</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-0">
+                    <i class="bi bi-key text-caffe fs-5"></i>
+                  </span>
+                  <input
+                    type="password"
+                    class="form-control border-0 shadow-sm"
+                    placeholder="Enter password"
+                    formControlName="pass"
+                  />
+                </div>
+                <div
+                  *ngIf="
+                    createAdminForm.get('pass')?.hasError('required') &&
+                    createAdminForm.get('pass')?.touched
+                  "
+                  class="text-danger small ps-2"
+                >
+                  Password is required.
+                </div>
+                <div
+                  *ngIf="
+                    createAdminForm.get('pass')?.hasError('minlength') &&
+                    createAdminForm.get('pass')?.touched
+                  "
+                  class="text-danger small ps-2"
+                >
+                  Password must be at least 6 characters.
+                </div>
+                <div
+                  *ngIf="
+                    createAdminForm.get('pass')?.hasError('maxlength') &&
+                    createAdminForm.get('pass')?.touched
+                  "
+                  class="text-danger small ps-2"
+                >
+                  Password cannot exceed 10 characters.
+                </div>
+                <div
+                  *ngIf="
+                    createAdminForm.get('pass')?.hasError('pattern') &&
+                    createAdminForm.get('pass')?.touched
+                  "
+                  class="text-danger small ps-2"
+                >
+                  Password must contain at least one uppercase letter, one
+                  lowercase letter, one number, and one special character.
+                </div>
+              </div>
+
+              <!-- Confirm Password -->
+              <div class="mb-4 mt-4">
+                <label class="form-label fw-semibold mb-0"
+                  >Confirm Password</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-0">
+                    <i class="bi bi-key-fill text-caffe fs-5"></i>
+                  </span>
+                  <input
+                    type="password"
+                    class="form-control border-0 shadow-sm"
+                    placeholder="Enter Confirm password"
+                    formControlName="confirmPassword"
+                  />
+                </div>
+                <div
+                  *ngIf="
+                    createAdminForm
+                      .get('confirmPassword')
+                      ?.hasError('required') &&
+                    createAdminForm.get('confirmPassword')?.touched
+                  "
+                  class="text-danger small ps-2"
+                >
+                  Confirm Password is required.
+                </div>
+                <div
+                  *ngIf="
+                    createAdminForm.get('pass')?.touched &&
+                    createAdminForm.get('confirmPassword')?.touched &&
+                    createAdminForm.get('pass')?.value !==
+                      createAdminForm.get('confirmPassword')?.value
+                  "
+                  class="text-danger small ps-2"
+                >
+                  Confirm Passwords do not match.
+                </div>
+              </div>
+
+              <!-- Profile Image -->
+              <div class="mb-4">
+                <label class="form-label fw-semibold mb-0"
+                  >Profile Image (Optional)</label
+                >
+                <input
+                  type="file"
+                  class="form-control"
+                  (change)="onFileChange($event)"
+                  accept="image/*"
+                />
+              </div>
+
+              <!-- Submit Button -->
+              <button
+                type="submit"
+                class="mt-3 mb-1 text-light p-2 btnStyle bg-caffe w-25 mx-auto d-block"
+                [disabled]="isLoading"
+              >
+                <span *ngIf="!isLoading">Create</span>
+                <span *ngIf="isLoading">
+                  <span
+                    class="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Creating...
+                </span>
+              </button>
             </div>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 </div>

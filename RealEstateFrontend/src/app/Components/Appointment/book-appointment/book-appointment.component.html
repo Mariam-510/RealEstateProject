@@ -13,12 +13,13 @@
         <div class="carousel-main position-relative mb-3">
           <div class="carousel-inner rounded-3">
             <div *ngFor="let img of images; let i = index" 
-                 class="carousel-item" 
-                 [class.active]="activeImageIndex === i">
-              <img [src]="img.main" 
-                   class="d-block w-100" 
-                   alt="Property image {{i + 1}}">
-            </div>
+            class="carousel-item object-fit-cover" 
+            [class.active]="activeImageIndex === i">
+         <img [src]="apiConfig.apiUrl + img" 
+              class="d-block w-100 object-fit-cover !important" 
+              alt="Property image {{i + 1}}">
+       </div>
+       
           </div>
           <button class="carousel-control prev" (click)="prevImage()">❮</button>
           <button class="carousel-control next" (click)="nextImage()">❯</button>
@@ -31,8 +32,8 @@
                  class="thumbnail-item" 
                  [class.active]="activeImageIndex === i"
                  (click)="setActiveImage(i)">
-              <img [src]="img.thumb" 
-                   class="img-thumbnail" 
+              <img [src]="apiConfig.apiUrl +img" 
+                   class="img-thumbnail object-fit-cover" 
                    alt="Thumbnail {{i + 1}}">
             </div>
           </div>
@@ -40,8 +41,8 @@
       </div>
 
           <!-- Property Info -->
-          <div class="property-info mb-3">
-            <h2 class="mb-3">Modern Downtown Loft</h2>
+          <div class="property-info mb-3" *ngIf="property">
+            <h2 class="mb-3">{{property.title}}</h2>
             <div class="d-flex gap-3 align-items-center">
               <p *ngIf="selectedDate" class="detail-item m-0">
                 <i class="bi bi-calendar me-2"></i>
@@ -51,16 +52,36 @@
                 <i class="bi bi-clock me-2"></i>
                 {{ selectedTime }}
               </p>
+              <!-- Change the hardcoded type display -->
+              <p class="detail-item m-0">
+                <i [ngClass]="appointmentType === 'Virtual' ? 'bi bi-laptop' : 'bi bi-person'" class="me-2"></i>
+                {{ appointmentType === 'Virtual' ? 'Virtual' : 'In Person' }}
+              </p>
+              
             </div>
           </div>
           <!-- Seller Info -->
+          <!-- <ng-container *ngIf="property.userImage; else defaultIcon">
+            <img [src]="apiConfig.apiUrl + property.userImage" alt="User" class="rounded-circle me-2" width="40"
+              height="40" alt="Agent">
+          </ng-container> -->
+
+          <ng-template #defaultIcon>
+            <i class="bi bi-person-circle text-brown me-2" style="font-size: 2.5rem;"></i>
+          </ng-template>
+
           <div class="seller-info bg-white px-3 py-2 rounded-3 shadow-sm">
             <div class="d-flex align-items-center mb-3">
-              <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D" alt="Seller avatar" 
-                   class="rounded-circle me-3" width="50" height="50">
+              <ng-container *ngIf="property.userImage; else defaultIcon">
+
+              <img [src]="apiConfig.apiUrl + property?.userImage" alt="Seller avatar" 
+                   class="rounded-circle me-3"  style="width: 50px; height: 50px; object-fit: cover;">
+                  </ng-container>
+
               <div>
-                <h5 class="mb-0">John Smith</h5>
-                <small class="text-muted">Licensed Realtor</small>
+                <h5 class="mb-0">{{ property?.userName }}</h5>
+                <small class="text-muted">{{ property?.agentId ? 'Verified real estate agent' : 'Original property seller' }}
+                </small>
               </div>
             </div>
            
@@ -71,19 +92,19 @@
     </div>
     <!-- Left Content Section -->
     <div class="col-5 section d-flex justify-content-center min-vh-100">
-      <div class="main-container" style="margin-left: 0.5rem;">
+      <form (ngSubmit)="onSubmit()" class="main-container" style="margin-left: 0.5rem;">
         <!-- Date & Time Picker Section -->
         <div class="row">
           <!-- Unified Title -->
           <div class="col-12">
-            <h2 class="text-center  appointment-title">Schedule Your Appointment</h2>
+            <h2 class="text-center  appointment-title">Schedule {{ appointmentType === 'Virtual' ? 'Virtual' : 'In Person' }} Appointment</h2>
           </div>
         
      <!-- Date Picker -->
 <!-- Date Picker -->
 <div class="col-12 pt-2">
   <div class="date-container">
-    <h3 class="mb-3">Select Date</h3>
+    <h3 class="mb-3 ">Select Date</h3>
     <div class="date-cards-grid pt-2 pb-2 px-1 row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
       <div 
         *ngFor="let day of days" 
@@ -102,21 +123,28 @@
 </div>
 
 <!-- Time Picker -->
-<div class="time-picker-container col-12 mt-4 pt-5">
+<div class="time-picker-container col-12 mt-4 ">
   <h3 class="picker-heading mb-3">Select Time</h3>
   <div class="time-input-wrapper">
     <input type="time" 
-           class="form-control time-input"
-           [(ngModel)]="timeValue"
-           (change)="onTimeChange()">
+       class="form-control time-input"
+       [(ngModel)]="timeValue"
+       name="time" 
+       (change)="onTimeChange()">
   </div>
 </div>
 
 
         </div>
         
-    
-      </div>
+        <div class="row mt-5 ">
+          <div class="col-12 text-center">
+            <button type="submit" class="btn bg-caffe text-white btn-lg">
+              Schedule Appointment
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
 
     <!-- Right Property Section -->

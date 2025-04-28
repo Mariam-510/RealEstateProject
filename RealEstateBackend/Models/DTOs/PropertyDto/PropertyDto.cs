@@ -17,6 +17,7 @@ namespace RealEstate.Models.DTOs.PropertyDto
         public decimal Space { get; set; }
         public string AddedDate { get; set; } // Changed from DateTime to string
         public string Status { get; set; } // Available, Sold, Auctioned
+        public string ApprovalStatus { get; set; } // Pending, Approved, Rejected
         public List<string> Images { get; set; }
         public int? AgentId { get; set; }
         public int? SellerId { get; set; }

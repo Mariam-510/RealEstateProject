@@ -24,12 +24,13 @@ export interface PropertyDTO {
   activeMap: boolean;
   userName: string | null;
   userImage: string | null;
+  approvalStatus: string;
 }
 
 export enum PropertyApprovalStatus {
   Pending,
   Approved,
-  Rejected
+  Rejected,
 }
 
 export interface CreatePropertyDTO {
@@ -49,13 +50,13 @@ export interface CreatePropertyDTO {
 
 export enum PropertyType {
   Sell = 'Sell',
-  Rent = 'Rent'
+  Rent = 'Rent',
 }
 
 export enum PropertyStatus {
   Available = 'Available',
   Sold = 'Sold',
-  Auctioned = 'Auctioned'
+  Auctioned = 'Auctioned',
 }
 
 export enum PropertyCategory {
@@ -66,17 +67,16 @@ export enum PropertyCategory {
   Penthouse = 'Penthouse',
   Duplex = 'Duplex',
   Townhouse = 'Townhouse',
-  Mansion = 'Mansion'
+  Mansion = 'Mansion',
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PropertyService {
-
   private apiUrl = `${API_CONFIG.apiUrl}api/Property`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getAll(
     category?: string,
@@ -89,12 +89,16 @@ export class PropertyService {
     if (category) params = params.append('category', category);
     if (status) params = params.append('status', status);
     if (type) params = params.append('type', type);
-    if (searchByLocation) params = params.append('searchByLocation', searchByLocation);
+    if (searchByLocation)
+      params = params.append('searchByLocation', searchByLocation);
 
     // Make GET request to the endpoint
     return this.http.get<PropertyDTO[]>(this.apiUrl, { params });
   }
 
+  getAllPropertiesUnfiltered(): Observable<PropertyDTO[]> {
+    return this.http.get<PropertyDTO[]>(`${this.apiUrl}/all`);
+  }
 
   getById(id: number): Observable<PropertyDTO> {
     return this.http.get<PropertyDTO>(`${this.apiUrl}/${id}`);
@@ -123,17 +127,23 @@ export class PropertyService {
 
     // Append contract file if exists
     if (createDto.contractFile) {
-      formData.append('ContractFile', createDto.contractFile, createDto.contractFile.name);
+      formData.append(
+        'ContractFile',
+        createDto.contractFile,
+        createDto.contractFile.name
+      );
     }
 
     return this.http.post<PropertyDTO>(`${this.apiUrl}/Add`, formData);
   }
 
-
   // ___________________________________________________________________________
   // New method to get properties by seller ID with optional status
   // Include Status only when a valid value is provided
-  getPropertiesBySellerId(status?: PropertyApprovalStatus): Observable<PropertyDTO[]> {
+
+  getPropertiesBySellerId(
+    status?: PropertyApprovalStatus
+  ): Observable<PropertyDTO[]> {
     let params = new HttpParams();
     if (status !== undefined) {
       params = params.append('Status', status);
@@ -145,4 +155,14 @@ export class PropertyService {
     return this.http.get<PropertyDTO[]>(`${this.apiUrl}/Agent`);
   }
 
+  getPendingProperties(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/Pending`);
+  }
+
+  updateApprovalStatus(propertyId: number, status: number): Observable<any> {
+    return this.http.patch(
+      `${this.apiUrl}/UpdateApprovalProperty/${propertyId}?Status=${status}`,
+      null
+    );
+  }
 }
