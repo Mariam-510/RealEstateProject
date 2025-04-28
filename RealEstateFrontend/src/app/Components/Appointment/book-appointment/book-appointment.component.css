@@ -1,6 +1,6 @@
 /* Consolidated CSS */
 .section {
-    padding: 4rem 2rem;
+    /* padding: 4rem 2rem; */
     min-height: 100vh;
     /* background: #f9f6f4; */
     position: relative;
@@ -204,18 +204,23 @@ h2 {
 .property-section {
     padding: 3rem 2rem;
     min-height: 100vh;
+    z-index: 1000;
     /* border-left: 1px solid #eee; */
   }
   
   .property-details {
     max-width: 650px;
     margin: 0 auto;
+    z-index: 1000;
+
   }
   
   .property-images .main-image {
     border-radius: 12px;
     overflow: hidden;
     position: relative;
+    z-index: 1000;
+
   }
   
   .img-thumbnail {

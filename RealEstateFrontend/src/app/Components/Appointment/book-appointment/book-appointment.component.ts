@@ -1,6 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, HostListener, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { AppointmentService, AppointmentStatus, AppointmentType, CreateAppointmentDto } from '../../../Services/ApiServices/appointment.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from '../../../Services/toastr.service';
+import { PropertyService } from '../../../Services/ApiServices/property.service';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { API_CONFIG } from '../../../app.config';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
 
 interface Day {
   date: Date;
@@ -16,9 +23,123 @@ interface Day {
   templateUrl: './book-appointment.component.html',
   styleUrl: './book-appointment.component.css'
 })
-export class BookAppointmentComponent {
+export class BookAppointmentComponent implements OnInit { // Implement OnInit
   @ViewChild('scrollWrapper') scrollWrapper!: ElementRef;
+  propertyId!: number;
+  appointmentType!: AppointmentType; // No default
+  status: AppointmentStatus = AppointmentStatus.Pending; // Required field
+  property: any = null; // or define a Property model/interface
+images: any[] = [];    // for images
+  apiConfig = API_CONFIG;
 
+  constructor(
+    private appointmentService: AppointmentService,
+    private route: ActivatedRoute // Inject ActivatedRoute
+    ,private toastr: ToastrService,
+    private router: Router, // <-- Inject Router
+    private propertyService: PropertyService,
+    private auth: AuthService
+  ) {
+    this.generateDays(10);
+  }
+
+
+  async ngOnInit() {
+    if (this.hasRole('Buyer')) {
+    try {
+      const params = await firstValueFrom(this.route.paramMap);
+      const id = params.get('id');
+      if (id) {
+        this.propertyId = +id;
+        const propertyId = Number(this.route.snapshot.paramMap.get('id'));
+        await this.loadProperty(propertyId);
+      } else {
+        console.error('No property ID in route');
+        // Handle missing property ID (redirect or show error)
+      }
+  
+      const queryParams = await firstValueFrom(this.route.queryParams);
+      if (!queryParams['type']) {
+        this.router.navigate(['/login']); 
+      }
+      this.appointmentType = queryParams['type'] as AppointmentType;
+  
+    } catch (error) {
+      console.error('Error during initialization:', error);
+      // Optionally handle the error, like redirecting or showing a user-friendly message
+    }
+  }
+  else{
+    this.router.navigate(['/login']); // Redirect to login if not authenticated
+  }
+  }
+   async loadProperty(id: number) {
+      try {
+        const property$ = this.propertyService.getById(id);
+        const result = await lastValueFrom(property$);
+  
+        if (!result) {
+          throw new Error('Property not found');
+        }
+  
+        this.property = result;
+        this.images=result.images; // Assuming images is an array in the property object
+      } catch (err) {
+        this.property = null;
+        console.error('Error loading property:', err);
+        // Consider redirecting to error page or showing message
+      }
+    }
+  
+  private formatDateTimeLocal(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    
+    // Return in ISO 8601 format WITHOUT timezone
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+  
+  onSubmit() {
+    if (!this.propertyId || !this.selectedDate || !this.timeValue) {
+      alert('All fields are required');
+      return;
+    }
+  
+    const [hours, minutes] = this.timeValue.split(':');
+    const scheduledTime = this.createScheduledTime();
+    
+    scheduledTime.setHours(parseInt(hours), parseInt(minutes));
+  
+    // Instead of sending Date object, format it manually
+    const formattedDateTime = this.formatDateTimeLocal(scheduledTime);
+  
+    const appointmentData: CreateAppointmentDto = {
+      scheduledTime: formattedDateTime, // <-- send as string
+      type: this.appointmentType,
+      status: 'Pending'
+    };
+  
+    this.appointmentService.createAppointment(
+      this.propertyId,
+      this.appointmentType,
+      appointmentData
+    ).subscribe({
+      next: (response) => {
+        this.toastr.success('Appointment created successfully!', 'Success');
+      },
+      error: (error) => {
+        console.error('Error creating appointment:', error);
+        this.toastr.error('Error creating appointment. Please try again.', 'Error');
+      }
+    });
+    setTimeout(() => {
+      this.router.navigate(['/user/BuyerViewAllAppointment']); // <-- replace with the page you want
+    }, 1000); // 1 second delay
+  }
+  
   days: Day[] = [];
   selectedDate: Date | null = null;
   hoveredDate: Date | null = null;
@@ -26,9 +147,6 @@ export class BookAppointmentComponent {
   showLeftControl = false;
   showRightControl = false;
 
-  constructor() {
-    this.generateDays(10); // Generate 14 days starting from today
-  }
 
   ngAfterViewInit() {
     setTimeout(() => {
@@ -101,19 +219,18 @@ private convertTo12HourFormat(hours: number, minutes: number): string {
   const twelveHour = hours % 12 || 12;
   return `${twelveHour}:${minutes.toString().padStart(2, '0')} ${period}`;
 }
+private createScheduledTime(): Date {
+  const [hours, minutes] = this.timeValue.split(':');
+  
+  // Create date in local timezone WITHOUT UTC conversion
+  const localDate = new Date(this.selectedDate!);
+  localDate.setHours(parseInt(hours), parseInt(minutes));
+  
+  // Return local time directly
+  return localDate;
+}
+
 activeImageIndex = 0;
-images = [
-  { main: 'https://images.unsplash.com/photo-1648840887119-a9d33c964054?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', thumb: 'https://images.unsplash.com/photo-1648840887119-a9d33c964054?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { main: 'https://images.unsplash.com/photo-1635108198979-9806fdf275c6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', thumb: 'https://images.unsplash.com/photo-1635108198979-9806fdf275c6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { main: 'https://plus.unsplash.com/premium_photo-1734549547878-9de3d46d8fc2?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', thumb: 'https://plus.unsplash.com/premium_photo-1734549547878-9de3d46d8fc2?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { main: 'https://plus.unsplash.com/premium_photo-1734549547944-cd118bca8e14?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', thumb: 'https://plus.unsplash.com/premium_photo-1734549547944-cd118bca8e14?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { main: 'https://images.unsplash.com/photo-1611005893660-34445879f48a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', thumb: 'https://images.unsplash.com/photo-1611005893660-34445879f48a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { main: 'https://images.unsplash.com/photo-1648840887119-a9d33c964054?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', thumb: 'https://images.unsplash.com/photo-1648840887119-a9d33c964054?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { main: 'https://images.unsplash.com/photo-1635108198979-9806fdf275c6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', thumb: 'https://images.unsplash.com/photo-1635108198979-9806fdf275c6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { main: 'https://plus.unsplash.com/premium_photo-1734549547878-9de3d46d8fc2?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', thumb: 'https://plus.unsplash.com/premium_photo-1734549547878-9de3d46d8fc2?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { main: 'https://plus.unsplash.com/premium_photo-1734549547944-cd118bca8e14?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', thumb: 'https://plus.unsplash.com/premium_photo-1734549547944-cd118bca8e14?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { main: 'https://images.unsplash.com/photo-1611005893660-34445879f48a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', thumb: 'https://images.unsplash.com/photo-1611005893660-34445879f48a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }
-];
 
 prevImage() {
   this.activeImageIndex = this.activeImageIndex === 0 
@@ -130,4 +247,17 @@ nextImage() {
 setActiveImage(index: number) {
   this.activeImageIndex = index;
 }
+hasRole(requiredRole: string) {
+  return this.auth.hasRole(requiredRole);
+}
+
+hasRoleOrNoUser(requiredRole: string) {
+  return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+}
+
+hasUser() {
+  return this.auth.isAuthenticated();
+}
+
+
 }

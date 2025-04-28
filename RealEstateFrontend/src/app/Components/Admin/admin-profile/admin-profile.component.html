@@ -15,15 +15,22 @@
         <div class="row">
             <!-- Left Side: Image & User Info -->
             <div class="custom-border col-lg-4 px-5 d-flex flex-column justify-content-center align-items-center text-center mb-lg-5 bg-white">
-                <div class="image-wrapper mb-5  mt-md-0  position-relative">
+                <div class="image-wrapper mb-5 mt-md-0 position-relative" style="display: inline-block;">
                     <img [src]="currentUser?.avatar ? currentUser.avatar : userImage"
-                    alt="User Avatar"
-                    class="rounded-circle img-fluid"
-                    style="max-width: 200px;">
-                    <div class="camera-icon position-absolute bottom-5 end-5" (click)="uploadImage()">
-                        <i class="bi bi-camera-fill"></i>
+                         alt="User Avatar"
+                         class="rounded-circle img-fluid profile-image">
+                    
+                    <!-- Camera Icon (Bottom Right) -->
+                    <div class="camera-icon position-absolute" (click)="uploadImage()">
+                        <i class="bi bi-camera-fill fs-5"></i>
+                    </div>
+                    
+                    <!-- Delete Icon (Top Right) -->
+                    <div class="delete-icon position-absolute" (click)="removeImage()">
+                        <i class="bi bi-trash fs-5"></i>
                     </div>
                 </div>
+                
                 <h5 class="mb-0 fs-3 text-caffe" style="margin-top: -4vh;">{{ currentUser?.name || 'Shahd Abdalla' }}</h5>
                 <div class="text-muted fst-italic mb-3 mt-3"> <i class="bi bi-calendar-event text-caffe me-1"></i> Joined Date: 15 Dec, 2022</div>
                 <div class="text-muted mb-3"> <i class="bi bi-envelope text-caffe me-1"></i>  {{ currentUser?.email || 'Shahd@gmail.com' }}</div>

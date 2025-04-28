@@ -16,6 +16,7 @@ export interface OrderItemDto {
   productName?: string;
   productDescription?: string;
   productImage?: string;
+  categoryName?: string;
 }
 
 export interface CreateOrderItemRequest {
@@ -66,6 +67,12 @@ export class OrderItemService {
     return this.http.put<EditOrderItemResponse>(
       `${this.apiUrl}/${id}`,
       dto
+    );
+  }
+
+  getAllByOrder(orderId: number): Observable<OrderItemDto[]> {
+    return this.http.get<OrderItemDto[]>(
+      `${this.apiUrl}/Order/${orderId}`
     );
   }
 

@@ -45,8 +45,8 @@
             <!-- <a routerLink="/checkout/payment" class="btn btn-primary" [class.disabled]="!selectedAddressId">
               Continue to Payment
             </a> -->
-            <a [routerLink]="['/checkout/payment']" [queryParams]="{ id: selectedAddressId }" class="btn btn-primary"
-              [class.disabled]="!selectedAddressId">
+            <a [routerLink]="['/checkout/payment']" [queryParams]="{ id: selectedAddressId }"
+              class="btn bg-caffe text-white border-0" [class.disabled]=" !selectedAddressId">
               Continue to Payment
             </a>
           </div>

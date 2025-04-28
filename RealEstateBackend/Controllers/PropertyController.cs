@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos.EmailDto;
@@ -57,6 +58,70 @@ namespace RealEstate.Controllers
             var properties = await _propertyRepo.GetFilteredAsync(propertyCategory, propertyStatus, propertyType, searchByLocation);
            
             var propertyDtos = _mapper.Map<List<PropertyDto>>(properties);
+            foreach (var dto in propertyDtos)
+            {
+                var contract = await _contractRepo.GetByPropertyIdAsync(dto.Id);
+                if (contract != null)
+                {
+                    dto.ContractImgUrl = contract.ImageUrl;
+                }
+            }
+
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (int.TryParse(buyerIdStr, out int buyerId))
+            {
+                var favoriteProperties = await wishListRepository.GetAllPropertyByBuyerIDAsync(buyerId);
+                if (favoriteProperties != null)
+                {
+                    foreach (var dto in propertyDtos)
+                    {
+                        if (favoriteProperties.Any(f => f.Id == dto.Id))
+                        {
+                            dto.IsFavorite = true;
+                        }
+                    }
+                }
+            }
+
+            return Ok(propertyDtos);
+        }
+
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllProperties([FromQuery] string category = null, [FromQuery] string status = null,
+    [FromQuery] string type = null, [FromQuery] string searchByLocation = null)
+        {
+            var properties = await _propertyRepo.GetAllPropertiesUnfilteredAsync(); 
+
+            // Convert strings to enums
+            PropertyCategory? propertyCategory = string.IsNullOrEmpty(category) ? null : Enum.TryParse(category, true, out PropertyCategory parsedCategory) ? parsedCategory : (PropertyCategory?)null;
+            PropertyStatus? propertyStatus = string.IsNullOrEmpty(status) ? null : Enum.TryParse(status, true, out PropertyStatus parsedStatus) ? parsedStatus : (PropertyStatus?)null;
+            PropertyType? propertyType = string.IsNullOrEmpty(type) ? null : Enum.TryParse(type, true, out PropertyType parsedType) ? parsedType : (PropertyType?)null;
+
+            // Apply filters manually (optional)
+            if (propertyCategory.HasValue)
+                properties = properties.Where(p => p.PropertyCategory == propertyCategory.Value).ToList();
+
+            if (propertyStatus.HasValue)
+                properties = properties.Where(p => p.Status == propertyStatus.Value).ToList();
+
+            if (propertyType.HasValue)
+                properties = properties.Where(p => p.Type == propertyType.Value).ToList();
+
+            if (!string.IsNullOrEmpty(searchByLocation))
+            {
+                properties = properties
+                    .Where(p => p.Location != null && p.Location.ToLower().Contains(searchByLocation.ToLower()))
+                    .OrderByDescending(p => p.Location.ToLower() == searchByLocation.ToLower())
+                    .ThenByDescending(p => p.Location.ToLower().StartsWith(searchByLocation.ToLower()))
+                    .ThenByDescending(p => p.Location.ToLower().Contains(searchByLocation.ToLower()))
+                    .ToList();
+            }
+
+            // Map to DTO
+            var propertyDtos = _mapper.Map<List<PropertyDto>>(properties);
+
             foreach (var dto in propertyDtos)
             {
                 var contract = await _contractRepo.GetByPropertyIdAsync(dto.Id);
@@ -303,7 +368,8 @@ namespace RealEstate.Controllers
                     property.SellerId = User.IsInRole("Seller") ? userId : null;
                     property.AgentId = User.IsInRole("Agent") ? userId : null;
                     property.Type = Enum.Parse<PropertyType>(createDto.Type, true);
-                    property.Status = Enum.Parse<PropertyStatus>(createDto.Status, true);
+                    //property.Status = Enum.Parse<PropertyStatus>(createDto.Status, true);
+                    property.Status = PropertyStatus.Available;
                     property.PropertyCategory = Enum.Parse<PropertyCategory>(createDto.PropertyCategory, true);
                     property.Images = new List<string>();
                     

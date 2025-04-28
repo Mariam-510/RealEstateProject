@@ -66,6 +66,13 @@ export class ProductService {
     return this.http.get<ProductDTO[]>(`${this.apiUrl}/GetAll`, { params });
   }
 
+  createProduct(productData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/CreateProduct`, productData);
+  }
+
+  
+
+
 
 
 }

@@ -12,8 +12,9 @@ namespace RealEstate.Models.DTOs.AppointmentDto
 
         public int BuyerId { get; set; }
         public string BuyerName { get; set; }
-
+        
         public int PropertyId { get; set; }
         public string PropertyTitle { get; set; }
+      
     }
 }

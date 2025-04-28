@@ -1,5 +1,5 @@
 // add-category.component.ts
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -11,6 +11,7 @@ import { CategoryService } from '../../../Services/ApiServices/category.service'
 import { Router, RouterModule } from '@angular/router';
 import { ToastrService } from '../../../Services/toastr.service';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
 
 @Component({
   selector: 'app-add-category',
@@ -19,13 +20,14 @@ import { CommonModule } from '@angular/common';
 
   styleUrls: ['./add-category.component.css'],
 })
-export class AddCategoryComponent {
+export class AddCategoryComponent implements OnInit {
   categoryForm: FormGroup;
   imagePreview: string | null = null;
   selectedFile: File | null = null;
   isLoading: boolean = false;
 
   constructor(
+    private auth: AuthService,
     private fb: FormBuilder,
     private categoryService: CategoryService,
     private toastr: ToastrService,
@@ -42,6 +44,24 @@ export class AddCategoryComponent {
       ],
       image: [null, Validators.required],
     });
+  }
+  ngOnInit(): void {
+    if (!this.hasRole('admin')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+  }
+
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
   }
 
   onFileChange(event: any): void {

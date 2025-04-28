@@ -1,6 +1,5 @@
 /* Main Page Styles */
 .approval-page {
-  background-color: #f8f9fa;
   min-height: calc(100vh - 140px);
   padding-top: 30px;
   padding-bottom: 50px;
@@ -193,4 +192,43 @@
 .pdf-preview .btn:hover {
   background-color: #a57865 !important;
   transform: translateY(-1px);
+}
+
+
+/* Pagination Styles */
+.pagination {
+  margin: 20px 0;
+}
+
+.page-item {
+  margin: 0 4px;
+}
+
+.page-link {
+  color: #c38e79;
+  border: 1px solid #dee2e6;
+  transition: all 0.3s ease;
+}
+
+.page-link:hover {
+  color: #a57865;
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+.page-item.active .page-link {
+  background-color: #c38e79;
+  border-color: #c38e79;
+  color: white;
+}
+
+.page-item.disabled .page-link {
+  color: #6c757d;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.page-item:first-child .page-link,
+.page-item:last-child .page-link {
+  border-radius: 4px;
 }
