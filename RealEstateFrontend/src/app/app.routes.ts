@@ -76,7 +76,7 @@ export const routes: Routes = [
       { path: "addCatgory", component: AddCategoryComponent, title: "Add Category" },
       { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscription Plan" },
       { path: 'approve', component: ApprovePropertyComponent, pathMatch: 'full' },
-      { path: 'createadmin', component: CreateadminComponent, pathMatch: 'full' },
+      { path: 'createAdmin', component: CreateadminComponent, pathMatch: 'full' },
     ]
   },
 
