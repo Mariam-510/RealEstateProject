@@ -1,28 +1,20 @@
-﻿using Stripe;
+﻿// StripeService.cs
+using Stripe;
 using Stripe.Checkout;
 
 namespace RealEstate.Services
 {
     public class StripeService
     {
-        public async Task<PaymentIntent> CreatePaymentIntentAsync(decimal amount, string currency = "usd")
+        private readonly IConfiguration _configuration;
+
+        public StripeService(IConfiguration configuration)
         {
-            var options = new PaymentIntentCreateOptions
-            {
-                Amount = (long)(amount * 100), // Stripe expects cents
-                Currency = currency,
-                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
-                {
-                    Enabled = true
-                }
-            };
-            var service = new PaymentIntentService();
-            return await service.CreateAsync(options);
+            _configuration = configuration;
+            StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
         }
 
-
-     
-        public Session CreateCheckoutSession(decimal amount, string successUrl, string cancelUrl, Dictionary<string, string> metadata = null)
+        public async Task<Session> CreateCheckoutSessionAsync(decimal amount, string successUrl, string cancelUrl)
         {
             var options = new SessionCreateOptions
             {
@@ -33,8 +25,8 @@ namespace RealEstate.Services
             {
                 PriceData = new SessionLineItemPriceDataOptions
                 {
-                    Currency = "usd",
                     UnitAmount = (long)(amount * 100),
+                    Currency = "usd",
                     ProductData = new SessionLineItemPriceDataProductDataOptions
                     {
                         Name = "Order Payment",
@@ -44,14 +36,25 @@ namespace RealEstate.Services
             },
         },
                 Mode = "payment",
-                SuccessUrl = successUrl,
+                SuccessUrl = $"{successUrl}",
                 CancelUrl = cancelUrl,
-                Metadata = metadata 
+                Metadata = new Dictionary<string, string>
+        {
+            {"amount", amount.ToString()}
+        }
             };
 
             var service = new SessionService();
-            return service.Create(options);
+            return await service.CreateAsync(options);
+        }
+
+
+        public async Task<bool> VerifySessionAsync(string sessionId)
+        {
+            var service = new SessionService();
+            var session = await service.GetAsync(sessionId);
+
+            return session.PaymentStatus == "paid";
         }
     }
-
 }

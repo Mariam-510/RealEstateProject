@@ -23,7 +23,7 @@ namespace RealEstate.Repositories
             return await _context.Payments.ToListAsync();
         }
 
-        public async Task AddAsync(Payment payment)
+        public async Task<Payment> AddAsync(Payment payment)
         {
             if (payment == null)
             {
@@ -32,6 +32,8 @@ namespace RealEstate.Repositories
 
             await _context.Payments.AddAsync(payment);
             await _context.SaveChangesAsync();
+
+            return payment;
         }
 
         public async Task UpdateAsync(Payment payment)

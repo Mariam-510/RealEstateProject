@@ -53,13 +53,17 @@ namespace RealEstate.Mapping
             return new OrderResponseDto
             {
                 Id = order.Id,
-                OrderDate = order.OrderDate,
-                Status = order.Status,
-                TotalAmount = order.TotalAmount,
+                OrderDate = order.OrderDate.ToString(),
+                Status = order.Status.ToString(),
+                StatusNum = order.Status,
+                SubTotal = order.SubTotal,
+                DeliveryFees = order.DeliveryFees,
                 IsDeleted = order.IsDeleted,
                 BuyerId = order.BuyerId,
                 AddressId = order.AddressId,
-                PaymentId = order.PaymentId
+                PaymentId = order.PaymentId,
+                PaymentMethod = order.Payment?.PaymentMethod.ToString() ?? null,
+
             };
         }
 
@@ -70,10 +74,15 @@ namespace RealEstate.Mapping
         {
             return new ReviewResponseDto
             {
+                Id = review.Id,
                 Rating = review.Rating,
                 Comment = review.Comment,
+                Date = review.Date.ToString(),
                 ProductId = review.ProductId,
-                BuyerId = review.BuyerId
+                BuyerId = review.BuyerId,
+                BuyerFName = review.Buyer.FirstName,
+                BuyerLName = review.Buyer.LastName,
+                BuyerImageUrl = review.Buyer.Account?.ImageUrl
             };
         }
 
@@ -90,7 +99,7 @@ namespace RealEstate.Mapping
                 Price = product.Price,
                 IsUsed = product.IsUsed,
                 IsDeleted = product.IsDeleted,
-                DateAdded = product.DateAdded,
+                DateAdded = product.DateAdded.ToString(),
                 AverageRating = product.AverageRating,
                 CategoryID = product.CategoryID ?? 0,
                 CategoryName = product.Category?.Name ?? string.Empty,
@@ -162,7 +171,6 @@ namespace RealEstate.Mapping
             return new Wishlist
             {
 
-                BuyerId = wishlistproductDTO.BuyerId,
                 ProductId = wishlistproductDTO.ProductId,
             };
         }
@@ -172,7 +180,6 @@ namespace RealEstate.Mapping
             return new Wishlist
             {
 
-                BuyerId = wishlistpropertyDTO.BuyerId,
                 PropertyId = wishlistpropertyDTO.PropertyID,
             };
         }
@@ -190,9 +197,6 @@ namespace RealEstate.Mapping
                 EndTime = TimeZoneInfo.ConvertTime(AuctionDto.EndTime, egyptTimeZone),
                 StartPrice = AuctionDto.StartPrice,
                 PropertyId= AuctionDto.PropertyId,
-                SellerId= AuctionDto.SellerId,
-                AgentId= AuctionDto.AgentId,
-
             };
         }
 

@@ -1,0 +1,691 @@
+<div class="mx-3 mt-1">
+  <div id="heroCarousel" class="carousel slide rounded-1 overflow-hidden" data-bs-ride="carousel"
+    style="height: 450px;">
+    <div class="carousel-inner h-100">
+      <div class="carousel-item active h-100">
+        <img src="propertyImages/slider2.jpg" class="d-block w-100 h-100" style="object-fit: cover;" alt="Luxury Homes">
+        <div class="carousel-overlay"></div>
+        <div class="carousel-caption d-none d-md-block">
+          <h3 class="display-5 fw-bold text-white">Modern Sofas for Every Home</h3>
+          <p class="text-white">Discover comfort and style with our premium sofas</p>
+        </div>
+      </div>
+      <div class="carousel-item h-100">
+        <img src="propertyImages/slider3.jpg" class="d-block w-100 h-100" style="object-fit: cover;"
+          alt="Modern Apartments">
+        <div class="carousel-overlay"></div>
+        <div class="carousel-caption d-none d-md-block">
+          <h3 class="display-5 fw-bold text-white">Elegant Dining Sets</h3>
+          <p class="text-white">Upgrade your dining space with stylish and durable sets</p>
+        </div>
+      </div>
+      <div class="carousel-item h-100">
+        <img src="propertyImages/slider4.jpg" class="d-block w-100 h-100" style="object-fit: cover;"
+          alt="Villa Communities">
+        <div class="carousel-overlay"></div>
+        <div class="carousel-caption d-none d-md-block">
+          <h3 class="display-5 fw-bold text-white">Luxurious Bedroom Furniture</h3>
+          <p class="text-white">Create your dream bedroom with our exclusive range</p>
+        </div>
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+  <div class="row align-items-center mt-4 ms-5 pt-2">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-3">
+        <li class="breadcrumb-item d-flex align-items-center">
+          <a href="#" class="text-decoration-none text-muted d-flex align-items-center">
+            <i class="bi bi-house-door-fill me-2 text-caffe"></i>
+            <span class="fw-medium">Home</span>
+          </a>
+        </li>
+        <li class="breadcrumb-item d-flex align-items-center">
+          <a href="#" class="text-decoration-none text-muted d-flex align-items-center">
+            <i class="bi bi-building me-2 text-caffe"></i>
+            <span class="fw-medium">Products</span>
+          </a>
+        </li>
+        <li class="breadcrumb-item active d-flex align-items-center" aria-current="page">
+          <i class="bi bi-tag-fill me-2 text-caffe"></i>
+          <span class="fw-medium">{{ selectedCategory || 'All Categories' }}</span>
+        </li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="py-2 px-5 mx-5">
+  <div class="row mb-2">
+    <div class="col-12">
+      <h2 class="mb-4 fw-semibold text-center roboto-font">All Products</h2>
+      <div class="section-underline mx-auto mb-4"></div>
+
+      <!-- nav -->
+      <div class="d-flex justify-content-center mt-4 pt-2">
+        <nav class="nav category-nav">
+          <button class="nav-link p-0 pb-2 position-relative" [class.active]="!selectedCategory"
+            (click)="toggleCategory('')">
+            <span class="d-flex align-items-center gap-2 text-muted" style="font-size: 1.3rem;">
+              <span class="fw-medium">All Categories</span>
+            </span>
+          </button>
+          <button *ngFor="let cat of categoryNames" class="nav-link p-0 pb-2 position-relative"
+            [class.active]="selectedCategory === cat" (click)="toggleCategory(cat)">
+            <span class="d-flex align-items-center gap-2 text-muted" style="font-size: 1.3rem;">
+              <span class="fw-medium text-capitalize">{{ cat }}</span>
+            </span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="border-top mb-1 mx-5"></div>
+
+<!-- Search & Filters Section -->
+<div #tabLinks class="tab-links mb-2 px-5">
+  <!-- Filters Row -->
+  <div class="row pt-4" [ngClass]="{'pb-3': isSticky}">
+
+    <!-- Search Bar -->
+    <div [style.width]="isSticky ? '25%' : '22%'">
+      <div class="input-group search-bar rounded-4 overflow-hidden">
+        <input type="search" class="form-control border-0 px-4 fs-6 no-focus-shadow" placeholder="Search by name..."
+          [(ngModel)]="searchQuery" (input)="applyFilters()">
+        <button class="btn btn-custom px-3 fs-6" type="button">
+          <i class="bi bi-search text-white" style="font-size: 1.2rem;"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Category Filter -->
+    <div [style.width]="isSticky ? '14%' : '15%'">
+      <div class="dropdown">
+        <button class="btn btn-filter w-100 d-flex justify-content-between align-items-center py-2 px-3 rounded-4"
+          type="button" data-bs-toggle="dropdown">
+          <span class="text-truncate text-muted">{{ selectedCategory || 'All Categories' }}</span>
+          <i class="bi bi-chevron-down ms-2 small text-caffe"></i>
+        </button>
+        <div class="dropdown-menu dropdown-filter p-3 w-100">
+          <div class="dropdown-item mb-2" (click)="toggleCategory('')" [class.active]="!selectedCategory">
+            <div class="d-flex justify-content-between">
+              <span>All Categories</span>
+            </div>
+          </div>
+          <div class="row g-2">
+            <div *ngFor="let cat of categoryNames">
+              <div class="dropdown-item" (click)="toggleCategory(cat)" [class.active]="selectedCategory === cat">
+                <div class="d-flex justify-content-between">
+                  <span class="text-truncate">{{ cat }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Type Filter -->
+    <div [style.width]="isSticky ? '14%' : '15%'">
+      <div class="dropdown">
+        <button class="btn btn-filter w-100 d-flex justify-content-between align-items-center py-2 px-3 rounded-4"
+          type="button" data-bs-toggle="dropdown">
+          <span class="text-truncate text-muted">{{ selectedCondition === '' ? 'All Conditions' :
+            (selectedCondition === 'used' ? 'Used' : 'New') }}</span>
+          <i class="bi bi-chevron-down ms-2 small text-caffe"></i>
+        </button>
+        <div class="dropdown-menu dropdown-filter p-3 w-100">
+          <div class="row g-2">
+            <div *ngFor="let type of productConditions" class="col-12">
+              <div class="dropdown-item" (click)="toggleProductCondition(type.value)"
+                [class.active]="selectedCondition === type.value">
+                <div class="d-flex justify-content-between">
+                  <span>{{ type.label }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sort Filter -->
+    <div [style.width]="isSticky ? '15%' : '15%'">
+      <div class="dropdown">
+        <button class="btn btn-filter w-100 d-flex justify-content-between align-items-center py-2 px-3 rounded-4"
+          type="button" data-bs-toggle="dropdown">
+          <span class="text-truncate text-muted">{{ getSortLabel(sortBy) || 'Sort By' }}</span>
+          <i class="bi bi-chevron-down ms-2 small text-caffe"></i>
+        </button>
+        <div class="dropdown-menu dropdown-filter p-3 w-100">
+          <div class="row g-2">
+            <div class="col-12">
+              <div class="dropdown-item" (click)="updateSort('')" [class.active]="!sortBy">
+                <div class="d-flex justify-content-between">
+                  <span>Sort By</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="dropdown-item" (click)="updateSort('priceAsc')" [class.active]="sortBy === 'priceAsc'">
+                <div class="d-flex justify-content-between">
+                  <span>Price: Low to High</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="dropdown-item" (click)="updateSort('priceDesc')" [class.active]="sortBy === 'priceDesc'">
+                <div class="d-flex justify-content-between">
+                  <span>Price: High to Low</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="dropdown-item" (click)="updateSort('ratingDesc')" [class.active]="sortBy === 'ratingDesc'">
+                <div class="d-flex justify-content-between">
+                  <span>Rating: High to Low</span>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="col-12">
+              <div class="dropdown-item" (click)="updateSort('ratingAsc')" [class.active]="sortBy === 'ratingAsc'">
+                <div class="d-flex justify-content-between">
+                  <span>Rating: Low to High</span>
+                </div>
+              </div>
+            </div> -->
+            <!-- <div class="col-12">
+              <div class="dropdown-item" (click)="updateSort('stock')" [class.active]="sortBy === 'stock'">
+                <div class="d-flex justify-content-between">
+                  <span>In Stock First</span>
+                </div>
+              </div>
+            </div> -->
+            <div class="col-12">
+              <div class="dropdown-item" (click)="updateSort('limitedStock')"
+                [class.active]="sortBy === 'limitedStock'">
+                <div class="d-flex justify-content-between">
+                  <span>Limited Stock First</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="dropdown-item" (click)="updateSort('dateNewest')" [class.active]="sortBy === 'dateNewest'">
+                <div class="d-flex justify-content-between">
+                  <span>Newest First</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="dropdown-item" (click)="updateSort('dateOldest')" [class.active]="sortBy === 'dateOldest'">
+                <div class="d-flex justify-content-between">
+                  <span>Oldest First</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Price Filter -->
+    <div [style.width]="isSticky ? '14%' : '20%'">
+      <div class="dropdown">
+        <button class="btn btn-filter w-100 d-flex justify-content-between align-items-center py-2 px-3 rounded-4"
+          type="button" data-bs-toggle="dropdown">
+          <span class="text-muted">Price Range</span>
+          <i class="bi bi-chevron-down ms-2 small text-caffe"></i>
+        </button>
+        <div class="dropdown-menu dropdown-filter p-3 w-100">
+          <div class="mb-3">
+            <div class="input-group input-group-sm mb-2">
+              <span class="input-group-text btnM fs-6">Min</span>
+              <input type="number" class="form-control" placeholder="0" [(ngModel)]="minPrice" (change)="updatePrice()">
+            </div>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text btnM fs-6">Max</span>
+              <input type="number" class="form-control" placeholder="∞" [(ngModel)]="maxPrice" (change)="updatePrice()">
+            </div>
+          </div>
+
+          <ngx-slider class="custom-slider mt-0" [(value)]="minPrice" [(highValue)]="maxPrice" [options]="sliderOptions"
+            (userChangeEnd)="updatePrice()"></ngx-slider>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Rating Filter -->
+    <div [style.width]="isSticky ? '12%' : '12%'">
+      <div class="dropdown">
+        <button class="btn btn-filter w-100 d-flex justify-content-between align-items-center py-2 px-3 rounded-4"
+          type="button" data-bs-toggle="dropdown">
+          <span class="text-truncate text-muted">
+            {{ selectedRating === 0 ? 'All Ratings' : getSelectedRatingLabel() }}
+          </span>
+          <i class="bi bi-chevron-down ms-2 small text-caffe"></i>
+        </button>
+        <div class="dropdown-menu dropdown-filter p-3 w-100">
+          <div class="row g-2">
+
+            <div *ngFor="let rating of ratings" class="col-12">
+              <div class="dropdown-item" (click)="toggleRating(rating.value)"
+                [class.active]="selectedRating === rating.value">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center">
+                    <span>
+                      {{ rating.label }}
+                      <i class="bi text-warning {{rating.icon}}"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clear Filters Icon (Sticky State) -->
+    <div *ngIf="isSticky" style="width: 5%;">
+      <button class="btn" (click)="clearFilters()" title="Clear filters">
+        <i class="bi bi-funnel text-caffe fs-5"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Reset Filter Row -->
+  <div class="row mt-0 me-3" *ngIf="!isSticky">
+    <div class="col-12 text-end">
+      <button class="btn d-inline-flex align-items-center py-2 px-3 text-caffe fw-semibold" type="button"
+        (click)="clearFilters()">
+        <i class="bi bi-arrow-counterclockwise me-2"></i>
+        Reset Filters
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<div class="p-4 px-5 mx-5">
+  <div class="row mb-2 align-items-center mt-2">
+    <div class="col-md-6">
+      <p class="text-muted mb-0 d-flex align-items-center">
+        <i class="bi bi-info-circle me-2"></i>
+        Showing <span class="fw-medium mx-1">{{ filteredProducts.length }}</span> results
+      </p>
+    </div>
+
+    <div class="col-md-6 d-flex justify-content-end align-items-center gap-3">
+      <div class="btn-group view-toggle mx-4" style="width: 8rem;">
+        <button *ngFor="let view of viewModes" class="btn btn-view" [class.active]="viewMode === view.id"
+          (click)="viewMode = view.id">
+          <i class="bi fs-5" [class]="view.icon"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if(paginatedProducts.length > 0)
+  {
+
+  <div class="row mt-3">
+
+    <!-- Grid View -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4" *ngIf="viewMode === 'grid'">
+      @for(product of paginatedProducts; track product.id) {
+      <div class="col mb-3">
+        <div class="card h-100 shadow-sm" style="position: relative;">
+          <div class="cardHeader position-relative">
+
+            <!-- Category Badge -->
+            <!-- <span class="badge bg-dark bg-opacity-50 position-absolute top-0 start-0 m-2 z-2"
+              style="font-size: 0.88rem;">
+              {{ product.categoryName }}
+            </span> -->
+
+            <span class="badge position-absolute bg-dark bg-opacity-50 fw-semibold top-0 start-0 m-2 z-2"
+              style="font-size: 0.88rem;">
+              {{ product.categoryName }}
+            </span>
+
+            <div class="position-absolute top-0 end-0 m-2 z-2 d-flex gap-2">
+              <!-- Wishlist Button -->
+              <a *ngIf="hasRoleOrNoUser('Buyer')" (click)="toggleWishList(product)" class="d-inline-block"
+                style="cursor: pointer;" role="button">
+                <span class="badge bg-dark bg-opacity-50" style="font-size: 1rem;">
+                  <!-- <i class="bi {{ product.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart text-white' }}"></i> -->
+                  <i class="bi" [ngClass]="{
+                        'bi-heart-fill text-danger': product?.isFavorite && hasUser(),
+                        'bi-heart text-white': !product?.isFavorite || !hasUser()
+                      }"></i>
+                </span>
+              </a>
+            </div>
+
+            <!-- <a (click)="shareItem(product)" style="cursor: pointer;">
+                            <span class="badge bg-dark bg-opacity-50 position-absolute bottom-0 end-0 m-2 z-2"
+                                style="font-size: 0.8rem;"><i class="bi bi-share fs-5"></i></span>
+                        </a> -->
+
+            <!-- Add to Cart Button -->
+            <a *ngIf="product.quantity > 0 && hasRoleOrNoUser('Buyer')" [routerLink]="['/products', product.id]"
+              style="cursor: pointer;">
+              <span class="badge bg-dark bg-opacity-50 position-absolute bottom-0 end-0 m-2 z-2"
+                style="font-size: 1rem;"><i class="bi bi-cart3"></i></span>
+            </a>
+
+
+            <!-- Image Carousel -->
+            <div class="position-relative overflow-hidden">
+              <a [routerLink]="['/products', product.id]" class="d-block" style="position: relative;">
+                <img [src]="apiConfig.apiUrl + product.productimage[currentImageIndices[product.id]]"
+                  alt="{{ product.name }} - Image {{ currentImageIndices[product.id] + 1 }}" class="img-fluid w-100"
+                  style="height: 255px; object-fit: cover; transition: transform 0.3s ease;" loading="lazy">
+
+
+                <div *ngIf="product.quantity == 0"
+                  class="status-overlay d-flex align-items-center justify-content-center position-absolute">
+                  <div class="status-text text-white text-uppercase fw-bold bg-caffe"
+                    style="font-size: 1.5rem; padding: 0.1rem 0.6rem; border-radius: 4px;">
+                    SOLD OUT
+                  </div>
+                </div>
+              </a>
+
+              <!-- Navigation buttons -->
+              <div
+                class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-between px-2"
+                style="pointer-events: none;">
+                <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
+                  (click)="prevImage(product.id); $event.stopPropagation()">
+                  <i class="bi bi-chevron-left"></i>
+                </button>
+                <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2" style="pointer-events: auto;"
+                  (click)="nextImage(product.id); $event.stopPropagation()">
+                  <i class="bi bi-chevron-right"></i>
+                </button>
+              </div>
+
+              <!-- Image counter -->
+              <div class="position-absolute bottom-0 m-2 px-2 py-1 bg-dark bg-opacity-50 text-white rounded small z-2">
+                <i class="bi bi-images me-1"></i>{{ currentImageIndices[product.id] + 1 }}/{{
+                product.productimage.length }}
+              </div>
+            </div>
+
+          </div>
+
+          <div class="card-body p-2">
+            <!-- <a [routerLink]="['/products', product.id]" class="d-block text-decoration-none"
+              style="position: relative; color: inherit;"> -->
+
+            <h5 class="card-title mb-1">
+              {{ product.name }}
+            </h5>
+            <!-- <p class="card-text text-muted small mb-2" style="min-height: 42px;">
+                            {{ product.description.length > 60 ? (product.description | slice:0:60) + '...' :
+                            product.description }}
+                        </p> -->
+
+            <!-- Colors -->
+            <div class="d-flex gap-2 flex-wrap my-3">
+              <!-- First 7 colors -->
+              <div *ngFor="let productStockDto of product.productStockDtos?.slice(0,4); let i = index"
+                class="color-swatch hover-scale rounded-5" [class.selected]="i === 0"
+                [style.background]="productStockDto.color" [class.out-of-stock]="productStockDto.quantity === 0">
+
+                <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+              </div>
+
+              <!-- Enhanced remaining colors container -->
+              <div *ngIf="(product.productStockDtos?.length ??0) > 4" class="position-relative d-inline-block">
+                <div
+                  class="color-swatch-num mt-1 d-flex align-items-center justify-content-center position-relative fw-semibold"
+                  (click)="toggleColorList(product.id)">
+
+                  + {{ (product.productStockDtos?.length ?? 0) - 4 }} more
+                </div>
+
+                <!-- Hidden color list that appears on hover -->
+                <div class="color-hover-container" *ngIf="openedProductId === product.id">
+                  <div class="d-flex gap-2 flex-column justify-content-center p-2">
+                    <div *ngFor="let productStockDto of product.productStockDtos?.slice(4)"
+                      class="color-swatch rounded-5" [style.background]="productStockDto.color">
+
+                      <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-semibold text-muted" style="font-size: 1.25rem;">EGP {{ product.price | number }}</span>
+              <span class=" badge text-white" [style.background-color]="product.isUsed ? '#de8332' : '#2a5f8b'">
+                {{ product.isUsed ? 'Used' : 'New' }}
+              </span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <div class="text-warning small">
+                <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                  <i class="star bi" [ngClass]="{
+                                            'bi-star-fill': i < Math.floor(product.averageRating),
+                                            'bi-star-half': i === Math.floor(product.averageRating) && product.averageRating % 1 !== 0,
+                                            'bi-star': i >= Math.ceil(product.averageRating)
+                                            }">
+                  </i>
+                </ng-container>
+              </div>
+              <small class="text-muted">{{ product.numberOfReviews }} Reviews</small>
+            </div>
+
+            <!-- </a> -->
+          </div>
+
+        </div>
+      </div>
+      }
+
+    </div>
+
+    <!-- List View -->
+    <div class="row row-cols-1" *ngIf="viewMode === 'list'">
+      @for(product of paginatedProducts; track product.id) {
+      <div class="col mb-3">
+        <div class="card cardHeader h-100 border-0 shadow-sm hover-shadow-md transition-all">
+          <div class="row g-0 h-100">
+            <!-- Image Section -->
+            <div class="col-md-4">
+              <div class="product-image-container h-100 rounded-start overflow-hidden">
+                <!-- Image Carousel -->
+                <div class="position-relative overflow-hidden h-100">
+                  <a [routerLink]="['/products', product.id]" class="d-block h-100">
+                    <img [src]="apiConfig.apiUrl +  product.productimage[currentImageIndices[product.id]]"
+                      alt="{{ product.name }} - Image {{ currentImageIndices[product.id] + 1 }}" class="img-fluid w-100"
+                      style="height: 235px; object-fit: fill; transition: transform 0.3s ease;" loading="lazy">
+
+                    <div *ngIf="product.quantity == 0"
+                      class="status-overlay d-flex align-items-center justify-content-center position-absolute">
+                      <div class="status-text text-white text-uppercase fw-bold bg-caffe"
+                        style="font-size: 1.5rem; padding: 0.1rem 0.6rem; border-radius: 4px;">
+                        SOLD OUT
+                      </div>
+                    </div>
+
+                  </a>
+
+                  <!-- Navigation buttons - visible on hover -->
+                  <div
+                    class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-between px-2"
+                    style="pointer-events: none;">
+                    <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2"
+                      style="pointer-events: auto;" (click)="prevImage(product.id);">
+                      <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button class="navImgBtn btn btn-dark btn-sm rounded-circle bg-dark m-2"
+                      style="pointer-events: auto;" (click)="nextImage(product.id);">
+                      <i class="bi bi-chevron-right"></i>
+                    </button>
+                  </div>
+
+                  <!-- Image counter -->
+                  <div
+                    class="badge bg-dark bg-opacity-50 image-counter position-absolute bottom-0 start-0 m-3 px-2 py-1 shadow-sm text-white fs-6 fw-light">
+                    <i class="bi bi-images me-1 fs-6"></i>{{ currentImageIndices[product.id] + 1 }}/{{
+                    product.productimage.length }}
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Details Section -->
+            <div class="card-body col-md-8 d-flex flex-column">
+              <!-- Header Row -->
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <h5 class="card-title fw-semibold mb-0 fs-3 flex-grow-1">{{ product.name }}</h5>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2">
+
+
+                  <a *ngIf="product.quantity > 0 && hasRoleOrNoUser('Buyer')" [routerLink]="['/products', product.id]"
+                    class="btn btn-link text-dark p-1">
+                    <i class="bi bi-cart-plus fs-5"></i>
+                  </a>
+
+                  <button class="btn btn-link text-dark p-1" (click)="$event.stopPropagation(); shareItem(product)">
+                    <i class="bi bi-share fs-5"></i>
+                  </button>
+
+                  <button class="btn btn-link text-dark p-1" *ngIf="hasRoleOrNoUser('Buyer')"
+                    (click)="$event.stopPropagation(); toggleWishList(product)">
+                    <i class="bi fs-5" [ngClass]="{
+                        'bi-heart-fill text-danger': product.isFavorite,
+                        'bi-heart': !product.isFavorite
+                      }"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Badges -->
+              <div class="d-flex justify-content-between align-items-center">
+
+                <div class="d-flex gap-2 mb-3">
+                  <span class="badge shadow-sm py-2 px-3" style="min-width: 4rem;"
+                    [style.background-color]="product.isUsed ? '#de8332' : '#2a5f8b'">
+                    {{ product.isUsed ? 'Used' : 'New' }}
+                  </span>
+
+                  <span class="badge bg-success shadow-sm py-2 px-3" style="min-width: 4rem;">
+                    {{ product.categoryName }}
+                  </span>
+
+                  <span class="badge bg-caffe text-white p-2" style="min-width: 4rem;">
+                    <i class="bi bi-star-fill text-warning me-1"></i> {{ product.averageRating }}
+                  </span>
+                </div>
+
+
+              </div>
+
+              <!-- Price -->
+              <div class="mt-auto mb-3">
+                <span class="text-muted fw-semibold fs-4">EGP {{ product.price | number }}</span>
+              </div>
+
+              <!-- Color Swatches -->
+              <div class="d-flex justify-content-between align-items-center">
+
+                <div class="d-flex gap-2">
+                  <div *ngFor="let productStockDto of product.productStockDtos; let i = index"
+                    class="color-swatch hover-scale rounded-5" [class.selected]="i === 0"
+                    [style.background]="productStockDto.color">
+                    <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+                  </div>
+                </div>
+
+                <div class="d-flex flex-column justify-content-end">
+                  <div class="text-warning me-2 fs-5">
+                    <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                      <i class="star bi" [ngClass]="{
+                          'bi-star-fill': i < Math.floor(product.averageRating),
+                          'bi-star-half': i === Math.floor(product.averageRating) && product.averageRating % 1 !== 0,
+                          'bi-star': i >= Math.ceil(product.averageRating)
+                        }"></i>
+                    </ng-container>
+                  </div>
+                  <small class="text-muted align-self-center fs-6">{{ product.numberOfReviews }} Reviews</small>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+
+  </div>
+
+  <!-- Pagination Controls -->
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center mt-4">
+      <!-- Previous Button -->
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <a class="page-link text-caffe" (click)="changePage(currentPage - 1)" aria-label="Previous">
+          Previous
+        </a>
+      </li>
+
+      <!-- Page Numbers -->
+      <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+        [class.active]="currentPage === i + 1">
+        <a class="page-link"
+          [ngClass]="{ 'text-white bg-caffe border-caffe': currentPage === i + 1, 'text-caffe': currentPage !== i + 1 }"
+          (click)="changePage(i + 1)">
+          {{ i + 1 }}
+        </a>
+      </li>
+
+      <!-- Next Button -->
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <a class="page-link text-caffe" (click)="changePage(currentPage + 1)" aria-label="Next">
+          Next
+        </a>
+      </li>
+    </ul>
+  </nav>
+  }
+  @else {
+  <div class="text-center my-5 py-5">
+    <div class="empty-state">
+      <i class="bi bi-house-exclamation display-3 text-caffe"></i>
+      <h3 class="mt-3 fw-bold">No Products Found</h3>
+      <p class="text-muted">Try adjusting your search or filters</p>
+      <button class="btn mt-3 bg-caffe text-white" (click)="clearFilters()">
+        <i class="bi bi-arrow-counterclockwise me-2"></i>
+        Reset Filters
+      </button>
+    </div>
+  </div>
+  }
+  <!-- </div> -->
+</div>
+
+
+<div id="stop-scroll"></div>

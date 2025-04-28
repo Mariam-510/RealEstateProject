@@ -1,0 +1,73 @@
+.brown-icon
+{
+    color: #c38e79 !important;
+    font-size: 20px;
+}
+.profile-image {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.camera-icon {
+    bottom: 15px;
+    right: 15px;
+    background:white;
+    width: 2vw;
+    height:4vh;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+
+ .delete-icon {
+    top: 12%;
+    left:5%;
+    background:white;
+    width: 2vw;
+    height:4vh;
+    border-radius: 50%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+
+
+@media (max-width: 768px) {
+    .profile-image {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .camera-icon, .delete-icon {
+        width: 30px;
+        height: 30px;
+    }
+}
+.custom-border {
+    border-bottom: 2px solid gainsboro;  
+}
+
+@media (min-width: 992px) { 
+    .custom-border {
+        border-bottom: none;  
+        border-right: 2px solid gainsboro;  
+    }
+}
+
+@media (min-width: 1200px) {  
+    .custom-border {
+        border-right: 2px solid gainsboro;  
+    }
+}

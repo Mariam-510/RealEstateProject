@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Transactions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Mapping;
 using RealEstate.Models.Domains;
@@ -31,93 +34,119 @@ namespace RealEstate.Controllers
         }
         
 
-        [HttpPost("CreateAuction")]
+        [HttpPost("Add")]
+        [Authorize(Roles = "Seller,Agent")]
         public async Task<IActionResult> CreateAuction([FromForm] AuctionDTO AuctionDtO)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
-          
-            DateTime now = DateTime.Now;
+
+            string userIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(userIdStr, out int userId))
+                return Unauthorized("User not found.");
 
 
             if (AuctionDtO.StartTime >= AuctionDtO.EndTime)
-            {
                 return BadRequest("Start time must be earlier than End time.");
-            }
+
             var property = await _propertyRepository.GetByIdAsync(AuctionDtO.PropertyId);
-            if (property == null) 
+
+            if (property == null)
+                return NotFound("Property not found!");
+
+            if ((User.IsInRole("Seller") && property.SellerId != userId) ||
+                (User.IsInRole("Agent") && property.AgentId != userId))
+                return Unauthorized("You are not authorized for this property.");
+
+
+            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                return NotFound("Property ID Not Found");
+                try
+                {
+                    if (property.Status == PropertyStatus.Auctioned)
+                        return BadRequest("Property is already auctioned.");
+
+                    if (property.Status == PropertyStatus.Sold)
+                        return BadRequest("Property is already sold.");
+
+                    property.Status = PropertyStatus.Auctioned;
+
+                    await _propertyRepository.UpdateAsync(property);
+
+                    var AuctionModel = AuctionDtO.ToAuctionModel();
+
+                    if (User.IsInRole("Seller"))
+                        AuctionModel.SellerId = userId;
+
+                    else if (User.IsInRole("Agent"))
+                        AuctionModel.AgentId = userId;
+
+                    var ActionCreated = await _AuctionRepository.CreateAsync(AuctionModel);
+
+                    var ActionShow = ActionCreated.ToAuctionDTOShow();
+
+                    transactionScope.Complete();
+
+                    return Ok(new { message = "Auction Created Successfully!", ActionShow });
+                }
+                catch (Exception ex)
+                {
+                    transactionScope.Dispose();
+                    return StatusCode(500, new { message = "An unexpected error occurred." });
+                }
             }
-            if (AuctionDtO.AgentId != null)
-            {
-                var Agent = await _AgentRepository.GetByIdAsync(AuctionDtO.AgentId.Value);
-                if (Agent == null)
-                {
-                    return NotFound("Agent ID Not Found");
-                }
-                if(property.AgentId!= Agent.Id)
-                {
-                    return Unauthorized("You Not allowed To Add Auction ");
-                }
-            }
-            if (AuctionDtO.SellerId != null)
-            {
-                var seller = await _SellerRepository.GetByIdAsync(AuctionDtO.SellerId.Value);
-
-                if (seller == null)
-                {
-                    return NotFound("Seller ID not Found");
-                }
-                if (property.SellerId != seller.Id)
-                {
-                    return Unauthorized("You Not allowed To Add Auction ");
-                }
-            }
-
-
-            var AuctionModel = AuctionDtO.ToAuctionModel();
-
-            property.Status = PropertyStatus.Auctioned;
-             await _propertyRepository.UpdateAsync(property);
-
-            var ActionCreated = await _AuctionRepository.CreateAsync(AuctionModel);
             
-            var ActionShow= ActionCreated.ToAuctionDTOShow();
-
-            return Ok(new { message = "Auction Created Successfully!", ActionShow });
         }
 
 
         [HttpDelete("DeleteAuction/{id}")]
+        [Authorize(Roles = "Seller,Agent")]
         public async Task<IActionResult> DeleteAuction(int id)
         {
-            var GetAction = await _AuctionRepository.GetByIdAsync(id);
-            if(GetAction==null)
-            {
-                return NotFound("Auction ID Not found !");
-            }
-            if(GetAction.Status==Status.Scheduled)
-            {
-                var ActionDeleted = await _AuctionRepository.DeleteAsync(id);
+            string userIdStr = User.FindFirst("userId")?.Value;
 
-                var property = await _propertyRepository.GetByIdAsync((int) GetAction.PropertyId);
-                if (property == null)
+            if (!int.TryParse(userIdStr, out int userId))
+                return Unauthorized("User not found.");
+
+            var GetAuction = await _AuctionRepository.GetByIdAsync(id);
+            if (GetAuction == null)
+                return NotFound("Auction not found!");
+
+            var property = await _propertyRepository.GetByIdAsync(GetAuction.PropertyId.Value);
+            if (property == null)
+                return NotFound("Property not found!");
+
+            if ((User.IsInRole("Seller") && property.SellerId != userId) ||
+                (User.IsInRole("Agent") && property.AgentId != userId))
+                return Unauthorized("You are not authorized for this property.");
+
+            if (GetAuction.Status == Status.Active)
+                return BadRequest("Can't delete an active auction!");
+
+            if (GetAuction.Status == Status.Finished)
+                return BadRequest("Auction already ended!");
+
+            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                try
                 {
-                    return NotFound("Property ID Not Found");
+                    var AuctionDeleted = await _AuctionRepository.DeleteAsync(id);
+                    property.Status = PropertyStatus.Available;
+                    await _propertyRepository.UpdateAsync(property);
+
+                    AuctionDTOShow ActionShow = AuctionDeleted.ToAuctionDTOShow();
+
+                    transactionScope.Complete();
+                    return Ok(new { message = "Auction deleted successfully.", ActionShow });
                 }
-
-                property.Status = PropertyStatus.Available;
-                await _propertyRepository.UpdateAsync(property);
-
-                AuctionDTOShow ActionShow = ActionDeleted.ToAuctionDTOShow();
-                return Ok(new { message = "Auction is", ActionShow });
+                catch (Exception ex)
+                {
+                    transactionScope.Dispose();
+                    return StatusCode(500, new { message = "An unexpected error occurred." });
+                }
             }
-            return BadRequest("Cant Delete This Auction");
           
-
         }
 
 
@@ -253,7 +282,6 @@ namespace RealEstate.Controllers
             return BadRequest("Cant Update auction Now !");
 
         }
-
 
         }
     }

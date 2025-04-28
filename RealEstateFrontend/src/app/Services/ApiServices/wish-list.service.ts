@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../app.config';
+
 import { ProductDTO } from './product.service';
 import { PropertyDTO } from './property.service';
 
@@ -41,6 +42,7 @@ export class WishListService {
       { responseType: 'text' }
     );
   }
+
 // In WishListService
 getAllProductsByBuyerId(): Observable<ProductDTO[]> {
   return this.http.get<ProductDTO[]>(`${this.apiUrl}/GetAllProductByBuyerID`);

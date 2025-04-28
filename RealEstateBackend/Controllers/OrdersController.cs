@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Transactions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -46,9 +47,17 @@ namespace RealEstate.Controllers
         }
 
         [HttpGet]
-        [Route("buyer/{buyerId}")]
-        public async Task<IActionResult> GetAllByBuyer(int buyerId)
+        [Route("buyer")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> GetAllByBuyer()
         {
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
             var existingBuyer = await _buyerRepository.GetByIdAsync(buyerId);
             if (existingBuyer == null)
                 return NotFound("Buyer not found!");
@@ -61,6 +70,7 @@ namespace RealEstate.Controllers
 
         [HttpGet]
         [Route("getById/{id}")]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> GetById(int id)
         {
             var order = await _orderRepository.GetByIdAsync(id);
@@ -73,30 +83,35 @@ namespace RealEstate.Controllers
 
         [HttpPost]
         [Route("placeOrder")]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> PlaceOrder([FromBody] CreateOrderDto createOrderDto)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 try
                 {
-                    //int buyerId = 0;
-                    ////int.TryParse(User.FindFirst("UserId")?.Value, out cusId);
-                    //int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out buyerId);
+                    string buyerIdStr = User.FindFirst("userId")?.Value;
+
+                    if (!int.TryParse(buyerIdStr, out int buyerId))
+                    {
+                        return Unauthorized("Buyer not found.");
+                    }
 
                     if (createOrderDto == null)
                         return BadRequest("Order cannot be null");
 
                     //cart
-                    var cart = await _cartRepository.GetByBuyerIdAsync(createOrderDto.BuyerId);
+                    var cart = await _cartRepository.GetByBuyerIdAsync(buyerId);
                     if (cart != null)
                     {
                         var order = new Order()
                         {
                             OrderDate = DateTime.Now,
                             Status = OrderStatus.Pending,
-                            TotalAmount = cart.TotalPrice,
+                            SubTotal = cart.TotalPrice,
+                            DeliveryFees = createOrderDto.DeliveryFees,
                             IsDeleted = false,
-                            BuyerId = createOrderDto.BuyerId,
+                            BuyerId = buyerId,
                             AddressId = createOrderDto.AddressId,
                             PaymentId = createOrderDto.PaymentId,
                         };
@@ -105,7 +120,7 @@ namespace RealEstate.Controllers
 
                         if (cart.OrderItems != null)
                         {
-                            foreach (var orderItem in cart.OrderItems)
+                            foreach (var orderItem in cart.OrderItems.ToList())
                             {
                                 var product = await _productRepository.GetByIdAsync((int) orderItem.ProductId);
 
@@ -125,11 +140,6 @@ namespace RealEstate.Controllers
                                     return BadRequest(new { message = "Quantity exceeds available stock." });
                                 }
 
-                                //if (product.Quantity < orderItem.Quantity)
-                                //{
-                                //    return StatusCode(409, $"Insufficient quantity for product '{product.Name}'. Available: {product.Quantity}, Requested: {orderItem.Quantity}");
-                                //}
-
                                 productStock.Quantity -= orderItem.Quantity;
                                 await ProductStockRepository.UpdateAsync(productStock.Id, productStock);
 
@@ -141,7 +151,6 @@ namespace RealEstate.Controllers
 
                         }
 
-                        cart.SelectedAddressId = null;
                         await _cartRepository.UpdateAsync(cart);
 
                         var response = order.OrderResponseDto();

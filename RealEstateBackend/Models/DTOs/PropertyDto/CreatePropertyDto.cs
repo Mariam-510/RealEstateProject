@@ -39,12 +39,8 @@ namespace RealEstate.Models.DTOs.PropertyDto
         [Required]
         public decimal Space { get; set; }
 
-        [Required]
-        public string Status { get; set; }
-
-        public int? AgentId { get; set; }
-
-        public int? SellerId { get; set; }
+        //[Required]
+        //public string Status { get; set; }
 
         // Upload files from form
         [Required]
@@ -52,23 +48,16 @@ namespace RealEstate.Models.DTOs.PropertyDto
         public IFormFile? ContractFile { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            // XOR logic: Exactly one must be provided
-            if ((AgentId == null && SellerId == null) || (AgentId != null && SellerId != null))
-            {
-                yield return new ValidationResult(
-                    "Exactly one of AgentId or SellerId must be provided (not both)."
-                );
-            }
             // Enum validation
             if (!Enum.TryParse(typeof(PropertyType), Type, true, out _))
             {
                 yield return new ValidationResult("Invalid property Type. Allowed: Sell, Rent.", new[] { nameof(Type) });
             }
 
-            if (!Enum.TryParse(typeof(PropertyStatus), Status, true, out _))
-            {
-                yield return new ValidationResult("Invalid property Status. Allowed: Available, Sold, Auctioned.", new[] { nameof(Status) });
-            }
+            //if (!Enum.TryParse(typeof(PropertyStatus), Status, true, out _))
+            //{
+            //    yield return new ValidationResult("Invalid property Status. Allowed: Available, Sold, Auctioned.", new[] { nameof(Status) });
+            //}
 
             if (!Enum.TryParse(typeof(PropertyCategory), PropertyCategory, true, out _))
             {

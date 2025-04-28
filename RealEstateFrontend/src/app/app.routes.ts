@@ -53,7 +53,13 @@ import { BookAppointmentComponent } from './Components/Appointment/book-appointm
 import { ViewAllPropertiesComponent } from './Components/PagesSellerAndAgent/view-all-properties/view-all-properties.component';
 import { ViewPendingPropertiesComponent } from './Components/Seller/view-pending-properties/view-pending-properties.component';
 import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist.component';
+import { SimilarProductsComponent } from './Components/Products/Details/similar-products/similar-products.component';
+import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-all-pointment/buyer-view-all-pointment.component';
+import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
+import { CreateadminComponent } from './Components/Admin/createadmin/createadmin.component';
+import { ApproveAgentComponent } from './Components/Admin/approve-agent/approve-agent.component';
 import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
+
 
 //----------------------------------------------------------------------------------------
 
@@ -71,7 +77,9 @@ export const routes: Routes = [
       { path: 'addProduct', component: AddProductComponent, title: "Add Product" },
       { path: "addCatgory", component: AddCategoryComponent, title: "Add Category" },
       { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscription Plan" },
-      { path: 'approve', component: ApprovePropertyComponent, pathMatch: 'full' },
+      { path: 'approveProperty', component: ApprovePropertyComponent, title: "Approve Property"},
+      { path: "createAdmin", component: CreateadminComponent, title: "Create Admin" },
+      { path: "approveAgent", component: ApproveAgentComponent, title: "Approve Agent" },
     ]
   },
 
@@ -83,8 +91,8 @@ export const routes: Routes = [
       { path: 'dashboard', component: AgentdashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
-      {path:'Properties',component:ViewAllPropertiesComponent,title:"View All Properties"}
-
+      { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
+      { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" }
     ]
   },
 
@@ -96,8 +104,9 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
-      {path:'Properties',component:ViewAllPropertiesComponent,title:"View All Properties"},
-      {path:'PropertiesPending',component:ViewPendingPropertiesComponent,title:"View Pending Properties"}
+      { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
+      { path: 'PropertiesPending', component: ViewPendingPropertiesComponent, title: "View Pending Properties" },
+      { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" }
     ]
   },
 
@@ -109,9 +118,9 @@ export const routes: Routes = [
       { path: "orders", component: OrderSummaryComponent, title: "Orders Summary" },
       { path: 'orders/:id', component: OrderDetailsComponent, title: "Order Details" },
       { path: "AllReveiw", component: AllReviewComponent, title: "AllReview" },
-      {path:'FavoriteProducts',component:FavoriteProductsComponent,title:"Favorite Products"},
-      {path:'wishlist',component:WishlistComponent,title:"Wishlist"},
-
+      { path: 'FavoriteProducts', component: FavoriteProductsComponent, title: "Favorite Products" },
+      { path: 'wishlist', component: WishlistComponent, title: "Wishlist" },
+      { path: 'BuyerViewAllAppointment', component: BuyerViewAllPointmentComponent, title: "View All Appointment" }
 
     ]
   },
@@ -134,7 +143,7 @@ export const routes: Routes = [
 
   //---------------------------------------------------------------------------------------
   { path: 'chat', component: ChatmodalComponent, title: "Chat" },
-  { path: 'MainChat', component: MainChatComponent, title: "Main Chat" },
+  { path: 'mainchat', component: MainChatComponent, title: "Main Chat" },
 
   //---------------------------------------------------------------------------------------
   { path: 'products', component: PHomeComponent, title: "Products Home Page" },
@@ -165,14 +174,12 @@ export const routes: Routes = [
   },
 
   //---------------------------------------------------------------------------------------
-<<<<<<< Updated upstream
-  {path:'book',component:BookAppointmentComponent,title:"Book Appointment"},
-=======
+
   { path: 'book/:id', component: BookAppointmentComponent, title: "Book Appointment" },
->>>>>>> Stashed changes
+
   //---------------------------------------------------------------------------------------
   { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
-  { path: "t", component: TViewAllProductsComponent, title: "t" },
+  { path: "t", component: SimilarProductsComponent, title: "t" },
   { path: "**", component: NotFoundComponent },
 
 

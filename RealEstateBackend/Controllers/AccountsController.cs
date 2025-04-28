@@ -8,6 +8,7 @@ using RealEstate.JWT;
 using RealEstate.Models.Domains;
 using RealEstate.Models.Dtos.AccountDto;
 using RealEstate.Models.Dtos.EmailDto;
+using RealEstate.Models.Dtos.JWTDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
 //using Stripe;
@@ -52,12 +53,12 @@ namespace RealEstate.Controllers
         }
 
 
-        //[HttpGet("TestAuth")]
-        //[Authorize]
-        //public async Task<IActionResult> TestAuth()
-        //{
-        //    return Ok("Hello");
-        //}
+        [HttpGet("TestAuth")]
+        [Authorize]
+        public async Task<IActionResult> TestAuth()
+        {
+            return Ok(new { message = "Hello" });
+        }
 
 
         [HttpPost]
@@ -178,7 +179,7 @@ namespace RealEstate.Controllers
                             Dear {account.Email},<br/>
                             Thank you for registering.<br/>
                             Your email confirmation code is: <strong>{confirmationCode}</strong><br/>
-                            This code will expire in 10 minutes.<br/>
+                            This code will expire in 2 minutes.<br/>
                             Please enter this code in the app to confirm your email.";
 
 
@@ -299,7 +300,7 @@ namespace RealEstate.Controllers
                             Dear {account.Email},<br/>
                             Thank you for registering.<br/>
                             Your email confirmation code is: <strong>{confirmationCode}</strong><br/>
-                            This code will expire in 10 minutes.<br/>
+                            This code will expire in 2 minutes.<br/>
                             Please enter this code in the app to confirm your email.";
 
 
@@ -360,13 +361,18 @@ namespace RealEstate.Controllers
                 var isEmailConfirmed = await UserManager.IsEmailConfirmedAsync(account);
                 if (!isEmailConfirmed)
                 {
-                    return Unauthorized(new { message = "Please confirm your email before logging in." });
+                    return StatusCode(StatusCodes.Status403Forbidden, new { message = "Please confirm your email before logging in." });
                 }
 
                 var checkPasswordResult = await UserManager.CheckPasswordAsync(account, loginDto.Password);
                 if (checkPasswordResult)
                 {
                     var roles = await UserManager.GetRolesAsync(account);
+
+                    int userId = 0;
+                    var fName = "";
+                    var lName = "";
+                    var imageUrl = account.ImageUrl;
 
                     if (roles.Contains("Agent"))
                     {
@@ -381,12 +387,42 @@ namespace RealEstate.Controllers
                             {
                                 return BadRequest(new{message = "Your account has been rejected. Please contact support for further details."});
                             }
+                            userId = agent.Id;
+                            fName = agent.Name;
+                        }
+                    }
+                    else if (roles.Contains("Seller"))
+                    {
+                        var seller = await SellerRepository.GetByAccountIdAsync(account.Id);
+                        if (seller != null)
+                        {
+                            userId = seller.Id;
+                            fName = seller.FirstName;
+                            lName = seller.LastName;
+                        }
 
+                    }
+                    else if (roles.Contains("Buyer"))
+                    {
+                        var buyer = await BuyerRepository.GetByAccountIdAsync(account.Id);
+                        if (buyer != null)
+                        {
+                            userId = buyer.Id;
+                            fName = buyer.FirstName;
+                            lName = buyer.LastName;
                         }
                     }
 
-                    //create token
-                    var jwtToken = TokenService.CreateJWTToken(account, roles.ToList());
+
+                    var userClaims = new UserClaimsDto
+                    {
+                        UserId = userId,
+                        FirstName = fName,
+                        LastName = lName,
+                        ImageUrl = imageUrl
+                    };
+
+                    var jwtToken = TokenService.CreateJWTToken(account, roles.ToList(), userClaims);
 
                     var tokenDto = new JWTTokenDto()
                     {
@@ -402,7 +438,7 @@ namespace RealEstate.Controllers
 
         [HttpPost]
         [Route("ConfirmEmailCode")]
-        public async Task<IActionResult> ConfirmEmailCode(string email, string code)
+        public async Task<IActionResult> ConfirmEmailCode([FromForm] string email, [FromForm] string code)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(code))
                 return BadRequest(new { message = "Email and code are required." });
@@ -470,7 +506,7 @@ namespace RealEstate.Controllers
                             Dear {account.Email},<br/>
                             Thank you for registering.<br/>
                             Your email confirmation code is: <strong>{confirmationCode}</strong><br/>
-                            This code will expire in 10 minutes.<br/>
+                            This code will expire in 2 minutes.<br/>
                             .Please enter this code in the app to confirm your email.";
 
 

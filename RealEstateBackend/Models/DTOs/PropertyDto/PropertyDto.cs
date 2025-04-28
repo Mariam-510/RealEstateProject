@@ -17,11 +17,15 @@ namespace RealEstate.Models.DTOs.PropertyDto
         public decimal Space { get; set; }
         public DateTime AddedDate { get; set; }
         public string Status { get; set; } // Available, Sold, Auctioned
+        public string ApprovalStatus { get; set; } // Pending, Approved, Rejected
         public List<string> Images { get; set; }
         public int? AgentId { get; set; }
         public int? SellerId { get; set; }
         public string? ContractImgUrl { get; set; }
         public bool IsFavorite { get; set; } = false;
+        public string? UserName { get; set; }
+        public string? UserImage { get; set; }
+
 
     }
 }

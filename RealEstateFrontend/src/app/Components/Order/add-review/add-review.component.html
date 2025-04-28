@@ -1,0 +1,111 @@
+<div class="container">
+      <p class="text-center text-caffe">Add Review for {{ data.productName }}</p>
+      <div class="stars">
+        <input
+          type="radio"
+          id="star5"
+          name="rating"
+          [(ngModel)]="selectedRating"
+          (click)="selectRating(5)"
+          value="5"
+        />
+        <label
+          for="star5"
+          (mouseover)="hoverRating(5)"
+          (mouseleave)="clearHover()"
+          >&#9733;</label
+        >
+
+        <input
+          type="radio"
+          id="star4"
+          name="rating"
+          [(ngModel)]="selectedRating"
+          (click)="selectRating(4)"
+          value="4"
+        />
+        <label
+          for="star4"
+          (mouseover)="hoverRating(4)"
+          (mouseleave)="clearHover()"
+          >&#9733;</label
+        >
+
+        <input
+          type="radio"
+          id="star3"
+          name="rating"
+          [(ngModel)]="selectedRating"
+          (click)="selectRating(3)"
+          value="3"
+        />
+        <label
+          for="star3"
+          (mouseover)="hoverRating(3)"
+          (mouseleave)="clearHover()"
+          >&#9733;</label
+        >
+
+        <input
+          type="radio"
+          id="star2"
+          name="rating"
+          [(ngModel)]="selectedRating"
+          (click)="selectRating(2)"
+          value="2"
+        />
+        <label
+          for="star2"
+          (mouseover)="hoverRating(2)"
+          (mouseleave)="clearHover()"
+          >&#9733;</label
+        >
+
+        <input
+          type="radio"
+          id="star1"
+          name="rating"
+          [(ngModel)]="selectedRating"
+          (click)="selectRating(1)"
+          value="1"
+        />
+        <label
+          for="star1"
+          (mouseover)="hoverRating(1)"
+          (mouseleave)="clearHover()"
+          >&#9733;</label
+        >
+      </div>
+
+      <textarea
+        [(ngModel)]="reviewText"
+        placeholder="Write your review"
+        rows="4"
+        (input)="validateReview()"
+        class="form-control"
+      ></textarea>
+      <p
+        *ngIf="isMaxLengthExceeded"
+        class="text-danger mt-1 ms-2"
+        style="font-size: 13px"
+      >
+        Maximum character is 150
+      </p>
+      <div class="text-right mt-3">
+        <button
+          class="btn text-caffe border border-gray  B1"
+          (click)="closeDialog()"
+          style="margin-right: 15px; transition: all 0.3s ease-in-out"
+        >
+          Cancel <i class="bi bi-ban"></i>
+        </button>
+        <button
+          class="btn bg-caffe text-light B2"
+          (click)="submitReview()"
+          style="transition: all 0.3s ease-in-out"
+        >
+          Submit <i class="bi bi-check-circle"></i>
+        </button>
+      </div>
+    </div>
+ 

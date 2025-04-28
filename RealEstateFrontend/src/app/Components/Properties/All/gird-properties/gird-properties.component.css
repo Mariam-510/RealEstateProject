@@ -1,0 +1,173 @@
+.property-card {
+  /* height: 100%; */
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  /* cursor: pointer; */
+}
+
+.property-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.image-counter {
+  z-index: 2;
+  backdrop-filter: blur(2px);
+}
+
+.category-badge {
+  top: 15px;
+  left: 15px;
+  z-index: 2;
+  /* font-size: 0.7rem; */
+}
+
+.rent-badge {
+  color: #2a5f8b;
+  font-size: 0.85rem;
+}
+
+.sell-badge {
+  color: #4a7d5e;
+  font-size: 0.85rem;
+}
+
+
+.bg-rent-badge {
+  background: #2a5f8b;
+  color: white;
+}
+
+.bg-sell-badge {
+  background-color: #4a7d5e;
+  color: white;
+}
+
+.status-overlay {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+.status-text {
+  letter-spacing: 2px;
+  transform: rotate(-15deg);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.property-actions {
+  top: 15px;
+  right: 15px;
+  z-index: 2;
+}
+
+.btn-icon {
+  /* border-radius: 50%; */
+  width: 32px;
+  height: 32px;
+  transition: all 0.2s;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+}
+
+.btn-icon:hover {
+  transform: scale(1.1);
+}
+
+.property-img {
+  height: 250px;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+}
+
+
+.property-card:hover .carousel-control-prev,
+.property-card:hover .carousel-control-next {
+  opacity: 0.75;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  width: 25px;
+  height: 25px;
+}
+
+
+@media (max-width: 768px) {
+  .property-img {
+    height: 200px;
+  }
+
+  .status-text {
+    font-size: 1.4rem;
+  }
+
+}
+
+@media (max-width: 576px) {
+  .property-img {
+    height: 180px;
+  }
+
+}
+
+/* ---------------------------------------------------------------------------------- */
+.footer {
+  margin-top: auto;
+}
+
+
+.mapToggle {
+  z-index: 1000;
+}
+
+
+/* Update existing .map-container class */
+.map-container {
+  height: 250px;
+  /* Match image height */
+  width: 100%;
+  border-radius: 12px 12px 0 0;
+  /* Match image rounding */
+  overflow: hidden;
+  /* Ensure rounded corners clip map */
+  position: relative;
+  /* For absolute positioning of children */
+}
+
+/* Leaflet map element styling */
+#map {
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  /* Inherit parent's border-radius */
+}
+
+/* Match image responsive heights */
+@media (max-width: 768px) {
+  .map-container {
+    height: 200px;
+  }
+}
+
+@media (max-width: 576px) {
+  .map-container {
+    height: 180px;
+  }
+}
+
+/* Optional: Add hover effect to match cards */
+.property-card:hover .map-container {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}

@@ -48,6 +48,226 @@ namespace RealEstate.Data
         }
 
         //----------------------------------------------------------------------------------------------------
+        public static void SeedAdmins(ModelBuilder modelBuilder)
+        {
+            var adminAccountId = "80d9c265-64a3-4520-9b0f-164d5bfc6afa";
+            //Seed Account
+            modelBuilder.Entity<Account>().HasData(
+                new Account
+                {
+                    Id = adminAccountId,
+                    UserName = "admin1@gmail.com",
+                    NormalizedUserName = "ADMIN1@GMAIL.COM",
+                    Email = "admin1@gmail.com",
+                    NormalizedEmail = "ADMIN1@GMAIL.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = "AQAAAAIAAYagAAAAEKfvX/zOYDc1MKNush8f9i13YnBN5qouubCluBQAIfkaUUgtOehMdxzX3tldGff7NQ==", //Admin@123
+                    SecurityStamp = "52a4b8bd-9804-45d3-9125-32df5869fab8",
+                    ConcurrencyStamp = "53f4f840-6448-4fbb-ab15-9ac7eb688f7c",
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0,
+                    CreatedAt = new DateTime(2025, 4, 25),
+                    ImageUrl = null,
+                });
+
+            //Assign Role to Admin Account
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    UserId = adminAccountId,
+                    RoleId = AdminRoleId
+                });
+
+            //Seed Admin
+            modelBuilder.Entity<Admin>().HasData(
+                new Admin
+                {
+                    Id = 1,
+                    Name = "Admin",
+                    IsDeleted = false,
+                    AccountId = adminAccountId
+                });
+        }
+
+        //----------------------------------------------------------------------------------------------------
+        public static void SeedSellers(ModelBuilder modelBuilder)
+        {
+            var seller1AccountId = "06f38ad4-75e6-4073-bbb7-27fa233fc984";
+            //Seed Account
+            modelBuilder.Entity<Account>().HasData(
+                new Account
+                {
+                    Id = seller1AccountId,
+                    UserName = "seller1@gmail.com",
+                    NormalizedUserName = "SELLER1@GMAIL.COM",
+                    Email = "seller1@gmail.com",
+                    NormalizedEmail = "SELLER1@GMAIL.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = "AQAAAAIAAYagAAAAEJ2vKB9pVu+kAI0d8+Xt2RggHvQLal3U78bJ0nqnXJtuDth5uAdpho+qxz3THEX7uw==", //Seller@123
+                    SecurityStamp = "7d9f2418-7525-473d-9c67-458e58a3479e",
+                    ConcurrencyStamp = "eda25df4-eded-4471-9713-8eefc79cca15",
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0,
+                    CreatedAt = new DateTime(2025, 4, 25),
+                    ImageUrl = null,
+                });
+
+            //Assign Role to Seller Account
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    UserId = seller1AccountId,
+                    RoleId = SellerRoleId
+                });
+
+            //Seed Seller
+            modelBuilder.Entity<Seller>().HasData(
+                new Seller
+                {
+                    Id = 1,
+                    FirstName = "Sara",
+                    LastName = "Ahmed",
+                    IsDeleted = false,
+                    AccountId = seller1AccountId
+                });
+
+            //------------------------------------------------------------------------------------
+            var seller2AccountId = "0ac5ea06-31b9-4007-8a23-3b8d844117d4";
+            //Seed Account
+            modelBuilder.Entity<Account>().HasData(
+                new Account
+                {
+                    Id = seller2AccountId,
+                    UserName = "seller2@gmail.com",
+                    NormalizedUserName = "SELLER2@GMAIL.COM",
+                    Email = "seller2@gmail.com",
+                    NormalizedEmail = "SELLER2GMAIL.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = "AQAAAAIAAYagAAAAEJ2vKB9pVu+kAI0d8+Xt2RggHvQLal3U78bJ0nqnXJtuDth5uAdpho+qxz3THEX7uw==", //Seller@123
+                    SecurityStamp = "22056678-0f49-4dd3-90d9-7900650e6866",
+                    ConcurrencyStamp = "4b7b82e1-5bd1-4a3f-9a5f-70e47698855c",
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0,
+                    CreatedAt = new DateTime(2025, 4, 25),
+                    ImageUrl = null,
+                });
+
+            //Assign Role to Seller Account
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    UserId = seller2AccountId,
+                    RoleId = SellerRoleId
+                });
+
+            //Seed Seller
+            modelBuilder.Entity<Seller>().HasData(
+                new Seller
+                {
+                    Id = 2,
+                    FirstName = "Mohamed",
+                    LastName = "Ali",
+                    IsDeleted = false,
+                    AccountId = seller2AccountId
+                });
+        }
+
+        //----------------------------------------------------------------------------------------------------
+        public static void SeedAgents(ModelBuilder modelBuilder)
+        {
+            var agent1AccountId = "68a09f7c-5690-47b7-b777-13672d28e7f0";
+            //Seed Account
+            modelBuilder.Entity<Account>().HasData(
+                new Account
+                {
+                    Id = agent1AccountId,
+                    UserName = "agent1@gmail.com",
+                    NormalizedUserName = "AGENT1@GMAIL.COM",
+                    Email = "agent1@gmail.com",
+                    NormalizedEmail = "AGENT1@GMAIL.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = "AQAAAAIAAYagAAAAEJMNkPaJE4aQaV5B7+cNfDs6MlmhV5T6TE/aPHIEFeLJT3GtYcXKCdhtbp3H23of3g==", //Agent@123
+                    SecurityStamp = "4fb21c71-8dba-4d10-b866-b3e5586cc6c7",
+                    ConcurrencyStamp = "4fb21c71-8dba-4d10-b866-b3e5586cc6c7",
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0,
+                    CreatedAt = new DateTime(2025, 4, 25),
+                    ImageUrl = "UserImages/3.jpg",
+                });
+
+            //Assign Role to Admin Account
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    UserId = agent1AccountId,
+                    RoleId = AgentRoleId
+                });
+
+            //Seed Admin
+            modelBuilder.Entity<Agent>().HasData(
+                new Agent
+                {
+                    Id = 1,
+                    Name = "ASK",
+                    CommercialRegister = "123456",
+                    ApprovalStatus = ApprovalStatus.Approved,
+                    IsDeleted = false,
+                    AccountId = agent1AccountId
+                });
+
+            //----------------------------------------------------------
+            var agent2ccountId = "90641f7b-3433-4f0f-bbfc-655fa74c201a";
+            //Seed Account
+            modelBuilder.Entity<Account>().HasData(
+                new Account
+                {
+                    Id = agent2ccountId,
+                    UserName = "agent2@gmail.com",
+                    NormalizedUserName = "AGENT2@GMAIL.COM",
+                    Email = "agent2@gmail.com",
+                    NormalizedEmail = "AGENT2@GMAIL.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = "AQAAAAIAAYagAAAAEJMNkPaJE4aQaV5B7+cNfDs6MlmhV5T6TE/aPHIEFeLJT3GtYcXKCdhtbp3H23of3g==", //Agent@123
+                    SecurityStamp = "90641f7b-3433-4f0f-bbfc-655fa74c201a",
+                    ConcurrencyStamp = "90641f7b-3433-4f0f-bbfc-655fa74c201a",
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0,
+                    CreatedAt = new DateTime(2025, 4, 25),
+                    ImageUrl = "UserImages/4.jpg",
+                });
+
+            //Assign Role to Admin Account
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    UserId = agent2ccountId,
+                    RoleId = AgentRoleId
+                });
+
+            //Seed Admin
+            modelBuilder.Entity<Agent>().HasData(
+                new Agent
+                {
+                    Id = 2,
+                    Name = "Agent2",
+                    CommercialRegister = "789101",
+                    ApprovalStatus = ApprovalStatus.Approved,
+                    IsDeleted = false,
+                    AccountId = agent2ccountId
+                });
+        }
+
+        //----------------------------------------------------------------------------------------------------
         public static void SeedCategories(ModelBuilder modelBuilder)
         {
             var categories = new List<Category>
@@ -70,66 +290,66 @@ namespace RealEstate.Data
             // Sofas
             modelBuilder.Entity<Product>().HasData(new Product[]
             {
-        new Product { Id = 1, Name = "Luxurious Leather Sofa", Description = "This luxurious leather sofa is designed for ultimate comfort and style, featuring premium quality leather and durable stitching. Ideal for any living room that needs both comfort and elegance.", Price = 3500, IsUsed = false, CategoryID = 1, Images = new List<string> { "ProductImages/sofa1.jpg", "ProductImages/sofa1_1.jpg", "ProductImages/sofa1_2.jpg", "ProductImages/sofa1_3.jpg" }, DateAdded = new DateTime(2023, 1, 15), AverageRating = 4.2 },
-        new Product { Id = 2, Name = "Velvet Sofa Set", Description = "A plush velvet sofa set that brings sophistication to your living room. Soft to the touch with deep cushioning, perfect for relaxation and lounging.", Price = 2800, IsUsed = false, CategoryID = 1, Images = new List<string> { "ProductImages/sofa2.jpg", "ProductImages/sofa2_1.jpg", "ProductImages/sofa2_2.jpg" }, DateAdded = new DateTime(2023, 2, 20), AverageRating = 4.7 },
-        new Product { Id = 3, Name = "Reclining Sectional Sofa", Description = "Featuring reclining sections, this sofa is perfect for those who enjoy ultimate comfort while watching TV or reading. Its adjustable backrest ensures personalized relaxation.", Price = 4500, IsUsed = false, CategoryID = 1, Images = new List<string> { "ProductImages/sofa3.jpg", "ProductImages/sofa3_1.jpg", "ProductImages/sofa3_2.jpg", "ProductImages/sofa3_3.jpg", "ProductImages/sofa3_4.jpg" }, DateAdded = new DateTime(2023, 3, 10), AverageRating = 4.9 },
-        new Product { Id = 4, Name = "Vintage Chesterfield Sofa", Description = "The timeless Chesterfield sofa offers an old-world charm with its iconic button-tufted back and rolled arms. Ideal for those who appreciate classic design.", Price = 3000, IsUsed = true, CategoryID = 1, Images = new List<string> { "ProductImages/sofa4.jpg", "ProductImages/sofa4_1.jpg", "ProductImages/sofa4_2.jpg" }, DateAdded = new DateTime(2023, 4, 5), AverageRating = 3.8 },
-        new Product { Id = 5, Name = "Modern Minimalist Sofa", Description = "A sleek and modern minimalist sofa perfect for contemporary living spaces. The design combines simplicity and elegance with a spacious seat for maximum comfort.", Price = 2500, IsUsed = false, CategoryID = 1, Images = new List<string> { "ProductImages/sofa5.jpg", "ProductImages/sofa5_1.jpg", "ProductImages/sofa5_2.jpg" }, DateAdded = new DateTime(2023, 5, 12), AverageRating = 4.5 }
+        new Product { Id = 1, Name = "Luxurious Leather Sofa", Description = "This luxurious leather sofa is designed for ultimate comfort and style, featuring premium quality leather and durable stitching. Ideal for any living room that needs both comfort and elegance.", Price = 3500, IsUsed = false, CategoryID = 1, Images = new List<string> { "ProductImages/sofa1.jpg", "ProductImages/sofa1_1.jpg", "ProductImages/sofa1_2.jpg", "ProductImages/sofa1_3.jpg" }, DateAdded = new DateTime(2025, 1, 15), AverageRating = 4.2 },
+        new Product { Id = 2, Name = "Velvet Sofa Set", Description = "A plush velvet sofa set that brings sophistication to your living room. Soft to the touch with deep cushioning, perfect for relaxation and lounging.", Price = 2800, IsUsed = false, CategoryID = 1, Images = new List<string> { "ProductImages/sofa2.jpg", "ProductImages/sofa2_1.jpg", "ProductImages/sofa2_2.jpg" }, DateAdded = new DateTime(2025, 2, 20), AverageRating = 4.7 },
+        new Product { Id = 3, Name = "Reclining Sectional Sofa", Description = "Featuring reclining sections, this sofa is perfect for those who enjoy ultimate comfort while watching TV or reading. Its adjustable backrest ensures personalized relaxation.", Price = 4500, IsUsed = false, CategoryID = 1, Images = new List<string> { "ProductImages/sofa3.jpg", "ProductImages/sofa3_1.jpg", "ProductImages/sofa3_2.jpg", "ProductImages/sofa3_3.jpg", "ProductImages/sofa3_4.jpg" }, DateAdded = new DateTime(2025, 3, 10), AverageRating = 4.9 },
+        new Product { Id = 4, Name = "Vintage Chesterfield Sofa", Description = "The timeless Chesterfield sofa offers an old-world charm with its iconic button-tufted back and rolled arms. Ideal for those who appreciate classic design.", Price = 3000, IsUsed = true, CategoryID = 1, Images = new List<string> { "ProductImages/sofa4.jpg", "ProductImages/sofa4_1.jpg", "ProductImages/sofa4_2.jpg" }, DateAdded = new DateTime(2025, 4, 5), AverageRating = 3.8 },
+        new Product { Id = 5, Name = "Modern Minimalist Sofa", Description = "A sleek and modern minimalist sofa perfect for contemporary living spaces. The design combines simplicity and elegance with a spacious seat for maximum comfort.", Price = 2500, IsUsed = false, CategoryID = 1, Images = new List<string> { "ProductImages/sofa5.jpg", "ProductImages/sofa5_1.jpg", "ProductImages/sofa5_2.jpg" }, DateAdded = new DateTime(2025, 5, 12), AverageRating = 4.5 }
             });
 
             // Beds
             modelBuilder.Entity<Product>().HasData(new Product[]
             {
-        new Product { Id = 6, Name = "King-Size Wooden Bed", Description = "A beautiful king-size bed crafted from high-quality wood with intricate detailing. Offers a spacious sleeping area and sturdy frame for long-term use.", Price = 4000, IsUsed = false, CategoryID = 2, Images = new List<string> { "ProductImages/bed1.jpg", "ProductImages/bed1_1.jpg", "ProductImages/bed1_2.jpg" }, DateAdded = new DateTime(2023, 1, 25), AverageRating = 4.6 },
-        new Product { Id = 7, Name = "Modern Metal Bed Frame", Description = "This modern metal bed frame features clean lines and a minimalist design. Durable and long-lasting, it is ideal for modern bedrooms that need a chic touch.", Price = 2500, IsUsed = true, CategoryID = 2, Images = new List<string> { "ProductImages/bed2.jpg", "ProductImages/bed2_1.jpg"}, DateAdded = new DateTime(2023, 2, 18), AverageRating = 3.9 },
-        new Product { Id = 8, Name = "Elegant Queen-Size Bed", Description = "A queen-size bed with an elegant upholstered headboard, soft fabric that adds comfort and luxury to your sleep space.", Price = 3200, IsUsed = false, CategoryID = 2, Images = new List<string> { "ProductImages/bed3.jpg", "ProductImages/bed3_1.jpg" }, DateAdded = new DateTime(2023, 3, 8), AverageRating = 4.8 },
-        new Product { Id = 9, Name = "Bunk Bed Set", Description = "A sturdy bunk bed designed for children's rooms. It's space-saving, practical, and comes with safety rails to ensure comfort and security for little ones.", Price = 2200, IsUsed = false, CategoryID = 2, Images = new List<string> { "ProductImages/bed4.jpg", "ProductImages/bed4_1.jpg","ProductImages/bed4_2.jpg" }, DateAdded = new DateTime(2023, 4, 15), AverageRating = 4.3 },
-        new Product { Id = 10, Name = "Storage Bed with Drawers", Description = "A functional bed with built-in storage drawers beneath the frame. Perfect for those who need extra storage in their bedroom without compromising on style.", Price = 2700, IsUsed = true, CategoryID = 2, Images = new List<string> { "ProductImages/bed5.jpg", "ProductImages/bed5_1.jpg", "ProductImages/bed5_3.jpg" }, DateAdded = new DateTime(2023, 5, 20), AverageRating = 4.1 }
+        new Product { Id = 6, Name = "King-Size Wooden Bed", Description = "A beautiful king-size bed crafted from high-quality wood with intricate detailing. Offers a spacious sleeping area and sturdy frame for long-term use.", Price = 4000, IsUsed = false, CategoryID = 2, Images = new List<string> { "ProductImages/bed1.jpg", "ProductImages/bed1_1.jpg", "ProductImages/bed1_2.jpg" }, DateAdded = new DateTime(2025, 1, 25), AverageRating = 4.6 },
+        new Product { Id = 7, Name = "Modern Metal Bed Frame", Description = "This modern metal bed frame features clean lines and a minimalist design. Durable and long-lasting, it is ideal for modern bedrooms that need a chic touch.", Price = 2500, IsUsed = true, CategoryID = 2, Images = new List<string> { "ProductImages/bed2.jpg", "ProductImages/bed2_1.jpg"}, DateAdded = new DateTime(2025, 2, 18), AverageRating = 3.9 },
+        new Product { Id = 8, Name = "Elegant Queen-Size Bed", Description = "A queen-size bed with an elegant upholstered headboard, soft fabric that adds comfort and luxury to your sleep space.", Price = 3200, IsUsed = false, CategoryID = 2, Images = new List<string> { "ProductImages/bed3.jpg", "ProductImages/bed3_1.jpg" }, DateAdded = new DateTime(2025, 3, 8), AverageRating = 4.8 },
+        new Product { Id = 9, Name = "Bunk Bed Set", Description = "A sturdy bunk bed designed for children's rooms. It's space-saving, practical, and comes with safety rails to ensure comfort and security for little ones.", Price = 2200, IsUsed = false, CategoryID = 2, Images = new List<string> { "ProductImages/bed4.jpg", "ProductImages/bed4_1.jpg","ProductImages/bed4_2.jpg" }, DateAdded = new DateTime(2025, 4, 15), AverageRating = 4.3 },
+        new Product { Id = 10, Name = "Storage Bed with Drawers", Description = "A functional bed with built-in storage drawers beneath the frame. Perfect for those who need extra storage in their bedroom without compromising on style.", Price = 2700, IsUsed = true, CategoryID = 2, Images = new List<string> { "ProductImages/bed5.jpg", "ProductImages/bed5_1.jpg"}, DateAdded = new DateTime(2025, 5, 20), AverageRating = 4.1 }
             });
 
             // Dining Sets
             modelBuilder.Entity<Product>().HasData(new Product[]
             {
-        new Product { Id = 11, Name = "6-Piece Wooden Dining Set", Description = "A 6-piece dining set made from premium solid wood, featuring a long dining table with comfortable chairs that make family meals a breeze.", Price = 5000, IsUsed = false, CategoryID = 3, Images = new List<string> { "ProductImages/dining1.jpg", "ProductImages/dining1_1.jpg","ProductImages/dining1_2.jpg", "ProductImages/dining1_3.jpg" }, DateAdded = new DateTime(2023, 1, 10), AverageRating = 4.9 },
-        new Product { Id = 12, Name = "Glass Top Dining Table Set", Description = "This elegant dining set features a sleek glass top dining table with metal legs and matching chairs. It's perfect for modern homes and adds a touch of sophistication to your dining area.", Price = 3500, IsUsed = false, CategoryID = 3, Images = new List<string> { "ProductImages/dining2.jpg", "ProductImages/dining2_1.jpg"}, DateAdded = new DateTime(2023, 2, 12), AverageRating = 4.5 },
-        new Product { Id = 13, Name = "Marble Dining Table", Description = "A luxurious marble dining table set with ornate wooden chairs. This set adds a high-end touch to any dining room, perfect for formal gatherings.", Price = 8000, IsUsed = true, CategoryID = 3, Images = new List<string> { "ProductImages/dining3.jpg", "ProductImages/dining3_1.jpg" , "ProductImages/dining3_2.jpg" }, DateAdded = new DateTime(2023, 3, 5), AverageRating = 4.7 },
-        new Product { Id = 14, Name = "Compact 4-Piece Dining Set", Description = "A compact 4-piece dining set, ideal for small apartments or kitchens. The set features a sleek, minimalist design with a durable wooden table and chairs.", Price = 1800, IsUsed = false, CategoryID = 3, Images = new List<string> { "ProductImages/dining4.jpg", "ProductImages/dining4_1.jpg", "ProductImages/dining4_2.jpg"}, DateAdded = new DateTime(2023, 4, 18), AverageRating = 3.7 },
-        new Product { Id = 15, Name = "Rustic Wooden Dining Set", Description = "This rustic dining set is made of reclaimed wood, perfect for farmhouse-style homes. The set includes a large dining table and 6 matching chairs.", Price = 4200, IsUsed = true, CategoryID = 3, Images = new List<string> { "ProductImages/dining5.jpg", "ProductImages/dining5_1.jpg" }, DateAdded = new DateTime(2023, 5, 22), AverageRating = 4.4 }
+        new Product { Id = 11, Name = "6-Piece Wooden Dining Set", Description = "A 6-piece dining set made from premium solid wood, featuring a long dining table with comfortable chairs that make family meals a breeze.", Price = 5000, IsUsed = false, CategoryID = 3, Images = new List<string> { "ProductImages/dining1.jpg", "ProductImages/dining1_1.jpg","ProductImages/dining1_2.jpg", "ProductImages/dining1_3.jpg" }, DateAdded = new DateTime(2025, 1, 10), AverageRating = 4.9 },
+        new Product { Id = 12, Name = "Glass Top Dining Table Set", Description = "This elegant dining set features a sleek glass top dining table with metal legs and matching chairs. It's perfect for modern homes and adds a touch of sophistication to your dining area.", Price = 3500, IsUsed = false, CategoryID = 3, Images = new List<string> { "ProductImages/dining2.jpg", "ProductImages/dining2_1.jpg"}, DateAdded = new DateTime(2025, 2, 12), AverageRating = 4.5 },
+        new Product { Id = 13, Name = "Marble Dining Table", Description = "A luxurious marble dining table set with ornate wooden chairs. This set adds a high-end touch to any dining room, perfect for formal gatherings.", Price = 8000, IsUsed = true, CategoryID = 3, Images = new List<string> { "ProductImages/dining3.jpg", "ProductImages/dining3_1.jpg" , "ProductImages/dining3_2.jpg" }, DateAdded = new DateTime(2025, 3, 5), AverageRating = 4.7 },
+        new Product { Id = 14, Name = "Compact 4-Piece Dining Set", Description = "A compact 4-piece dining set, ideal for small apartments or kitchens. The set features a sleek, minimalist design with a durable wooden table and chairs.", Price = 1800, IsUsed = false, CategoryID = 3, Images = new List<string> { "ProductImages/dining4.jpg", "ProductImages/dining4_1.jpg", "ProductImages/dining4_2.jpg"}, DateAdded = new DateTime(2025, 4, 18), AverageRating = 3.7 },
+        new Product { Id = 15, Name = "Rustic Wooden Dining Set", Description = "This rustic dining set is made of reclaimed wood, perfect for farmhouse-style homes. The set includes a large dining table and 6 matching chairs.", Price = 4200, IsUsed = true, CategoryID = 3, Images = new List<string> { "ProductImages/dining5.jpg", "ProductImages/dining5_1.jpg" }, DateAdded = new DateTime(2025, 5, 22), AverageRating = 4.4 }
             });
 
             // Chairs
             modelBuilder.Entity<Product>().HasData(new Product[]
             {
-        new Product { Id = 16, Name = "Recliner Chair", Description = "This luxurious recliner chair is perfect for relaxing after a long day. With soft fabric and a reclining function, it's perfect for any living room or home theater.", Price = 2300, IsUsed = false, CategoryID = 4, Images = new List<string> { "ProductImages/chair1.jpg", "ProductImages/chair1_1.jpg"}, DateAdded = new DateTime(2023, 1, 8), AverageRating = 4.3 },
-        new Product { Id = 17, Name = "Ergonomic Office Chair", Description = "Designed for comfort and support, this ergonomic office chair helps maintain good posture throughout long working hours. Fully adjustable to fit your needs.", Price = 1800, IsUsed = false, CategoryID = 4, Images = new List<string> { "ProductImages/chair2.jpg", "ProductImages/chair2_1.jpg","ProductImages/chair2_2.jpg" }, DateAdded = new DateTime(2023, 2, 14), AverageRating = 4.6 },
-        new Product { Id = 18, Name = "Dining Chair Set", Description = "This dining chair set is designed to complement any modern dining table. With cushioned seats and sturdy wooden legs, it provides both comfort and style.", Price = 1200, IsUsed = true, CategoryID = 4, Images = new List<string> { "ProductImages/chair3.jpg", "ProductImages/chair3_1.jpg", "ProductImages/chair3_2.jpg"}, DateAdded = new DateTime(2023, 3, 22), AverageRating = 3.9 },
-        new Product { Id = 19, Name = "Modern Lounge Chair", Description = "A stylish lounge chair with a sleek modern design, perfect for your living room or study area. It features plush cushioning and an easy-to-clean fabric.", Price = 1500, IsUsed = false, CategoryID = 4, Images = new List<string> { "ProductImages/chair4.jpg", "ProductImages/chair4_1.jpg" }, DateAdded = new DateTime(2023, 4, 10), AverageRating = 4.8 },
-        new Product { Id = 20, Name = "Folding Chair Set", Description = "These practical folding chairs are perfect for hosting guests or outdoor events. Easy to store and highly durable, they are ideal for both indoor and outdoor use.", Price = 600, IsUsed = true, CategoryID = 4, Images = new List<string> { "ProductImages/chair5.jpg", "ProductImages/chair5_1.jpg"}, DateAdded = new DateTime(2023, 5, 5), AverageRating = 3.5 }
+        new Product { Id = 16, Name = "Recliner Chair", Description = "This luxurious recliner chair is perfect for relaxing after a long day. With soft fabric and a reclining function, it's perfect for any living room or home theater.", Price = 2300, IsUsed = false, CategoryID = 4, Images = new List<string> { "ProductImages/chair1.jpg", "ProductImages/chair1_1.jpg"}, DateAdded = new DateTime(2025, 1, 8), AverageRating = 4.3 },
+        new Product { Id = 17, Name = "Ergonomic Office Chair", Description = "Designed for comfort and support, this ergonomic office chair helps maintain good posture throughout long working hours. Fully adjustable to fit your needs.", Price = 1800, IsUsed = false, CategoryID = 4, Images = new List<string> { "ProductImages/chair2.jpg", "ProductImages/chair2_1.jpg","ProductImages/chair2_2.jpg" }, DateAdded = new DateTime(2025, 2, 14), AverageRating = 4.6 },
+        new Product { Id = 18, Name = "Dining Chair Set", Description = "This dining chair set is designed to complement any modern dining table. With cushioned seats and sturdy wooden legs, it provides both comfort and style.", Price = 1200, IsUsed = true, CategoryID = 4, Images = new List<string> { "ProductImages/chair3.jpg", "ProductImages/chair3_1.jpg", "ProductImages/chair3_2.jpg"}, DateAdded = new DateTime(2025, 3, 22), AverageRating = 3.9 },
+        new Product { Id = 19, Name = "Modern Lounge Chair", Description = "A stylish lounge chair with a sleek modern design, perfect for your living room or study area. It features plush cushioning and an easy-to-clean fabric.", Price = 1500, IsUsed = false, CategoryID = 4, Images = new List<string> { "ProductImages/chair4.jpg", "ProductImages/chair4_1.jpg" }, DateAdded = new DateTime(2025, 4, 10), AverageRating = 4.8 },
+        new Product { Id = 20, Name = "Folding Chair Set", Description = "These practical folding chairs are perfect for hosting guests or outdoor events. Easy to store and highly durable, they are ideal for both indoor and outdoor use.", Price = 600, IsUsed = true, CategoryID = 4, Images = new List<string> { "ProductImages/chair5.jpg", "ProductImages/chair5_1.jpg"}, DateAdded = new DateTime(2025, 5, 5), AverageRating = 3.5 }
             });
 
             // Tables
             modelBuilder.Entity<Product>().HasData(new Product[]
             {
-        new Product { Id = 21, Name = "Wooden Dining Table", Description = "This solid wooden dining table is perfect for family gatherings. With a smooth finish and sturdy build, it can comfortably seat six people.", Price = 3500, IsUsed = false, CategoryID = 5, Images = new List<string> { "ProductImages/table1.jpg", "ProductImages/table1_1.jpg" }, DateAdded = new DateTime(2023, 1, 20), AverageRating = 4.7 },
-        new Product { Id = 22, Name = "Marble Coffee Table", Description = "A luxurious marble coffee table with a gold frame. This elegant piece will enhance the decor of any living room or lounge area.", Price = 2500, IsUsed = false, CategoryID = 5, Images = new List<string> { "ProductImages/table2.jpg", "ProductImages/table2_1.jpg"}, DateAdded = new DateTime(2023, 2, 5), AverageRating = 4.5 },
-        new Product { Id = 23, Name = "Glass Dining Table", Description = "This sleek glass dining table with a chrome base offers a modern look. Its minimalist design is ideal for contemporary dining rooms.", Price = 4200, IsUsed = false, CategoryID = 5, Images = new List<string> { "ProductImages/table3.jpg", "ProductImages/table3_1.jpg","ProductImages/table3_2.jpg" }, DateAdded = new DateTime(2023, 3, 15), AverageRating = 4.9 },
-        new Product { Id = 24, Name = "Round Wooden Table", Description = "This round wooden table offers a cozy and intimate setting for meals or casual gatherings. The compact size makes it perfect for smaller spaces.", Price = 1800, IsUsed = false, CategoryID = 5, Images = new List<string> { "ProductImages/table4.jpg", "ProductImages/table4_1.jpg" }, DateAdded = new DateTime(2023, 4, 8), AverageRating = 4.2 },
-        new Product { Id = 25, Name = "Extendable Dining Table", Description = "This extendable dining table offers flexibility for larger gatherings. It can be adjusted from a small table to a larger one with ease.", Price = 5500, IsUsed = true, CategoryID = 5, Images = new List<string> { "ProductImages/table5.jpg", "ProductImages/table5_1.jpg"}, DateAdded = new DateTime(2023, 5, 25), AverageRating = 4.6 }
+        new Product { Id = 21, Name = "Wooden Dining Table", Description = "This solid wooden dining table is perfect for family gatherings. With a smooth finish and sturdy build, it can comfortably seat six people.", Price = 3500, IsUsed = false, CategoryID = 5, Images = new List<string> { "ProductImages/table1.jpg", "ProductImages/table1_1.jpg" }, DateAdded = new DateTime(2025, 1, 20), AverageRating = 4.7 },
+        new Product { Id = 22, Name = "Marble Coffee Table", Description = "A luxurious marble coffee table with a gold frame. This elegant piece will enhance the decor of any living room or lounge area.", Price = 2500, IsUsed = false, CategoryID = 5, Images = new List<string> { "ProductImages/table2.jpg", "ProductImages/table2_1.jpg"}, DateAdded = new DateTime(2025, 2, 5), AverageRating = 4.5 },
+        new Product { Id = 23, Name = "Glass Dining Table", Description = "This sleek glass dining table with a chrome base offers a modern look. Its minimalist design is ideal for contemporary dining rooms.", Price = 4200, IsUsed = false, CategoryID = 5, Images = new List<string> { "ProductImages/table3.jpg", "ProductImages/table3_1.jpg","ProductImages/table3_2.jpg" }, DateAdded = new DateTime(2025, 3, 15), AverageRating = 4.9 },
+        new Product { Id = 24, Name = "Round Wooden Table", Description = "This round wooden table offers a cozy and intimate setting for meals or casual gatherings. The compact size makes it perfect for smaller spaces.", Price = 1800, IsUsed = false, CategoryID = 5, Images = new List<string> { "ProductImages/table4.jpg", "ProductImages/table4_1.jpg" }, DateAdded = new DateTime(2025, 4, 8), AverageRating = 4.2 },
+        new Product { Id = 25, Name = "Extendable Dining Table", Description = "This extendable dining table offers flexibility for larger gatherings. It can be adjusted from a small table to a larger one with ease.", Price = 5500, IsUsed = true, CategoryID = 5, Images = new List<string> { "ProductImages/table5.jpg", "ProductImages/table5_1.jpg"}, DateAdded = new DateTime(2025, 5, 25), AverageRating = 4.6 }
             });
 
             // Wardrobe
             modelBuilder.Entity<Product>().HasData(new Product[]
             {
-        new Product { Id = 26, Name = "Wooden Wardrobe", Description = "This spacious wooden wardrobe is designed with multiple shelves and hanging spaces to organize your clothes. Its natural wood finish adds warmth to any bedroom.", Price = 5000, IsUsed = false, CategoryID = 6, Images = new List<string> { "ProductImages/wardrobe1.jpg", "ProductImages/wardrobe1_1.jpg" }, DateAdded = new DateTime(2023, 1, 5), AverageRating = 4.8 },
-        new Product { Id = 27, Name = "Sliding Door Wardrobe", Description = "This wardrobe features sleek sliding doors and a contemporary design. It provides ample storage while fitting perfectly into modern bedrooms.", Price = 4500, IsUsed = true, CategoryID = 6, Images = new List<string> { "ProductImages/wardrobe2.jpg", "ProductImages/wardrobe2_1.jpg"}, DateAdded = new DateTime(2023, 2, 8), AverageRating = 4.4 },
-        new Product { Id = 28, Name = "Mirrored Wardrobe", Description = "A stylish wardrobe with a full-length mirror on the doors. This wardrobe is perfect for storing clothes while also providing a functional mirror for dressing.", Price = 3800, IsUsed = false, CategoryID = 6, Images = new List<string> { "ProductImages/wardrobe3.jpg", "ProductImages/wardrobe3_1.jpg"}, DateAdded = new DateTime(2023, 3, 12), AverageRating = 4.6 }
+        new Product { Id = 26, Name = "Wooden Wardrobe", Description = "This spacious wooden wardrobe is designed with multiple shelves and hanging spaces to organize your clothes. Its natural wood finish adds warmth to any bedroom.", Price = 5000, IsUsed = false, CategoryID = 6, Images = new List<string> { "ProductImages/wardrobe1.jpg", "ProductImages/wardrobe1_1.jpg" }, DateAdded = new DateTime(2025, 1, 5), AverageRating = 4.8 },
+        new Product { Id = 27, Name = "Sliding Door Wardrobe", Description = "This wardrobe features sleek sliding doors and a contemporary design. It provides ample storage while fitting perfectly into modern bedrooms.", Price = 4500, IsUsed = true, CategoryID = 6, Images = new List<string> { "ProductImages/wardrobe2.jpg", "ProductImages/wardrobe2_1.jpg"}, DateAdded = new DateTime(2025, 2, 8), AverageRating = 4.4 },
+        new Product { Id = 28, Name = "Mirrored Wardrobe", Description = "A stylish wardrobe with a full-length mirror on the doors. This wardrobe is perfect for storing clothes while also providing a functional mirror for dressing.", Price = 3800, IsUsed = false, CategoryID = 6, Images = new List<string> { "ProductImages/wardrobe3.jpg", "ProductImages/wardrobe3_1.jpg"}, DateAdded = new DateTime(2025, 3, 12), AverageRating = 4.6 }
             });
 
             // TV Units
             modelBuilder.Entity<Product>().HasData(new Product[]
             {
-        new Product { Id = 29, Name = "Wooden TV Unit", Description = "A stylish wooden TV unit that offers storage for media devices and decorative items. Its clean design complements both traditional and contemporary living rooms.", Price = 3000, IsUsed = false, CategoryID = 7, Images = new List<string> { "ProductImages/tvunit1.jpg", "ProductImages/tvunit1_1.jpg"}, DateAdded = new DateTime(2023, 1, 18), AverageRating = 4.5 },
-        new Product { Id = 30, Name = "Modern TV Stand", Description = "A sleek TV stand with a minimalist design, featuring two spacious shelves for media devices. Ideal for contemporary living spaces.", Price = 2000, IsUsed = false, CategoryID = 7, Images = new List<string> { "ProductImages/tvunit2.jpg", "ProductImages/tvunit2_1.jpg" }, DateAdded = new DateTime(2023, 2, 25), AverageRating = 4.7 }
+        new Product { Id = 29, Name = "Wooden TV Unit", Description = "A stylish wooden TV unit that offers storage for media devices and decorative items. Its clean design complements both traditional and contemporary living rooms.", Price = 3000, IsUsed = false, CategoryID = 7, Images = new List<string> { "ProductImages/tvunit1.jpg"}, DateAdded = new DateTime(2025, 1, 18), AverageRating = 4.5 },
+        new Product { Id = 30, Name = "Modern TV Stand", Description = "A sleek TV stand with a minimalist design, featuring two spacious shelves for media devices. Ideal for contemporary living spaces.", Price = 2000, IsUsed = false, CategoryID = 7, Images = new List<string> { "ProductImages/tvunit2.jpg", "ProductImages/tvunit2_1.jpg" }, DateAdded = new DateTime(2025, 2, 25), AverageRating = 4.7 }
             });
         }
 
@@ -163,7 +383,7 @@ namespace RealEstate.Data
                         {
                             Id = stockId++,
                             Color = color, // Now stores hex codes
-                            Quantity = random.Next(5, 51),
+                            Quantity = random.Next(0, 30),
                             IsDeleted = false,
                             ProductId = productId
                         }
@@ -188,7 +408,7 @@ namespace RealEstate.Data
                     Id = 1,
                     Title = "Downtown Luxury Apartment",
                     Description = "This exquisite modern 2-bedroom apartment offers breathtaking panoramic views of the city skyline from its floor-to-ceiling windows. The open-concept living space features high-end finishes including hardwood flooring, custom cabinetry, and premium stainless steel appliances. The master suite boasts a spacious walk-in closet and a spa-like ensuite with heated floors and a rainfall shower. The building amenities include a 24-hour concierge, state-of-the-art fitness center, rooftop terrace with infinity pool, and private dining rooms for entertaining. Located in the heart of the financial district, you're steps away from fine dining, luxury shopping, and cultural attractions. The apartment comes with two underground parking spots and a storage locker. Perfect for professionals seeking a sophisticated urban lifestyle with all the conveniences at your doorstep.",
-                    Location = "El-Korba, Heliopolis, Cairo",
+                    Location = "Maadi, Cairo",
                     Type = PropertyType.Sell,
                     Price = 750000.00m,
                     Status = PropertyStatus.Available,
@@ -196,7 +416,7 @@ namespace RealEstate.Data
                     BedRooms = 2,
                     BathRooms = 2,
                     Space = 110.00m,
-                    AgentId = 1,
+                    AgentId = null,
                     SellerId = 1,
                     Images = new List<string> { "PropertyImages/1-1.jpg", "PropertyImages/1-2.jpg","PropertyImages/1-3.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
@@ -210,7 +430,7 @@ namespace RealEstate.Data
                     Id = 2,
                     Title = "Suburban Family Home",
                     Description = "This charming 4-bedroom family home in the sought-after Green Valley neighborhood offers the perfect blend of comfort and functionality. The recently renovated kitchen features quartz countertops, custom shaker-style cabinets, and professional-grade appliances. The spacious backyard includes a large deck, professionally landscaped gardens, and a play area - ideal for family gatherings and summer barbecues. Inside, you'll find hardwood floors throughout, a cozy fireplace in the living room, and a finished basement that can serve as a recreation room or home office. The primary bedroom includes an ensuite bathroom with double vanity and walk-in closet. Located in a top-rated school district with easy access to parks, community centers, and shopping. The neighborhood is known for its friendly atmosphere and annual community events. A true family sanctuary just minutes from all amenities.",
-                    Location = "El Rehab City, New Cairo",
+                    Location = "Mokattam, Cairo, Egypt",
                     Type = PropertyType.Rent,
                     Price = 3200.00m,
                     Status = PropertyStatus.Available,
@@ -218,7 +438,7 @@ namespace RealEstate.Data
                     BedRooms = 4,
                     BathRooms = 3,
                     Space = 240.00m,
-                    AgentId = 2,
+                    AgentId = null,
                     SellerId = 2,
                     Images = new List<string> { "PropertyImages/2-1.jpg", "PropertyImages/2-2.jpg", "PropertyImages/2-3.jpg",
                     "PropertyImages/2-4.jpg","PropertyImages/2-5.jpg"},
@@ -233,7 +453,7 @@ namespace RealEstate.Data
                     Id = 3,
                     Title = "Luxury Beachfront Villa",
                     Description = "Experience ultimate luxury in this stunning beachfront villa that offers direct private access to pristine white sand beaches. This architectural masterpiece spans nearly 500 square meters of living space with floor-to-ceiling windows that showcase breathtaking ocean views from every room. The gourmet kitchen is equipped with top-of-the-line appliances, custom cabinetry, and a massive center island. The villa features five ensuite bedrooms, each with its own unique design theme and private balcony. The infinity pool seems to merge with the ocean horizon, surrounded by an expansive sun deck with lounge areas and an outdoor kitchen. Smart home technology controls lighting, temperature, security and entertainment systems throughout the property. The landscaped grounds include tropical gardens, a meditation pavilion, and a private dock. Located in an exclusive gated community with 24/7 security, this is coastal living at its most luxurious and private.",
-                    Location = "Marina El Alamein, North Coast",
+                    Location = "Marassi, Egypt",
                     Type = PropertyType.Sell,
                     Price = 2500000.00m,
                     Status = PropertyStatus.Sold,
@@ -242,7 +462,7 @@ namespace RealEstate.Data
                     BathRooms = 5,
                     Space = 480.00m,
                     AgentId = 1,
-                    SellerId = 3,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/3-1.jpg", "PropertyImages/3-2.jpg", "PropertyImages/3-3.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 3, 3), // Static date
@@ -255,7 +475,7 @@ namespace RealEstate.Data
                     Id = 4,
                     Title = "City Center Studio",
                     Description = "This beautifully designed studio apartment offers an exceptional urban living experience in the most vibrant part of downtown. Despite its compact size, the space has been meticulously planned to maximize functionality with custom built-in storage solutions, a Murphy bed that transforms into a workspace, and a kitchenette with full-size appliances cleverly integrated into the design. The unit features polished concrete floors, exposed brick walls, and large industrial-style windows that flood the space with natural light. The building offers fantastic amenities including a shared rooftop terrace with skyline views, co-working spaces, laundry facilities, and a bike storage room. Located in the trendiest neighborhood with countless cafes, restaurants, and nightlife options right outside your door. Perfect for young professionals or students who want to live in the heart of the action without compromising on style and comfort. Includes all utilities and high-speed internet in the rent.",
-                    Location = "Zamalek, Cairo",
+                    Location = "Nasr City, Cairo",
                     Type = PropertyType.Rent,
                     Price = 1200.00m,
                     Status = PropertyStatus.Available,
@@ -263,8 +483,8 @@ namespace RealEstate.Data
                     BedRooms = 1,
                     BathRooms = 1,
                     Space = 45.00m,
-                    AgentId = 3,
-                    SellerId = 4,
+                    AgentId = 1,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/4-1.jpg",
                         "PropertyImages/4-2.jpg", 
                         "PropertyImages/4-3.jpg",
@@ -280,16 +500,16 @@ namespace RealEstate.Data
                     Id = 5,
                     Title = "Skyline Penthouse",
                     Description = "Perched atop the city's most prestigious tower, this extraordinary penthouse redefines luxury living with its unparalleled views, exquisite finishes, and expansive 320 square meter layout. The residence features a grand entrance gallery that leads to a spectacular great room with 360-degree panoramic views through floor-to-ceiling glass walls. The chef's kitchen is outfitted with the finest appliances from Sub-Zero, Wolf, and Miele, complemented by custom Italian cabinetry and rare stone countertops. The primary bedroom suite is a private sanctuary complete with a lavish dressing room and spa bathroom featuring a freestanding soaking tub and steam shower. Additional highlights include a state-of-the-art home theater, temperature-controlled wine cellar, and a private elevator entrance. The crowning jewel is the sprawling rooftop terrace with an outdoor kitchen, infinity-edge jacuzzi, and multiple lounge and dining areas - perfect for entertaining against the backdrop of the glittering city skyline. This is urban living at its most exclusive and sophisticated.",
-                    Location = "Nile Corniche, Maadi, Cairo",
+                    Location = "El Manial, Cairo",
                     Type = PropertyType.Sell,
                     Price = 3850000.00m,
-                    Status = PropertyStatus.Available,
+                    Status = PropertyStatus.Auctioned,
                     PropertyCategory = PropertyCategory.Penthouse,
                     BedRooms = 3,
                     BathRooms = 3,
                     Space = 320.00m,
                     AgentId = 2,
-                    SellerId = 5,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/5-1.jpg", "PropertyImages/5-2.jpg",
                     "PropertyImages/5-3.jpg","PropertyImages/5-4.jpg"},
                     ApprovalStatus = PropertyApprovalStatus.Approved,
@@ -303,7 +523,7 @@ namespace RealEstate.Data
                     Id = 6,
                     Title = "Modern Duplex Apartment",
                     Description = "This architect-designed duplex apartment offers a unique two-level living experience in the vibrant Tech Park neighborhood. The lower level features an open-concept living area with soaring ceilings, a sleek modern kitchen with waterfall-edge island, and a wall of glass doors that open to a private balcony. A sculptural floating staircase leads to the upper level where you'll find two spacious bedrooms, each with ensuite bathrooms and ample closet space. The interior showcases premium finishes throughout including wide-plank oak flooring, designer lighting fixtures, and smart home technology. The building offers exceptional amenities including a fitness center, co-working lounge, and a rooftop terrace with stunning city views. Located in an up-and-coming area known for its tech startups, trendy cafes, and art galleries. This property appeals to those who appreciate contemporary design and urban convenience, with easy access to public transportation and major highways. A rare opportunity to own a distinctive home in one of the city's most dynamic neighborhoods.",
-                    Location = "Smart Village, 6th of October City, Giza",
+                    Location = "6th of October City, Giza",
                     Type = PropertyType.Rent,
                     Price = 4500.00m,
                     Status = PropertyStatus.Available,
@@ -311,11 +531,11 @@ namespace RealEstate.Data
                     BedRooms = 2,
                     BathRooms = 2,
                     Space = 180.00m,
-                    AgentId = 4,
-                    SellerId = 6,
+                    AgentId = 2,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/6-1.jpg", "PropertyImages/6-2.jpg",
                     "PropertyImages/6-3.jpg","PropertyImages/6-4.jpg","PropertyImages/6-5.jpg"},
-                    ApprovalStatus = PropertyApprovalStatus.Pending,
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 4, 8) // Static date
 
                 },
@@ -334,8 +554,8 @@ namespace RealEstate.Data
                     BedRooms = 4,
                     BathRooms = 3,
                     Space = 280.00m,
-                    AgentId = 5,
-                    SellerId = 7,
+                    AgentId = 1,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/7-1.jpg", "PropertyImages/7-2.jpg", "PropertyImages/7-3.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2024, 10, 23) // Static date
@@ -351,13 +571,13 @@ namespace RealEstate.Data
                     Location = "Katameya Heights, New Cairo",
                     Type = PropertyType.Sell,
                     Price = 8500000.00m,
-                    Status = PropertyStatus.Auctioned,
+                    Status = PropertyStatus.Available,
                     PropertyCategory = PropertyCategory.Mansion,
                     BedRooms = 8,
                     BathRooms = 7,
                     Space = 1200.00m,
-                    AgentId = 1,
-                    SellerId = 8,
+                    AgentId = null,
+                    SellerId = 1,
                     Images = new List<string> { "PropertyImages/8-1.jpg", "PropertyImages/8-2.jpg", "PropertyImages/8-3.jpg", "PropertyImages/8-4.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2024, 11, 27) // Static date
@@ -370,7 +590,7 @@ namespace RealEstate.Data
                     Id = 9,
                     Title = "River View Apartment",
                     Description = "Wake up to stunning river views every morning in this bright and airy 1-bedroom apartment. The open-concept layout maximizes the breathtaking water views, with a wall of windows in the living area that frame the ever-changing scenery. The modern kitchen features quartz countertops, stainless steel appliances, and a breakfast bar perfect for casual dining. The bedroom is generously sized with a large walk-in closet, while the bathroom offers a spa-like experience with a deep soaking tub and separate glass shower. The private balcony is the perfect spot to enjoy morning coffee or evening cocktails while watching boats sail by. Building amenities include a 24-hour concierge, fitness center, and a shared rooftop terrace with barbecue stations. Located in the desirable Waterside neighborhood with easy access to riverside walking trails, charming cafes, and the downtown core. This apartment offers an exceptional quality of life for those who appreciate beautiful views and convenient urban living.",
-                    Location = "Nile Towers, Giza Corniche",
+                    Location = "Zamalek, Cairo",
                     Type = PropertyType.Rent,
                     Price = 1800.00m,
                     Status = PropertyStatus.Available,
@@ -378,10 +598,10 @@ namespace RealEstate.Data
                     BedRooms = 1,
                     BathRooms = 1,
                     Space = 65.00m,
-                    AgentId = 3,
-                    SellerId = 9,
+                    AgentId = null,
+                    SellerId = 2,
                     Images = new List<string> { "PropertyImages/9-1.jpg", "PropertyImages/9-2.jpg", "PropertyImages/9-3.jpg", "PropertyImages/9-4.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Rejected,
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 4, 20) // Static date
 
                 },
@@ -395,15 +615,15 @@ namespace RealEstate.Data
                     Location = "Shorouk City, Cairo",
                     Type = PropertyType.Sell,
                     Price = 220000.00m,
-                    Status = PropertyStatus.Available,
+                    Status = PropertyStatus.Auctioned,
                     PropertyCategory = PropertyCategory.House,
                     BedRooms = 3,
                     BathRooms = 2,
                     Space = 150.00m,
-                    AgentId = 4,
-                    SellerId = 10,
+                    AgentId = null,
+                    SellerId = 2,
                     Images = new List<string> { "PropertyImages/10-1.jpg", "PropertyImages/10-2.jpg", "PropertyImages/10-3.jpg" },
-                    ApprovalStatus = PropertyApprovalStatus.Pending,
+                    ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 3, 8) // Static date
 
                 },
@@ -422,8 +642,8 @@ namespace RealEstate.Data
                     BedRooms = 4,
                     BathRooms = 3,
                     Space = 300.00m,
-                    AgentId = 5,
-                    SellerId = 11,
+                    AgentId = null,
+                    SellerId = 1,
                     Images = new List<string> { "PropertyImages/11-1.jpg", "PropertyImages/11-2.jpg", "PropertyImages/11-3.jpg", "PropertyImages/11-4.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 1, 2) // Static date
@@ -436,7 +656,7 @@ namespace RealEstate.Data
                     Id = 12,
                     Title = "Artist's Studio Loft",
                     Description = "This unique live-work space in the heart of the Creative District is perfect for artists, writers, or anyone seeking an inspiring urban loft. The open 35-square-meter space features soaring ceilings with exposed ductwork, original brick walls, and enormous north-facing windows that flood the space with perfect natural light. The flexible layout can accommodate various configurations - use the open area as a painting studio, photography space, or simply as an airy living area. A compact but fully functional kitchenette and a stylish bathroom with walk-in shower complete the space. The building has a rich artistic history, having been home to several notable local artists over the decades. Current residents enjoy the building's creative energy and regular open studio events. Located just steps from galleries, performance spaces, and some of the city's most innovative restaurants. This is more than just an apartment - it's a creative haven in the city's most vibrant arts community. Includes access to shared rooftop space with skyline views.",
-                    Location = "Downtown Arts District, Alexandria",
+                    Location = "Smouha, Alexandria",
                     Type = PropertyType.Rent,
                     Price = 950.00m,
                     Status = PropertyStatus.Available,
@@ -445,7 +665,7 @@ namespace RealEstate.Data
                     BathRooms = 1,
                     Space = 35.00m,
                     AgentId = 2,
-                    SellerId = 12,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/12-1.jpg", "PropertyImages/12-2.jpg" , "PropertyImages/12-3.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 1, 7) // Static date
@@ -458,7 +678,7 @@ namespace RealEstate.Data
                     Id = 13,
                     Title = "Executive Penthouse Suite",
                     Description = "Designed for the discerning business traveler or corporate executive, this fully-furnished penthouse suite offers hotel-like amenities with the comfort of a private residence. The sophisticated interior features a neutral palette with high-end finishes, creating a serene and productive environment. The living area includes a dedicated workspace with high-speed internet and printer, while the bedroom offers blackout curtains and premium bedding for optimal rest. The kitchen is equipped with everything needed for short or extended stays, including a Nespresso machine and wine cooler. Building amenities rival five-star hotels, including 24/7 concierge service, business center, meeting rooms, and a fitness facility with personal training available. The location couldn't be more convenient - just steps from the financial district's major office towers, luxury shopping, and fine dining. Flexible lease terms available, with housekeeping and laundry services optional. This is corporate housing at its most elegant and convenient, perfect for relocation packages or project-based stays in the city.",
-                    Location = "City Stars Towers, Nasr City, Cairo",
+                    Location = "Dokki, Giza",
                     Type = PropertyType.Rent,
                     Price = 8500.00m,
                     Status = PropertyStatus.Available,
@@ -467,7 +687,7 @@ namespace RealEstate.Data
                     BathRooms = 2,
                     Space = 160.00m,
                     AgentId = 1,
-                    SellerId = 13,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/13-1.jpg", "PropertyImages/13-2.jpg", "PropertyImages/13-3.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2024, 11, 11) // Static date
@@ -488,8 +708,8 @@ namespace RealEstate.Data
                     BedRooms = 3,
                     BathRooms = 2,
                     Space = 210.00m,
-                    AgentId = 3,
-                    SellerId = 14,
+                    AgentId = 2,
+                    SellerId = null,
                     Images = new List<string> { "PropertyImages/14-1.jpg", "PropertyImages/14-2.jpg" , "PropertyImages/14-3.jpg", "PropertyImages/14-4.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Approved,
                     AddedDate = new DateTime(2025, 3, 7) // Static date
@@ -510,8 +730,8 @@ namespace RealEstate.Data
                     BedRooms = 10,
                     BathRooms = 8,
                     Space = 2500.00m,
-                    AgentId = 5,
-                    SellerId = 15,
+                    AgentId = null,
+                    SellerId = 1,
                     Images = new List<string> { "PropertyImages/15-1.jpg", "PropertyImages/15-2.jpg", "PropertyImages/15-3.jpg", "PropertyImages/15-4.jpg" },
                     ApprovalStatus = PropertyApprovalStatus.Pending,
                     AddedDate = new DateTime(2025, 4, 4) // Static date
@@ -519,6 +739,80 @@ namespace RealEstate.Data
                 }
             );
         }
+
+        //----------------------------------------------------------------------------------------------------
+        public static void SeedSubscriptionPlans(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SubscriptionPlan>().HasData(
+                new SubscriptionPlan
+                {
+                    Id = 1,
+                    Name = "Free",
+                    Price = 0,
+                    MaxAllowedProperties = 3,
+                    Description = "Free plan with limited property slots."
+                },
+                new SubscriptionPlan
+                {
+                    Id = 2,
+                    Name = "Basic",
+                    Price = 9.99m,
+                    MaxAllowedProperties = 10,
+                    Description = "Basic plan suitable for individuals with moderate property listings."
+                },
+                new SubscriptionPlan
+                {
+                    Id = 3,
+                    Name = "Pro",
+                    Price = 29.99m,
+                    MaxAllowedProperties = 50,
+                    Description = "Pro plan ideal for professionals managing multiple properties."
+                },
+                new SubscriptionPlan
+                {
+                    Id = 4,
+                    Name = "Enterprise",
+                    Price = 99.99m,
+                    MaxAllowedProperties = 200,
+                    Description = "Enterprise plan for large-scale property management businesses."
+                }
+            );
+        }
+
+        //----------------------------------------------------------------------------------------------------
+        public static void SeedShippings(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Shipping>().HasData(
+                new Shipping { Id = 1, City = "Cairo", DeliveryFees = 50m, IsDeleted = false },
+                new Shipping { Id = 2, City = "Giza", DeliveryFees = 50m, IsDeleted = false },
+                new Shipping { Id = 3, City = "Alexandria", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 4, City = "Dakahlia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 5, City = "Beheira", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 6, City = "Monufia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 7, City = "Qalyubia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 8, City = "Gharbia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 9, City = "Sharqia", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 10, City = "Damietta", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 11, City = "Port Said", DeliveryFees = 100m, IsDeleted = false },
+                new Shipping { Id = 12, City = "Ismailia", DeliveryFees = 100m, IsDeleted = false },
+                new Shipping { Id = 13, City = "Suez", DeliveryFees = 100m, IsDeleted = false },
+                new Shipping { Id = 14, City = "Kafr el-Sheikh", DeliveryFees = 80m, IsDeleted = false },
+                new Shipping { Id = 15, City = "Fayoum", DeliveryFees = 100m, IsDeleted = false },
+                new Shipping { Id = 16, City = "Beni Suef", DeliveryFees = 120m, IsDeleted = false },
+                new Shipping { Id = 17, City = "Minya", DeliveryFees = 120m, IsDeleted = false },
+                new Shipping { Id = 18, City = "Assiut", DeliveryFees = 120m, IsDeleted = false },
+                new Shipping { Id = 19, City = "Sohag", DeliveryFees = 120m, IsDeleted = false },
+                new Shipping { Id = 20, City = "Qena", DeliveryFees = 150m, IsDeleted = false },
+                new Shipping { Id = 21, City = "Luxor", DeliveryFees = 150m, IsDeleted = false },
+                new Shipping { Id = 22, City = "Aswan", DeliveryFees = 150m, IsDeleted = false },
+                new Shipping { Id = 23, City = "Red Sea", DeliveryFees = 200m, IsDeleted = false },
+                new Shipping { Id = 24, City = "New Valley", DeliveryFees = 200m, IsDeleted = false },
+                new Shipping { Id = 25, City = "Matrouh", DeliveryFees = 200m, IsDeleted = false },
+                new Shipping { Id = 26, City = "North Sinai", DeliveryFees = 200m, IsDeleted = false },
+                new Shipping { Id = 27, City = "South Sinai", DeliveryFees = 200m, IsDeleted = false }
+            );
+        }
+
 
     }
 }

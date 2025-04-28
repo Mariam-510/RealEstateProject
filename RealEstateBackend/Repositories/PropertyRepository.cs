@@ -15,13 +15,6 @@ namespace RealEstate.Repositories
             _context = context;
         }
 
-        public async Task<List<Property>> GetAllAsync()
-        {
-            return await _context.Properties.Where(p=>!p.IsDeleted && p.ApprovalStatus==PropertyApprovalStatus.Approved)
-                                  .Include(p=>p.Seller)
-                                  .Include(p=>p.Agent)
-                                  .ToListAsync();
-        }
         public async Task<List<Property>> GetAllPending()
         {
             return await _context.Properties.Where(p => !p.IsDeleted && p.ApprovalStatus == PropertyApprovalStatus.Pending)
@@ -47,6 +40,7 @@ namespace RealEstate.Repositories
                 .Include(p => p.Agent)
                 .ToListAsync();
         }
+        
         public async Task<List<Property>> GetPendingBySellerIdAsync(int sellerId)
         {
             return await _context.Properties
@@ -55,6 +49,7 @@ namespace RealEstate.Repositories
                 .Include(p => p.Agent)
                 .ToListAsync();
         }
+        
         public async Task<List<Property>> GetRejectedBySellerIdAsync(int sellerId)
         {
             return await _context.Properties
@@ -72,12 +67,13 @@ namespace RealEstate.Repositories
                 .Include(p => p.Agent)
                 .ToListAsync();
         }
+        
         public async Task<Property?> GetByIdAsync(int id)
         {
             return await _context.Properties
                                  .Where(p => !p.IsDeleted)
-                                  .Include(p => p.Seller)
-                                  .Include(p => p.Agent)
+                                 .Include(p => p.Seller).ThenInclude(s => s.Account)
+                                 .Include(p => p.Agent).ThenInclude(a => a.Account)
                                  .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -106,7 +102,10 @@ namespace RealEstate.Repositories
 
         public async Task<List<Property>> GetFilteredAsync(PropertyCategory? category, PropertyStatus? status, PropertyType? type, string searchByLocation)
         {
-            var query = _context.Properties.Where(p => !p.IsDeleted && p.ApprovalStatus==PropertyApprovalStatus.Approved); 
+            var query = _context.Properties
+                .Include(p => p.Seller).ThenInclude(s=>s.Account)
+                .Include(p => p.Agent).ThenInclude(a => a.Account)
+                .Where(p => !p.IsDeleted && p.ApprovalStatus==PropertyApprovalStatus.Approved); 
 
             if (!string.IsNullOrWhiteSpace(category?.ToString())) 
             {
@@ -138,6 +137,21 @@ namespace RealEstate.Repositories
 
             return await query.ToListAsync();
         }
+
+
+
+
+        public async Task<List<Property>> GetAllPropertiesUnfilteredAsync()
+        {
+            return await _context.Properties
+                .Include(p => p.Seller).ThenInclude(s => s.Account)
+                .Include(p => p.Agent).ThenInclude(a => a.Account)
+                .Where(p => !p.IsDeleted) 
+                .ToListAsync();
+        }
+
+
+
     }
 }
    

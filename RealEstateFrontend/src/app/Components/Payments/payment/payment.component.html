@@ -1,0 +1,215 @@
+<!-- payment.component.html -->
+<div class="payment-page">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <div class="bg-white p-4 rounded shadow-sm">
+          <!-- Rest of your order summary content remains the same -->
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <h3><i class="bi bi-geo-alt"></i> Delivery Address</h3>
+
+              <a routerLink="/checkout/address" class="btn btn-outline-secondary">Change address</a>
+            </div>
+            <hr style="
+                border: 2px solid #c38e79;
+                margin-bottom: -5;
+                margin-top: -5;
+              " />
+
+            <p class="text-muted mb-1">
+              {{ address?.buildingNum }} {{ address?.street }},
+              {{ address?.city }}
+            </p>
+            <p class="text-muted mb-1">
+              Floor: {{ address?.floor }} - Apartment: {{ address?.apartment }}
+            </p>
+            <p class="text-muted mb-0">{{ address?.phoneNum }}</p>
+          </div>
+
+          <hr style="border-color: #e0e0e0" />
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0">
+              &nbsp;<i class="bi bi-credit-card"></i> Payment Method
+            </h3>
+          </div>
+
+          <hr style="border: 2px solid #c38e79" />
+
+          <div class="payment-methods">
+            <div class="list-group mb-4">
+              <button *ngFor="let method of paymentMethods" type="button"
+                class="list-group-item list-group-item-action d-flex flex-column align-items-start p-3"
+                [class.active]="selectedMethod === method.id" (click)="selectPaymentMethod(method.id)">
+                <!-- selectedMethod = method.id -->
+                <div class="d-flex w-100 align-items-center">
+                  <i class="bi {{ method.icon }} me-3 fs-4"></i>
+                  <div>
+                    <h6 class="mb-0">{{ method.name }}</h6>
+                    <small class="text-muted">{{ method.description }}</small>
+                  </div>
+                  <i class="bi bi-check-circle-fill ms-auto" *ngIf="selectedMethod === method.id"></i>
+                </div>
+              </button>
+            </div>
+
+            <!-- Stripe Card Element (only visible when Credit Card selected) -->
+            <!-- Stripe Checkout Button (only visible when Credit Card selected) -->
+            <div *ngIf="selectedMethod === 'stripe'" class="mb-4 p-3 border rounded">
+              <div class="d-flex align-items-center">
+                <!-- <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/stripe/stripe-original.svg" alt="Stripe"
+                  style="height: 30px; margin-right: 15px" /> -->
+                <i class="bi bi-stripe fs-1 me-2 text-caffe"></i>
+
+                <div class="mt-2">
+                  <h6 class="">Secure Card Payment</h6>
+                  <p class="text-muted">
+                    Please review your order before checking out with PayPal
+                  </p>
+                  <!-- <div class="card-icons mt-2">
+                    <i class="bi bi-credit-card-2-front fs-5 me-2"></i>
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visa/visa-original.svg" alt="Visa"
+                      style="height: 20px; margin-right: 10px" />
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mastercard/mastercard-original.svg"
+                      alt="Mastercard" style="height: 20px; margin-right: 10px" />
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amex/amex-original.svg"
+                      alt="American Express" style="height: 20px" />
+                  </div> -->
+                </div>
+              </div>
+
+              <button class="btn btn-stripe w-100 py-2 mb-3" [disabled]="isProcessing" (click)="handlePayment()">
+                <span *ngIf="!isProcessing">
+                  <i class="bi bi-credit-card me-2"></i> Pay with Card
+                </span>
+                <span *ngIf="isProcessing">
+                  Processing...
+                  <div class="spinner-border spinner-border-sm ms-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </span>
+              </button>
+
+              <small class="text-muted d-block mt-2">
+                <i class="bi bi-lock-fill me-2"></i>
+                You'll be redirected to Stripe's secure payment page
+              </small>
+            </div>
+
+            <!-- PayPal section (only visible when PayPal selected) -->
+            <div *ngIf="selectedMethod === 'paypal'" class="mb-4 p-3 border rounded">
+              <div class="d-flex align-items-center mb-3">
+                <!-- <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/paypal/paypal-original.svg" alt="PayPal"
+                  style="height: 30px; margin-right: 15px" /> -->
+
+                <i class="bi bi-paypal fs-3 me-2 text-caffe"></i>
+                <div class="mt-2">
+                  <h6 class="mb-1">PayPal Payment</h6>
+                  <p class="text-muted mb-2">
+                    Please review your order before checking out with PayPal
+                  </p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div id="paypal-button-container"></div>
+              </div>
+
+              <p class="text-center text-muted mt-3 mb-0">
+                By placing your order, you agree to our
+                <a href="#">terms of use</a> and
+                <a href="#">privacy agreement</a>
+              </p>
+            </div>
+
+            <div class="order-summary p-3 mb-4 border rounded">
+              <div class="d-flex justify-content-between mb-2">
+                <span>Subtotal:</span>
+                <span>{{ cart?.totalPrice | currency : "EGP " }}</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Shipping:</span>
+                <span>{{ shippingDto?.deliveryFees | currency : "EGP " }}</span>
+              </div>
+              <hr />
+              <div class="d-flex justify-content-between fw-semibold text-caffe fs-5">
+                <span>Total:</span>
+                <span>{{
+                  (cart?.totalPrice ?? 0) + (shippingDto?.deliveryFees ?? 0)
+                  | currency : "USD"
+                  }}</span>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <a routerLink="/checkout/address" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Back
+              </a>
+              <button class="btn bg-caffe text-white border-0" (click)=" handlePayment()" [disabled]="
+                  selectedMethod === 'paypal' ||
+                  selectedMethod === 'stripe' ||
+                  isProcessing
+                ">
+                <span *ngIf="!isProcessing">
+                  Complete Order
+                  <i class="bi bi-lock-fill ms-2"></i>
+                </span>
+                <span *ngIf="isProcessing">
+                  Processing...
+                  <div class="spinner-border spinner-border-sm ms-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Order Summary -->
+      <div class="col-lg-4 ps-lg-4">
+        <div class="bg-white p-4 rounded shadow-sm position-sticky" style="top: 10px">
+          <h4 class="mb-3">
+            <i class="bi bi-clipboard-check"></i>
+            Order Summary
+          </h4>
+          <hr style="border: 2px solid #c38e79" />
+
+          <!-- Order Items with scroll -->
+          <div class="order-items">
+            <div *ngFor="let item of cart?.orderItemDtos; let last = last" class="order-item">
+              <div class="d-flex justify-content-between">
+                <div class="d-flex">
+                  <img [src]="apiConfig.apiUrl + item.productImage" alt="Product image" class="me-2 product-image" />
+                  <div>
+                    <div class="item-name">
+                      {{ item.productName }}
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                      <span>{{ item.quantity }} x</span>
+                      <div class="color-swatch rounded-5" [style.background]="item.color"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="price-text d-flex align-items-end mb-1 text-caffe">
+                  {{ item.price | currency : "EGP " }}
+                </div>
+              </div>
+              <div class="d-flex justify-content-center">
+                <hr width="240vw" *ngIf="!last" style="border: 1px solid #c38e79" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Modify Order Button -->
+          <div class="text-center mt-4" style="margin-bottom: 3px">
+            <a routerLink="/checkout/cart" class="btn btn-outline-secondary">
+              <i class="bi bi-pencil me-2"></i>Modify Your Order
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

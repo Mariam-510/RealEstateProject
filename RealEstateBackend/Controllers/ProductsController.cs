@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using System.Transactions;
 using AutoMapper;
 using RealEstate.Models.Dtos.ProductStockDto;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,24 +26,27 @@ namespace RealEstate.Controllers
         public IProductStockRepository productStockRepository { get; }
         public FileService _fileService { get; }
 
-        private readonly ReviewService _reviewService;
+        //private readonly ReviewService _reviewService;
         private readonly IWishListRepository wishListRepository;
+        private readonly IReviewRepository reviewRepository;
         private readonly IMapper mapper;
 
         public ProductsController(IProductRepository productRepository, ICategoryRepository categoryRepository,
             IProductStockRepository productStockRepository, FileService fileService, ReviewService reviewService,
-            IWishListRepository wishListRepository, IMapper mapper)
+            IWishListRepository wishListRepository, IReviewRepository reviewRepository ,IMapper mapper)
         {
             _ProductRepository = productRepository;
             _CategoryRepository = categoryRepository;
             this.productStockRepository = productStockRepository;
             _fileService = fileService;
-            _reviewService = reviewService;
+            //_reviewService = reviewService;
             this.wishListRepository = wishListRepository;
+            this.reviewRepository = reviewRepository;
             this.mapper = mapper;
         }
 
         [HttpPost("CreateProduct")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateProduct([FromForm] ProductDTO ProductDTO)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -106,6 +110,9 @@ namespace RealEstate.Controllers
 
 
         [HttpDelete("DeleteProduct/{id}")]
+
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> DeleteProduct(int id)
         {
 
@@ -128,7 +135,7 @@ namespace RealEstate.Controllers
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll(string? Name = null, string? SortPrice = null, string? Category = null, string? SortQuantity = null)
-        {
+       {
 
             var ProductModelList = await _ProductRepository.GetAllAsync(Name, SortPrice, Category, SortQuantity);
             if (ProductModelList == null)
@@ -142,8 +149,8 @@ namespace RealEstate.Controllers
             foreach (var product in ProductModelList)
             {
                 var productDto = product.ToProductDTOShow();
-                productDto.AverageRating = _reviewService.CalculateAverageRating(product.Id);
-                productDto.NumberOfReviews = _reviewService.GetReviewCount(product.Id);
+                productDto.AverageRating = await _ProductRepository.CalculateAverageRating(product.Id);
+                productDto.NumberOfReviews = await reviewRepository.GetCountOfProductReviewsAsync(product.Id);
 
                 ProductDtoList.Add(productDto);
             }
@@ -156,16 +163,24 @@ namespace RealEstate.Controllers
             }
 
 
-            //var favoriteProducts = await wishListRepository.GetAllProductByBuyerIDAsync(1);
-            //foreach (var dto in ProductDtoList)
-            //{
-            //    if (favoriteProducts.Any(f => f.Id == dto.Id))
-            //    {
-            //        dto.IsFavorite = true;
-            //    }
-            //}
+            string buyerIdStr = User.FindFirst("userId")?.Value;
 
-            return Ok(new { message = "Product List is :", ProductDtoList });
+            if (int.TryParse(buyerIdStr, out int buyerId))
+            {
+                var favoriteProducts = await wishListRepository.GetAllProductByBuyerIDAsync(buyerId);
+                if (favoriteProducts != null)
+                {
+                    foreach (var dto in ProductDtoList)
+                    {
+                        if (favoriteProducts.Any(f => f.Id == dto.Id))
+                        {
+                            dto.IsFavorite = true;
+                        }
+                    }
+                }
+            }
+
+            return Ok(ProductDtoList);
         }
 
 
@@ -178,8 +193,8 @@ namespace RealEstate.Controllers
                 return NotFound("Product Not found !");
             }
             var ProductDto = ProductModel.ToProductDTOShow();
-            ProductDto.AverageRating = _reviewService.CalculateAverageRating(ProductModel.Id);
-            ProductDto.NumberOfReviews = _reviewService.GetReviewCount(ProductModel.Id);
+            ProductDto.AverageRating = await _ProductRepository.CalculateAverageRating(ProductModel.Id);
+            ProductDto.NumberOfReviews = await reviewRepository.GetCountOfProductReviewsAsync(ProductModel.Id);
 
             if (ProductDto == null)
             {
@@ -187,18 +202,25 @@ namespace RealEstate.Controllers
             }
 
 
-            var favoriteProducts = await wishListRepository.GetAllProductByBuyerIDAsync(1);
-            if (favoriteProducts.Any(f => f.Id == ProductDto.Id))
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (int.TryParse(buyerIdStr, out int buyerId))
             {
-                ProductDto.IsFavorite = true;
+                var favoriteProducts = await wishListRepository.GetAllProductByBuyerIDAsync(buyerId);
+                if (favoriteProducts!=null && favoriteProducts.Any(f => f.Id == ProductDto.Id))
+                {
+                    ProductDto.IsFavorite = true;
+                }
             }
 
-            return Ok(new { message = "Product is :", ProductDto });
+            return Ok(ProductDto);
 
         }
 
 
         [HttpPut("UpdateProduct/{id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductDTO ProductDTO)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))

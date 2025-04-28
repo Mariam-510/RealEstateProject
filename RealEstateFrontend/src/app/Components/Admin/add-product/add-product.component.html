@@ -1,0 +1,309 @@
+<div class="mt-5 ms-5 me-5">
+  <div>
+      <h2 class="fw-bold">
+        <span style="font-size: 0.9em;">
+          <i class="bi bi-box-seam text-caffe"></i> Add Product
+        </span>
+      </h2>
+      <nav aria-label="breadcrumb" class="mt-2">
+          <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item mb-0">
+                  <p class="text-muted mb-0">Admin</p>
+              </li>
+              <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">Add Product</li>
+          </ol>
+      </nav>
+  </div>
+</div>
+<div class="new-product-page mt-4">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <div class="bg-white p-4 rounded shadow">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0">Add New Product</h3>
+            <a routerLink="/products" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-2"></i>Back
+            </a>
+          </div>
+
+          <hr style="border: 2px solid #c38e79" />
+
+          <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+            <!-- Basic Information -->
+            <div class="mb-4">
+              <h5 class="mb-3">Basic Information</h5>
+
+              <div class="row g-3">
+                <div class="col-md-12">
+                  <label for="name" class="form-label">Product Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    formControlName="name"
+                    maxlength="50"
+                  />
+                  <small class="text-muted"
+                    >{{ productForm.get("name")?.value?.length || 0 }}/50
+                    characters</small
+                  >
+                  <div
+                    *ngIf="
+                      productForm.get('name')?.invalid &&
+                      productForm.get('name')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Product name is required (1-50 characters)
+                  </div>
+                </div>
+
+                <div class="col-md-12">
+                  <label for="description" class="form-label"
+                    >Description</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="description"
+                    formControlName="description"
+                    rows="3"
+                    maxlength="200"
+                  ></textarea>
+                  <small class="text-muted"
+                    >{{
+                      productForm.get("description")?.value?.length || 0
+                    }}/200 characters</small
+                  >
+                  <div
+                    *ngIf="
+                      productForm.get('description')?.invalid &&
+                      productForm.get('description')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Description must be less than 200 characters
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="price" class="form-label">Price ($)</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="price"
+                    formControlName="price"
+                    min="0"
+                    step="5"
+                  />
+                  <div
+                    *ngIf="
+                      productForm.get('price')?.invalid &&
+                      productForm.get('price')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Valid price is required (minimum 0)
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="categoryID" class="form-label">Category</label>
+                  <select
+                    class="form-select"
+                    id="categoryID"
+                    formControlName="categoryID"
+                  >
+                    <option value="" disabled selected>Select category</option>
+                    <option
+                      *ngFor="let category of categories"
+                      [value]="category.id"
+                    >
+                      {{ category.name }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="
+                      productForm.get('categoryID')?.invalid &&
+                      productForm.get('categoryID')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Category is required
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="condition" class="form-label">Condition</label>
+                  <select
+                    class="form-select"
+                    id="condition"
+                    formControlName="isUsed"
+                  >
+                    <option value="" disabled selected>Select condition</option>
+                    <option [value]="false">New</option>
+                    <option [value]="true">Used</option>
+                  </select>
+                  <div
+                    *ngIf="
+                      productForm.get('isUsed')?.invalid &&
+                      productForm.get('isUsed')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Condition is required
+                  </div>
+                </div>
+
+                <hr style="border: 2px solid #c38e79; margin-top: 30px" />
+
+                <!-- Quantity-color section -->
+                <div class="col-md-12">
+                  <div class="mb-4">
+                    <h5 class="mb-3">Product Quantity by Color</h5>
+
+                    <div class="row g-3 align-items-end mb-3">
+                      <div class="col-md-4">
+                        <label for="color" class="form-label">Color</label>
+                        <input
+                          type="color"
+                          class="form-control form-control-color"
+                          id="color"
+                          formControlName="color"
+                          title="Choose color"
+                        />
+                      </div>
+
+                      <div class="col-md-4">
+                        <label for="quantity" class="form-label"
+                          >Quantity</label
+                        >
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="quantity"
+                          formControlName="quantity"
+                          min="1"
+                        />
+                      </div>
+
+                      <div class="col-md-4">
+                        <button
+                          type="button"
+                          class="btn btn-primary w-100"
+                          (click)="addColorQuantity()"
+                        >
+                          <i class="bi bi-plus-circle me-2"></i>Add Color
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Display added color quantities -->
+                    <div
+                      *ngIf="colorQuantities.length > 0"
+                      class="color-quantities-container"
+                    >
+                      <h6>Added Color Quantities:</h6>
+                      <div class="d-flex flex-wrap gap-2">
+                        <div
+                          *ngFor="let item of colorQuantities; let i = index"
+                          class="color-quantity-badge"
+                        >
+                          <span
+                            class="color-preview"
+                            [style.background-color]="item.color"
+                          ></span>
+                          <span>{{ item.color }}: {{ item.quantity }}</span>
+                          <button
+                            type="button"
+                            class="btn-close btn-close-white"
+                            (click)="removeColor(i)"
+                            aria-label="Remove"
+                          ></button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      *ngIf="
+                        colorQuantities.length === 0 &&
+                        productForm.get('quantity')?.touched
+                      "
+                      class="text-danger"
+                    >
+                      Please add at least one color with quantity
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr style="border: 2px solid #c38e79" />
+
+            <!-- Product Images -->
+            <div class="mb-4">
+              <h5 class="mb-3">Product Images</h5>
+
+              <div class="mb-3">
+                <label for="productImages" class="form-label"
+                  >Upload Images
+                  <span class="text-muted d-block mt-2"
+                    >( You can add more than one image )</span
+                  ></label
+                >
+                <input
+                  type="file"
+                  class="form-control"
+                  id="productImages"
+                  multiple
+                  accept="image/*"
+                  (change)="onFileChange($event)"
+                />
+                <div
+                  *ngIf="
+                    images.length === 0 && productForm.get('images')?.touched
+                  "
+                  class="text-danger"
+                >
+                  At least one image is required
+                </div>
+              </div>
+
+              <div class="image-previews row g-2">
+                <div
+                  class="col-6 col-md-4 col-lg-3"
+                  *ngFor="let image of images; let i = index"
+                >
+                  <div class="image-preview-container position-relative">
+                    <img
+                      [src]="image.preview"
+                      class="img-thumbnail"
+                      alt="Product image"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                      (click)="removeImage(i)"
+                    >
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-grid mt-4">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="productForm.invalid || images.length === 0"
+              >
+                Add Product
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
