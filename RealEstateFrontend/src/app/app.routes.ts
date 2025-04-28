@@ -56,8 +56,10 @@ import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist
 import { SimilarProductsComponent } from './Components/Products/Details/similar-products/similar-products.component';
 import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-all-pointment/buyer-view-all-pointment.component';
 import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
-import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
 import { CreateadminComponent } from './Components/Admin/createadmin/createadmin.component';
+import { ApproveAgentComponent } from './Components/Admin/approve-agent/approve-agent.component';
+import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
+
 
 //----------------------------------------------------------------------------------------
 
@@ -75,8 +77,9 @@ export const routes: Routes = [
       { path: 'addProduct', component: AddProductComponent, title: "Add Product" },
       { path: "addCatgory", component: AddCategoryComponent, title: "Add Category" },
       { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscription Plan" },
-      { path: 'approve', component: ApprovePropertyComponent, pathMatch: 'full' },
-      { path: 'createAdmin', component: CreateadminComponent, pathMatch: 'full' },
+      { path: 'approveProperty', component: ApprovePropertyComponent, title: "Approve Property"},
+      { path: "createAdmin", component: CreateadminComponent, title: "Create Admin" },
+      { path: "approveAgent", component: ApproveAgentComponent, title: "Approve Agent" },
     ]
   },
 

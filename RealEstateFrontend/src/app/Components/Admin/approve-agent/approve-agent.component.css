@@ -1,0 +1,14 @@
+.btn-caffe:hover {
+    background-color: #5d3e2c;
+    color: white;
+}
+
+.card {
+    border-radius: 0.7rem;
+}
+
+.copy-btn {
+    font-size: 1rem;
+    margin-bottom: 3px;
+    
+}
