@@ -65,5 +65,15 @@ namespace RealEstate.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByBuyerIdAsync(int buyerId)
+        {
+            return await _context.Appointments
+                .Where(a => a.BuyerId == buyerId && !a.IsDeleted)
+                .Include(a => a.Property).ThenInclude(p=>p.Agent ).ThenInclude(a=>a.Account).
+                Include(a => a.Property).ThenInclude(p => p.Seller).ThenInclude(a => a.Account)
+                .OrderByDescending(a => a.ScheduledTime)
+                .ToListAsync();
+        }
+
     }
 }

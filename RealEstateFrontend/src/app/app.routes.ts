@@ -165,7 +165,11 @@ export const routes: Routes = [
   },
 
   //---------------------------------------------------------------------------------------
+<<<<<<< Updated upstream
   {path:'book',component:BookAppointmentComponent,title:"Book Appointment"},
+=======
+  { path: 'book/:id', component: BookAppointmentComponent, title: "Book Appointment" },
+>>>>>>> Stashed changes
   //---------------------------------------------------------------------------------------
   { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
   { path: "t", component: TViewAllProductsComponent, title: "t" },
