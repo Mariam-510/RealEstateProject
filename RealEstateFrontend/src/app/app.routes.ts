@@ -54,6 +54,7 @@ import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist
 import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-all-pointment/buyer-view-all-pointment.component';
 import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
 import { CreateadminComponent } from './Components/Admin/createadmin/createadmin.component';
+import { ChatComponent } from './Components/TestChat/chat/chat.component';
 import { ApproveAgentComponent } from './Components/Admin/approve-agent/approve-agent.component';
 import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
 
@@ -63,6 +64,8 @@ import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-
 export const routes: Routes = [
 
   { path: "about", component: AboutComponent, title: "About" },
+  { path: "chatTest", component: ChatComponent, title: "chat" },
+
 
   //---------------------------------------------------------------------------------------
   {

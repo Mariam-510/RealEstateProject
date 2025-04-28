@@ -162,4 +162,10 @@ export class AuthService {
     this.setAutoLogout(decoded.exp);
   }
 
+
+  getCurrentUser(): User | null {
+    return this.currentUserSubject.value;
+  }
+
+
 }
