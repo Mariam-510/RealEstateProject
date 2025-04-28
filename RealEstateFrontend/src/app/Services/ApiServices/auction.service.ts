@@ -47,7 +47,7 @@ export class AuctionService {
     formData.append('PropertyId', auctionDto.PropertyId.toString());
 
     return this.http.post<{ message: string, ActionShow: AuctionDTOShow }>(
-      `${this.apiUrl}/CreateAuction`,
+      `${this.apiUrl}/Add`,
       formData
     );
   }

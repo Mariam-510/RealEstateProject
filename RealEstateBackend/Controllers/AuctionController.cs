@@ -283,5 +283,51 @@ namespace RealEstate.Controllers
 
         }
 
+        [HttpGet("GetHighestBid")]
+        [Authorize(Roles = "Seller,Agent")]
+        public async Task<IActionResult> GetHighestBidForEndedAuctionsByUserId()
+        {
+            try
+            {
+                string userIdStr = User.FindFirst("userId")?.Value;
+
+                if (!int.TryParse(userIdStr, out int userId))
+                    return Unauthorized("User not found.");
+
+                if (User.IsInRole("Seller"))
+                {
+                    var seller = await _SellerRepository.GetByIdAsync(userId);
+
+                    if (seller == null || seller.IsDeleted)
+                        return NotFound($"Seller with ID {userId} does not exist or is deleted!");
+
+                    var highestBid = await _AuctionRepository.GetHighestBidForEndedAuctionsBySellerAsync(userId);
+
+                    if (!highestBid.HasValue)
+                        return NotFound("No bids found for this seller's ended auctions");
+
+                    return Ok(new { HighestBid = highestBid });
+
+                }
+                else
+                {
+                    var agent = await _AgentRepository.GetByIdAsync(userId);
+                    if (agent == null || agent.IsDeleted)
+                        return NotFound($"Agent with ID {userId} does not exist or is deleted!");
+
+                    var highestBid = await _AuctionRepository.GetHighestBidForEndedAuctionsByAgentAsync(userId);
+
+                    if (!highestBid.HasValue)
+                        return NotFound("No bids found for this seller's ended auctions");
+
+                    return Ok(new { HighestBid = highestBid });
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An unexpected error occurred." });
+            }
         }
     }
+}
