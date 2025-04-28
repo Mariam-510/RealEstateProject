@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using RealEstate.Models.Domains;
 using RealEstate.Models.DTOs.AppointmentDto;
 using RealEstate.Repositories;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace RealEstate.Controllers
 {
@@ -39,30 +42,124 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("buyer/{buyerId}")]
-        public async Task<IActionResult> GetAppointmentsByBuyer(int buyerId, [FromQuery] string sortOrder = "desc", [FromQuery] string status = null)
+        //[HttpGet]
+        //[Authorize(Roles = "Buyer")]
+        //public async Task<IActionResult> GetAppointmentsByBuyer( [FromQuery] string sortOrder = "desc", [FromQuery] string status = null)
+        //{
+
+        //    string buyerIdStr = User.FindFirst("userId")?.Value;
+        //    Console.WriteLine(buyerIdStr);
+
+        //    if (!int.TryParse(buyerIdStr, out int buyerId))
+        //    {
+        //        return Unauthorized("Buyer not found.");
+        //    }
+        //    var appointments = await _appointmentRepo.GetByBuyerAsync(buyerId);
+        //    if (appointments == null || appointments.Count == 0)
+        //        return NotFound("No appointments found for this buyer.");
+        //    if (!string.IsNullOrEmpty(status))
+        //    {
+        //        appointments = appointments.Where(a => a.Status.ToString().Equals(status, StringComparison.OrdinalIgnoreCase)).ToList();
+        //    }
+
+        //    if (sortOrder.ToLower() == "asc")
+        //    {
+        //        appointments = appointments.OrderBy(a => a.ScheduledTime).ToList(); 
+
+        //    }
+        //    else
+        //    {
+        //        appointments = appointments.OrderByDescending(a => a.ScheduledTime).ToList();
+
+        //    }
+        //    var dtoList = _mapper.Map<List<AppointmentDto>>(appointments);
+        //    return Ok(dtoList);
+        //}
+        [HttpGet]
+        [Route("user/BuyerViewAllAppointment")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> GetAppointmentsByBuyer([FromQuery] string sortOrder = "desc", [FromQuery] string status = null)
         {
-            var appointments = await _appointmentRepo.GetByBuyerAsync(buyerId);
-            if (appointments == null || appointments.Count == 0)
-                return NotFound("No appointments found for this buyer.");
-            if (!string.IsNullOrEmpty(status))
+            try
             {
-                appointments = appointments.Where(a => a.Status.ToString().Equals(status, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
+                string userIdStr = User.FindFirst("userId")?.Value;
 
-            if (sortOrder.ToLower() == "asc")
+                if (!int.TryParse(userIdStr, out int userId))
+                    return Unauthorized("User not found.");
+
+                var buyer = await _buyerRepo.GetByIdAsync(userId);
+
+                if (buyer == null)
+                    return NotFound("Buyer not found.");
+
+                var appointments = await _appointmentRepo.GetAppointmentsByBuyerIdAsync(buyer.Id);
+
+                if (appointments == null || !appointments.Any())
+                {
+                    return NotFound("No appointments found for this buyer.");
+                }
+
+                // Filter by status if provided
+                if (!string.IsNullOrEmpty(status))
+                {
+                    appointments = appointments
+                        .Where(a => a.Status.ToString().Equals(status, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                }
+
+                // Sort by scheduled time
+                if (sortOrder.ToLower() == "asc")
+                {
+                    appointments = appointments.OrderBy(a => a.ScheduledTime).ToList();
+                }
+                else
+                {
+                    appointments = appointments.OrderByDescending(a => a.ScheduledTime).ToList();
+                }
+
+                var result = appointments.Select(a => new AppointmentResponseDto
+                {
+                    Id = a.Id,
+                    ScheduledTime = a.ScheduledTime,
+                    Type = a.Type.ToString(),
+                    Status = a.Status.ToString(),
+                    Property = new AppointmentPropertyDto
+                    {
+                        Id = a.Property.Id,
+                        Title = a.Property.Title,
+                        Location = a.Property.Location,
+                        Price = a.Property.Price,
+                        Type = a.Property.Type.ToString(),
+                        Images = a.Property.Images.ToList(),
+                        agentId = a.Property.AgentId,
+                        sellerId = a.Property.SellerId,
+                        userName = a.Property.Agent != null
+                            ? a.Property.Agent.Name
+                            : a.Property.Seller != null
+                                ? a.Property.Seller.FirstName + " " + a.Property.Seller.LastName
+                                : null,
+                        userImage = a.Property.Agent != null
+    ? a.Property.Agent.Account?.ImageUrl
+    : a.Property.Seller != null
+        ? a.Property.Seller.Account?.ImageUrl
+        : null,
+
+                        userType = a.Property.Agent != null ? "Agent"
+                                : a.Property.Seller != null ? "Seller"
+                                : null
+                    }
+                });
+
+                return Ok(result);
+            }
+            catch (Exception ex)
             {
-                appointments = appointments.OrderBy(a => a.ScheduledTime).ToList(); 
-
+                return StatusCode(500, new { message = "An unexpected error occurred." });
             }
-            else
-            {
-                appointments = appointments.OrderByDescending(a => a.ScheduledTime).ToList();
-
-            }
-            var dtoList = _mapper.Map<List<AppointmentDto>>(appointments);
-            return Ok(dtoList);
         }
+
+
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -75,22 +172,33 @@ namespace RealEstate.Controllers
             return Ok(dto);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateAppointmentDto createDto)
+        [HttpPost("book/{id}")]
+        [Authorize(Roles ="Buyer")]
+        public async Task<IActionResult> Create([FromRoute] int id, [FromBody] CreateAppointmentDto createDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var property = await _propertyRepo.GetByIdAsync(createDto.PropertyId);
+            var property = await _propertyRepo.GetByIdAsync(id);
             if (property == null)
                 return NotFound("Property not found.");
 
             // Check if the buyer exists
-            var buyer = await _buyerRepo.GetByIdAsync(createDto.BuyerId);
-            if (buyer == null)
-                return NotFound("Buyer not found.");
+            //var buyer = await _buyerRepo.GetByIdAsync(createDto.BuyerId);
+            //if (buyer == null)
+            //    return NotFound("Buyer not found.");
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+            Console.WriteLine(buyerIdStr);
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
 
             // Create appointment
             var appointment = _mapper.Map<Appointment>(createDto);
+            appointment.PropertyId = id;  // From route
+            appointment.BuyerId = buyerId;        // From token
+
             await _appointmentRepo.AddAsync(appointment);
 
             return CreatedAtAction(nameof(GetById),

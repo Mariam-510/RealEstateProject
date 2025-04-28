@@ -174,7 +174,9 @@ export const routes: Routes = [
   },
 
   //---------------------------------------------------------------------------------------
-  { path: 'book', component: BookAppointmentComponent, title: "Book Appointment" },
+
+  { path: 'book/:id', component: BookAppointmentComponent, title: "Book Appointment" },
+
   //---------------------------------------------------------------------------------------
   { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
   { path: "t", component: SimilarProductsComponent, title: "t" },

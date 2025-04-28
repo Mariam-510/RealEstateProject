@@ -17,11 +17,11 @@ namespace RealEstate.Models.DTOs.AppointmentDto
         [Required]
         public string Status { get; set; }
 
-        [Required]
-        public int BuyerId { get; set; }
+        //[Required]
+        //public int BuyerId { get; set; }
 
-        [Required]
-        public int PropertyId { get; set; }
+        //[Required]
+        //public int PropertyId { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
          
