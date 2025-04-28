@@ -36,7 +36,7 @@
                   <select class="form-select" id="propertyId" formControlName="propertyId">
                     <option value="" disabled selected>Select property</option>
                     <option *ngFor="let property of properties" [value]="property.id">
-                      {{ property.name }}
+                      {{ property.title }}
                     </option>
                   </select>
                   <div *ngIf="

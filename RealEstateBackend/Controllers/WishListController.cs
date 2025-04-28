@@ -21,13 +21,15 @@ namespace RealEstate.Controllers
         public IBuyerRepository _BuyerRepository { get; }
         public IProductRepository _productRepository { get; }
         private readonly IMapper _mapper;
+        private readonly IPropertyRepository _propertyRepository;
 
-        public WishListController(IWishListRepository wishListRepository, IProductRepository productRepository, IBuyerRepository buyerRepository, IMapper mapper)
+        public WishListController(IWishListRepository wishListRepository, IProductRepository productRepository, IBuyerRepository buyerRepository, IMapper mapper, IPropertyRepository propertyRepository)
         {
             _WishlistRepository = wishListRepository;
             _productRepository = productRepository;
             _BuyerRepository = buyerRepository;
             _mapper = mapper;
+            _propertyRepository = propertyRepository;
         }
 
         [HttpPost("ToggleProductWishlist")]
@@ -113,8 +115,8 @@ namespace RealEstate.Controllers
 
 
             var Wishlist = await _WishlistRepository.GetByBuyerAndpropertyIdAsync(wishListPropertyDTO.PropertyID, buyerId);
-            var ProductFound = await _productRepository.GetByIdAsync(wishListPropertyDTO.PropertyID);
-            if (ProductFound == null)
+            var PropertyFound = await _propertyRepository.GetByIdAsync(wishListPropertyDTO.PropertyID);
+            if (PropertyFound == null)
             {
                 return NotFound("Property ID Not Found !");
             }

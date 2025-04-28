@@ -28,7 +28,7 @@ import { AdmindashboardComponent } from './Components/Admin/admindashboard/admin
 import { ViewAllOrderComponent } from './Components/Admin/view-all-order/view-all-order.component';
 import { SellersidebarComponent } from './Components/Seller/sellersidebar/sellersidebar.component';
 import { SellerProfileComponent } from './Components/Seller/seller-profile/seller-profile.component';
-import { DashboardComponent } from './Components/Seller/dashboard/dashboard.component';
+import { DashboardComponent } from './Components/PagesSellerAndAgent/dashboard/dashboard.component';
 import { PaymentComponent } from './Components/Payments/payment/payment.component';
 import { PropertyDetailsComponent } from './Components/Properties/Details/property-details/property-details.component';
 import { PHomeComponent } from './Components/Products/Home/p-home/p-home.component';
@@ -88,7 +88,7 @@ export const routes: Routes = [
     path: 'agent', component: AgentSideBarComponent, title: "Agent", children: [
       { path: '', redirectTo: 'profile', pathMatch: "full" },
       { path: "profile", component: AgentProfileComponent, title: "Profile" },
-      { path: 'dashboard', component: AgentdashboardComponent, title: "Dashboard" },
+      { path: 'dashboard', component: DashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
       { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
