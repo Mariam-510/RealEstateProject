@@ -113,4 +113,10 @@ export class AuthService {
     return user.roles === requiredRole;
   }
 
+
+  getCurrentUser(): User | null {
+    return this.currentUserSubject.value;
+  }
+
+
 }

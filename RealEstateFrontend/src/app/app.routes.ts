@@ -58,12 +58,15 @@ import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-al
 import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
 import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
 import { CreateadminComponent } from './Components/Admin/createadmin/createadmin.component';
+import { ChatComponent } from './Components/TestChat/chat/chat.component';
 
 //----------------------------------------------------------------------------------------
 
 export const routes: Routes = [
 
   { path: "about", component: AboutComponent, title: "About" },
+  { path: "chatTest", component: ChatComponent, title: "chat" },
+
 
   //---------------------------------------------------------------------------------------
   {
