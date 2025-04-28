@@ -53,8 +53,7 @@ interface Feature {
 
 @Component({
   selector: 'app-home-page',
-  imports: [CommonModule, RouterModule, LeafletMapComponent, RecommendedComponent, CardmapComponent,
-    HomePropertiesComponent, HomeAuctionsComponent, DaysUntilPipe],
+  imports: [CommonModule, RouterModule, DaysUntilPipe],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css'
 })
@@ -64,8 +63,6 @@ export class HomePageComponent implements OnInit {
   apiConfig = API_CONFIG;
 
   products: ProductDTO[] = [];
-  topRatedProducts: ProductDTO[] = [];
-
   properties: PropertyDTO[] = [];
 
   // Property listings data
@@ -192,74 +189,6 @@ export class HomePageComponent implements OnInit {
     }
   ];
 
-  // Featured Properties
-  featuredProperties: PropertyDto[] = [
-    {
-      id: 101,
-      title: 'Luxury Penthouse with Sea View',
-      description: 'Stunning 3-bedroom penthouse with private pool and 360° city views',
-      location: 'Palm Jumeirah, Dubai',
-      price: 8500000,
-      type: 'SALE',
-      propertyCategory: 'Residential',
-      status: 'FEATURED',
-      images: [
-        'propertyImages/1.jpg',
-        'propertyImages/2.jpg'
-      ],
-      bedrooms: 4,
-      bathrooms: 6,
-      space: 450,
-      isFavorite: false,
-      userImage: 'https://www.mocka.com.au/cdn/shop/files/T04028_HiRes_01.jpg?v=1728479772&width=2040',
-      userName: 'Emaar Properties',
-      date: new Date('2024-03-15'),
-      activeMap: true
-    },
-    {
-      id: 102,
-      title: 'Modern Downtown Apartment',
-      description: 'Fully furnished 2-bedroom apartment in financial district',
-      location: 'Manhattan, New York',
-      price: 2500000,
-      type: 'SALE',
-      propertyCategory: 'Residential',
-      status: 'FEATURED',
-      images: [
-        'propertyImages/2.jpg'
-      ],
-      bedrooms: 2,
-      bathrooms: 2,
-      space: 180,
-      isFavorite: true,
-      userImage: '/assets/images/avatars/city-realty.jpg',
-      userName: 'City Realty',
-      date: new Date('2024-03-10'),
-      activeMap: true
-    },
-    {
-      id: 103,
-      title: 'Historic Villa with Garden',
-      description: 'Renovated 19th century villa with private garden',
-      location: 'Centro, Rome',
-      price: 4200000,
-      type: 'RENT',
-      propertyCategory: 'Residential',
-      status: 'FEATURED',
-      images: [
-        'propertyImages/3.jpg'
-      ],
-      bedrooms: 5,
-      bathrooms: 4,
-      space: 800,
-      isFavorite: false,
-      userImage: '/assets/images/avatars/heritage-homes.jpg',
-      userName: 'Heritage Homes',
-      date: new Date('2024-03-20'),
-      activeMap: false
-    }
-  ];
-
   // Upcoming Auctions
   upcomingAuctions: PropertyDto[] = [
     {
@@ -351,52 +280,223 @@ export class HomePageComponent implements OnInit {
     }
   ];
 
-  constructor(private sharedService: SharedService, private auth: AuthService, private wishListService: WishListService,
+  constructor(private auth: AuthService, private wishListService: WishListService,
     private toastr: ToastrService, private productService: ProductService, private cdr: ChangeDetectorRef,
     private propertyService: PropertyService, private dialog: MatDialog) { }
 
   async ngOnInit() {
     this.startAutoSlide();
     await this.loadProducts();
-    this.getTopRatedProducts();
-
-    // await this.loadProperties();
-    // this.propertiess = this.sharedService.properties;
-    // this.products = this.sharedService.HomeProducts;
+    await this.loadProperties();
   }
+
+  // async loadProducts() {
+  //   try {
+  //     const allProducts = await this.productService.getAllProducts().toPromise() ?? [];
+
+  //     // Filter out products with quantity <= 0
+  //     const availableProducts = allProducts.filter(product => product.quantity > 0);
+
+  //     // Group available products by category
+  //     const productsByCategory = availableProducts.reduce((acc, product) => {
+  //       const category = product.categoryName;
+  //       if (!acc[category]) {
+  //         acc[category] = [];
+  //       }
+  //       acc[category].push(product);
+  //       return acc;
+  //     }, {} as { [key: string]: typeof availableProducts });
+
+
+  //     // Get top-rated product from each category and sort by category name
+  //     const topProducts = Object.keys(productsByCategory)
+  //       .sort() // Sort categories A-Z first
+  //       .map(category =>
+  //         productsByCategory[category]
+  //           .sort((a, b) => b.averageRating - a.averageRating)[0]
+  //       )
+  //       // Take first 3 categories
+  //       .slice(0, 3);
+
+  //     this.products = topProducts;
+  //     console.log('Top 3 products by category (A-Z):', this.products);
+  //     this.cdr.detectChanges();
+  //   } catch (err) {
+  //     console.error('Error loading products:', err);
+  //   }
+  // }
 
   async loadProducts() {
     try {
-      this.products = await this.productService.getAllProducts().toPromise() ?? [];
-      console.log(this.products);
+      const allProducts = await this.productService.getAllProducts().toPromise() ?? [];
+
+      // Filter out products with quantity <= 0
+      const availableProducts = allProducts.filter(product => product.quantity > 0).sort();
+
+      // Group available products by category
+      const productsByCategory = availableProducts.reduce((acc, product) => {
+        const category = product.categoryName;
+        if (!acc[category]) {
+          acc[category] = [];
+        }
+        acc[category].push(product);
+        return acc;
+      }, {} as { [key: string]: typeof availableProducts });
+
+      // Get best product from each category using stock+rating sorting
+      const topProducts = Object.keys(productsByCategory)
+        .sort() // Sort categories A-Z first
+        .map(category =>
+          productsByCategory[category]
+            .sort((a, b) => {
+              // Primary sort: stock quantity descending
+              const stockDiff = b.quantity - a.quantity;
+              // Secondary sort: rating descending
+              return stockDiff !== 0 ? stockDiff : b.averageRating - a.averageRating;
+            })[1] // Take top item from category
+        )
+        // Additional sorting of final products by stock then rating
+        // .sort((a, b) => {
+        //   const stockDiff = b.quantity - a.quantity;
+        //   return stockDiff !== 0 ? stockDiff : b.averageRating - a.averageRating;
+        // })
+        // Take first 3 categories
+        .slice(0, 3);
+
+      this.products = topProducts;
+      console.log('Stock-optimized top products:', this.products);
       this.cdr.detectChanges();
     } catch (err) {
       console.error('Error loading products:', err);
     }
   }
 
-  // async loadProperties() {
+
+  // In your component
+  // async loadProperties(
+  //   category?: string,
+  //   status?: string,
+  //   type?: string,
+  //   searchByLocation?: string
+  // ) {
   //   try {
-  //     this.properties = await this.propertyService.getAllProperties().toPromise() ?? [];
-  //     console.log(this.properties);
-  //     this.cdr.detectChanges();
+  //     this.properties = await this.propertyService.getAll(
+  //       category,
+  //       status,
+  //       type,
+  //       searchByLocation
+  //     ).toPromise() ?? [];
+
+  //     console.log('Loaded properties:', this.properties);
+  //     this.cdr.detectChanges(); // If using ChangeDetectorRef
   //   } catch (err) {
   //     console.error('Error loading properties:', err);
+  //     // Handle error (show message, etc.)
   //   }
   // }
 
-  private getTopRatedProducts(): void {
-    // Sort products by averageRating descending, then by number of reviews
-    this.topRatedProducts = [...this.products].sort((a, b) => {
-      // First sort by rating
-      if (b.averageRating !== a.averageRating) {
-        return b.averageRating - a.averageRating;
-      }
-      // If ratings are equal, sort by number of reviews
-      return b.numberOfReviews - a.numberOfReviews;
-    });
 
-    this.topRatedProducts = this.topRatedProducts.slice(0, 3);
+  async loadProperties(
+    category?: string,
+    status?: string,
+    type?: string,
+    searchByLocation?: string
+  ) {
+    try {
+      const allProperties = await this.propertyService.getAll(
+        category,
+        status,
+        type,
+        searchByLocation
+      ).toPromise() ?? [];
+
+      // 1. Group properties by category
+      const propertiesByCategory = allProperties.reduce((acc, property) => {
+        const categoryKey = property.propertyCategory;
+        if (!acc[categoryKey]) {
+          acc[categoryKey] = [];
+        }
+        acc[categoryKey].push(property);
+        return acc;
+      }, {} as { [key: string]: typeof allProperties });
+
+      // 2. Select most recent property from each category
+      let selectedProperties = Object.keys(propertiesByCategory)
+        .map(category =>
+          propertiesByCategory[category]
+            .sort((a, b) => new Date(b.addedDate).getTime() - new Date(a.addedDate).getTime())[0]
+        );
+
+      // 3. Ensure Sell/Rent type diversity
+      const hasSell = selectedProperties.some(p => p.type === 'Sell');
+      const hasRent = selectedProperties.some(p => p.type === 'Rent');
+
+      if (!hasSell || !hasRent) {
+        const missingType = !hasSell ? 'Sell' : 'Rent';
+
+        // Find newest property of missing type from any category
+        const replacementCandidate = allProperties
+          .filter(p => p.type === missingType)
+          .sort((a, b) => new Date(b.addedDate).getTime() - new Date(a.addedDate).getTime())[0];
+
+        if (replacementCandidate) {
+          // Remove oldest property from selected
+          selectedProperties = selectedProperties.slice(1);
+          // Add replacement candidate
+          selectedProperties.push(replacementCandidate);
+        }
+      }
+
+      // 4. Final sorting by title (A-Z) and limit to 10
+      this.properties = selectedProperties
+        .sort((a, b) => b.title.localeCompare(a.title)) // Alphabetical sort by title
+        .slice(2, 5);
+
+      console.log('Sorted properties:', this.properties);
+      this.cdr.detectChanges();
+    } catch (err) {
+      console.error('Error loading properties:', err);
+    }
+  }
+
+
+
+  toggleProductWishList(product: ProductDTO) {
+    // Optimistic UI update
+    const previousState = product.isFavorite;
+    product.isFavorite = !previousState;
+
+    this.wishListService.toggleProductWishlist(product.id).subscribe({
+      next: (response) => {
+        this.toastr.success(response);
+        // Optional: Update with actual API state if needed
+      },
+      error: (err) => {
+        // Revert UI state on error
+        product.isFavorite = previousState;
+        this.toastr.error('Error updating wishlist');
+        console.error(err);
+      }
+    });
+  }
+
+  togglePropertyWishList(property: PropertyDTO) {
+    // Optimistic UI update
+    const previousState = property.isFavorite;
+    property.isFavorite = !previousState;
+
+    this.wishListService.togglePropertyWishlist(property.id).subscribe({
+      next: (response) => {
+        this.toastr.success(response);
+        // Optional: Update with actual API state if needed
+      },
+      error: (err) => {
+        // Revert UI state on error
+        property.isFavorite = previousState;
+        this.toastr.error('Error updating wishlist');
+        console.error(err);
+      }
+    });
   }
 
   startAutoSlide() {
@@ -419,43 +519,6 @@ export class HomePageComponent implements OnInit {
     this.startAutoSlide();
   }
 
-  toggleProductWishList(product: any) {
-    // Optimistic UI update
-    const previousState = product.isFavorite;
-    product.isFavorite = !previousState;
-
-    this.wishListService.toggleProductWishlist(product.id).subscribe({
-      next: (response) => {
-        this.toastr.success(response);
-        // Optional: Update with actual API state if needed
-      },
-      error: (err) => {
-        // Revert UI state on error
-        product.isFavorite = previousState;
-        this.toastr.error('Error updating wishlist');
-        console.error(err);
-      }
-    });
-  }
-
-  togglePropertyWishList(property: any) {
-    // Optimistic UI update
-    // const previousState = product.isFavorite;
-    // product.isFavorite = !previousState;
-
-    // this.wishListService.toggleProductWishlist(product.id).subscribe({
-    //   next: (response) => {
-    //     this.toastr.success(response);
-    //     // Optional: Update with actual API state if needed
-    //   },
-    //   error: (err) => {
-    //     // Revert UI state on error
-    //     product.isFavorite = previousState;
-    //     this.toastr.error('Error updating wishlist');
-    //     console.error(err);
-    //   }
-    // });
-  }
 
   openSigUPDialog(): void {
     this.dialog.open(SignUpRoleComponentComponent);

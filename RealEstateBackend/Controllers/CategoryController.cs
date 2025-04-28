@@ -1,4 +1,5 @@
 ﻿using System.Transactions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,8 @@ namespace RealEstate.Controllers
         }
 
         [HttpPost("CreateCategory")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> CreateCategory([FromForm] CategoryDTO CategoryDTO)
         {
             if (!ModelState.IsValid)
@@ -53,6 +56,8 @@ namespace RealEstate.Controllers
 
 
         [HttpDelete("DeleteCategory/{id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> DeleteCategory(int id)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -135,6 +140,9 @@ namespace RealEstate.Controllers
 
         
         [HttpPut("UpdateCategory/{id}")]
+
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> UpdateCategory(int id, [FromForm] CategoryDTO CategoryDTO)
         {
             if (!ModelState.IsValid)

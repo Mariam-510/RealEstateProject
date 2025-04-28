@@ -146,6 +146,10 @@ namespace RealEstate.Mapping
                 .ForMember(dest => dest.ProductImage, opt => opt.MapFrom(
                     src => src.Product != null && src.Product.Images != null && src.Product.Images.Count > 0
                         ? src.Product.Images[0]
+                        : null))
+                    .ForMember(dest => dest.CategoryName,
+                    opt => opt.MapFrom(src => src.Product != null && src.Product.Category != null
+                        ? src.Product.Category.Name
                         : null));
 
             //------------------------------------------------------------------------------------------------

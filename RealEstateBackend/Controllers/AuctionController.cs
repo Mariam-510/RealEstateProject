@@ -34,7 +34,7 @@ namespace RealEstate.Controllers
         }
         
 
-        [HttpPost("CreateAuction")]
+        [HttpPost("Add")]
         [Authorize(Roles = "Seller,Agent")]
         public async Task<IActionResult> CreateAuction([FromForm] AuctionDTO AuctionDtO)
         {

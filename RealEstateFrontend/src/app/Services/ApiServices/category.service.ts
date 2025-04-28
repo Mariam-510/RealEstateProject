@@ -30,4 +30,6 @@ export class CategoryService {
   createCategory(categoryData: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/CreateCategory`, categoryData);
   }
+
+  
 }

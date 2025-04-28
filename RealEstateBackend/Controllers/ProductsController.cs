@@ -46,6 +46,7 @@ namespace RealEstate.Controllers
         }
 
         [HttpPost("CreateProduct")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateProduct([FromForm] ProductDTO ProductDTO)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -109,6 +110,9 @@ namespace RealEstate.Controllers
 
 
         [HttpDelete("DeleteProduct/{id}")]
+
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> DeleteProduct(int id)
         {
 
@@ -215,6 +219,8 @@ namespace RealEstate.Controllers
 
 
         [HttpPut("UpdateProduct/{id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductDTO ProductDTO)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))

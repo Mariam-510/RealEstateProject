@@ -1,5 +1,11 @@
 .footer-container {
-  background: #5e3c31;
+  /* background: #5e3c31; */
+  
+  /* background: #bf856e; */
+  /* background: #987061; */
+
+  background: #987061;
+
   padding: 1rem 1rem auto;
   /* box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1); */
   margin-top: auto;
@@ -28,7 +34,7 @@
 }
 
 .footer-heading {
-  color: #c38e79  ;
+  color: #4a2c2a;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   font-size: 1.2rem;
@@ -94,16 +100,18 @@
 .copyright {
   text-align: center;
   padding: 1rem 0;
-  border-top: 1px solid #6e5447;
-  margin-top: 2rem;
-  color: white;
+  /* border-top: 1px solid #6e5447; */
+  margin-top: 1.5rem;
+  /* color: white; */
+  color: #4a2c2a;
+
 }
 
 .footer-brand-link {
-  color: #c38e79 !important;
+  color: #4a2c2a !important;
   text-decoration: none;
-  font-size: 1.2rem;
-  font-weight: 600;
+  /* font-size: 1.2rem; */
+  /* font-weight: 600; */
   position: relative;
   transition: color 0.3s ease;
 }

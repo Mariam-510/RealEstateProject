@@ -15,13 +15,6 @@ namespace RealEstate.Repositories
             _context = context;
         }
 
-        public async Task<List<Property>> GetAllAsync()
-        {
-            return await _context.Properties.Where(p=>!p.IsDeleted && p.ApprovalStatus==PropertyApprovalStatus.Approved)
-                                  .Include(p=>p.Seller)
-                                  .Include(p=>p.Agent)
-                                  .ToListAsync();
-        }
         public async Task<List<Property>> GetAllPending()
         {
             return await _context.Properties.Where(p => !p.IsDeleted && p.ApprovalStatus == PropertyApprovalStatus.Pending)
@@ -144,6 +137,21 @@ namespace RealEstate.Repositories
 
             return await query.ToListAsync();
         }
+
+
+
+
+        public async Task<List<Property>> GetAllPropertiesUnfilteredAsync()
+        {
+            return await _context.Properties
+                .Include(p => p.Seller).ThenInclude(s => s.Account)
+                .Include(p => p.Agent).ThenInclude(a => a.Account)
+                .Where(p => !p.IsDeleted) 
+                .ToListAsync();
+        }
+
+
+
     }
 }
    

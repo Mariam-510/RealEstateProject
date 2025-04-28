@@ -1,5 +1,5 @@
 // add-subscriptionplan.component.ts
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormGroup,
   FormControl,
@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from '../../../Services/toastr.service';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
 
 @Component({
   selector: 'app-add-subscriptionplan',
@@ -20,17 +21,24 @@ import { ToastrService } from '../../../Services/toastr.service';
   templateUrl: './add-subscriptionplan.component.html',
   styleUrl: './add-subscriptionplan.component.css',
 })
-export class AddSubscriptionplanComponent {
+export class AddSubscriptionplanComponent implements OnInit {
   DescriptionText: string = '';
   isMaxLengthExceeded: boolean = false;
   maxCharacters: number = 150;
   isLoading: boolean = false;
 
   constructor(
+    private auth: AuthService,
     private subscriptionPlanService: SubscriptionPlanService,
     private router: Router,
     private toastr: ToastrService
   ) {}
+  ngOnInit(): void {
+    if (!this.hasRole('admin')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+  }
 
   subscriptionForm = new FormGroup({
     name: new FormControl('', [
@@ -49,6 +57,18 @@ export class AddSubscriptionplanComponent {
     ]),
     description: new FormControl('', [Validators.maxLength(200)]),
   });
+
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
+  }
 
   validateReview() {
     this.isMaxLengthExceeded =

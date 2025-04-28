@@ -7,7 +7,7 @@
         <a routerLink="/" class="footer-brand-link">UrbanNest</a>
       </h4>
       <p class="footer-description">
-        Transforming spaces into dream homes through curated properties, 
+        Transforming spaces into dream homes through curated properties,
         premium furniture, and exciting auctions.
       </p>
       <div class="social-links">
@@ -24,7 +24,8 @@
       <nav class="d-flex justify-content-center d-md-block">
         <ul>
           <li *ngFor="let link of quickLinks">
-            <a [routerLink]="link.path" class="footer-link fs-6"><i class="bi {{ link.icon }} me-2"></i>{{ link.label }}</a>
+            <a [routerLink]="link.path" class="footer-link fs-6"><i class="bi {{ link.icon }} me-2"></i>{{ link.label
+              }}</a>
           </li>
         </ul>
       </nav>
@@ -36,7 +37,8 @@
       <nav class="d-flex justify-content-center d-md-block">
         <ul>
           <li *ngFor="let link of legalLinks">
-            <a [routerLink]="link.path" class="footer-link fs-6"><i class="bi {{ link.icon }} me-2"></i>{{ link.label }}</a>
+            <a [routerLink]="link.path" class="footer-link fs-6"><i class="bi {{ link.icon }} me-2"></i>{{ link.label
+              }}</a>
           </li>
         </ul>
       </nav>

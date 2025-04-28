@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Models.Domains;
@@ -38,6 +39,8 @@ namespace RealEstate.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Create(CreateSubscriptionPlanDto dto)
         {
             var plan = _mapper.Map<SubscriptionPlan>(dto);
@@ -46,6 +49,8 @@ namespace RealEstate.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Update(int id, CreateSubscriptionPlanDto dto)
         {
             var plan = await _repository.GetByIdAsync(id);
@@ -58,6 +63,8 @@ namespace RealEstate.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Delete(int id)
         {
             var plan = await _repository.GetByIdAsync(id);

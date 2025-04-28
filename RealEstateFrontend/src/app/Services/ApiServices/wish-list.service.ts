@@ -3,6 +3,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../app.config';
 
+import { ProductDTO } from './product.service';
+import { PropertyDTO } from './property.service';
+
 // Add DTO interface
 export interface WishListProductDTO {
   ProductId: number;
@@ -40,4 +43,12 @@ export class WishListService {
     );
   }
 
+// In WishListService
+getAllProductsByBuyerId(): Observable<ProductDTO[]> {
+  return this.http.get<ProductDTO[]>(`${this.apiUrl}/GetAllProductByBuyerID`);
+}
+
+getAllPropertiesByBuyerId(): Observable<PropertyDTO[]> {
+  return this.http.get<PropertyDTO[]>(`${this.apiUrl}/GetAllPropertyByBuyerID`);
+}
 }

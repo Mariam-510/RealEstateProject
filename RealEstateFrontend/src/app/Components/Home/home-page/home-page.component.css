@@ -1,13 +1,14 @@
 :host {
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   color: #333333;
 }
 
 /* Hero Slider */
 .hero-slider {
   position: relative;
-  height: 600px;
+  height: 550px;
+  object-fit: cover;
   overflow: hidden;
 }
 
@@ -45,24 +46,184 @@
   bottom: 2%;
   left: 2%;
   color: white;
-  max-width: 600px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   z-index: 3;
 }
 
-.dots span {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
-  transition: all 0.3s ease;
+/* aaaaaaaaa */
+.hero-slider {
+  position: relative;
+  height: 550px;
+  background: #0a0a0a;
+  overflow: hidden;
 }
 
-.dots span.active {
-  background: #c38e79;
-  transform: scale(1.2);
+.slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.slide.active {
+  opacity: 1;
+}
+
+.slide-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(30%) brightness(0.7);
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
+}
+
+/* Blueprint Overlay */
+.blueprint-grid {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+/* Furniture Outline Animation */
+.furniture-outline {
+  position: absolute;
+  right: 5%;
+  bottom: 15%;
+  width: 400px;
+  height: 300px;
+  animation: drawOutline 2s ease-out;
+}
+
+.sofa-line {
+  position: absolute;
+  border: 2px solid #ff6b6b;
+  width: 250px;
+  height: 80px;
+  border-radius: 15px;
+  filter: drop-shadow(0 0 5px rgba(255,107,107,0.5));
+}
+
+.table-line {
+  position: absolute;
+  border: 2px solid #4ecdc4;
+  width: 150px;
+  height: 150px;
+  top: 100px;
+  left: 50px;
+  transform: rotate(45deg);
+}
+
+/* Auction Timer */
+.auction-timer {
+  position: absolute;
+  right: 5%;
+  top: 15%;
+  width: 80px;
+  height: 80px;
+  border: 2px solid #ffd700;
+  border-radius: 50%;
+}
+
+.timer-progress {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 3px solid transparent;
+  border-top-color: #ffd700;
+  border-radius: 50%;
+  animation: timerSpin 10s linear infinite;
+}
+
+/* Text Effects */
+.title-mask {
+  font-size: 4.5rem;
+  background: linear-gradient(45deg, #fff 60%, #4ecdc4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.title-mask::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100px;
+  height: 4px;
+  background: #ff6b6b;
+}
+
+/* Preview Cards */
+.preview-cards {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.preview-card {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(5px);
+  border-radius: 10px;
+  width: 180px;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.preview-card:hover {
+  transform: translateY(-10px);
+}
+
+.preview-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
+}
+
+/* Timeline Navigation */
+.timeline-nav {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2rem;
+}
+
+.timeline-item {
+  width: 80px;
+  height: 4px;
+  background: rgba(255,255,255,0.3);
+  cursor: pointer;
+  position: relative;
+}
+
+.timeline-progress {
+  width: 0;
+  height: 100%;
+  background: #4ecdc4;
+  transition: width 0.3s ease;
+}
+
+.timeline-item.active .timeline-progress {
+  width: 100%;
+}
+
+@keyframes drawOutline {
+  from { clip-path: inset(100% 0 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes timerSpin {
+  to { transform: rotate(360deg); }
 }
 
 /* Services Section */
@@ -181,7 +342,7 @@
 
 .service-image {
   height: 250px;
-  background-image: url('https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg');
+  background-image: url("https://m.media-amazon.com/images/I/81SKUYxdMlL._AC_UF894,1000_QL80_.jpg");
   background-size: cover;
   background-position: center;
   transition: transform 0.3s ease;
@@ -193,13 +354,17 @@
 }
 
 .service-image::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.4));
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 60%,
+    rgba(0, 0, 0, 0.4)
+  );
 }
 
 .service-content {
@@ -260,7 +425,7 @@
 }
 
 .service-link::after {
-  content: '→';
+  content: "→";
   margin-left: 5px;
   transition: transform 0.3s ease;
 }
@@ -573,10 +738,12 @@
 
 .signup-section {
   padding: 100px 20px;
-  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1') no-repeat center center;
+  /* background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url("https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1")
+      no-repeat center center; */
   background-size: cover;
   text-align: center;
-  color: white;
+  color: black;
 }
 
 .signup-container {
@@ -598,9 +765,9 @@
 .trust {
   text-align: center;
   padding: 4rem 10%;
-  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/7.jpg') no-repeat center center;
+  background: linear-gradient(rgba(0, 0, 0, 0.662), rgba(0, 0, 0, 0.434)),
+    url("https://images.unsplash.com/photo-1531971589569-0d9370cbe1e5?q=80&w=2081&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D") no-repeat center center;
   background-size: cover;
-
 }
 
 .stats {
@@ -646,7 +813,6 @@
   text-decoration: none;
 }
 
-
 /* feedback section */
 
 .feedback-section {
@@ -661,7 +827,8 @@
   /* margin: 1rem auto; */
 }
 
-.feedback-ratings, .feedback-form {
+.feedback-ratings,
+.feedback-form {
   /* flex: 1; */
   padding: 1rem;
 }
