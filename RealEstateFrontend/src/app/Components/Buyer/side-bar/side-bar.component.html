@@ -1,66 +1,71 @@
 <div class="dashboard-container d-flex min-vh-100 p-3 bg-light gap-3">
-    <!-- Sidebar -->
-    <div class="sidebar bg-white shadow-sm p-3 position-relative rounded border flex-shrink-0"
-      [class.collapsed]="isCollapsed">
-      <div class="sidebar-header d-flex align-items-center">
-        <button class="btn fs-3 border-0 menu-btn" (click)="toggleSidebar()">
-          <i class="bi bi-list text-caffe"></i>
-        </button>
-      </div>
-  
-      <ul class="nav flex-column mt-3 ms-2">
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="profile"
-            routerLinkActive="active">
-            <i class="bi bi-person-circle me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">User Info</span>
-          </a>
-        </li>
-         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
-            routerLink="orders" routerLinkActive="active">
-           <i class="bi bi-receipt me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Your Order</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
-            routerLink="AllReveiw" routerLinkActive="active">
-            <i class="bi bi-chat-left-text me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed"> Your Reviews</span>
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
-            routerLink="wishlist" routerLinkActive="active">
-            <i class="bi-heart-fill me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed"> Your Favourites</span>
-          </a>
-        </li>
-
-
-
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
-            routerLink="BuyerViewAllAppointment" routerLinkActive="active">
-           <i class="bi bi-eye me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">All Appointment</span>
-          </a>
-        </li>
-  
-   
-      </ul>
+  <!-- Sidebar -->
+  <div class="sidebar bg-white shadow-sm p-3 position-relative rounded border flex-shrink-0"
+    [class.collapsed]="isCollapsed">
+    <div class="sidebar-header d-flex align-items-center">
+      <button class="btn fs-3 border-0 menu-btn" (click)="toggleSidebar()">
+        <i class="bi bi-list text-caffe"></i>
+      </button>
     </div>
-  
-  
-    <!-- Content Area -->
-    <main class="content-area flex-grow-1 shadow-sm px-4 bg-white rounded border d-flex flex-column content"
-      style="min-height: 5vh; height: auto;">
-      <router-outlet></router-outlet>
-    </main>
-  
-  
-  
+
+    <ul class="nav flex-column mt-3 ms-2">
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="profile"
+          routerLinkActive="active">
+          <i class="bi bi-person-circle me-2 text-caffe"></i>
+          <span class="d-md-inline d-none" *ngIf="!isCollapsed">User Info</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="orders"
+          routerLinkActive="active">
+          <i class="bi bi-receipt me-2 text-caffe"></i>
+          <span class="d-md-inline d-none" *ngIf="!isCollapsed">Orders</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="reviews"
+          routerLinkActive="active">
+          <i class="bi bi-chat-left-text me-2 text-caffe"></i>
+          <span class="d-md-inline d-none" *ngIf="!isCollapsed">Reviews</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="wishlist"
+          routerLinkActive="active">
+          <i class="bi-heart me-2 text-caffe"></i>
+          <span class="d-md-inline d-none" *ngIf="!isCollapsed"> Favourites</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
+          routerLink="BuyerViewAllAppointment" routerLinkActive="active">
+          <i class="bi bi-calendar3 me-2 text-caffe"></i>
+          <span class="d-md-inline d-none" *ngIf="!isCollapsed">Appointments</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5"
+          (click)="confirmDeleteAccount($event)">
+          <i class="bi bi-trash me-2 text-caffe"></i>
+          <span class="d-md-inline d-none" *ngIf="!isCollapsed">Delete Account</span>
+        </a>
+
+      </li>
+
+    </ul>
   </div>
-  
+
+
+  <!-- Content Area -->
+  <main class="content-area flex-grow-1 shadow-sm px-4 bg-white rounded border d-flex flex-column content"
+    style="min-height: 5vh; height: auto;">
+    <router-outlet></router-outlet>
+  </main>
+
+
+
+</div>

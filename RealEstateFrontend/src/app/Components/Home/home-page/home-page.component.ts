@@ -16,6 +16,7 @@ import { API_CONFIG } from '../../../app.config';
 import { PropertyDTO, PropertyService } from '../../../Services/ApiServices/property.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SignUpRoleComponentComponent } from '../../Authentication/sign-up-role-component/sign-up-role-component.component';
+import { GoogleService } from '../../../Services/ApiServices/google.service';
 
 interface PropertyListing {
   id: number;
@@ -282,7 +283,7 @@ export class HomePageComponent implements OnInit {
 
   constructor(private auth: AuthService, private wishListService: WishListService,
     private toastr: ToastrService, private productService: ProductService, private cdr: ChangeDetectorRef,
-    private propertyService: PropertyService, private dialog: MatDialog) { }
+    private propertyService: PropertyService, private dialog: MatDialog, private googleService: GoogleService) { }
 
   async ngOnInit() {
     this.startAutoSlide();

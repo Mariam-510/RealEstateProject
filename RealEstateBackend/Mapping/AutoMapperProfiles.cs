@@ -19,6 +19,7 @@ using RealEstate.Models.Dtos.SubscriptionPlanDto;
 using RealEstate.Models.Dtos.ProductStockDto;
 using RealEstate.Models.DTOs.Category;
 using RealEstate.Models.Dtos.PaymentDto;
+using System.Globalization;
 
 
 namespace RealEstate.Mapping
@@ -31,7 +32,9 @@ namespace RealEstate.Mapping
             //CreateMap<Property, PropertyDto>();
 
             CreateMap<Property, PropertyDto>()
-                // Map UserName: Seller.FirstName -> Agent.FirstName
+                .ForMember(dest => dest.AddedDate, opt => opt.MapFrom(src => 
+                    src.AddedDate.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)
+                ))
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src =>
                     src.Seller != null
                         ? src.Seller.FirstName + " " + src.Seller.LastName
@@ -39,7 +42,6 @@ namespace RealEstate.Mapping
                             ? src.Agent.Name
                             : null
                 ))
-                // Map UserImage: Seller.Account.Image -> Agent.Account.Image
                 .ForMember(dest => dest.UserImage, opt => opt.MapFrom(src =>
                     src.Seller != null
                         ? src.Seller.Account != null
@@ -57,6 +59,7 @@ namespace RealEstate.Mapping
             CreateMap<UpdatePropertyDto, Property>()
                 .ForMember(dest => dest.Images, opt => opt.Ignore()); // Ignore Images
 
+            //------------------------------------------------------------------------------------------------
             CreateMap<Appointment, AppointmentDto>()
                 .ForMember(dest => dest.BuyerName, opt => 
                 opt.MapFrom(src => src.Buyer != null ?$"{src.Buyer.FirstName} {src.Buyer.LastName}" : null))
@@ -103,7 +106,7 @@ namespace RealEstate.Mapping
             //------------------------------------------------------------------------------------------------
 
             CreateMap<Seller, SellerDto>()
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.Account.CreatedAt))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.Account.CreatedAt.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Account.ImageUrl));
                 
@@ -112,7 +115,7 @@ namespace RealEstate.Mapping
             //------------------------------------------------------------------------------------------------
 
             CreateMap<Buyer, BuyerDto>()
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.Account.CreatedAt))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.Account.CreatedAt.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Account.ImageUrl));
 
@@ -121,7 +124,7 @@ namespace RealEstate.Mapping
             //------------------------------------------------------------------------------------------------
 
             CreateMap<Agent, AgentDto>()
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.Account.CreatedAt))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.Account.CreatedAt.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Account.ImageUrl));
 
@@ -130,7 +133,7 @@ namespace RealEstate.Mapping
             //------------------------------------------------------------------------------------------------
 
             CreateMap<Admin, AdminDto>()
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.Account.CreatedAt))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.Account.CreatedAt.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Account.ImageUrl));
 

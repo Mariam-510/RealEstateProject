@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AccountService } from '../../../Services/ApiServices/account.service';
+import { GoogleService } from '../../../Services/ApiServices/google.service';
 
 @Component({
   selector: 'app-register',
@@ -17,7 +18,8 @@ export class RegisterComponent {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private googleService: GoogleService
   ) {
     this.route.queryParams.subscribe(params => {
       this.role = params['role'] || 'buyer'; // Fallback to 'buyer' if no param
@@ -100,16 +102,8 @@ export class RegisterComponent {
     }
   }
 
-
-  googleLogin(event: MouseEvent) {
-    //   event.preventDefault();
-    //   event.stopPropagation();
-    //   const clientId = '329985024640-j1e42v80vulq0c0pqom75puhm75c4f4i.apps.googleusercontent.com';
-    //   const redirectUri = 'http://localhost:4200/home';
-    //   const scope = 'email profile openid';
-    //   const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=${scope}`;
-
-    //   window.location.href = authUrl;
+  googleLogin() {
+    this.googleService.googleLogin();
   }
 
 }

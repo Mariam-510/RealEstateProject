@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Mapping;
 using RealEstate.Models.Domains;
@@ -24,8 +25,16 @@ namespace RealEstate.Controllers
 
         [HttpGet]
         [Route("GetAll")]
-        public async Task<ActionResult> GetAll(int buyerId)
+        [Authorize(Roles = "Buyer")]
+        public async Task<ActionResult> GetAll()
         {
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
             var existingBuyer = await _buyerRepository.GetByIdAsync(buyerId);
             if (existingBuyer == null)
                 return NotFound("Buyer not found!");
@@ -54,11 +63,19 @@ namespace RealEstate.Controllers
 
         [HttpPost]
         [Route("Create")]
+        [Authorize(Roles = "Buyer")]
         public async Task<ActionResult> Create(ReviewDto reviewDto)
         {
             if(!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
             }
 
             if (reviewDto == null)
@@ -68,7 +85,7 @@ namespace RealEstate.Controllers
             if (product == null)
                 return NotFound("Product not found!");
 
-            var buyer = await _buyerRepository.GetByIdAsync(reviewDto.BuyerId);
+            var buyer = await _buyerRepository.GetByIdAsync(buyerId);
             if (buyer == null)
                 return NotFound("Buyer not found!");
 
@@ -77,7 +94,7 @@ namespace RealEstate.Controllers
                 Rating = reviewDto.Rating,
                 Comment = reviewDto.Comment,
                 ProductId = reviewDto.ProductId,
-                BuyerId = reviewDto.BuyerId,
+                BuyerId = buyerId,
             };
 
             var createdReview = await _reviewRepository.CreateAsync(review);
@@ -88,8 +105,16 @@ namespace RealEstate.Controllers
 
         [HttpPost]
         [Route("Edit")]
+        [Authorize(Roles = "Buyer")]
         public async Task<ActionResult> Edit(int id, ReviewDto reviewDto)
         {
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
             if (reviewDto == null)
                 return BadRequest("Invalid review data!");
 
@@ -97,7 +122,7 @@ namespace RealEstate.Controllers
             if (product == null)
                 return NotFound("Product not found!");
 
-            var buyer = await _buyerRepository.GetByIdAsync(reviewDto.BuyerId);
+            var buyer = await _buyerRepository.GetByIdAsync(buyerId);
             if (buyer == null)
                 return NotFound("Buyer not found!");
 
@@ -108,7 +133,7 @@ namespace RealEstate.Controllers
             existingReview.Rating = reviewDto.Rating;
             existingReview.Comment = reviewDto.Comment;
             existingReview.ProductId = reviewDto.ProductId;
-            existingReview.BuyerId = reviewDto.BuyerId;
+            existingReview.BuyerId = buyerId;
 
             var updatedReview = await _reviewRepository.UpdateAsync(existingReview);
 
@@ -119,11 +144,24 @@ namespace RealEstate.Controllers
 
         [HttpDelete]
         [Route("Delete/{id}")]
+        [Authorize(Roles = "Buyer")]
         public async Task<ActionResult> Delete(int id)
         {
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
             var existingReview = await _reviewRepository.GetByIdAsync(id);
             if (existingReview == null)
                 return NotFound("Review not found!");
+
+            if(existingReview.BuyerId != buyerId)
+            {
+                return Unauthorized();
+            }
 
             var deletedReview = await _reviewRepository.DeleteAsync(id);
             return Ok("Review deleted successfully.");

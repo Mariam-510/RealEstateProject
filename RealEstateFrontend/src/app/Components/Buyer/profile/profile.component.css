@@ -1,40 +1,41 @@
+.brown-icon {
+  color: #c38e79 !important;
+  font-size: 20px;
+}
 
-.brown-icon
-{
-    color: #c38e79 !important;
-    font-size: 20px;
-}.image-wrapper {
-    position: relative;
-    display: inline-block;
+.image-wrapper {
+  position: relative;
+  display: inline-block;
 }
 
 .camera-icon {
-    position: absolute;
-    bottom: 5%;
-    right: 5%;
-    background: white;
-    border-radius: 50%;
-    padding: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease-in-out;
+  position: absolute;
+  bottom: 10%;
+  right: 10%;
+  background: white;
+  border-radius: 50%;
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
 }
+
 .custom-border {
-    border-bottom: 2px solid gainsboro;  
+  border-bottom: 2px solid gainsboro;
 }
 
-@media (min-width: 992px) { 
-    .custom-border {
-        border-bottom: none;  
-        border-right: 2px solid gainsboro;  
-    }
+@media (min-width: 992px) {
+  .custom-border {
+    border-bottom: none;
+    border-right: 2px solid gainsboro;
+  }
 }
 
-@media (min-width: 1200px) {  
-    .custom-border {
-        border-right: 2px solid gainsboro;  
-    }
+@media (min-width: 1200px) {
+  .custom-border {
+    border-right: 2px solid gainsboro;
+  }
 }

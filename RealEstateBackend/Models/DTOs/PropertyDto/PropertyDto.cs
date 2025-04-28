@@ -15,7 +15,7 @@ namespace RealEstate.Models.DTOs.PropertyDto
         public int BedRooms { get; set; }
         public int BathRooms { get; set; }
         public decimal Space { get; set; }
-        public DateTime AddedDate { get; set; }
+        public string AddedDate { get; set; } // Changed from DateTime to string
         public string Status { get; set; } // Available, Sold, Auctioned
         public List<string> Images { get; set; }
         public int? AgentId { get; set; }

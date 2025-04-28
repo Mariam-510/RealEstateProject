@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using RealEstate.JWT;
 using RealEstate.Models.Domains;
@@ -11,11 +14,15 @@ using RealEstate.Models.Dtos.EmailDto;
 using RealEstate.Models.Dtos.JWTDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+
 //using Stripe;
 using System.Text;
 using System.Transactions;
 
 using Account = RealEstate.Models.Domains.Account;
+using System.Text.Json;
 
 namespace RealEstate.Controllers
 {
@@ -34,10 +41,12 @@ namespace RealEstate.Controllers
         public ICartRepository CartRepository { get; }
         public ISubscriptionRepository SubscriptionRepository { get; }
         public ISubscriptionPlanRepository SubscriptionPlanRepository { get; }
+        public GoogleService GoogleService { get; }
 
         public AccountsController(UserManager<Account> userManager, JWTService tokenService, IMapper Mapper, EmailService emailService,
             IBuyerRepository buyerRepository, ISellerRepository sellerRepository, IAgentRepository agentRepository, FileService fileService,
-            ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, ISubscriptionPlanRepository subscriptionPlanRepository)
+            ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, ISubscriptionPlanRepository subscriptionPlanRepository,
+            GoogleService googleService)
         {
             UserManager = userManager;
             TokenService = tokenService;
@@ -50,6 +59,7 @@ namespace RealEstate.Controllers
             CartRepository = cartRepository;
             SubscriptionRepository = subscriptionRepository;
             SubscriptionPlanRepository = subscriptionPlanRepository;
+            GoogleService = googleService;
         }
 
 
@@ -145,7 +155,7 @@ namespace RealEstate.Controllers
                                     return StatusCode(500, new { message = "An error occurred while creating" });
 
                                 var subscriptionPlan = await SubscriptionPlanRepository.GetByNameAsync("Free");
-                                if(subscriptionPlan == null)
+                                if (subscriptionPlan == null)
                                 {
                                     return StatusCode(500, new { message = "An error occurred while creating subscription plan" });
                                 }
@@ -385,7 +395,7 @@ namespace RealEstate.Controllers
                             }
                             if (agent.ApprovalStatus == ApprovalStatus.Rejected)
                             {
-                                return BadRequest(new{message = "Your account has been rejected. Please contact support for further details."});
+                                return BadRequest(new { message = "Your account has been rejected. Please contact support for further details." });
                             }
                             userId = agent.Id;
                             fName = agent.Name;
@@ -665,52 +675,244 @@ namespace RealEstate.Controllers
         }
 
 
+        [HttpPost("google")]
+        public async Task<IActionResult> ExternalLoginWithGoogle([FromBody] ExternalLoginDto dto)
+        {
+            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                try
+                {
+                    // 1. Validate the ID token
+                    var (isValid, claims) = await GoogleService.ValidateGoogleToken(dto.IdToken);
 
-        //[HttpPost("external-login/google")]
-        //public async Task<IActionResult> ExternalLoginWithGoogle([FromBody] ExternalLoginDto dto)
-        //{
-        //    try
-        //    {
-        //        var payload = await GoogleJsonWebSignature.ValidateAsync(dto.IdToken);
+                    if (!isValid)
+                        return Unauthorized("Invalid Google token");
 
-        //        var email = payload.Email;
-        //        var name = payload.Name;
+                    var userInfo = await GoogleService.GetGoogleUserInfoAsync(dto.AccessToken);
 
-        //        var user = await UserManager.FindByEmailAsync(email);
-        //        if (user == null)
-        //        {
-        //            user = new Account
-        //            {
-        //                UserName = email,
-        //                Email = email,
-        //                EmailConfirmed = true
-        //            };
+                    //Console.WriteLine($"infoooooo: {userInfo}");
 
-        //            var createResult = await UserManager.CreateAsync(user);
-        //            if (!createResult.Succeeded)
-        //            {
-        //                return BadRequest(createResult.Errors);
-        //            }
+                    // 3. Check if user exists in your database
+                    var user = await UserManager.Users
+                        .Where(u => u.Email.ToLower() == userInfo.Email.ToLower() && !u.IsDeleted)
+                        .FirstOrDefaultAsync();
 
-        //            //await UserManager.AddToRoleAsync(user, "Customer");
 
-        //            // Optionally create related customer data here
-        //        }
+                    if (user == null)
+                    {
+                        // Create new user
+                        user = new Account
+                        {
+                            Email = userInfo.Email,
+                            UserName = userInfo.Email,
+                            CreatedAt = DateTime.Now,
+                            ImageUrl = null,
+                            EmailConfirmationCode = null,
+                            CodeGeneratedAt = null,
+                            PasswordResetCode = null,
+                            ResetCodeGeneratedAt = null,
+                            EmailConfirmed = true,
+                        };
 
-        //        var roles = await UserManager.GetRolesAsync(user);
-        //        var jwtToken = TokenService.CreateJWTToken(user, roles.ToList());
+                        var result = await UserManager.CreateAsync(user);
+                        if (!result.Succeeded)
+                        {
+                            transactionScope.Dispose();
+                            return StatusCode(500, result.Errors);
+                        }
 
-        //        return Ok(new
-        //        {
-        //            token = jwtToken
-        //        });
-        //    }
-        //    catch (InvalidJwtException)
-        //    {
-        //        return Unauthorized("Invalid Google token");
-        //    }
-        //}
+                        result = await UserManager.AddToRoleAsync(user, "Buyer");
 
+                        if (result.Succeeded)
+                        {
+                            Buyer buyer = new Buyer
+                            {
+                                FirstName = userInfo.GivenName,
+                                LastName = userInfo.FamilyName,
+                                IsDeleted = false,
+                                AccountId = user.Id
+                            };
+                            buyer = await BuyerRepository.CreateAsync(buyer);
+
+                            if (buyer == null)
+                                return StatusCode(500, new { message = "An error occurred while creating" });
+
+                            var cart = new Cart()
+                            {
+                                TotalPrice = 0,
+                                IsDeleted = false,
+                                BuyerId = buyer.Id
+                            };
+
+                            cart = await CartRepository.CreateAsync(cart);
+                        }
+                        else
+                        {
+                            transactionScope.Dispose();
+                            return StatusCode(500, result.Errors);
+                        }
+
+                    }
+
+                    var roles = await UserManager.GetRolesAsync(user);
+
+                    int userId = 0;
+                    var fName = "";
+                    var lName = "";
+                    var imageUrl = user.ImageUrl;
+
+                    if (roles.Contains("Buyer"))
+                    {
+                        var buyer = await BuyerRepository.GetByAccountIdAsync(user.Id);
+                        if (buyer != null)
+                        {
+                            userId = buyer.Id;
+                            fName = buyer.FirstName;
+                            lName = buyer.LastName;
+                        }
+                    }
+
+                    var userClaims = new UserClaimsDto
+                    {
+                        UserId = userId,
+                        FirstName = fName,
+                        LastName = lName,
+                        ImageUrl = imageUrl
+                    };
+
+                    var jwtToken = TokenService.CreateJWTToken(user, roles.ToList(), userClaims);
+
+                    var tokenDto = new JWTTokenDto()
+                    {
+                        JwtToken = jwtToken,
+                    };
+
+                    transactionScope.Complete();
+                    return Ok(new { tokenDto });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Internal server error: {ex.Message}");
+                }
+            }
+        }
+
+
+        [HttpPost("login/google")]
+        public async Task<IActionResult> ExternalLoginGoogle([FromBody] GoogleUserInfo dto)
+        {
+            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                try
+                {
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+
+                    // 3. Check if user exists in your database
+                    var user = await UserManager.Users
+                        .Where(u => u.Email.ToLower() == dto.Email.ToLower() && !u.IsDeleted)
+                        .FirstOrDefaultAsync();
+
+                    if (user == null)
+                    {
+                        // Create new user
+                        user = new Account
+                        {
+                            Email = dto.Email,
+                            UserName = dto.Email,
+                            CreatedAt = DateTime.Now,
+                            ImageUrl = null,
+                            EmailConfirmationCode = null,
+                            CodeGeneratedAt = null,
+                            PasswordResetCode = null,
+                            ResetCodeGeneratedAt = null,
+                            EmailConfirmed = true,
+                        };
+
+                        var result = await UserManager.CreateAsync(user);
+                        if (!result.Succeeded)
+                        {
+                            transactionScope.Dispose();
+                            return StatusCode(500, result.Errors);
+                        }
+
+                        result = await UserManager.AddToRoleAsync(user, "Buyer");
+
+                        if (result.Succeeded)
+                        {
+                            Buyer buyer = new Buyer
+                            {
+                                FirstName = dto.GivenName ?? dto.Name ?? "",
+                                LastName = dto.FamilyName ?? "",
+                                IsDeleted = false,
+                                AccountId = user.Id
+                            };
+                            buyer = await BuyerRepository.CreateAsync(buyer);
+
+                            if (buyer == null)
+                                return StatusCode(500, new { message = "An error occurred while creating" });
+
+                            var cart = new Cart()
+                            {
+                                TotalPrice = 0,
+                                IsDeleted = false,
+                                BuyerId = buyer.Id
+                            };
+
+                            cart = await CartRepository.CreateAsync(cart);
+                        }
+                        else
+                        {
+                            transactionScope.Dispose();
+                            return StatusCode(500, result.Errors);
+                        }
+
+                    }
+
+                    var roles = await UserManager.GetRolesAsync(user);
+
+                    int userId = 0;
+                    var fName = "";
+                    var lName = "";
+                    var imageUrl = user.ImageUrl;
+
+                    if (roles.Contains("Buyer"))
+                    {
+                        var buyer = await BuyerRepository.GetByAccountIdAsync(user.Id);
+                        if (buyer != null)
+                        {
+                            userId = buyer.Id;
+                            fName = buyer.FirstName;
+                            lName = buyer.LastName;
+                        }
+                    }
+
+                    var userClaims = new UserClaimsDto
+                    {
+                        UserId = userId,
+                        FirstName = fName,
+                        LastName = lName,
+                        ImageUrl = imageUrl
+                    };
+
+                    var jwtToken = TokenService.CreateJWTToken(user, roles.ToList(), userClaims);
+
+                    var tokenDto = new JWTTokenDto()
+                    {
+                        JwtToken = jwtToken,
+                    };
+
+                    transactionScope.Complete();
+                    return Ok(new { tokenDto });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Internal server error: {ex.Message}");
+                }
+            }
+        }
 
 
     }

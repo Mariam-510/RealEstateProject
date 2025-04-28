@@ -122,7 +122,7 @@ namespace RealEstate.Controllers
                         {
                             foreach (var orderItem in cart.OrderItems.ToList())
                             {
-                                var product = await _productRepository.GetByIdAsync((int) orderItem.ProductId);
+                                var product = await _productRepository.GetByIdAsync((int)orderItem.ProductId);
 
                                 if (product == null)
                                 {
@@ -170,23 +170,65 @@ namespace RealEstate.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin, Buyer")]
         public async Task<IActionResult> Update([FromBody] UpdateOrderDto updateOrderDto)
         {
-            var existingOrder = await _orderRepository.GetByIdAsync(updateOrderDto.Id);
-
-            if (existingOrder == null)
+            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                return NotFound("Order not found!");
+                try
+                {
+                    var existingOrder = await _orderRepository.GetByIdAsync(updateOrderDto.Id);
+
+                    if (existingOrder == null)
+                    {
+                        return NotFound("Order not found!");
+                    }
+
+                    existingOrder.Status = updateOrderDto.Status;
+
+                    existingOrder = await _orderRepository.UpdateAsync(existingOrder);
+                    if (existingOrder == null)
+                    {
+                        return NotFound("Order not found!");
+                    }
+                    if(updateOrderDto.Status == OrderStatus.Cancelled)
+                    {
+                        var orderItems = await _orderItemRepository.GetAllByOrderAsync(existingOrder.Id);
+                        if (orderItems == null || orderItems.Any())
+                        {
+                            return NotFound("Order Items not found");
+                        }
+
+                        foreach (var orderItem in orderItems)
+                        {
+                            var product = await _productRepository.GetByIdAsync((int)orderItem.ProductId);
+
+                            if (product != null)
+                            {
+                                var productStock = await ProductStockRepository.GetByColorAsync(product.Id, orderItem.Color);
+                                if (productStock != null)
+                                {
+                                    productStock.Quantity += orderItem.Quantity;
+                                    await ProductStockRepository.UpdateAsync(productStock.Id, productStock);
+                                }
+                            }
+                        }
+
+                    }
+
+                    var response = existingOrder.OrderResponseDto();
+
+                    transactionScope.Complete();
+                    return Ok(response);
+                }
+                catch (Exception)
+                {
+                    transactionScope.Dispose();
+                    return StatusCode(500, new { message = "An unexpected error occurred." });
+                }
             }
-
-            existingOrder.Status = updateOrderDto.Status;
-
-            await _orderRepository.UpdateAsync(existingOrder);
-
-            var response = existingOrder.OrderResponseDto();
-
-            return Ok(response);
         }
+
 
     }
 }

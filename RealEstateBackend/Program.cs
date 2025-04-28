@@ -141,6 +141,7 @@ namespace RealEstate
             builder.Services.AddScoped<ReviewService>();
             builder.Services.AddScoped<CartService>();
             builder.Services.AddScoped<ShippingFeesService>();
+            builder.Services.AddScoped<GoogleService>();
             
 
             // builder.Services.AddSingleton<PayPalService>();// Maybe review if it's better to use singleton or scoped here later

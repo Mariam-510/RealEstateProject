@@ -8,6 +8,7 @@ using RealEstate.Models.DTOs.Wishlist;
 using RealEstate.Models.DTOs.OrderDto;
 using RealEstate.Models.DTOs.ReviewDto;
 using RealEstate.Models.Dtos.ProductStockDto;
+using System.Globalization;
 
 namespace RealEstate.Mapping
 {
@@ -53,7 +54,7 @@ namespace RealEstate.Mapping
             return new OrderResponseDto
             {
                 Id = order.Id,
-                OrderDate = order.OrderDate.ToString(),
+                OrderDate = order.OrderDate.ToString("MMM dd, yyyy hh:mm tt", CultureInfo.InvariantCulture),
                 Status = order.Status.ToString(),
                 StatusNum = order.Status,
                 SubTotal = order.SubTotal,
@@ -77,12 +78,15 @@ namespace RealEstate.Mapping
                 Id = review.Id,
                 Rating = review.Rating,
                 Comment = review.Comment,
-                Date = review.Date.ToString(),
+                Date = review.Date.ToString("MMM dd, yyyy hh:mm tt", CultureInfo.InvariantCulture),
                 ProductId = review.ProductId,
                 BuyerId = review.BuyerId,
                 BuyerFName = review.Buyer.FirstName,
                 BuyerLName = review.Buyer.LastName,
-                BuyerImageUrl = review.Buyer.Account?.ImageUrl
+                BuyerImageUrl = review.Buyer.Account?.ImageUrl,
+                ProductImage = review.Product?.Images?.FirstOrDefault() ?? null,
+                ProductName = review.Product?.Name,
+                CategoryName = review.Product?.Category?.Name,
             };
         }
 
@@ -99,7 +103,7 @@ namespace RealEstate.Mapping
                 Price = product.Price,
                 IsUsed = product.IsUsed,
                 IsDeleted = product.IsDeleted,
-                DateAdded = product.DateAdded.ToString(),
+                DateAdded = product.DateAdded.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture),
                 AverageRating = product.AverageRating,
                 CategoryID = product.CategoryID ?? 0,
                 CategoryName = product.Category?.Name ?? string.Empty,
