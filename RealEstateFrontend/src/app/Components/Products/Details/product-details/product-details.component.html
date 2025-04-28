@@ -198,7 +198,7 @@
         <div class="d-flex gap-2 flex-wrap">
           <!-- All color swatches -->
           <div *ngFor="let productStockDto of product?.productStockDtos"
-            class="color-swatch hover-scale rounded-5 position-relative"
+            class="color-swatch shadow hover-scale rounded-5 position-relative"
             [class.selected]="productStockDto === selectedColorStock"
             [class.out-of-stock]="productStockDto.quantity === 0" [style.background]="productStockDto.color"
             (click)="productStockDto.quantity > 0 ? selectColor(productStockDto) : null">
@@ -439,7 +439,7 @@
       <div class="ms-3 mt-3">
         <div class="d-flex gap-3 flex-wrap mt-2 align-items-center">
           <div *ngFor="let productStockDto of product?.productStockDtos"
-            class="color-swatch position-relative rounded-circle" [style.backgroundColor]="productStockDto.color"
+            class="color-swatch shadow position-relative rounded-circle" [style.backgroundColor]="productStockDto.color"
             style="width: 4.5rem; height: 4.5rem;">
           </div>
         </div>

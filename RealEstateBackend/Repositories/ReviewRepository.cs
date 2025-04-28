@@ -21,6 +21,7 @@ namespace RealEstate.Repositories
                 .Include(r => r.Buyer)
                 .ThenInclude(b => b.Account)
                 .Include(r => r.Product)
+                .ThenInclude(p=>p.Category)
                 .Where(r => r.IsDeleted == false)
                 .ToListAsync();
         }
@@ -31,6 +32,7 @@ namespace RealEstate.Repositories
                 .Include(r => r.Buyer)
                 .ThenInclude(b => b.Account)
                 .Include(r => r.Product)
+                .ThenInclude(p => p.Category)
                 .Where(r => r.IsDeleted == false && r.ProductId == productId)
                 .OrderByDescending(r => r.Date)
                 .ToListAsync();
@@ -49,6 +51,7 @@ namespace RealEstate.Repositories
                 .Include(r => r.Buyer)
                 .ThenInclude(b=>b.Account)
                 .Include(r => r.Product)
+                .ThenInclude(p => p.Category)
                 .Where(r => r.IsDeleted == false && r.BuyerId == buyerId)
                 .OrderByDescending(r => r.Date)
                 .ToListAsync();
@@ -60,6 +63,7 @@ namespace RealEstate.Repositories
                 .Include(r => r.Buyer)
                 .ThenInclude(b => b.Account)
                 .Include(r => r.Product)
+                .ThenInclude(p => p.Category)
                 .Where(r => r.IsDeleted == false)
                 .FirstOrDefaultAsync(r => r.Id == id);
         }

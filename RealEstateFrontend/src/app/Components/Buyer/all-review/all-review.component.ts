@@ -1,106 +1,81 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-interface Review {
-  id: number;
-  productName: string;
-  rating: number;
-  reviewText: string;
-  store: string;
-  date: Date;
-  verified: boolean;
-  imageUrl: string;
-}
+import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { Router, RouterModule } from '@angular/router';
+import { ReviewResponseDto, ReviewService } from '../../../Services/ApiServices/review.service';
+import { API_CONFIG } from '../../../app.config';
 @Component({
   selector: 'app-all-review',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './all-review.component.html',
   styleUrl: './all-review.component.css'
 })
-export class AllReviewComponent {
-  sortOrder: 'asc' | 'desc' = 'desc';
-  reviews: Review[] = [
-    {
-      id: 1,
-      productName: 'Mid-Century Lounge Chair',
-      rating: 4.8,
-      reviewText: 'This lounge chair is incredibly comfortable and looks even better in person. The walnut finish is beautiful!',
-      store: 'ModernLiving',
-      date: new Date('2023-05-15'),
-      verified: true,
-      imageUrl: '/images/Home/Sofa.jpg'
-    },
-    {
-      id: 2,
-      productName: 'Industrial Coffee Table',
-      rating: 3.5,
-      reviewText: 'The metal frame is sturdy but the glass top scratches easily.',
-      store: 'UrbanDecor',
-      date: new Date('2023-04-02'),
-      verified: true,
-      imageUrl: '/images/Home/Sofa.jpg'
-    },
-    {
-      id: 3,
-      productName: 'Scandinavian Bookshelf',
-      rating: 5.0,
-      reviewText: 'Absolutely perfect! Easy to assemble and holds all my books with room to spare.',
-      store: 'NordicDesign',
-      date: new Date('2023-03-18'),
-      verified: true,
-      imageUrl: '/images/Home/Sofa.jpg'
-    },
-    {
-      id: 4,
-      productName: 'Convertible Sleeper Sofa',
-      rating: 4.0,
-      reviewText: 'Great space-saving solution for my studio apartment. The mattress could be thicker but it\'s comfortable enough for guests.',
-      store: 'SpaceSavers',
-      date: new Date('2023-02-05'),
-      verified: true,
-      imageUrl: '/images/Home/Sofa.jpg'
-    },
-    {
-      id: 5,
-      productName: 'Glass Dining Table',
-      rating: 2.5,
-      reviewText: 'Looks elegant but arrived with a small chip in the glass. Customer service was slow to respond about a replacement.',
-      store: 'ElegantLiving',
-      date: new Date('2023-01-12'),
-      verified: true,
-      imageUrl: '/images/Home/Sofa.jpg'
-    },
-    {
-      id: 6,
-      productName: 'Leather Recliner Chair',
-      rating: 4.2,
-      reviewText: 'The perfect chair for reading and relaxing. The leather is soft and the reclining mechanism works smoothly.',
-      store: 'ComfortZone',
-      date: new Date('2022-12-08'),
-      verified: true,
-      imageUrl: '/images/Home/Sofa.jpg'
-    },
-    {
-      id: 7,
-      productName: 'Rustic Farmhouse Table',
-      rating: 4.7,
-      reviewText: 'Beautiful solid wood construction. It\'s the centerpiece of our dining room and has held up well to family meals.',
-      store: 'CountryLiving',
-      date: new Date('2022-11-03'),
-      verified: true,
-      imageUrl: '/images/Home/Sofa.jpg'
-    }
-  ];
+export class AllReviewComponent implements OnInit {
+  apiConfig = API_CONFIG;
 
-  get sortedReviews(): Review[] {
-    return [...this.reviews].sort((a, b) => {
-      if (this.sortOrder === 'desc') {
-        return b.date.getTime() - a.date.getTime(); // Newest first
-      } else {
-        return a.date.getTime() - b.date.getTime(); // Oldest first
+  constructor(private router: Router, private auth: AuthService, private reviewService: ReviewService) { }
+
+  reviews: ReviewResponseDto[] = []
+
+  ngOnInit() {
+    if (!this.hasRole('Buyer')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    // Call the service after role check
+    this.loadReviews();
+  }
+
+  private loadReviews(): void {
+    this.reviewService.getCurrentBuyerReviews().subscribe({
+      next: (reviews) => {
+        this.reviews = reviews;
+      },
+      error: (err) => {
+        console.error('Failed to load reviews:', err);
+        // Handle error (show message, etc.)
       }
     });
+  }
+
+  sortOrder: 'asc' | 'desc' = 'desc';
+
+  get sortedReviews(): ReviewResponseDto[] {
+    return [...this.reviews].sort((a, b) => {
+      // Convert date strings to timestamps
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+
+      // Handle potential invalid dates (optional)
+      if (isNaN(dateA) || isNaN(dateB)) {
+        return 0; // or handle differently if needed
+      }
+
+      // Sort based on current order
+      return this.sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+    });
+  }
+
+  deleteReview(reviewId: number): void {
+    if (confirm('Are you sure you want to delete this review?')) {
+      this.reviewService.deleteReview(reviewId).subscribe({
+        next: () => {
+          // Remove the deleted review from the local array
+          this.reviews = this.reviews.filter(r => r.id !== reviewId);
+          // Or refresh the list entirely
+          // this.loadReviews();
+
+          // Show success message
+          alert('Review deleted successfully');
+        },
+        error: (err) => {
+          console.error('Failed to delete review:', err);
+          alert('Failed to delete review. Please try again.');
+        }
+      });
+    }
   }
 
   toggleSortOrder(): void {
@@ -117,10 +92,22 @@ export class AllReviewComponent {
 
   // Format date for display
   formatDate(date: Date): string {
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
+  }
+
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
   }
 }

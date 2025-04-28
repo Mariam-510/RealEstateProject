@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { jsPDF } from 'jspdf';
 import { MatDialog } from '@angular/material/dialog';
 import { AddReviewComponent } from '../add-review/add-review.component';
@@ -14,11 +14,11 @@ import { API_CONFIG } from '../../../app.config';
 
 @Component({
   selector: 'app-order-details',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './order-details.component.html',
   styleUrl: './order-details.component.css'
 })
-export class OrderDetailsComponent {
+export class OrderDetailsComponent implements OnInit {
   apiConfig = API_CONFIG;
   order: OrderResponseDto | null = null;
   address?: AddressDto | null;
@@ -164,12 +164,54 @@ export class OrderDetailsComponent {
 
     y += 10;
 
+    // this.orderItems?.forEach(item => {
+    //   doc.setFont('helvetica', 'normal');
+    //   doc.setTextColor(0, 0, 0);
+
+    //   // Product name and quantity
+    //   doc.text(`${item.productName} (x${item.quantity})`, margin + 5, y);
+
+    //   // Color swatch
+    //   const swatchSize = 5;
+    //   const swatchX = margin + 5 + 70; // Adjust position as needed
+    //   doc.setFillColor(item.color); // Use hex color value
+    //   doc.circle(swatchX + swatchSize / 2, y - 2 + swatchSize / 2, swatchSize / 2, 'F');
+
+
+    //   // Price
+    //   doc.text(`${item.price} EGP`, priceColumnX, y, { align: 'right' });
+
+    //   y += 7;
+    // });
+
     this.orderItems?.forEach(item => {
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
-      doc.text(`${item.productName} (x${item.quantity})`, margin + 5, y);
-      // All prices aligned to the same right position
+
+      // Product name, quantity, and color swatch on same line
+      const text = `${item.productName} (x${item.quantity})`;
+      const swatchSize = 4;  // Reduced size for better alignment
+      const textWidth = doc.getTextWidth(text);
+
+      // Text and swatch positions
+      const textX = margin + 5;
+      const swatchX = textX + textWidth + 3;  // 3mm padding after text
+
+      // Draw text
+      doc.text(text, textX, y);
+
+      // Draw color circle aligned with text
+      doc.setFillColor(item.color);
+      doc.circle(
+        swatchX + swatchSize / 2,  // X center position
+        y - (swatchSize / 2) + 1,  // Y center aligned with text baseline
+        swatchSize / 2,            // Radius
+        'F'                      // Fill mode
+      );
+
+      // Price remains on the same line
       doc.text(`${item.price} EGP`, priceColumnX, y, { align: 'right' });
+
       y += 7;
     });
 
@@ -239,10 +281,13 @@ export class OrderDetailsComponent {
     doc.save(`Invoice_${this.order?.id}.pdf`);
   }
 
-  openReviewDialog(event: any): void {
+  openReviewDialog(orderItem: OrderItemDto): void {
     this.dialog.open(AddReviewComponent, {
       width: '400px',
-      data: { productName: event.name }
+      data: {
+        productId: orderItem.productId,
+        productName: orderItem?.productName
+      }
     });
   }
 

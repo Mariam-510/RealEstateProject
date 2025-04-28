@@ -14,6 +14,15 @@ export interface ReviewResponseDto {
   buyerLName?: string;
   buyerImageUrl?: string;
   productId?: number;
+  productName?: string;
+  productImage?: string;
+  categoryName?: string;
+}
+
+export interface CreateReviewRequest {
+  productId: number;
+  rating: number;
+  comment?: string;
 }
 
 @Injectable({
@@ -28,5 +37,27 @@ export class ReviewService {
   getReviewsByProduct(productId: number): Observable<ReviewResponseDto[]> {
     return this.http.get<ReviewResponseDto[]>(`${this.apiUrl}/ByProduct/${productId}`);
   }
+
+  createReview(reviewData: CreateReviewRequest): Observable<ReviewResponseDto> {
+    return this.http.post<ReviewResponseDto>(
+      `${this.apiUrl}/Create`,
+      reviewData
+    );
+  }
+
+  // Get all reviews for the current buyer
+  getCurrentBuyerReviews(): Observable<ReviewResponseDto[]> {
+    return this.http.get<ReviewResponseDto[]>(`${this.apiUrl}/GetAll`);
+  }
+
+  deleteReview(reviewId: number): Observable<string> {
+    return this.http.delete(
+      `${this.apiUrl}/Delete/${reviewId}`,
+      {
+        responseType: 'text' as const
+      }
+    );
+  }
+
 
 }

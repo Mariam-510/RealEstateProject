@@ -88,15 +88,4 @@ export class RegisterAsAgentComponent {
     }
   }
 
-
-  googleLogin(event: MouseEvent) {
-    // event.preventDefault();
-    // event.stopPropagation();
-    // const clientId = '329985024640-j1e42v80vulq0c0pqom75puhm75c4f4i.apps.googleusercontent.com';
-    // const redirectUri = 'http://localhost:4200/home';
-    // const scope = 'email profile openid';
-    // const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=${scope}`;
-
-    // window.location.href = authUrl;
-  }
 }

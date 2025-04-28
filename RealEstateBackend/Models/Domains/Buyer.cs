@@ -18,8 +18,6 @@ namespace RealEstate.Models.Domains
         [RegularExpression("^[a-zA-Z\\s]+$", ErrorMessage = "Name must contain only letters.")]
         public string? LastName { get; set; }
 
-        //public string? Preferences { get; set; }
-
         public bool IsDeleted { get; set; } = false;
 
 

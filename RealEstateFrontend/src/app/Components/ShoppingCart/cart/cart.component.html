@@ -43,8 +43,10 @@
               <div class="row align-items-center">
                 <!-- Product Image -->
                 <div class="col-md-2 ms-2">
-                  <img [src]="apiConfig.apiUrl+item.productImage" alt="Product"
-                    class="product-image img-fluid rounded-3" />
+                  <a [routerLink]="['/products', item.productId]">
+                    <img [src]="apiConfig.apiUrl+item.productImage" alt="Product"
+                      class="product-image img-fluid rounded-3" />
+                  </a>
                 </div>
 
                 <!-- Product Name -->

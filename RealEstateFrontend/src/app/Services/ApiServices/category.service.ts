@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../app.config';
@@ -15,7 +15,7 @@ export interface CategoryDTOShow {
 export class CategoryService {
   private apiUrl = `${API_CONFIG.apiUrl}api/Category`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // New method to get all categories
   getAllCategories(): Observable<{
@@ -31,5 +31,5 @@ export class CategoryService {
     return this.http.post(`${this.apiUrl}/CreateCategory`, categoryData);
   }
 
-  
+
 }
