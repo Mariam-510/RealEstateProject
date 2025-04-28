@@ -41,7 +41,14 @@ export class AdminProfileComponent {
     },
   );
 }
-  
+removeImage() {
+  this.userImage = 'images/Home/user.jpeg';
+ 
+  if (this.currentUser) {
+    this.currentUser.avatar = null;
+  }
+}
+
 uploadImage() {
     const input = document.createElement('input');
     input.type = 'file';

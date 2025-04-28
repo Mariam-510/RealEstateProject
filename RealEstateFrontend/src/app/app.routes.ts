@@ -55,6 +55,8 @@ import { ViewPendingPropertiesComponent } from './Components/Seller/view-pending
 import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist.component';
 import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-all-pointment/buyer-view-all-pointment.component';
 import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
+import { CreateadminComponent } from './Components/Admin/createadmin/createadmin.component';
+import { ApproveAgentComponent } from './Components/Admin/approve-agent/approve-agent.component';
 
 //----------------------------------------------------------------------------------------
 
@@ -72,7 +74,10 @@ export const routes: Routes = [
       { path: 'addProduct', component: AddProductComponent, title: "Add Product" },
       { path: "addCatgory", component: AddCategoryComponent, title: "Add Category" },
       { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscription Plan" },
-      { path: 'approve', component: ApprovePropertyComponent, pathMatch: 'full' },
+      { path: 'approveproperty', component: ApprovePropertyComponent, title: "Approve Property"},
+      { path: "CreateAdmin", component: CreateadminComponent, title: "Create Admin" },
+      { path: "approveAgent", component: ApproveAgentComponent, title: "Approve Agent" },
+
     ]
   },
 
