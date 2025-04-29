@@ -55,7 +55,7 @@ import { ViewPendingPropertiesComponent } from './Components/Seller/view-pending
 import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist.component';
 import { SimilarProductsComponent } from './Components/Products/Details/similar-products/similar-products.component';
 import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-all-pointment/buyer-view-all-pointment.component';
-import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
+import { ViewAllPointmentComponent } from './Components/PagesSellerAndAgent/view-all-pointment/view-all-pointment.component';
 import { CreateadminComponent } from './Components/Admin/createadmin/createadmin.component';
 import { ApproveAgentComponent } from './Components/Admin/approve-agent/approve-agent.component';
 import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
