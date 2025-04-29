@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { API_CONFIG } from '../../app.config';
 import { Observable } from 'rxjs';
+import { PropertyDTO } from './property.service';
 
 export interface AuctionDTO {
   StartTime: Date;
@@ -51,4 +52,9 @@ export class AuctionService {
       formData
     );
   }
+
+  getHighestBidForEndedAuctions(): Observable<{ highestBid: number, property: PropertyDTO }> {
+    return this.http.get<{ highestBid: number, property: PropertyDTO }>(`${this.apiUrl}/GetHighestBid`);
+  }
+
 }

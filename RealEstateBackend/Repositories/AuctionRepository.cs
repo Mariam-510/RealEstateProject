@@ -134,31 +134,48 @@ namespace RealEstate.Repositories
             return await dbcontext.Auctions.Where(A => A.PropertyBids.Any(P => P.BuyerId == BuyerID)).ToListAsync();
         }
 
-        public async Task<decimal?> GetHighestBidForEndedAuctionsBySellerAsync(int sellerId)
+        public async Task<(Property? Property, int MaxBid)> GetHighestBidForEndedAuctionsBySellerAsync(int sellerId)
         {
             var currentTime = DateTime.Now;
 
-            var maxBid = await dbcontext.Auctions
-                .Where(a => a.Property != null && a.Property.SellerId == sellerId)
-                .Where(a => a.EndTime <= currentTime || a.Status == Status.Finished)
+            var result = await dbcontext.Auctions
+                .Where(a => a.Property != null &&
+                           a.Property.SellerId == sellerId &&
+                           (a.EndTime <= currentTime || a.Status == Status.Finished))
+                .Include(a => a.Property)
                 .SelectMany(a => a.PropertyBids)
-                .MaxAsync(b => (decimal?)b.BidAmount);
+                .OrderByDescending(b => b.BidAmount)
+                .Select(b => new {
+                    Bid = b.BidAmount,
+                    Property = b.Auction.Property
+                })
+                .FirstOrDefaultAsync();
 
-            return maxBid;
+            return result != null
+                ? (result.Property, (int)result.Bid)
+                : (null, 0);
         }
 
-        public async Task<decimal?> GetHighestBidForEndedAuctionsByAgentAsync(int agentId)
+        public async Task<(Property? Property, int MaxBid)> GetHighestBidForEndedAuctionsByAgentAsync(int agentId)
         {
             var currentTime = DateTime.Now;
 
-            var maxBid = await dbcontext.Auctions
-                .Where(a => a.Property != null && a.Property.AgentId == agentId)
-                .Where(a => a.EndTime <= currentTime || a.Status == Status.Finished)
+            var result = await dbcontext.Auctions
+                .Where(a => a.Property != null &&
+                           a.Property.AgentId == agentId &&
+                           (a.EndTime <= currentTime || a.Status == Status.Finished))
+                .Include(a => a.Property)
                 .SelectMany(a => a.PropertyBids)
-                .MaxAsync(b => (decimal?)b.BidAmount);
+                .OrderByDescending(b => b.BidAmount)
+                .Select(b => new {
+                    Bid = b.BidAmount,
+                    Property = b.Auction.Property
+                })
+                .FirstOrDefaultAsync();
 
-            return maxBid;
+            return result != null
+                ? (result.Property, (int)result.Bid)
+                : (null, 0);
         }
-
     }
 }

@@ -31,7 +31,16 @@ namespace RealEstate.Mapping
             //CreateMap<Property, PropertyDto>();
 
             CreateMap<Property, PropertyDto>()
+<<<<<<< Updated upstream
                 // Map UserName: Seller.FirstName -> Agent.FirstName
+=======
+                .ForMember(dest => dest.AddedDate, opt => opt.MapFrom(src => 
+                    src.AddedDate.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)
+                ))
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src =>
+                      src.AddedDate
+                ))
+>>>>>>> Stashed changes
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src =>
                     src.Seller != null
                         ? src.Seller.FirstName + " " + src.Seller.LastName

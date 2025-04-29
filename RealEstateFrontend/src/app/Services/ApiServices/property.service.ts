@@ -15,6 +15,7 @@ export interface PropertyDTO {
   bathRooms: number;
   space: number;
   addedDate: string;
+  date: Date;
   status: string;
   images: string[];
   agentId: number | null;
@@ -162,5 +163,32 @@ export class PropertyService {
       `${this.apiUrl}/UpdateApprovalProperty/${propertyId}?Status=${status}`,
       null
     );
+  }
+
+  getAllByUserId(type?: PropertyType, status?: PropertyStatus): Observable<{ propertyCount: number }> {
+    let params = new HttpParams();
+    if (type) params = params.append('type', type);
+    if (status) params = params.append('status', status);
+    return this.http.get<{ propertyCount: number }>(`${this.apiUrl}/GetAllByUserId`, { params });
+  }
+
+  getRevenue(): Observable<{ totalRevenue: number, totalSales: number, totalRentals: number }> {
+    return this.http.get<{ totalRevenue: number, totalSales: number, totalRentals: number }>(`${this.apiUrl}/GetRevenue`);
+  }
+
+  getHighestWishlistedProperty(): Observable<{ property: PropertyDTO, wishListCount: number }> {
+    return this.http.get<{ property: PropertyDTO, wishListCount: number }>(
+      `${this.apiUrl}/GetHighestWishlistedProperty`
+    );
+  }
+
+  getMostCompletedAppointments(): Observable<{ property: PropertyDTO, appointmentCount: number }> {
+    return this.http.get<{ property: PropertyDTO, appointmentCount: number }>(
+      `${this.apiUrl}/GetMostCompletedAppointments`
+    );
+  }
+
+  getRevenueByPropertyCategory(): Observable<{ category: string, totalSalesRevenue: number, totalRentalRevenue: number }[]> {
+    return this.http.get<{ category: string, totalSalesRevenue: number, totalRentalRevenue: number }[]>(`${this.apiUrl}/GetRevenueByPropertyCategory`);
   }
 }
