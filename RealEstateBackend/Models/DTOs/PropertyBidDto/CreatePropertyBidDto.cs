@@ -12,7 +12,5 @@ namespace RealEstate.Models.DTOs.PropertyBidDto
         [Required]
         public int AuctionId { get; set; }
 
-        [Required]
-        public int BuyerId { get; set; }
     }
 }

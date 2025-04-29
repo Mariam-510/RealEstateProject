@@ -212,7 +212,7 @@ namespace RealEstate.Mapping
                 StartTime = auction.StartTime,
                 EndTime = auction.EndTime,
                 StartPrice = auction.StartPrice,
-                Status = auction.Status,
+                Status = auction.Status.ToString(),
                 PropertyId = auction.PropertyId.Value,
                 SellerId = auction.SellerId,
                 AgentId = auction.AgentId,

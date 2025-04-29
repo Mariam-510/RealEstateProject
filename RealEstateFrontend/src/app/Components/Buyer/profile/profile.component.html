@@ -21,20 +21,36 @@
           <!-- <img [src]="buyer?.imageUrl" alt="User Avatar" class="rounded-circle img-fluid" style="max-width: 200px;"> -->
 
           <ng-container *ngIf="userImage; else defaultIcon">
-            <img [src]="userImage" alt="User" class="rounded-circle img-fluid mb-3" style="max-width: 200px;">
+            <img [src]="userImage" alt="User" class="rounded-circle img-fluid" style="max-width: 200px;">
           </ng-container>
 
           <ng-template #defaultIcon>
             <!-- 4a2c2a -->
-            <i class="bi bi-person-circle position-relative border-0" style="color: #4a2c2ad1; font-size: 10rem;"></i>
+            <div
+              style="width: 200px; height: 200px; border-radius: 50%; border: 5px solid #4a2c2ad1; display: flex; align-items: center; justify-content: center;">
+              <i class="fas fa-user" style="color: #4a2c2ad1; font-size: 9rem;"></i>
+            </div>
           </ng-template>
 
-          <div class="camera-icon position-absolute" (click)="uploadImage()">
-            <i class="bi bi-camera-fill"></i>
+          <!-- <div class="camera-icon position-absolute" (click)="uploadImage()">
+            <i class="bi bi-camera-fill fs-5"></i>
           </div>
 
+          <div *ngIf="userImage" class=" delete-icon position-absolute" (click)="removeImage()">
+            <i class="bi bi-trash fs-5"></i>
+          </div> -->
         </div>
-        <button class="btn" (click)="removeImage()">delete</button>
+
+        <div class="d-flex justify-content-center mb-2">
+          <button class="btn btn-custom rounded-pill px-4 d-flex align-items-center text-caffe" (click)="removeImage()">
+            <i class="bi bi-trash me-2"></i>
+            Delete
+          </button>
+          <button class="btn btn-custom rounded-pill px-4 d-flex align-items-center text-caffe" (click)="uploadImage()">
+            <i class="bi bi-upload me-2"></i>
+            Upload
+          </button>
+        </div>
 
         <h5 class="mb-0 fs-3">{{ buyer?.firstName + " " + (buyer?.lastName ?? '')}}
         </h5>

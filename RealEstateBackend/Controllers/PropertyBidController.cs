@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Models.Domains;
@@ -22,11 +23,21 @@ namespace RealEstate.Controllers
             _auctionRepository= auctionRepository;
             _buyerRepository= buyerRepository;
         }
+
         [HttpPost]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> Create([FromBody] CreatePropertyBidDto createDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
             // Check if the auction exists
             var auction = await _auctionRepository.GetByIdAsync(createDto.AuctionId);
             if (auction == null)
@@ -39,13 +50,31 @@ namespace RealEstate.Controllers
                 return BadRequest($"Bid cannot be placed as the auction is not active. Current status: {auction.Status}.");
             }
             // Check if the buyer exists
-            var buyer = await _buyerRepository.GetByIdAsync(createDto.BuyerId);
+            var buyer = await _buyerRepository.GetByIdAsync(buyerId);
             if (buyer == null)
             {
-                return NotFound($"Buyer with ID {createDto.BuyerId} not found.");
+                return NotFound($"Buyer with ID {buyerId} not found.");
+            }
+
+            var lastBid = await _propertyBidRepo.GetLastBidByAuctionIdAsync(createDto.AuctionId);
+            var amount = auction.StartPrice;
+
+            if (lastBid != null)
+            {
+                amount = lastBid.BidAmount;
+            }
+
+            if (createDto.BidAmount <= amount)
+            {
+                var errorMessage = lastBid != null
+                    ? $"Bid amount must exceed the current highest bid of {amount}"
+                    : $"Bid amount must be higher than the starting price of {amount}";
+
+                return BadRequest(errorMessage);
             }
 
             var propertyBid = _mapper.Map<PropertyBid>(createDto);
+            propertyBid.BuyerId = buyerId;
 
             var createdBid = await _propertyBidRepo.AddAsync(propertyBid);
 
@@ -55,6 +84,7 @@ namespace RealEstate.Controllers
             
             return CreatedAtAction(nameof(GetById), new { id = bidDto.Id }, bidDto);
         }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -67,21 +97,29 @@ namespace RealEstate.Controllers
             return Ok(bidDto);
         }
 
+        [HttpGet("LastBid/{auctionId}")]
+        public async Task<IActionResult> GetLastByAuctionId(int auctionId)
+        {
+            var bid = await _propertyBidRepo.GetLastBidByAuctionIdAsync(auctionId);
+            if (bid == null)
+                return NotFound();
+
+            var bidDto = _mapper.Map<PropertyBidDto>(bid);
+            
+            bidDto.TimeAgo = GetTimeAgo(bidDto.Timestamp);
+
+            return Ok(bidDto);
+        }
+
         [HttpGet("auction/{auctionId}")]
         public async Task<IActionResult> GetByAuctionId(int auctionId)
         {
             var bids = await _propertyBidRepo.GetByAuctionIdAsync(auctionId);
-            if (bids == null || !bids.Any())
+            if (bids == null)
                 return NotFound("No bids found for this auction.");
 
-            // Sort by Timestamp DESC, then by BidAmount DESC
-            var sortedBids = bids
-                .OrderByDescending(b => b.Timestamp)
-                .ThenByDescending(b => b.BidAmount)
-                .ToList();
-
             // Map and set TimeAgo
-            var bidDtos = _mapper.Map<List<PropertyBidDto>>(sortedBids);
+            var bidDtos = _mapper.Map<List<PropertyBidDto>>(bids);
             foreach (var dto in bidDtos)
             {
                 dto.TimeAgo = GetTimeAgo(dto.Timestamp);
@@ -89,8 +127,6 @@ namespace RealEstate.Controllers
 
             return Ok(bidDtos);
         }
-
-
 
         private string GetTimeAgo(DateTime time)
         {
