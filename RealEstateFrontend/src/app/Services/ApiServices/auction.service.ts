@@ -1,7 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { API_CONFIG } from '../../app.config';
 import { Observable } from 'rxjs';
+import { PropertyDTO } from './property.service';
+import { PropertyBidDto } from './property-bid.service';
 
 export interface AuctionDTO {
   StartTime: Date;
@@ -17,15 +19,22 @@ export enum Status {
 }
 
 export interface AuctionDTOShow {
-  Id: number;
-  StartTime: string;         // ISO 8601 date string
-  EndTime: string;           // ISO 8601 date string
-  StartPrice: number;
-  Status: Status;
-  PropertyId: number;
-  AgentId: number | null;
-  SellerId: number | null;
+  id: number;
+  startTime: Date;         // ISO 8601 date string
+  endTime: Date;           // ISO 8601 date string
+  startPrice: number;
+  status: string;
+  propertyId: number;
+  agentId: number | null;
+  sellerId: number | null;
+  propertyDto: PropertyDTO | null;
+  lastPropertyBidDto: PropertyBidDto | null;
+  numOfPropertyBids: number | null;
+  timeProgress: number | null;
+  mouseStartX?: number | null;
+  currentImageIndex: number | null;
 }
+
 
 @Injectable({
   providedIn: 'root'
@@ -37,9 +46,9 @@ export class AuctionService {
   constructor(private http: HttpClient) { }
 
   createAuction(auctionDto: AuctionDTO): Observable<{ message: string, ActionShow: AuctionDTOShow }> {
-    
+
     const formData = new FormData();
-    
+
     // Convert dates to ISO strings and append to form data
     formData.append('StartTime', auctionDto.StartTime.toISOString());
     formData.append('EndTime', auctionDto.EndTime.toISOString());
@@ -51,4 +60,30 @@ export class AuctionService {
       formData
     );
   }
+
+  //-----------------------------------------------------------------------------------------------
+  getAllAuctions(
+    sortByPrice?: string,
+    sortByTime?: string,
+    ISLivestatus?: Status
+  ): Observable<AuctionDTOShow[]> {
+    let params = new HttpParams();
+
+    // Append parameters if they are provided
+    if (sortByPrice) {
+      params = params.append('sortByPrice', sortByPrice);
+    }
+    if (sortByTime) {
+      params = params.append('sortByTime', sortByTime);
+    }
+    if (ISLivestatus) {
+      params = params.append('ISLivestatus', ISLivestatus);
+    }
+
+    return this.http.get<AuctionDTOShow[]>(`${this.apiUrl}/GetAll`, { params });
+  }
+
+  //-----------------------------------------------------------------------------------------------
+
+  
 }

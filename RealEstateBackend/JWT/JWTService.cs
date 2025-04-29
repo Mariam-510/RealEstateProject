@@ -39,7 +39,7 @@ namespace RealEstate.JWT
                 configuration["Jwt:Issuer"],
                 configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.Now.AddDays(5),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

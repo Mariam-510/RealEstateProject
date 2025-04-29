@@ -104,10 +104,12 @@
 .text-caffe-dark {
   color: #4a2c2a;
 }
-.bg-caffe-dark{
+
+.bg-caffe-dark {
   background-color: #4a2c2a;
 
 }
+
 .btn-caffe-primary {
   background-color: #c38e79;
   color: white;
@@ -145,9 +147,10 @@
   padding: 8px 20px;
   font-weight: 600;
   transition: transform 0.3s ease-in-out;
+
   &:hover {
     /* background-color: #e6c9b4; */
-    transform: scale(1.03);   
+    transform: scale(1.03);
     /* border-color: #bb9778; */
   }
 }
@@ -180,11 +183,13 @@
 .custom-width-dropdown .custom-dropdown .dropdown-item {
   width: 185px;
 }
+
 .filter-dropdown {
   width: 24vw;
   max-height: calc(100vh - 2rem);
   overflow-y: auto;
-  overflow-x: hidden; /* Add horizontal overflow control */
+  overflow-x: hidden;
+  /* Add horizontal overflow control */
   border-radius: 0.75rem;
   z-index: 1001;
   position: absolute;
@@ -196,17 +201,17 @@
 
 @media (max-width: 960px) {
   .filter-dropdown {
-    max-width:15%;
+    max-width: 15%;
     left: 50% !important;
     transform: translateX(-50%) !important;
     margin-left: 0 !important;
   }
-  
+
   /* Stack input fields vertically on mobile */
   .filter-dropdown .d-flex.gap-2 {
     flex-wrap: wrap;
   }
-  
+
   .filter-dropdown .form-control {
     width: 100%;
     margin-bottom: 0.5rem;
@@ -218,6 +223,7 @@
   left: auto;
   right: 0;
 }
+
 /* auction-list.component.css */
 .auction-card {
   transition: transform 0.2s;
@@ -368,14 +374,17 @@
 .slider-container:hover .slider-controls {
   opacity: 1;
 }
+
 .sell-badge {
   color: #4a7d5e;
   font-size: 0.85rem;
 }
+
 .status-badge {
   /* color: #4a7d5e; */
   font-size: 0.85rem;
 }
+
 .bg-rent-badge {
   background: #2a5f8b;
   color: white;
@@ -385,10 +394,12 @@
   background-color: #4a2c2a;
   color: white;
 }
+
 .rent-badge {
   color: #2a5f8b;
   font-size: 0.85rem;
 }
+
 .bids-count {
   .badge {
     font-size: 0.9rem;
@@ -402,16 +413,18 @@
 .btn-primary {
   white-space: nowrap;
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(111, 78, 55, 0.2);
   }
 }
+
 .bid-now-button {
   background-color: transparent;
   border: none;
-  color: #c38e79; /* Red shade */
+  color: #c38e79;
+  /* Red shade */
   font-weight: bold;
   font-size: 1.1rem;
   padding: 0;
@@ -425,9 +438,11 @@
 }
 
 .bid-now-button:hover {
-  color: #c38e79; /* Slightly darker red on hover */
+  color: #c38e79;
+  /* Slightly darker red on hover */
   text-decoration: underline;
 }
+
 .auction-progress {
   margin: 0;
   padding: 0;
@@ -437,12 +452,15 @@
   background-color: transparent !important;
   border-radius: 0;
 }
+
 .custumBottomBorder {
   border-bottom: 2.5px solid rgba(195, 142, 121, 0.1);
 }
+
 .status-scheduled {
-font-size: 1.2rem !important;
+  font-size: 1.2rem !important;
 }
+
 /* Add to your component CSS */
 .disabled-auction {
   position: absolute;
@@ -457,6 +475,7 @@ font-size: 1.2rem !important;
 
 /* Add to existing CSS */
 .auction-card:has(.disabled-auction) {
+
   .card-title,
   .location,
   .text-caffe-dark,
@@ -464,12 +483,13 @@ font-size: 1.2rem !important;
   .bid-now-button {
     opacity: 0.6;
   }
-  
+
   .bid-now-button {
     cursor: not-allowed;
     color: #58595bdd !important;
   }
 }
+
 .finished-overlay {
   position: absolute;
   top: 0;
@@ -477,7 +497,8 @@ font-size: 1.2rem !important;
   width: 100%;
   height: 100%;
   z-index: 1;
-  background: rgba(0, 0, 0, 0.5); /* semi-transparent dark overlay */
+  background: rgba(0, 0, 0, 0.5);
+  /* semi-transparent dark overlay */
   pointer-events: none;
 }
 
@@ -485,6 +506,7 @@ font-size: 1.2rem !important;
   font-size: 1.5rem !important;
   text-transform: uppercase;
 }
+
 /* auction.component.css */
 .time-tooltip {
   position: absolute;
@@ -517,11 +539,13 @@ font-size: 1.2rem !important;
   border-style: solid;
   border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
 }
+
 .auction-progress {
   position: relative;
   margin: 0;
   padding: 0;
 }
+
 .time-tooltip {
   min-width: 180px;
 }
@@ -533,62 +557,74 @@ font-size: 1.2rem !important;
 .status-message {
   font-size: 0.8rem;
   color: #c38e79;
-  border-top: 1px solid rgba(255,255,255,0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   padding-top: 8px;
 }
+
 .ended-message {
   padding: 8px;
   text-align: center;
   font-weight: 500;
   color: #c38e79;
 }
+
 .section-underline {
   width: 8rem;
   height: 3px;
   background-color: #c38e79;
   margin-top: -1rem;
 }
+
 .scroll-container {
   scroll-behavior: smooth;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .scroll-container::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+  display: none;
+  /* Chrome, Safari */
 }
+
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed !important;
   pointer-events: none;
-  background-color: #f8f9fa !important; /* same as btn-light */
+  background-color: #f8f9fa !important;
+  /* same as btn-light */
   border-color: #dee2e6;
   color: #6c757d;
 }
+
 .section-underline {
   width: 10rem;
   height: 3px;
   background-color: #c38e79;
   margin-top: -1rem;
 }
+
 /* Add to auction.component.css */
 .sticky-categories {
   position: sticky;
   top: 0;
   z-index: 50;
   background: white;
-  padding-bottom: 0.5rem ;
+  padding-bottom: 0.5rem;
   /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
 }
 
 .category-scroll-container {
   display: flex;
   overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
 }
 
 .category-scroll-container::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  display: none;
+  /* Chrome/Safari */
 }
 
 /* Modify existing category-item */
@@ -600,10 +636,12 @@ button:disabled {
   transition: all 0.2s;
   padding: 0.5rem 1rem;
 }
+
 .sticky-categories,
 .category-scroll-container {
   overflow: visible !important;
 }
+
 .category-scroll-container {
   display: flex;
   flex-wrap: wrap;
@@ -618,12 +656,14 @@ button:disabled {
     white-space: nowrap;
   }
 }
+
 /* Hide "More Filters" text on small screens */
 @media (max-width: 1200px) {
   .more-filters-text {
     display: none;
   }
 }
+
 @media (max-width: 480px) {
   .filter-dropdown {
     width: 90vw;
@@ -631,6 +671,7 @@ button:disabled {
     transform: none !important;
   }
 }
+
 /* __________________________________Slider_______________________________________ */
 .category-box {
   width: 200px;
@@ -732,6 +773,7 @@ button:disabled {
   opacity: 0;
   transition-duration: 0.3s;
 }
+
 /* ______________________________flipclock_______________________________________________ */
 .flip-clock {
   gap: 0.5rem;
@@ -780,12 +822,13 @@ button:disabled {
   font-size: 0.9rem;
   color: #4a2c2a;
 }
+
 /* In your component's CSS file */
 .filter-dropdown {
   /* Input focus states */
- 
+
   /* Date input icon color */
- 
+
   /* Select dropdown icon */
   .form-select {
     background-repeat: no-repeat;
@@ -794,19 +837,24 @@ button:disabled {
   }
 
   /* Number input spinner */
-  
+
 }
+
 .filter-dropdown .form-control:focus,
 .filter-dropdown .form-select:focus {
-  border-color: #4a2c2a; /* your custom color */
-  box-shadow: 0 0 0 0.05rem #4a2c2a; /* subtle glow */
+  border-color: #4a2c2a;
+  /* your custom color */
+  box-shadow: 0 0 0 0.05rem #4a2c2a;
+  /* subtle glow */
 }
+
 .filter-dropdown .form-select {
   background-color: #fff;
   border-color: #ccc;
   color: #333;
   transition: all 0.3s ease;
-  appearance: none; /* removes native dropdown style */
+  appearance: none;
+  /* removes native dropdown style */
   -webkit-appearance: none;
   -moz-appearance: none;
   padding-right: 2rem;
@@ -821,6 +869,11 @@ button:disabled {
 /* Active Page Border Color */
 .pagination .page-item.active .page-link {
   /* border: 2px solid #4a2c2a;  */
-  border-color:#c38e79;
+  border-color: #c38e79;
 }
 
+
+
+.pagination {
+  cursor: pointer;
+}

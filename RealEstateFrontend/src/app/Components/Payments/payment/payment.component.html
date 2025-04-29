@@ -56,13 +56,13 @@
             <!-- Stripe Card Element (only visible when Credit Card selected) -->
             <!-- Stripe Checkout Button (only visible when Credit Card selected) -->
             <div *ngIf="selectedMethod === 'stripe'" class="mb-4 p-3 border rounded">
-              <div class="d-flex align-items-center">
+              <div class="d-flex">
                 <!-- <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/stripe/stripe-original.svg" alt="Stripe"
                   style="height: 30px; margin-right: 15px" /> -->
                 <i class="bi bi-stripe fs-1 me-2 text-caffe"></i>
 
                 <div class="mt-2">
-                  <h6 class="">Secure Card Payment</h6>
+                  <h6 style="margin-bottom: .1rem;">Secure Card Payment</h6>
                   <p class="text-muted">
                     Please review your order before checking out with Stripe
                   </p>
@@ -180,7 +180,9 @@
             <div *ngFor="let item of cart?.orderItemDtos; let last = last" class="order-item">
               <div class="d-flex justify-content-between">
                 <div class="d-flex">
-                  <img [src]="apiConfig.apiUrl + item.productImage" alt="Product image" class="me-2 product-image" />
+                  <a [routerLink]="['/products', item.productId]">
+                    <img [src]="apiConfig.apiUrl + item.productImage" alt="Product image" class="me-2 product-image" />
+                  </a>
                   <div>
                     <div class="item-name">
                       {{ item.productName }}
