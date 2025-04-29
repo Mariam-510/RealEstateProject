@@ -3,7 +3,13 @@
     <nav aria-label="breadcrumb mb-0">
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item mb-0">
-                <p class="text-muted mb-0">User</p>
+                <p class="text-muted mb-0">
+                    @if (hasRole('Seller')) {
+                        Seller
+                    } @else if (hasRole('Agent')) {
+                        Agent
+                    }
+                </p>
             </li>
             <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">All Appointments</li>
         </ol>
@@ -36,14 +42,9 @@
     </div>
 </div>
 
-
-
-<div *ngIf="error" class="alert alert-danger mx-4" role="alert">
-    {{ error }}
-</div>
 <ng-container *ngIf="appointments.length > 0 && filteredappoinments.length > 0; else noAppointments">
 
-<div class="row" >
+<div class="row">
     <div *ngFor="let appointment of paginatedAppointments" class="col-12">
         <div class="card border-0 shadow-sm hover-shadow transition-all ms-4 mb-4" 
              style="height: auto; min-height: 16vw; max-height: none;">
@@ -53,34 +54,39 @@
                          style="min-height: 200px; height: auto;">
                          <a [routerLink]="['/properties', appointment.property.id]" class="d-block h-100">
 
-                        <img [src]="apiConfig.apiUrl + appointment.property.images[0]" class="img-fluid w-100 h-100" 
-                             style="object-fit: cover; min-height: 200px;">
-                         </a>
+                            <img [src]="apiConfig.apiUrl + appointment.property.images[0]" class="img-fluid w-100 h-100" 
+                                 style="object-fit: cover; min-height: 200px;">
+                             </a>
                         <div class="position-absolute top-0 end-1 m-2">
                             <span class="badge bg-white text-dark shadow-sm py-2 px-3" style="font-size: .85rem;">
                                 <i class="bi bi-tag-fill text-caffe me-1"></i>
                                 {{ appointment.property.type === 'Sell' ? 'For Sale' : (appointment.property.type === 'Rent' ? 'For Rent' : appointment.property.type) }}
                             </span>
-                            
                         </div>
                     </div>
 
                     <div class="col-md-4 px-1 py-2 h-100">
-                        <h5 class="card-title fw-bold mt-2 ms-3" style="font-size: 1.2rem;">
-                            {{appointment.property.title}}
+                        <h5 class="card-title fw-bold mt-2 ms-3" style="font-size: 1.2rem;">{{appointment.property.title}}
+
                         </h5>
                         <div class="d-flex flex-column gap-2 ms-3">
                             <div class="d-flex align-items-start">
                                 <i class="bi  bi-geo-alt text-caffe me-2 fs-6 mt-2"></i>
                                 <div>
-                                    <div class="fw-medium text-dark mt-2">Location</div>
-                                    <div class="text-muted">{{ appointment.property.location }}</div>
+                                    <div class="fw-medium text-dark mt-2">
+                                        Location
+                                    </div>
+                                    <div class="text-muted">
+                                        {{ appointment.property.location }}
+                                    </div>
                                 </div>
                             </div>
                             <div class="d-flex align-items-start">
                                 <i class="bi bi-clock text-caffe me-2 fs-6 mt-1"></i>
                                 <div>
-                                    <div class="fw-medium text-dark mt-1">DateTime</div>
+                                    <div class="fw-medium text-dark mt-1">
+                                        DateTime
+                                    </div>
                                     <div class="text-muted">
                                         {{ appointment.scheduledTime | date: 'EEE, MMM d h:mm a' }}
                                     </div>
@@ -89,7 +95,9 @@
                             <div class="d-flex align-items-start">
                                 <i class="bi bi-cash text-caffe me-2 fs-6 mt-1"></i>
                                 <div>
-                                    <div class="fw-medium text-dark mt-1">Price</div>
+                                    <div class="fw-medium text-dark mt-1">
+                                        Price
+                                    </div>
                                     <div class="text-muted">
                                         {{appointment.property.price | currency}}
                                     </div>
@@ -98,13 +106,14 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 border-start p-3 d-flex flex-column">
+                    <div class="col-md-4 border-start p-3 d-flex flex-column h-100">
+
                         <div class="d-flex align-items-center mb-2">
                             <ng-template #defaultIcon>
                                 <i class="bi bi-person-circle text-brown me-2" style="font-size: 2.5rem;"></i>
                               </ng-template>
-                            <ng-container *ngIf="appointment.property.userImage; else defaultIcon">
-                                <img  [src]="apiConfig.apiUrl+ appointment.property.userImage"
+                            <ng-container *ngIf="appointment.buyerImage; else defaultIcon">
+                                <img  [src]="apiConfig.apiUrl+ appointment.buyerImage"
                                 alt="Seller avatar" class="rounded-circle me-2" width="50" height="50">
                               </ng-container>
                 
@@ -112,9 +121,9 @@
                             <!-- <img  [src]="apiConfig.apiUrl+ appointment.property.userImage"
                                 alt="Seller avatar" class="rounded-circle me-2" width="50" height="50"> -->
                             <div>
-                                <h6 class="mb-0 fw-bold small">{{appointment.property.userName}}</h6>
+                                <h6 class="mb-0 fw-bold small">{{appointment.buyerName}}</h6>
                                 <small class="text-muted small text-truncate d-block" style="max-width: 150px;"> 
-                                    {{appointment.property.userType}}
+                                    {{appointment.buyerEmail}}
                                 </small>
                             </div>
                         </div>
@@ -124,8 +133,7 @@
                                 <i [ngClass]="{ 
                                         'bi bi-camera-video-fill fs-6': appointment.type === 'Virtual',
                                         'bi bi-building fs-6': appointment.type === 'InPerson'
-                                      }" 
-                                   class="me-2 text-caffe"></i>
+                                      }" class="me-2 text-caffe"></i>
                                 <span class="text-dark" style="font-size:.93rem;">{{ appointment.type }}</span>
                             </div>
                             <div class="d-flex align-items-center">
@@ -142,13 +150,38 @@
                             </div>
                         </div>
 
-                        <div *ngIf="appointment.status === 'Pending' || appointment.status === 'Confirmed'" 
-                             class="d-flex justify-content-center mt-4">
-                             <button (click)="updateStatus(appointment, AppointmentStatus.Cancelled)"
-                             class="btn btn-outline-danger w-75 mt-2 mb-2" style="font-size: .99rem;">
-                                <i class="bi bi-x-circle me-1 fs-6"></i> Cancel Appointment
+                        <div class="mt-2 ms-3 small text-muted text-center">
+                            <span *ngIf="appointment.status === 'Pending'">Waiting for your approval</span>
+                            <span *ngIf="appointment.status === 'Confirmed'">Appointment is confirmed</span>
+                        </div>
+
+
+                        <div *ngIf="appointment.status === 'Pending'" class="d-flex gap-3 mt-2 flex-wrap">
+                            <button (click)="updateStatus(appointment, AppointmentStatus.Confirmed)"
+                                class="btn bg-caffe btn-sm flex-grow-1 py-1 text-light hover-class"
+                                style="font-size: .99rem; min-width: 120px;">
+                                <i class="bi bi-check-circle me-1  text-light fs-6"></i> Approve
                             </button>
-                       </div>
+                            <button (click)="updateStatus(appointment, AppointmentStatus.Cancelled)"
+                                class="btn btn-outline-danger btn-sm flex-grow-1 py-1" style="font-size: .99rem; min-width: 120px;">
+                                <i class="bi bi-x-circle me-1 fs-6"></i> Reject
+                            </button>
+                        </div>
+                        <div *ngIf="appointment.status === 'Confirmed'" class="d-flex gap-3 mt-2 flex-wrap">
+                            <button (click)="updateStatus(appointment, AppointmentStatus.Completed)"
+                                class="btn bg-caffe btn-sm flex-grow-1 py-1 text-light" style="font-size: .99rem; min-width: 120px;">
+                                <i class="bi bi-check-circle me-1 fs-6"></i> Complete
+                            </button>
+                            <button (click)="updateStatus(appointment, AppointmentStatus.Cancelled)"
+                                class="btn btn-outline-danger btn-sm flex-grow-1 py-1" style="font-size: .99rem; min-width: 120px;">
+                                <i class="bi bi-x-circle me-1 fs-6"></i> Cancel
+                            </button>
+                        </div>
+                        <div *ngIf="appointment.status === 'Completed' || appointment.status === 'Cancelled'"
+                            class="d-flex gap-1" style="visibility: hidden;font-size: .99rem;">
+                            <button class="btn btn-sm flex-grow-1" disabled style="height: 25px;"></button>
+                            <button class="btn btn-sm flex-grow-1" disabled style="height: 25px;"></button>
+                        </div>
                     </div>
                 </div>
             </div>

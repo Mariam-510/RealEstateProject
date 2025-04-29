@@ -52,7 +52,7 @@ import { ViewAllPropertiesComponent } from './Components/PagesSellerAndAgent/vie
 import { ViewPendingPropertiesComponent } from './Components/Seller/view-pending-properties/view-pending-properties.component';
 import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist.component';
 import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-all-pointment/buyer-view-all-pointment.component';
-import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointment/view-all-pointment.component';
+import { ViewAllPointmentComponent } from './Components/PagesSellerAndAgent/view-all-pointment/view-all-pointment.component';
 import { CreateadminComponent } from './Components/Admin/createadmin/createadmin.component';
 import { ChatComponent } from './Components/TestChat/chat/chat.component';
 import { ApproveAgentComponent } from './Components/Admin/approve-agent/approve-agent.component';

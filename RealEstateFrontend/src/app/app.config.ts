@@ -8,8 +8,9 @@ import { JwtInterceptor } from './Interceptors/jwt.interceptor';
 
 // src/app/config/api.config.ts
 export const API_CONFIG = {
-  // apiUrl: 'http://realestategp.runasp.net/',
-  apiUrl: 'https://localhost:7184/',
+
+  apiUrl: 'http://realestategp.runasp.net/',
+//  apiUrl: 'https://localhost:7184/',
 };
 
 export const appConfig: ApplicationConfig = {

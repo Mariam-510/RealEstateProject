@@ -359,4 +359,11 @@ export class PropertyDetailsComponent implements AfterViewInit {
   hasUser() {
     return this.auth.isAuthenticated();
   }
+  requestShowing(property: PropertyDTO| null) {
+    const selectedOption = (document.querySelector('input[name="tourOption"]:checked') as HTMLInputElement)?.value;
+    if (selectedOption) {
+      window.location.href = `/book/${property?.id}?type=${selectedOption}`;
+    }
+  }
+  
 }

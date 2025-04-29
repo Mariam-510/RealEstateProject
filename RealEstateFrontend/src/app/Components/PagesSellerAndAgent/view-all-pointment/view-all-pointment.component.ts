@@ -7,12 +7,13 @@ import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-buyer-view-all-pointment',
+  selector: 'app-view-all-pointment',
+  standalone: true,
   imports: [CommonModule,FormsModule,RouterLink,RouterModule],
-  templateUrl: './buyer-view-all-pointment.component.html',
-  styleUrl: './buyer-view-all-pointment.component.css'
+  templateUrl: './view-all-pointment.component.html',
+  styleUrl: './view-all-pointment.component.css'
 })
-export class BuyerViewAllPointmentComponent implements OnInit{
+export class ViewAllPointmentComponent implements OnInit{
   propertyLinks = ['All Appointment', 'Pending', 'Confirmed', 'Cancelled', 'Completed'];
   activeLink = 'All Appointment';
   
@@ -30,12 +31,15 @@ export class BuyerViewAllPointmentComponent implements OnInit{
 
   async  ngOnInit() {
  
-    if (this.hasRole('Buyer')) {
-      this.loadAppointments();
+    if (!this.hasRole('Seller') && !this.hasRole('Agent')) {
+      this.router.navigate(['/login']);
     } 
     else{
-      this.router.navigate(['/login']);
+      this.loadAppointments();
     }
+    // else{
+    //   this.router.navigate(['/login']);
+    // }
   }
  sortAppointment: 'asc' | 'desc' = 'desc';
 
