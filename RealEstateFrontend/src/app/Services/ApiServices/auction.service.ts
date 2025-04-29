@@ -60,6 +60,10 @@ export class AuctionService {
       formData
     );
   }
+  
+  getHighestBidForEndedAuctions(): Observable<{ highestBid: number, property: PropertyDTO }> {
+    return this.http.get<{ highestBid: number, property: PropertyDTO }>(`${this.apiUrl}/GetHighestBid`);
+  }
 
   //-----------------------------------------------------------------------------------------------
   getAllAuctions(
@@ -85,5 +89,4 @@ export class AuctionService {
 
   //-----------------------------------------------------------------------------------------------
 
-  
 }

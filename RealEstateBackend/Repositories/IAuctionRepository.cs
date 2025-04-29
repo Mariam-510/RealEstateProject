@@ -13,7 +13,7 @@ namespace RealEstate.Repositories
         Task<List<Auction>> GetByBuyerID(int BuyerID);
         Task<Auction?> GetByIdAsync(int id);
         Task<Auction?> GetByProprtyIdAsync(int id);
-        Task<decimal?> GetHighestBidForEndedAuctionsBySellerAsync(int sellerId);
-        Task<decimal?> GetHighestBidForEndedAuctionsByAgentAsync(int agentId);
+        Task<(Property? Property, int MaxBid)> GetHighestBidForEndedAuctionsBySellerAsync(int sellerId);
+        Task<(Property? Property, int MaxBid)> GetHighestBidForEndedAuctionsByAgentAsync(int agentId);
     }
 }

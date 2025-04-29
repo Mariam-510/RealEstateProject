@@ -29,9 +29,11 @@ namespace RealEstate.Controllers
         public IPropertyRepository _propertyRepository { get; }
         public IAgentRepository _AgentRepository { get; }
         public ISellerRepository _SellerRepository { get; }
+        public IMapper _mapper { get; }
         public FileService _fileService { get; }
 
         public AuctionController(IAuctionRepository auctionRepository, IPropertyRepository propertyRepository,
+
             IAgentRepository agentRepository , ISellerRepository sellerRepository, IMapper mapper,
             IPropertyBidRepository propertyBidRepository)
         {
@@ -40,6 +42,7 @@ namespace RealEstate.Controllers
             _AgentRepository = agentRepository;
             _SellerRepository = sellerRepository;
             _mapper = mapper;
+
             this.propertyBidRepository = propertyBidRepository;
         }
         
@@ -347,17 +350,19 @@ namespace RealEstate.Controllers
                 if (User.IsInRole("Seller"))
                 {
                     var seller = await _SellerRepository.GetByIdAsync(userId);
-
                     if (seller == null || seller.IsDeleted)
                         return NotFound($"Seller with ID {userId} does not exist or is deleted!");
 
-                    var highestBid = await _AuctionRepository.GetHighestBidForEndedAuctionsBySellerAsync(userId);
+                    var (property, maxBid) = await _AuctionRepository.GetHighestBidForEndedAuctionsBySellerAsync(userId);
 
-                    if (!highestBid.HasValue)
+                    if (property == null || maxBid == 0)
                         return NotFound("No bids found for this seller's ended auctions");
 
-                    return Ok(new { HighestBid = highestBid });
-
+                    return Ok(new
+                    {
+                        HighestBid = maxBid,
+                        Property = _mapper.Map<PropertyDto>(property)
+                    });
                 }
                 else
                 {
@@ -365,14 +370,17 @@ namespace RealEstate.Controllers
                     if (agent == null || agent.IsDeleted)
                         return NotFound($"Agent with ID {userId} does not exist or is deleted!");
 
-                    var highestBid = await _AuctionRepository.GetHighestBidForEndedAuctionsByAgentAsync(userId);
+                    var (property, maxBid) = await _AuctionRepository.GetHighestBidForEndedAuctionsByAgentAsync(userId);
 
-                    if (!highestBid.HasValue)
-                        return NotFound("No bids found for this seller's ended auctions");
+                    if (property == null || maxBid == 0)
+                        return NotFound("No bids found for this agent's ended auctions");
 
-                    return Ok(new { HighestBid = highestBid });
+                    return Ok(new
+                    {
+                        HighestBid = maxBid,
+                        Property = _mapper.Map<PropertyDto>(property)
+                    });
                 }
-                
             }
             catch (Exception ex)
             {
