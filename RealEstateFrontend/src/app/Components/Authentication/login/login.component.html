@@ -29,11 +29,12 @@
           <span class="input-group-text bg-light border-0">
             <i class="bi bi-key-fill text-caffe fs-5"></i>
           </span>
-          <input type="password" class="form-control border-0 shadow-sm" placeholder="Enter password"
-            formControlName="pass">
+          <input [type]="showPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm" placeholder="Enter password" formControlName="pass"   autocomplete="new-password">
+          <span class="input-group-text bg-light border-0" style="cursor: pointer;" (click)="togglePasswordVisibility()">
+            <i class="bi fs-5" [class.bi-eye-fill]="showPassword" [class.bi-eye-slash-fill]="!showPassword"></i>
+          </span>
         </div>
-        <div *ngIf="Loginform.get('pass')?.hasError('required') && Loginform.get('pass')?.touched"
-          class="text-danger small ps-2">
+        <div *ngIf="Loginform.get('pass')?.hasError('required') && Loginform.get('pass')?.touched" class="text-danger small ps-2">
           Password is required.
         </div>
       </div>

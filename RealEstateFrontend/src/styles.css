@@ -27,3 +27,10 @@
 .bg-caffe-light {
   background-color: rgba(195, 142, 121, 0.05) !important; 
 }
+
+.bg-caffe-light2 {
+  background-color: rgba(195, 142, 121, 0.164) !important; 
+}
+input[type="password"]::-ms-reveal {
+  display: none !important;
+}
