@@ -56,6 +56,8 @@ import { ViewAllPointmentComponent } from './Components/Seller/view-all-pointmen
 import { CreateadminComponent } from './Components/Admin/createadmin/createadmin.component';
 import { ApproveAgentComponent } from './Components/Admin/approve-agent/approve-agent.component';
 import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
+import { SubscriptionPlanComponent } from './Components/subscription-plan/subscription-plan.component';
+import { SubscriptionPaymentMethodComponent } from './Components/subscription-payment-method/subscription-payment-method.component';
 
 
 //----------------------------------------------------------------------------------------
@@ -63,6 +65,9 @@ import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-
 export const routes: Routes = [
 
   { path: "about", component: AboutComponent, title: "About" },
+  { path: 'subscriptionPlan', component: SubscriptionPlanComponent, title: "subscription Plan" },
+
+
 
   //---------------------------------------------------------------------------------------
   {
@@ -89,7 +94,8 @@ export const routes: Routes = [
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
       { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
-      { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" }
+      { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" },
+
     ]
   },
 
@@ -103,7 +109,8 @@ export const routes: Routes = [
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
       { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
       { path: 'PropertiesPending', component: ViewPendingPropertiesComponent, title: "View Pending Properties" },
-      { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" }
+      { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" },
+
     ]
   },
 

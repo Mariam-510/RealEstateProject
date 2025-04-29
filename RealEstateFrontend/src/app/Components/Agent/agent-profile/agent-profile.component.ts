@@ -30,17 +30,25 @@ export class AgentProfileComponent {
         Validators.pattern(/^[A-Za-z]+$/)
       ]),
       password: new FormControl("", [
-        Validators.required,
         Validators.minLength(6),
         Validators.maxLength(10),
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*?&])[A-Za-z\d@#$!%*?&]{6,10}$/)
 
       ]),
-      confirmPassword: new FormControl("", [
-        Validators.required
-      ])
+      confirmPassword: new FormControl('')
+
     },
   );
+}
+showPassword: boolean = false;
+showConfirmPassword: boolean = false;
+
+togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+}
+
+toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
 }
   
 

@@ -106,39 +106,51 @@
           <div class="col-12 mb-4">
             <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Password</label>
             <div class="input-group">
-              <span class="input-group-text bg-light border-0"><i class="bi bi-key text-muted brown-icon"></i></span>
-              <input type="password" class="form-control border-0 shadow-sm" placeholder="password"
-                formControlName="newPassword">
+                <span class="input-group-text bg-light border-0"><i
+                        class="bi bi-key text-muted brown-icon"></i></span>
+                <input [type]="showPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm"
+                    placeholder="password" formControlName="password">
+                <span class="input-group-text bg-light border-0" style="cursor: pointer;"
+                    (click)="togglePasswordVisibility()">
+                    <i class="bi fs-5" [class.bi-eye-fill]="showPassword"
+                        [class.bi-eye-slash-fill]="!showPassword"></i>
+                </span>
             </div>
-            <div *ngIf="MyForm.get('newPassword')?.hasError('minlength') && MyForm.get('newPassword')?.touched"
-              class="text-danger small ps-2">
-              Password must be at least 6 characters.
+             <div *ngIf="MyForm.get('password')?.hasError('minlength') && MyForm.get('password')?.touched"
+                class="text-danger small ps-2">
+                Password must be at least 6 characters.
             </div>
-            <div *ngIf="MyForm.get('newPassword')?.hasError('maxlength') && MyForm.get('newPassword')?.touched"
-              class="text-danger small ps-2">
-              Password cannot exceed 10 characters.
+            <div *ngIf="MyForm.get('password')?.hasError('maxlength') && MyForm.get('password')?.touched"
+                class="text-danger small ps-2">
+                Password cannot exceed 10 characters.
             </div>
-            <div *ngIf="MyForm.get('newPassword')?.hasError('pattern') && MyForm.get('newPassword')?.touched"
-              class="text-danger small ps-2">
-              Password include uppercase, lowercase, number, and special character.
+            <div *ngIf="MyForm.get('password')?.hasError('pattern') && MyForm.get('password')?.touched"
+                class="text-danger small ps-2">
+                Password include uppercase, lowercase, number, and special character.
             </div>
-          </div>
+        </div>
 
-          <!-- Confirm Password -->
-          <div class="col-12 mb-4">
+        <!-- Confirm Password -->
+        <div class="col-12 mb-4">
             <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Confirm Password</label>
             <div class="input-group">
-              <span class="input-group-text bg-light border-0"><i
-                  class="bi bi-key-fill text-muted brown-icon fs-5"></i></span>
-              <input type="password" class="form-control border-0 shadow-sm" placeholder="Confirm password"
-                formControlName="confirmNewPassword">
+                <span class="input-group-text bg-light border-0"><i
+                        class="bi bi-key-fill text-muted brown-icon fs-5"></i></span>
+                <input [type]="showConfirmPassword ? 'text' : 'password'"
+                    class="form-control border-0 shadow-sm" placeholder="Confirm password"
+                    formControlName="confirmPassword">
+                <span class="input-group-text bg-light border-0" style="cursor: pointer;"
+                    (click)="toggleConfirmPasswordVisibility()">
+                    <i class="bi fs-5" [class.bi-eye-fill]="showConfirmPassword"
+                    [class.bi-eye-slash-fill]="!showConfirmPassword"></i>
+                </span>
             </div>
-            <div
-              *ngIf="MyForm.get('newPassword')?.touched && MyForm.get('confirmNewPassword')?.touched && MyForm.get('newPassword')?.value !== MyForm.get('confirmNewPassword')?.value"
-              class="text-danger small ps-2">
-              Confirm Passwords do not match.
+            <div *ngIf="MyForm.get('password')?.touched && MyForm.get('confirmPassword')?.touched && MyForm.get('password')?.value !== MyForm.get('confirmPassword')?.value"
+                class="text-danger small ps-2">
+                Confirm Passwords do not match.
             </div>
-          </div>
+        </div>
+
 
           <div class="error text-danger ms-3">
             {{errorMes}}

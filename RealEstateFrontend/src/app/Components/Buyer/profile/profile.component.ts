@@ -52,7 +52,16 @@ export class ProfileComponent implements OnInit {
       console.error('Failed to fetch buyer:', err);
     }
   }
-
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
+  
+  togglePasswordVisibility(): void {
+      this.showPassword = !this.showPassword;
+  }
+  
+  toggleConfirmPasswordVisibility(): void {
+      this.showConfirmPassword = !this.showConfirmPassword;
+  }
   private _initializeForm() {
     this.MyForm = new FormGroup({
       firstName: new FormControl('', [
@@ -65,12 +74,12 @@ export class ProfileComponent implements OnInit {
         Validators.pattern(/^[A-Za-z]+$/)
       ]),
       currentPassword: new FormControl(''),
-      newPassword: new FormControl('', [
+      password: new FormControl('', [
         Validators.minLength(6),
         Validators.maxLength(10),
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*?&])[A-Za-z\d@#$!%*?&]{6,10}$/)
       ]),
-      confirmNewPassword: new FormControl('')
+      confirmPassword: new FormControl('')
     });
   }
 

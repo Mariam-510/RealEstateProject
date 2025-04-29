@@ -35,39 +35,27 @@ export class SellerProfileComponent {
       ]),
       
       password: new FormControl("", [
-        Validators.required,
         Validators.minLength(6),
         Validators.maxLength(10),
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*?&])[A-Za-z\d@#$!%*?&]{6,10}$/)
 
       ]),
-      confirmPassword: new FormControl("", [
-        Validators.required
-      ])
+      confirmPassword: new FormControl('')
+
     },
   );
 }
-  
+showPassword: boolean = false;
+showConfirmPassword: boolean = false;
 
-  // uploadImage() {
-  //   const input = document.createElement('input');
-  //   input.type = 'file';
-  //   input.accept = 'Images/*';
+togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+}
 
-  //   input.onchange = (event: Event) => {
-  //     const file = (event.target as HTMLInputElement).files?.[0];
-  //     if (file) {
-  //       const reader = new FileReader();
-  //       reader.onload = (e) => {
-  //         this.currentUser.avatar = e.target?.result;
-  //       };
-  //       reader.readAsDataURL(file);
-  //     }
-  //   };
-
-  //   input.click();
-  // }
-  uploadImage() {
+toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+}
+uploadImage() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
