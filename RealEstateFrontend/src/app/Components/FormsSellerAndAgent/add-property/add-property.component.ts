@@ -14,6 +14,7 @@ import * as L from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import { CreatePropertyDTO, PropertyService } from '../../../Services/ApiServices/property.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-add-property',
@@ -46,8 +47,7 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
   private provider = new OpenStreetMapProvider();
 
   constructor(private fb: FormBuilder, private router: Router, private propertyService: PropertyService,
-    private auth: AuthService
-  ) {
+    private auth: AuthService, private toastr: ToastrService) {
     this.propertyForm = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(15)]],
       description: ['', [Validators.required, Validators.maxLength(40)]],
@@ -83,9 +83,9 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
 
-    if (!this.hasRole('Agent') && !this.hasRole('Seller')) {
+    if (!this.auth.hasRole('Agent') && !this.auth.hasRole('Seller')) {
 
-      //toastr
+      this.toastr.error('Unauthorized access!');
       this.router.navigate(['/login']);
     }
 
@@ -411,12 +411,12 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
       this.propertyService.addProperty(createDto).subscribe({
         next: (createdProperty) => {
           // this.isSubmitting = false;
-          console.log('Property created:', createdProperty);
+          this.toastr.success('Property created successfully!');
           this.router.navigate(['/properties']);
         },
         error: (err) => {
           // this.isSubmitting = false;
-          console.error('Error creating property:', err);
+          this.toastr.error('Error creating property!', err);
           alert(`Error creating property: ${err.error?.message || err.message}`);
         }
       });

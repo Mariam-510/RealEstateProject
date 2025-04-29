@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -44,10 +45,18 @@ namespace RealEstate.Controllers
             return Ok(buyersDto);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        [HttpGet("Id")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> GetById()
         {
-            var buyer = await BuyerRepository.GetByIdAsync(id);
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
+            var buyer = await BuyerRepository.GetByIdAsync(buyerId);
 
             if (buyer == null)
             {
@@ -75,9 +84,9 @@ namespace RealEstate.Controllers
             return Ok(buyerDto);
         }
 
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromForm] BuyerFormDto buyerFormDto)
+        [HttpPut]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> Update([FromForm] BuyerFormDto buyerFormDto)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -88,9 +97,16 @@ namespace RealEstate.Controllers
                         return BadRequest(ModelState);
                     }
 
+                    string buyerIdStr = User.FindFirst("userId")?.Value;
+
+                    if (!int.TryParse(buyerIdStr, out int buyerId))
+                    {
+                        return Unauthorized("Buyer not found.");
+                    }
+
                     var buyer = Mapper.Map<Buyer>(buyerFormDto);
 
-                    var updatedBuyer = await BuyerRepository.UpdateAsync(id, buyer);
+                    var updatedBuyer = await BuyerRepository.UpdateAsync(buyerId, buyer);
                     if (updatedBuyer == null)
                     {
                         transactionScope.Dispose();
@@ -120,7 +136,7 @@ namespace RealEstate.Controllers
                         if (!isCurrentPasswordValid)
                         {
                             transactionScope.Dispose();
-                            return Unauthorized(new { message = "Current password is incorrect." });
+                            return StatusCode(403,new { message = "Current password is incorrect." });
                         }
 
                         var token = await UserManager.GeneratePasswordResetTokenAsync(existingAccount);

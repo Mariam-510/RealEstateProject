@@ -10,6 +10,9 @@ import {
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuctionDTO, AuctionService } from '../../../Services/ApiServices/auction.service';
+import { PropertyDTO, PropertyService } from '../../../Services/ApiServices/property.service';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-add-auction',
@@ -21,15 +24,11 @@ import { AuctionDTO, AuctionService } from '../../../Services/ApiServices/auctio
 export class AddAuctionComponent implements OnInit {
   auctionForm: FormGroup;
   minDate: string;
-  properties = [
-    { id: 1, name: 'Luxury Villa in New Cairo' },
-    { id: 2, name: 'Modern Apartment in Zamalek' },
-    { id: 3, name: 'Penthouse with Nile View' },
-    { id: 4, name: 'Townhouse in Rehab City' },
-    { id: 5, name: 'Duplex in Sheikh Zayed' },
-  ];
+  properties: PropertyDTO[] = [];
 
-  constructor(private fb: FormBuilder, private router: Router, private auctionService: AuctionService) {
+  constructor(private fb: FormBuilder, private router: Router,
+      private auctionService: AuctionService, private propertyService: PropertyService,
+        private auth: AuthService, private toastr: ToastrService) {
     // Set minimum date to current datetime
     const now = new Date();
     this.minDate = now.toISOString().slice(0, 16);
@@ -50,7 +49,16 @@ export class AddAuctionComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    if (!this.auth.hasRole('Agent') && !this.auth.hasRole('Seller')) {
+
+      this.toastr.error('Unauthorized access!');
+      this.router.navigate(['/login']);
+    }
+
     // Trigger validation when either field changes
+    this.loadProperties();
+
     this.auctionForm.get('startTime')?.valueChanges.subscribe(() => {
       this.auctionForm.get('endTime')?.updateValueAndValidity();
       this.updateFormValidity();
@@ -59,6 +67,38 @@ export class AddAuctionComponent implements OnInit {
     this.auctionForm.get('endTime')?.valueChanges.subscribe(() => {
       this.updateFormValidity();
     });
+  }
+
+  private loadProperties(): void {
+
+    if (this.auth.hasRole('Seller'))
+    {
+        // Call with parameter 1 (assuming you want Approved status)
+        this.propertyService.getPropertiesBySellerId(1).subscribe({
+          next: (properties) => {
+            this.properties = properties.filter(p => 
+              p.status === 'Available' // Filter available properties
+            );
+          },
+          error: (err) => {
+            console.error('Error loading properties:', err);
+          }
+        });
+    }
+    else
+    {
+      this.propertyService.getPropertiesByAgentId().subscribe({
+        next: (properties) => {
+          this.properties = properties.filter(p => 
+            p.status === 'Available' // Filter available properties
+          );
+        },
+        error: (err) => {
+          console.error('Error loading properties:', err);
+        }
+      });
+    }
+    
   }
 
   private updateFormValidity(): void {
@@ -103,22 +143,6 @@ export class AddAuctionComponent implements OnInit {
     return null;
   }
 
-  // onSubmit(): void {
-  //   // Mark all fields as touched to show errors if any
-  //   this.auctionForm.markAllAsTouched();
-
-  //   if (this.auctionForm.valid) {
-  //     const formValue = {
-  //       ...this.auctionForm.value,
-  //       startTime: new Date(this.auctionForm.value.startTime).toISOString(),
-  //       endTime: new Date(this.auctionForm.value.endTime).toISOString(),
-  //     };
-
-  //     console.log('Auction data:', formValue);
-  //     this.router.navigate(['/auctions']);
-  //   }
-  // }
-
   onSubmit(): void {
     this.auctionForm.markAllAsTouched();
 
@@ -133,7 +157,8 @@ export class AddAuctionComponent implements OnInit {
 
       this.auctionService.createAuction(auctionDto).subscribe({
         next: (response) => {
-          console.log('Auction created:', response);
+          // console.log('Auction created:', response);
+          this.toastr.success('Auction created successfully!');
           this.router.navigate(['/auctions']);
         },
         error: (err) => {

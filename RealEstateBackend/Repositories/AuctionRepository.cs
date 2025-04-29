@@ -76,7 +76,7 @@ namespace RealEstate.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<List<Auction?>> GetAllAsync(string? sortByPrice = null, string? sortByTime = null, Status? ISLivestatus = null)
+        public async Task<List<Auction>> GetAllAsync(string? sortByPrice = null, string? sortByTime = null, Status? ISLivestatus = null)
         {
             var Auction = dbcontext.Auctions.Where(A => A.IsDeleted == false).AsQueryable();
             if (Auction == null)
@@ -124,14 +124,40 @@ namespace RealEstate.Repositories
                 }
             }
 
-            List<Auction?> result = await Auction.ToListAsync();
+            List<Auction> result = await Auction.ToListAsync();
 
-            return result.Any() ? result : null;
+            return result;
         }
 
         public async Task<List<Auction>> GetByBuyerID(int BuyerID)
         {
             return await dbcontext.Auctions.Where(A => A.PropertyBids.Any(P => P.BuyerId == BuyerID)).ToListAsync();
+        }
+
+        public async Task<decimal?> GetHighestBidForEndedAuctionsBySellerAsync(int sellerId)
+        {
+            var currentTime = DateTime.Now;
+
+            var maxBid = await dbcontext.Auctions
+                .Where(a => a.Property != null && a.Property.SellerId == sellerId)
+                .Where(a => a.EndTime <= currentTime || a.Status == Status.Finished)
+                .SelectMany(a => a.PropertyBids)
+                .MaxAsync(b => (decimal?)b.BidAmount);
+
+            return maxBid;
+        }
+
+        public async Task<decimal?> GetHighestBidForEndedAuctionsByAgentAsync(int agentId)
+        {
+            var currentTime = DateTime.Now;
+
+            var maxBid = await dbcontext.Auctions
+                .Where(a => a.Property != null && a.Property.AgentId == agentId)
+                .Where(a => a.EndTime <= currentTime || a.Status == Status.Finished)
+                .SelectMany(a => a.PropertyBids)
+                .MaxAsync(b => (decimal?)b.BidAmount);
+
+            return maxBid;
         }
 
     }

@@ -7,6 +7,7 @@ import { SignUpRoleComponentComponent } from '../sign-up-role-component/sign-up-
 import { AccountService } from '../../../Services/ApiServices/account.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { CartService } from '../../../Services/ApiServices/cart.service';
+import { GoogleService } from '../../../Services/ApiServices/google.service';
 
 @Component({
   selector: 'app-login',
@@ -20,12 +21,12 @@ export class LoginComponent {
     {
       email: new FormControl('', [Validators.required, Validators.pattern(/^[\w-.]+@([\w-]+.)+[\w-]{2,4}$/)]),
       pass: new FormControl('', [Validators.required]),
-
+      rememberMe: new FormControl(false)
     },
 
   );
-  constructor(private dialog: MatDialog, private router: Router,
-    private accountService: AccountService, private auth: AuthService) { }
+  constructor(private dialog: MatDialog, private router: Router, private auth: AuthService,
+    private accountService: AccountService, private googleService: GoogleService) { }
 
   openSigUPDialog(): void {
     this.dialog.open(SignUpRoleComponentComponent);
@@ -40,11 +41,12 @@ export class LoginComponent {
     }
 
     const email = this.Loginform.value.email!;
-    const password = this.Loginform.value.pass!; // Note the field name mismatch
+    const password = this.Loginform.value.pass!;
+    const rememberMe = this.Loginform.value.rememberMe!;
 
     this.accountService.login(email, password).subscribe({
       next: (response) => {
-        this.auth.setAuthState(response.tokenDto.jwtToken);
+        this.auth.setAuthState(response.tokenDto.jwtToken, rememberMe);
         this.Loginform.reset();
         this.router.navigate(['/']);
       },
@@ -71,11 +73,6 @@ export class LoginComponent {
 
 
   googleLogin() {
-    // const clientId = '329985024640-j1e42v80vulq0c0pqom75puhm75c4f4i.apps.googleusercontent.com';
-    // const redirectUri = 'http://localhost:4200/home';
-    // const scope = 'email profile openid';
-    // const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=${scope}`;
-
-    // window.location.href = authUrl;
+    this.googleService.googleLogin();
   }
 }

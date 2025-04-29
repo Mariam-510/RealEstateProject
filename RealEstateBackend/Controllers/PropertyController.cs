@@ -88,7 +88,6 @@ namespace RealEstate.Controllers
         }
 
 
-
         [HttpGet("all")]
         public async Task<IActionResult> GetAllProperties([FromQuery] string category = null, [FromQuery] string status = null,
     [FromQuery] string type = null, [FromQuery] string searchByLocation = null)
@@ -152,11 +151,6 @@ namespace RealEstate.Controllers
             return Ok(propertyDtos);
         }
 
-
-
-
-
-
         [HttpGet("Pending")]
         public async Task<IActionResult> GetPendingProperties()
         {
@@ -188,7 +182,6 @@ namespace RealEstate.Controllers
         [HttpGet()] // Explicit route definition
         [Route("Seller")]
         [Authorize(Roles = "Seller")]
-
         public async Task<IActionResult> GetAllBySellerId( [FromQuery] PropertyApprovalStatus? Status = null)
         {
             string sellerIdStr = User.FindFirst("userId")?.Value;
@@ -600,5 +593,200 @@ namespace RealEstate.Controllers
         }
 
 
+        [HttpGet("GetAllByUserId")]
+        [Authorize(Roles = "Seller,Agent")]
+        public async Task<IActionResult> GetAllByUserId([FromQuery] PropertyType? type = null, [FromQuery] PropertyStatus? status = null)
+        {
+            int propertiesCount = 0;
+
+            string userIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(userIdStr, out int userId))
+                return Unauthorized("User not found.");
+
+            if (User.IsInRole("Seller"))
+            {
+                var seller = await _sellerRepo.GetByIdAsync(userId);
+                if (seller == null || seller.IsDeleted)
+                    return NotFound($"Seller with ID {userId} does not exist or is deleted!");
+
+                propertiesCount = await _propertyRepo.GetFilteredBySellerIdAsync(userId, type, status);
+            }
+            else if (User.IsInRole("Agent"))
+            {
+                var agent = await _agentRepo.GetByIdAsync(userId);
+                if (agent == null || agent.IsDeleted)
+                    return NotFound($"Agent with ID {userId} does not exist or is deleted!");
+
+                propertiesCount = await _propertyRepo.GetFilteredByAgentIdAsync(userId, type, status);
+            }
+
+            if (propertiesCount == 0)
+                return NotFound("No properties found matching the specified criteria.");
+
+            return Ok(new { PropertyCount = propertiesCount });
+        }
+
+        [HttpGet("GetRevenue")]
+        [Authorize(Roles = "Seller,Agent")]
+        public async Task<IActionResult> GetRevenueByUserId()
+        {
+            string userIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(userIdStr, out int userId))
+                return Unauthorized("User not found.");
+
+            decimal totalSales = 0;
+            decimal totalRentals = 0;
+            decimal totalRevenue = 0;
+
+            if (User.IsInRole("Seller"))
+            {
+                var seller = await _sellerRepo.GetByIdAsync(userId);
+
+                if (seller == null || seller.IsDeleted)
+                    return NotFound($"Seller with ID {userId} does not exist or is deleted!");
+
+                totalSales = await _propertyRepo.GetTotalSalesBySellerID(seller.Id);
+                totalRentals = await _propertyRepo.GetTotalRentalsBySellerID(seller.Id);
+                totalRevenue = totalSales + totalRentals;
+            }
+            else if (User.IsInRole("Agent"))
+            {
+                var agent = await _agentRepo.GetByIdAsync(userId);
+
+                if (agent == null || agent.IsDeleted)
+                    return NotFound($"Agent with ID {userId} does not exist or is deleted!");
+
+                totalSales = await _propertyRepo.GetTotalSalesByAgentID(agent.Id);
+                totalRentals = await _propertyRepo.GetTotalRentalsByAgentID(agent.Id);
+                totalRevenue = totalSales + totalRentals;
+            }
+
+            return Ok(new { TotalSales = totalSales, TotalRentals = totalRentals, TotalRevenue = totalRevenue });
+        }
+
+        [HttpGet("GetHighestWishlistedProperty")]
+        [Authorize(Roles = "Seller,Agent")]
+        public async Task<IActionResult> GetHighestWishlistedPropertyByUserId()
+        {
+            string userIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(userIdStr, out int userId))
+                return Unauthorized("User not found.");
+
+            Property? property = null;
+            int wishlistCount = 0;
+
+            if (User.IsInRole("Seller"))
+            {
+                var seller = await _sellerRepo.GetByIdAsync(userId);
+
+                if (seller == null || seller.IsDeleted)
+                    return NotFound($"Seller with ID {userId} does not exist or is deleted!");
+
+                var result = await _propertyRepo.GetHighestWishlistedPropertyBySellerIdAsync(seller.Id);
+
+                property = result.Property;
+                wishlistCount = result.WishlistCount;
+            }
+            else if (User.IsInRole("Agent"))
+            {
+                var agent = await _agentRepo.GetByIdAsync(userId);
+
+                if (agent == null || agent.IsDeleted)
+                    return NotFound($"Agent with ID {userId} does not exist or is deleted!");
+
+                var result = await _propertyRepo.GetHighestWishlistedPropertyByAgentIdAsync(agent.Id);
+
+                property = result.Property;
+                wishlistCount = result.WishlistCount;
+            }
+
+            if (property == null)
+                return NotFound("No wishlisted properties found.");
+
+            var propertyDto = _mapper.Map<PropertyDto>(property);
+            
+            return Ok(new { Property = propertyDto, WishListCount = wishlistCount });
+        }
+
+        [HttpGet("GetMostCompletedAppointments")]
+        [Authorize(Roles = "Seller,Agent")]
+        public async Task<IActionResult> GetMostCompletedAppointmentsByUserId()
+        {
+            string userIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(userIdStr, out int userId))
+                return Unauthorized("User not found.");
+
+            Property? property = null;
+            int appointmentCount = 0;
+
+            if (User.IsInRole("Seller"))
+            {
+                var seller = await _sellerRepo.GetByIdAsync(userId);
+
+                if (seller == null || seller.IsDeleted)
+                    return NotFound($"Seller with ID {userId} does not exist or is deleted!");
+
+                var result = await _propertyRepo.GetMostCompletedAppointmentsBySellerIdAsync(seller.Id);
+
+                property = result.Property;
+                appointmentCount = result.CompletedAppointmentCount;
+            }
+            else if (User.IsInRole("Agent"))
+            {
+                var agent = await _agentRepo.GetByIdAsync(userId);
+
+                if (agent == null || agent.IsDeleted)
+                    return NotFound($"Agent with ID {userId} does not exist or is deleted!");
+
+                var result = await _propertyRepo.GetMostCompletedAppointmentsByAgentIdAsync(agent.Id);
+
+                property = result.Property;
+                appointmentCount = result.CompletedAppointmentCount;
+            }
+
+            if (property == null)
+                return NotFound("No completed appointment properties found.");
+
+            var propertyDto = _mapper.Map<PropertyDto>(property);
+
+            return Ok(new { Property = propertyDto, AppointmentCount = appointmentCount });
+        }
+
+        //for charttttttttt
+
+        [HttpGet("GetRevenueByPropertyCategory")]
+        [Authorize(Roles = "Seller,Agent")]
+        public async Task<ActionResult<IEnumerable<CategoryRevenueDto>>> GetCategoryRevenuesBySeller()
+        {
+            string userIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(userIdStr, out int userId))
+                return Unauthorized("User not found.");
+
+            if (User.IsInRole("Seller"))
+            {
+                var seller = await _sellerRepo.GetByIdAsync(userId);
+
+                if (seller == null || seller.IsDeleted)
+                    return NotFound($"Seller with ID {userId} does not exist or is deleted!");
+
+                var result = await _propertyRepo.GetCategoryRevenuesBySellerIdAsync(userId);
+                return Ok(result);
+            }
+            else
+            {
+                var agent = await _agentRepo.GetByIdAsync(userId);
+
+                if (agent == null || agent.IsDeleted)
+                    return NotFound($"Agent with ID {userId} does not exist or is deleted!");
+
+                var result = await _propertyRepo.GetCategoryRevenuesByAgentIdAsync(userId);
+                return Ok(result);
+            }
+        }
     }
 }

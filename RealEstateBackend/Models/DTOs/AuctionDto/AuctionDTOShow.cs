@@ -10,9 +10,13 @@ namespace RealEstate.Models.DTOs.Auction
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public decimal StartPrice { get; set; }
-        public Status Status { get; set; }
+        public string Status { get; set; }
         public int PropertyId { get; set; }
         public int? AgentId { get; set; }
         public int? SellerId { get; set; }
+        public PropertyDto.PropertyDto? PropertyDto { get; set; }
+        public PropertyBidDto.PropertyBidDto? LastPropertyBidDto { get; set; }
+        public int? NumOfPropertyBids { get; set; }
+
     }
 }

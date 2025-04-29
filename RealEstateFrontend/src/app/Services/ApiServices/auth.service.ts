@@ -40,20 +40,31 @@ export class AuthService {
   }
 
   private initializeAuthState() {
-    const token = localStorage.getItem('jwtToken');
+    // Check both storage locations
+    let token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
     if (token) {
-      this.setAuthState(token);
+      // Determine storage type used
+      const rememberMe = localStorage.getItem('jwtToken') !== null;
+      this.setAuthState(token, rememberMe);
     }
   }
 
-  setAuthState(token: string) {
-    localStorage.setItem('jwtToken', token);
+  setAuthState(token: string, rememberMe: boolean) {
+    // Clear opposite storage and set token in correct storage
+    if (rememberMe) {
+      localStorage.setItem('jwtToken', token);
+      sessionStorage.removeItem('jwtToken');
+    } else {
+      sessionStorage.setItem('jwtToken', token);
+      localStorage.removeItem('jwtToken');
+    }
+
     const decoded = jwtDecode<DecodedToken>(token);
 
     const currentUser: User = {
       accountId: decoded.sub,
-      userId: Number(decoded.userId),  // Converts the string to a number
-      email: decoded.email,  // Map 'name' claim to email
+      userId: Number(decoded.userId),
+      email: decoded.email,
       firstName: decoded.firstName,
       lastName: decoded.lastName,
       imageUrl: decoded.imageUrl,
@@ -74,7 +85,9 @@ export class AuthService {
   }
 
   logout(isExpired = false) {
+    // Clear both storage locations
     localStorage.removeItem('jwtToken');
+    sessionStorage.removeItem('jwtToken');
     this.currentUserSubject.next(null);
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
@@ -82,8 +95,9 @@ export class AuthService {
 
     if (isExpired) {
       this.redirectToLoginWithMessage('Session expired. Please login again.');
+    } else {
+      this.router.navigate(['/login']);
     }
-    this.router.navigate(['/login']);
   }
 
   private redirectToLoginWithMessage(message: string) {
@@ -94,7 +108,7 @@ export class AuthService {
   }
 
   getToken() {
-    return localStorage.getItem('jwtToken');
+    return localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
   }
 
   isAuthenticated() {
@@ -112,5 +126,46 @@ export class AuthService {
     }
     return user.roles === requiredRole;
   }
+
+
+  // Add to AuthService class
+  updateToken(newToken: string) {
+    // Preserve the original "remember me" choice
+    const rememberMe = localStorage.getItem('jwtToken') !== null;
+
+    // Clear existing token from both storages
+    localStorage.removeItem('jwtToken');
+    sessionStorage.removeItem('jwtToken');
+
+    // Set new token using existing rememberMe preference
+    if (rememberMe) {
+      localStorage.setItem('jwtToken', newToken);
+    } else {
+      sessionStorage.setItem('jwtToken', newToken);
+    }
+
+    // Decode and update user state
+    const decoded = jwtDecode<DecodedToken>(newToken);
+
+    const currentUser: User = {
+      accountId: decoded.sub,
+      userId: Number(decoded.userId),
+      email: decoded.email,
+      firstName: decoded.firstName,
+      lastName: decoded.lastName,
+      imageUrl: decoded.imageUrl,
+      roles: decoded.roles,
+      tokenExpiration: new Date(decoded.exp * 1000)
+    };
+
+    this.currentUserSubject.next(currentUser);
+    this.setAutoLogout(decoded.exp);
+  }
+
+
+  getCurrentUser(): User | null {
+    return this.currentUserSubject.value;
+  }
+
 
 }

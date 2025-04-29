@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { GoogleAndPaypalComponent } from './Components/google-and-paypal/google-and-paypal.component';
 import { PropertyHomeComponent } from './Components/Properties/Home/property-home/property-home.component';
 import { CartComponent } from './Components/ShoppingCart/cart/cart.component';
 import { RegisterComponent } from './Components/Authentication/register/register.component';
@@ -28,7 +27,7 @@ import { AdmindashboardComponent } from './Components/Admin/admindashboard/admin
 import { ViewAllOrderComponent } from './Components/Admin/view-all-order/view-all-order.component';
 import { SellersidebarComponent } from './Components/Seller/sellersidebar/sellersidebar.component';
 import { SellerProfileComponent } from './Components/Seller/seller-profile/seller-profile.component';
-import { DashboardComponent } from './Components/Seller/dashboard/dashboard.component';
+import { DashboardComponent } from './Components/PagesSellerAndAgent/dashboard/dashboard.component';
 import { PaymentComponent } from './Components/Payments/payment/payment.component';
 import { PropertyDetailsComponent } from './Components/Properties/Details/property-details/property-details.component';
 import { PHomeComponent } from './Components/Products/Home/p-home/p-home.component';
@@ -47,16 +46,15 @@ import { AddReviewComponent } from './Components/Order/add-review/add-review.com
 import { AllReviewComponent } from './Components/Buyer/all-review/all-review.component';
 import { AddSubscriptionplanComponent } from './Components/Admin/add-subscriptionplan/add-subscriptionplan.component';
 import { ViewAllComponent } from './Components/Products/All/view-all/view-all.component';
-import { TViewAllProductsComponent } from './Components/Products/ToBeEdited/t-view-all-products/t-view-all-products.component';
 import { ApprovePropertyComponent } from './Components/Admin/approve-property/approve-property.component';
 import { BookAppointmentComponent } from './Components/Appointment/book-appointment/book-appointment.component';
 import { ViewAllPropertiesComponent } from './Components/PagesSellerAndAgent/view-all-properties/view-all-properties.component';
 import { ViewPendingPropertiesComponent } from './Components/Seller/view-pending-properties/view-pending-properties.component';
 import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist.component';
-import { SimilarProductsComponent } from './Components/Products/Details/similar-products/similar-products.component';
 import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-all-pointment/buyer-view-all-pointment.component';
 import { ViewAllPointmentComponent } from './Components/PagesSellerAndAgent/view-all-pointment/view-all-pointment.component';
 import { CreateadminComponent } from './Components/Admin/createadmin/createadmin.component';
+import { ChatComponent } from './Components/TestChat/chat/chat.component';
 import { ApproveAgentComponent } from './Components/Admin/approve-agent/approve-agent.component';
 import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
 
@@ -66,6 +64,8 @@ import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-
 export const routes: Routes = [
 
   { path: "about", component: AboutComponent, title: "About" },
+  { path: "chatTest", component: ChatComponent, title: "chat" },
+
 
   //---------------------------------------------------------------------------------------
   {
@@ -88,7 +88,7 @@ export const routes: Routes = [
     path: 'agent', component: AgentSideBarComponent, title: "Agent", children: [
       { path: '', redirectTo: 'profile', pathMatch: "full" },
       { path: "profile", component: AgentProfileComponent, title: "Profile" },
-      { path: 'dashboard', component: AgentdashboardComponent, title: "Dashboard" },
+      { path: 'dashboard', component: DashboardComponent, title: "Dashboard" },
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
       { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
@@ -117,7 +117,7 @@ export const routes: Routes = [
       { path: "profile", component: ProfileComponent, title: "Profile" },
       { path: "orders", component: OrderSummaryComponent, title: "Orders Summary" },
       { path: 'orders/:id', component: OrderDetailsComponent, title: "Order Details" },
-      { path: "AllReveiw", component: AllReviewComponent, title: "AllReview" },
+      { path: "reviews", component: AllReviewComponent, title: "All Review" },
       { path: 'FavoriteProducts', component: FavoriteProductsComponent, title: "Favorite Products" },
       { path: 'wishlist', component: WishlistComponent, title: "Wishlist" },
       { path: 'BuyerViewAllAppointment', component: BuyerViewAllPointmentComponent, title: "View All Appointment" }
@@ -178,8 +178,6 @@ export const routes: Routes = [
   { path: 'book/:id', component: BookAppointmentComponent, title: "Book Appointment" },
 
   //---------------------------------------------------------------------------------------
-  { path: "gopl", component: GoogleAndPaypalComponent, title: "gopl" },
-  { path: "t", component: SimilarProductsComponent, title: "t" },
   { path: "**", component: NotFoundComponent },
 
 
