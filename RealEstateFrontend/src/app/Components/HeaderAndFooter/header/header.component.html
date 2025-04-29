@@ -97,7 +97,9 @@
         <div *ngIf="(cart$ | async) as cart">
           <div *ngIf="(cart?.orderItemDtos?.length || 0) > 0">
             <div *ngFor="let item of cart?.orderItemDtos" class="cart-item">
-              <img [src]="apiConfig.apiUrl + item?.productImage" alt="Product image">
+              <a [routerLink]="['/products', item.productId]">
+                <img [src]="apiConfig.apiUrl + item?.productImage" alt="Product image">
+              </a>
               <div class="item-info">
                 <h5>{{ (item?.productName?.length ?? 0) > 20 ? item.productName?.slice(0, 20) + '...' : item.productName
                   }}

@@ -8,12 +8,12 @@ namespace RealEstate.Repositories
         Task<Auction?> CreateAsync(Auction Auction);
         Task<Auction?> UpdateAsync(int id, DateTime StartTime, DateTime EndTime,decimal StartPrice, Status isLive );
         Task<Auction?> DeleteAsync(int id);
-        Task<List<Auction?>> GetAllAsync(string? sortByPrice = null, string? sortByTime = null, Status? ISLivestatus = null);
-        Task<List<Auction?>> GetByUserID(int? AgentID=null, int? SellerID=null);
+        Task<List<Auction>> GetAllAsync(string? sortByPrice = null, string? sortByTime = null, Status? ISLivestatus = null);
+        Task<List<Auction>> GetByUserID(int? AgentID=null, int? SellerID=null);
         Task<List<Auction>> GetByBuyerID(int BuyerID);
         Task<Auction?> GetByIdAsync(int id);
         Task<Auction?> GetByProprtyIdAsync(int id);
-        Task<decimal?> GetHighestBidForEndedAuctionsBySellerAsync(int sellerId);
-        Task<decimal?> GetHighestBidForEndedAuctionsByAgentAsync(int agentId);
+        Task<(Property? Property, int MaxBid)> GetHighestBidForEndedAuctionsBySellerAsync(int sellerId);
+        Task<(Property? Property, int MaxBid)> GetHighestBidForEndedAuctionsByAgentAsync(int agentId);
     }
 }

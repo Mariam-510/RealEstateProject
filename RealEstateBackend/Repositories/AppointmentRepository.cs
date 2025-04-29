@@ -69,8 +69,27 @@ namespace RealEstate.Repositories
         {
             return await _context.Appointments
                 .Where(a => a.BuyerId == buyerId && !a.IsDeleted)
-                .Include(a => a.Property).ThenInclude(p=>p.Agent ).ThenInclude(a=>a.Account).
-                Include(a => a.Property).ThenInclude(p => p.Seller).ThenInclude(a => a.Account)
+                .Include(a => a.Property).ThenInclude(p=>p.Agent ).ThenInclude(a=>a.Account)
+                .Include(a => a.Property).ThenInclude(p => p.Seller).ThenInclude(a => a.Account)
+                .OrderByDescending(a => a.ScheduledTime)
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByAgentIdAsync(int agentId)
+        {
+            return await _context.Appointments
+                .Where(a => a.Property.AgentId == agentId && !a.IsDeleted).Include(a=>a.Buyer).ThenInclude(b=>b.Account)
+                .Include(a => a.Property).ThenInclude(p => p.Agent).ThenInclude(a => a.Account)
+                .Include(a => a.Property).ThenInclude(p => p.Seller).ThenInclude(s => s.Account)
+                .OrderByDescending(a => a.ScheduledTime)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Appointment>> GetAppointmentsBySellerIdAsync(int sellerId)
+        {
+            return await _context.Appointments
+                .Where(a => a.Property.SellerId == sellerId && !a.IsDeleted).Include(a => a.Buyer).ThenInclude(b => b.Account)
+                .Include(a => a.Property).ThenInclude(p => p.Agent).ThenInclude(a => a.Account)
+                .Include(a => a.Property).ThenInclude(p => p.Seller).ThenInclude(s => s.Account)
                 .OrderByDescending(a => a.ScheduledTime)
                 .ToListAsync();
         }

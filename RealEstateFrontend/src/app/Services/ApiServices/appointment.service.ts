@@ -23,19 +23,17 @@ export interface PropertyDto {
   userImage:string,
   userType:string,
 }
-export interface UserDto {
-  id: number;
-  name: string;
-  email: string;
-  phone?: string;
-  type?: string;
-}
+
 export interface AppointmentDto {
   id: number;
   scheduledTime: string;
   type: AppointmentType;
   status: AppointmentStatus;
-  property: PropertyDto;   // <-- add this
+  property: PropertyDto;  
+  buyerName:string; // <-- add this
+  buyerEmail:string; // <-- add this
+  buyerImage:string; // <-- add this
+
 
 }
 export enum AppointmentType {
@@ -74,7 +72,7 @@ export class AppointmentService {
       { params }
     );
   }
-  GetAppointmentsByBuyer(
+  GetAppointments(
     sortOrder: string = 'desc',
     status?: string
   ): Observable<AppointmentDto[]> {
@@ -87,8 +85,12 @@ export class AppointmentService {
     return this.http.get<AppointmentDto[]>(`${this.apiUrl}/user/BuyerViewAllAppointment`, { params });
   }
   
-  updateStatus(id: number, status: AppointmentStatus) {
-    return this.http.patch(`/api/appointments/${id}/status`, { status });
+  updateStatus(id: number, status: AppointmentStatus): Observable<AppointmentDto> {
+    return this.http.patch<AppointmentDto>(
+      `${this.apiUrl}/${id}/status`,
+      { status }
+    );
   }
+  
   
 }

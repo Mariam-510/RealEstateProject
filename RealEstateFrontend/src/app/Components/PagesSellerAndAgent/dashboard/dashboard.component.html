@@ -1,12 +1,20 @@
 <div class="mt-5 ms-5">
-  <h2 class="fw-bold"><span style="font-size: 0.9em;">📊</span> Seller Dashboard</h2>
+  <h2 class="fw-bold" *ngIf="auth.hasRole('Seller')">
+    <span style="font-size: 0.9em;">📊</span>
+    Seller Dashboard
+  </h2>
+  <h2 class="fw-bold" *ngIf="auth.hasRole('Agent')">
+    <span style="font-size: 0.9em;">📊</span>
+    Agent Dashboard
+  </h2>
   <nav aria-label="breadcrumb mb-0">
-      <ol class="breadcrumb mb-4">
-          <li class="breadcrumb-item mb-0">
-              <p class="text-muted mb-0">Seller</p>
-          </li>
-          <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">Dashboard</li>
-      </ol>
+    <ol class="breadcrumb mb-4">
+      <li class="breadcrumb-item mb-0">
+        <p class="text-muted mb-0" *ngIf="auth.hasRole('Seller')">Seller</p>
+        <p class="text-muted mb-0" *ngIf="auth.hasRole('Agent')">Agent</p>
+      </li>
+      <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">Dashboard</li>
+    </ol>
   </nav>
 </div>
 
@@ -17,45 +25,75 @@
     <!-- Total Revenue Card -->
     <div class="col-md-4">
       <div class="card border-0 shadow-sm" style="height:17vh;background-color: #f9fafb;">
-          <div class="card-header bg-transparent d-flex justify-content-between align-items-center border-bottom-0 pt-3">
-              <h5 class="card-title mb-0 d-flex align-items-center text-muted">
-                  <i class="bi bi-bar-chart me-2  text-caffe "></i>TOTAL REVENUE
-              </h5>
+
+        <div *ngIf="isLoadingRevenue; else revenueTotal" class="h-100 d-flex align-items-center justify-content-center">
+          <div class="spinner-border text-caffe" role="status"></div>
+        </div>
+
+        <ng-template #revenueTotal>
+          <div
+            class="card-header bg-transparent d-flex justify-content-between align-items-center border-bottom-0 pt-3">
+            <h5 class="card-title mb-0 d-flex align-items-center text-muted">
+              <i class="bi bi-bar-chart me-2  text-caffe "></i>TOTAL REVENUE
+            </h5>
           </div>
           <div class="text-center d-flex flex-column">
-              <div class="card-value fs-2 text-dark" style="font-weight: 600;">£{{ TotalRevenue | number:'1.0-0' }}</div>
-              <p class="card-description text-muted small">Combined sales and rental income</p>
+            <div class="card-value fs-2 text-dark" style="font-weight: 600;">EGP {{ revenueData?.totalRevenue|
+              number:'1.0-0'
+              }}</div>
+            <p class="card-description text-muted small">Combined sales and rental income</p>
           </div>
+        </ng-template>
       </div>
     </div>
 
     <!-- Sales Revenue Card -->
     <div class="col-md-4">
       <div class="card border-0 shadow-sm" style="height:17vh;background-color: #f9fafb;">
-          <div class="card-header bg-transparent d-flex justify-content-between align-items-center border-bottom-0 pt-3">
-              <h5 class="card-title mb-0 d-flex align-items-center text-muted">
-                  <i class="bi bi-cash-stack me-2  text-caffe"></i>SALES REVENUE
-              </h5>
+
+        <div *ngIf="isLoadingRevenue; else salesRevenue" class="h-100 d-flex align-items-center justify-content-center">
+          <div class="spinner-border text-caffe" role="status"></div>
+        </div>
+
+        <ng-template #salesRevenue>
+          <div
+            class="card-header bg-transparent d-flex justify-content-between align-items-center border-bottom-0 pt-3">
+            <h5 class="card-title mb-0 d-flex align-items-center text-muted">
+              <i class="bi bi-cash-stack me-2  text-caffe"></i>SALES REVENUE
+            </h5>
           </div>
           <div class="text-center d-flex flex-column">
-              <div class="card-value fs-2 text-dark" style="font-weight: 600;">£{{ SoldRevenue | number:'1.0-0' }}</div>
-              <p class="card-description text-muted small me-2">Properties sold this year</p>
+            <div class="card-value fs-2 text-dark" style="font-weight: 600;">EGP {{ revenueData?.soldRevenue|
+              number:'1.0-0'
+              }}</div>
+            <p class="card-description text-muted small me-2">Total earnings from property sales</p>
           </div>
+        </ng-template>
       </div>
     </div>
 
     <!-- Rental Revenue Card -->
     <div class="col-md-4">
       <div class="card border-0 shadow-sm" style="height:17vh;background-color: #f9fafb;">
-          <div class="card-header bg-transparent d-flex justify-content-between align-items-center border-bottom-0 pt-3">
-              <h5 class="card-title mb-0 d-flex align-items-center text-muted">
-                  <i class="bi bi-house-door me-2  text-caffe"></i>RENTAL REVENUE
-              </h5>
+
+        <div *ngIf="isLoadingRevenue; else rentalRevenue"
+          class="h-100 d-flex align-items-center justify-content-center">
+          <div class="spinner-border text-caffe" role="status"></div>
+        </div>
+
+        <ng-template #rentalRevenue>
+          <div
+            class="card-header bg-transparent d-flex justify-content-between align-items-center border-bottom-0 pt-3">
+            <h5 class="card-title mb-0 d-flex align-items-center text-muted">
+              <i class="bi bi-house-door me-2  text-caffe"></i>RENTAL REVENUE
+            </h5>
           </div>
           <div class="text-center d-flex flex-column">
-              <div class="card-value fs-2 text-dark" style="font-weight: 600;">£{{ RentalRevenue | number:'1.0-0' }}</div>
-              <p class="card-description text-muted small">Active rental properties</p>
+            <div class="card-value fs-2 text-dark" style="font-weight: 600;">EGP {{ revenueData?.rentalRevenue|
+              number:'1.0-0' }}</div>
+            <p class="card-description text-muted small">Total earnings from property rentals</p>
           </div>
+        </ng-template>
       </div>
     </div>
   </div>
@@ -65,78 +103,92 @@
     <!-- Revenue by Category Bar Chart -->
     <div class="col-md-8">
       <div class="card shadow-sm h-100">
+
+        <div *ngIf="isLoadingChart; else chartContent" class="h-100 d-flex align-items-center justify-content-center">
+          <div class="spinner-border text-caffe" role="status"></div>
+        </div>
+
+        <ng-template #chartContent>
           <div class="card-header bg-white border-bottom ">
-              <h5 class="card-title mb-2 mt-2 d-flex align-items-center">
-                  <i class="bi bi-bar-chart-line me-2 text-muted"></i>Revenue by Property Category
-              </h5>
+            <h5 class="card-title mb-2 mt-2 d-flex align-items-center">
+              <i class="bi bi-bar-chart-line me-2 text-muted"></i>Revenue by Property Category
+            </h5>
           </div>
           <div class="card-body pt-3 d-flex flex-column">
-              <div class="chart-wrapper w-100" style="height: 300px; margin: 0 auto;">
-                  <canvas baseChart 
-                          [data]="barChartData" 
-                          [options]="barChartOptions" 
-                          [type]="'bar'"
-                          style="display: block; width: 95%; height: 90%; margin: auto;">
-                  </canvas>
-              </div>
+            <div class="chart-wrapper w-100" style="height: 300px; margin: 0 auto;">
+              <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="'bar'"
+                style="display: block; width: 95%; height: 90%; margin: auto;">
+              </canvas>
+            </div>
           </div>
+        </ng-template>
+
       </div>
     </div>
-    
+
     <!-- Portfolio Summary -->
     <div class="col-md-4">
       <div class="card shadow-sm h-100">
-        <div class="card-header bg-white border-bottom py-2">
-          <h5 class="card-title mb-2 mt-2 d-flex align-items-center">
-            <i class="bi bi-clipboard-data me-2"></i>Portfolio Summary
-          </h5>
+
+        <div *ngIf="isLoadingPortfolio; else portfolioContent"
+          class="h-100 d-flex align-items-center justify-content-center">
+          <div class="spinner-border text-caffe" role="status"></div>
         </div>
-        <div class="card-body p-0">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item d-flex justify-content-between align-items-center pt-4 border-0">
-              <span class="d-flex align-items-center">
-                <i class="bi bi-house-door-fill me-2 text-caffe fs-5"></i>
-                <span class="fw-medium">For Sale</span>
-              </span>
-              <span class="ms-auto badge  bg-caffe text-white rounded-pill px-2">{{ SellProperty }}</span>
-             </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center pt-4 border-0">
-              <span class="d-flex align-items-center">
-                <i class="bi bi-key me-2 text-caffe fs-5"></i>
-                <span class="fw-medium">For Rent</span>
-              </span>
-              <span class="ms-auto badge  bg-caffe text-white rounded-pill px-2">{{ RentProperty }}</span>
-           </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center pt-4 border-0">
-              <span class="d-flex align-items-center">
-                <i class="bi bi-check-circle-fill me-2 text-caffe fs-5"></i>
-                <span class="fw-medium">Available</span>
-              </span>
-              <span class="ms-auto badge  bg-caffe text-white rounded-pill px-2">{{ availableProperties }}</span>
-           </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center pt-4 border-0">
-              <span class="d-flex align-items-center">
-                <i class="bi bi-currency-dollar me-2 text-caffe fs-5"></i>
-                <span class="fw-medium">Sold</span>
-              </span>
-              <span class="ms-auto badge  bg-caffe text-white rounded-pill px-2">{{ soldProperties }}</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center pt-4 pb-4 border-0">
-              <span class="d-flex align-items-center">
-                <i class="bi bi-hammer me-2 text-caffe fs-5"></i>
-                <span class="fw-medium">Auctioned</span>
-              </span>
-              <span class="ms-auto badge bg-caffe text-white rounded-pill px-2">{{ AuctionProperties }}</span>
-           </li>
-          </ul>
-        </div>
+
+        <ng-template #portfolioContent>
+          <div class="card-header bg-white border-bottom py-2">
+            <h5 class="card-title mb-2 mt-2 d-flex align-items-center">
+              <i class="bi bi-clipboard-data me-2"></i>Portfolio Summary
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between align-items-center pt-4 border-0">
+                <span class="d-flex align-items-center">
+                  <i class="bi bi-house-door-fill me-2 text-caffe fs-5"></i>
+                  <span class="fw-medium">For Sale</span>
+                </span>
+                <span class="ms-auto badge  bg-caffe text-white rounded-pill px-2">{{ portfolioCounts.forSale }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center pt-4 border-0">
+                <span class="d-flex align-items-center">
+                  <i class="bi bi-key me-2 text-caffe fs-5"></i>
+                  <span class="fw-medium">For Rent</span>
+                </span>
+                <span class="ms-auto badge  bg-caffe text-white rounded-pill px-2">{{ portfolioCounts.forRent }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center pt-4 border-0">
+                <span class="d-flex align-items-center">
+                  <i class="bi bi-check-circle-fill me-2 text-caffe fs-5"></i>
+                  <span class="fw-medium">Available</span>
+                </span>
+                <span class="ms-auto badge  bg-caffe text-white rounded-pill px-2">{{ portfolioCounts.available
+                  }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center pt-4 border-0">
+                <span class="d-flex align-items-center">
+                  <i class="bi bi-currency-dollar me-2 text-caffe fs-5"></i>
+                  <span class="fw-medium">Sold</span>
+                </span>
+                <span class="ms-auto badge  bg-caffe text-white rounded-pill px-2">{{ portfolioCounts.sold }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center pt-4 pb-4 border-0">
+                <span class="d-flex align-items-center">
+                  <i class="bi bi-hammer me-2 text-caffe fs-5"></i>
+                  <span class="fw-medium">Auctioned</span>
+                </span>
+                <span class="ms-auto badge bg-caffe text-white rounded-pill px-2">{{ portfolioCounts.auctioned }}</span>
+              </li>
+            </ul>
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>
 
   <!-- Bottom Section - Recent Activity (Full width) -->
   <div class="row g-4 mt-2 mb-4">
-    
+
     <div class="col-8">
       <div class="card shadow-sm">
         <div class="card-header bg-white border-bottom pt-2">
@@ -146,147 +198,203 @@
         </div>
         <div class="card-body p-0 recent-activity-scroll">
           <div class="list-group list-group-flush">
-            <!-- Property Sold -->
-            <div class="list-group-item border-0 pt-3">
+
+            <!-- Last Sold Property -->
+            <div class="list-group-item border-0 pt-3" *ngIf="lastSoldProperty && !isLoadingRecentActivity">
               <div class="d-flex align-items-start">
+                <!-- Icon -->
                 <div class="text-caffe fs-5 me-3">
                   <i class="bi bi-check2-circle"></i>
                 </div>
+                <!-- Content -->
                 <div class="flex-grow-1">
                   <h6 class="mb-1">Latest Property Sold</h6>
-                  <p class="mb-1 small text-muted">{{properties[0].title}} in {{properties[0].location}}</p>
-                  <small class="text-muted">2 hours ago</small>
+                  <p class="mb-1 small text-muted">
+                    {{ lastSoldProperty.title }} in {{ lastSoldProperty.location }}
+                  </p>
+                  <small class="text-muted">
+                    {{ getTimeAgo(lastSoldProperty.addedDate) }}
+                  </small>
                 </div>
+                <!-- Price -->
                 <div class="text-end">
-                  <span style="font-size:16px;">£{{properties[0].price | number}}</span>
+                  <span style="font-size:16px;">
+                    EGP {{ lastSoldProperty.price | number }}
+                  </span>
                 </div>
               </div>
             </div>
-    
+
             <!-- Property Rented -->
-            <div class="list-group-item border-0 pt-2">
+            <div class="list-group-item border-0 pt-2" *ngIf="lastRentedProperty">
               <div class="d-flex align-items-start">
                 <div class="text-caffe fs-5 me-3">
                   <i class="bi bi-house-check"></i>
                 </div>
                 <div class="flex-grow-1">
                   <h6 class="mt-1">Latest Property Rented</h6>
-                  <p class="mb-1 small text-muted">{{properties[6].title}} in {{properties[6].location}}</p>
-                  <small class="text-muted">3 days ago</small>
+                  <p class="mb-1 small text-muted">
+                    {{ lastRentedProperty.title }} in {{ lastRentedProperty.location }}
+                  </p>
+                  <small class="text-muted">
+                    {{ getTimeAgo(lastRentedProperty.addedDate) }}
+                  </small>
                 </div>
                 <div class="text-end">
-                  <span style="font-size:16px;">£{{properties[6].price | number}}</span>
+                  <span style="font-size:16px;">
+                    EGP {{ lastRentedProperty.price | number }}
+                  </span>
                 </div>
               </div>
             </div>
-    
+
             <!-- Auction Started -->
-            <div class="list-group-item border-0 pt-2">
+            <div class="list-group-item border-0 pt-2" *ngIf="lastAuctionedProperty">
               <div class="d-flex align-items-start">
                 <div class="text-caffe fs-5 me-3">
                   <i class="bi bi-hammer"></i>
                 </div>
                 <div class="flex-grow-1">
                   <h6 class="mt-1">Latest Auction Added</h6>
-                  <p class="mb-1 small text-muted">{{properties[3].title}} in {{properties[3].location}}</p>
-                  <small class="text-muted">2 days ago</small>
+                  <p class="mb-1 small text-muted">
+                    {{ lastAuctionedProperty.title }} in {{ lastAuctionedProperty.location }}
+                  </p>
+                  <small class="text-muted">
+                    {{ getTimeAgo(lastAuctionedProperty.addedDate) }}
+                  </small>
                 </div>
                 <div class="text-end">
-                  <span style="font-size:16px;">£{{properties[3].price | number}}</span>
+                  <span style="font-size:16px;">
+                    EGP {{ lastAuctionedProperty.price | number }}
+                  </span>
                 </div>
               </div>
             </div>
-    
+
             <!-- New Listing -->
-            <div class="list-group-item border-0 pt-2">
+            <div class="list-group-item border-0 pt-2" *ngIf="lastAddedProperty">
               <div class="d-flex align-items-start">
                 <div class="text-caffe fs-5 me-3">
                   <i class="bi bi-file-earmark-plus"></i>
                 </div>
                 <div class="flex-grow-1">
-                  <h6 class="mt-1">Latest Sell Property</h6>
-                  <p class="mb-1 small text-muted">{{properties[1].title}} in {{properties[1].location}}</p>
-                  <small class="text-muted">Yesterday</small>
+                  <h6 class="mt-1">Latest Added Property</h6>
+                  <p class="mb-1 small text-muted">
+                    {{ lastAddedProperty.title }} in {{ lastAddedProperty.location }}
+                  </p>
+                  <small class="text-muted">
+                    {{ getTimeAgo(lastAddedProperty.addedDate) }}
+                  </small>
                 </div>
                 <div class="text-end">
-                  <span style="font-size:16px;">£{{properties[1].price | number}}</span>
+                  <span style="font-size:16px;">
+                    EGP {{ lastAddedProperty.price | number }}
+                  </span>
                 </div>
               </div>
             </div>
-    
-            <!-- New Townhouse Listing -->
-            <div class="list-group-item border-0 pt-2">
-              <div class="d-flex align-items-start">
-                <div class="text-caffe fs-5 me-3">
-                  <i class="bi bi-house-add"></i>
-                </div>
-                <div class="flex-grow-1">
-                  <h6 class="mt-1">Latest Rent Property</h6>
-                  <p class="mb-1 small text-muted">{{properties[4].title}} in {{properties[4].location}}</p>
-                  <small class="text-muted">1 week ago</small>
-                </div>
-                <div class="text-end">
-                  <span style="font-size:16px;">£{{properties[4].price | number}}</span>
+
+            <!-- Loading State -->
+            <div *ngIf="isLoadingRecentActivity" class="list-group-item border-0 pt-3">
+              <div class="text-center py-3">
+                <div class="spinner-border text-caffe" role="status">
+                  <span class="visually-hidden">Loading...</span>
                 </div>
               </div>
             </div>
-    
+
+            <!-- Empty State -->
+            <div
+              *ngIf="!isLoadingRecentActivity && !lastSoldProperty && !lastRentedProperty && !lastAuctionedProperty && !lastAddedProperty"
+              class="list-group-item border-0 pt-3">
+              <div class="text-center py-3 text-muted">
+                No recent activity found
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    
+
     <div class="col-4">
       <div class="card shadow-sm h-100">
-        <div class="card-header bg-white border-bottom pt-2">
-          <h5 class="card-title mt-1 mb-1 d-flex align-items-center">
-            <i class="bi bi-lightning-charge text-muted me-2"></i>Quick Stats
-          </h5>
+
+        <div *ngIf="isLoadingQuickStats; else quickStatsContent"
+          class="h-100 d-flex align-items-center justify-content-center">
+          <div class="spinner-border text-caffe" role="status"></div>
         </div>
-        <div class="card-body p-0">
-          <div class="list-group list-group-flush">
-            <div class="list-group-item border-0 pt-3">
-              <div class="d-flex align-items-center">
-                <i class="bi bi-eye-fill text-caffe fs-5 me-3"></i>
-                <div>
-                  <p class="mb-0 fw-medium">Total Views</p>
-                  <span class="text-muted small">This Month</span>
+
+        <ng-template #quickStatsContent>
+          <div class="card-header bg-white border-bottom pt-2">
+            <h5 class="card-title mt-1 mb-1 d-flex align-items-center">
+              <i class="bi bi-lightning-charge text-muted me-2"></i>Quick Stats
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+              <div class="list-group-item border-0 pt-3">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-hammer text-caffe fs-5 me-3"></i>
+                  <div>
+                    <p class="mb-0 fw-medium">Highest Property Bid</p>
+                    <!-- <span class="text-muted small">Property Name</span> -->
+                    <span class="text-muted small">
+                      {{ highestBidData?.property?.title }}
+                    </span>
+                  </div>
+                  <!-- <span class="ms-auto badge bg-caffe text-white rounded-pill">12000</span> -->
+                  <span class="ms-auto badge bg-caffe text-white rounded-pill">
+                    EGP {{ highestBidData?.highestBid| number }}
+                  </span>
                 </div>
-                <span class="ms-auto badge bg-caffe text-white rounded-pill">1.2K</span>
               </div>
-            </div>
-            <div class="list-group-item border-0 pt-3">
-              <div class="d-flex align-items-center">
-                <i class="bi bi-star-fill text-caffe fs-5 me-3"></i>
-                <div>
-                  <p class="mb-0 fw-medium">Top Property</p>
-                  <span class="text-muted small">Lakeside Villa</span>
+              <div class="list-group-item border-0 pt-3">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-heart-fill text-caffe fs-5 me-3"></i>
+                  <div>
+                    <p class="mb-0 fw-medium">Top Wishlisted Property</p>
+                    <!-- <span class="text-muted small">Property Name</span> -->
+                    <span class="text-muted small">
+                      {{ topWishlistedData?.property?.title || 'No wishlists' }}
+                    </span>
+                  </div>
+                  <!-- <span class="ms-auto badge bg-caffe text-white rounded-pill">count</span> -->
+                  <span class="ms-auto badge bg-caffe text-white rounded-pill">
+                    {{ topWishlistedData?.wishListCount || 0 }}
+                  </span>
                 </div>
-                <span class="ms-auto badge bg-caffe text-white rounded-pill">4.8★</span>
               </div>
-            </div>
-            <div class="list-group-item border-0 pt-3">
-              <div class="d-flex align-items-center">
-                <i class="bi bi-calendar-check text-caffe fs-5 me-3"></i>
-                <div>
-                  <p class="mb-0 fw-medium">Appointments</p>
-                  <span class="text-muted small">Today</span>
+              <div class="list-group-item border-0 pt-3">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-calendar-check text-caffe fs-5 me-3"></i>
+                  <div>
+                    <p class="mb-0 fw-medium">Top Property Appointments</p>
+                    <!-- <span class="text-muted small">Today</span> -->
+                    <span class="text-muted small">
+                      {{ mostAppointmentsData?.appointmentCount === 0 ? 'No appointments' :
+                      mostAppointmentsData?.property?.title || 'No appointments' }}
+                    </span>
+                  </div>
+                  <!-- <span class="ms-auto badge bg-caffe text-white rounded-pill">3</span> -->
+                  <span class="ms-auto badge bg-caffe text-white rounded-pill">
+                    {{ mostAppointmentsData?.appointmentCount || 0 }}
+                  </span>
                 </div>
-                <span class="ms-auto badge bg-caffe text-white rounded-pill">3</span>
               </div>
-            </div>
-            <div class="list-group-item border-0 pt-3 pb-3">
-              <div class="d-flex align-items-center">
-                <i class="bi bi-chat-dots text-caffe fs-5 me-3"></i>
-                <div>
-                  <p class="mb-0 fw-medium">New Messages</p>
-                  <span class="text-muted small">Unread</span>
+              <div class="list-group-item border-0 pt-3 pb-3">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-chat-dots text-caffe fs-5 me-3"></i>
+                  <div>
+                    <p class="mb-0 fw-medium">New Messages</p>
+                    <span class="text-muted small">Unread</span>
+                  </div>
+                  <span class="ms-auto badge bg-caffe text-white rounded-pill">5</span>
                 </div>
-                <span class="ms-auto badge bg-caffe text-white rounded-pill">5</span>
               </div>
             </div>
           </div>
-        </div>
+        </ng-template>
+
       </div>
     </div>
   </div>

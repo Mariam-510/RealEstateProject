@@ -9,6 +9,11 @@ namespace RealEstate.Models.DTOs.AppointmentDto
         public string Type { get; set; }
         public string Status { get; set; } = AppointmentStatus.Pending.ToString(); // default status
         public AppointmentPropertyDto Property { get; set; }
+        public string buyerName {  get; set; }
+        
+        public string buyerEmail { get; set; }
+        public string buyerImage { get; set; }
+
     }
 
     public class AppointmentPropertyDto

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RealEstate.Data;
 using RealEstate.Models.Domains;
+using System.Threading.Tasks;
 
 namespace RealEstate.Repositories
 {
@@ -18,7 +19,7 @@ namespace RealEstate.Repositories
             await _context.SaveChangesAsync();
             return propertyBid;
         }
-        public async Task<PropertyBid> GetByIdAsync(int id)
+        public async Task<PropertyBid?> GetByIdAsync(int id)
         {
             return await _context.PropertyBids
                 .FirstOrDefaultAsync(bid => bid.Id == id && !bid.IsDeleted);
@@ -27,10 +28,23 @@ namespace RealEstate.Repositories
         {
             return await _context.PropertyBids
                 .Include(pb => pb.Buyer)
+                .ThenInclude(b=>b.Account)
                 .Where(pb => pb.AuctionId == auctionId && !pb.IsDeleted)
+                .OrderByDescending(pb => pb.Timestamp)
                 .ToListAsync();
         }
 
 
+        public async Task<PropertyBid?> GetLastBidByAuctionIdAsync(int auctionId)
+        {
+            return await _context.PropertyBids
+                .Include(pb => pb.Buyer)
+                .ThenInclude(b => b.Account)
+                .Where(pb => pb.AuctionId == auctionId && !pb.IsDeleted)
+                .OrderByDescending(pb => pb.Timestamp)
+                .ThenByDescending(b => b.BidAmount)
+                .FirstOrDefaultAsync();
+        }
+        
     }
 }

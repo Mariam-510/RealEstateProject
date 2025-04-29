@@ -32,8 +32,12 @@ namespace RealEstate.Mapping
             //CreateMap<Property, PropertyDto>();
 
             CreateMap<Property, PropertyDto>()
+                // Map UserName: Seller.FirstName -> Agent.FirstName
                 .ForMember(dest => dest.AddedDate, opt => opt.MapFrom(src => 
                     src.AddedDate.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)
+                ))
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src =>
+                      src.AddedDate
                 ))
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src =>
                     src.Seller != null
