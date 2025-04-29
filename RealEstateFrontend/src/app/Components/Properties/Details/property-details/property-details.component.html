@@ -239,22 +239,24 @@
                     </div>
 
                     <!-- Radio button group -->
-                    <div class="btn-group pb-2" role="group" aria-label="Tour options">
-                      <input type="radio" class="btn-check" name="tourOption" id="inPerson" autocomplete="off" checked>
-                      <label class="btn btn-caffe-tertiary fw-bold" for="inPerson" style="font-size: 1.0229rem;">
-                        <i class="bi bi-house-door me-2"></i> Tour in person
-                      </label>
+            <!-- Radio button group -->
+<div class="btn-group pb-2" role="group" aria-label="Tour options">
+  <input type="radio" class="btn-check" name="tourOption" id="inPerson" value="InPerson" autocomplete="off" checked>
+  <label class="btn btn-caffe-tertiary fw-bold" for="inPerson" style="font-size: 1.0229rem;">
+    <i class="bi bi-house-door me-2"></i> Tour in person
+  </label>
 
-                      <input type="radio" class="btn-check" name="tourOption" id="videoChat" autocomplete="off">
-                      <label class="btn btn-caffe-tertiary fw-bold" for="videoChat" style="font-size: 1.0229rem;">
-                        <i class="bi bi-phone me-2"></i> Tour via video chat
-                      </label>
-                    </div>
+  <input type="radio" class="btn-check" name="tourOption" id="videoChat" value="Virtual" autocomplete="off">
+  <label class="btn btn-caffe-tertiary fw-bold" for="videoChat" style="font-size: 1.0229rem;">
+    <i class="bi bi-phone me-2"></i> Tour via video chat
+  </label>
+</div>
 
-                    <!-- Main action button -->
-                    <a class="btn btn-caffe-primary fw-bold fs-5 py-2">
-                      <i class="bi bi-calendar3 me-2"></i>Request showing
-                    </a>
+<!-- Main action button -->
+<a class="btn btn-caffe-primary text-white fw-bold fs-5 py-2" (click)="requestShowing(property)">
+  <i class="bi bi-calendar3 me-2"></i> Request showing
+</a>
+
                   </div>
 
                   <div *ngIf="!hasRoleOrNoUser('Buyer') && property?.status === 'Available'" class=" d-grid gap-2 pb-4">
@@ -487,7 +489,7 @@
                 <i class="bi bi-hourglass-split  text-caffe fs-5 fs-sm-4"></i>
                 <div class="d-flex flex-wrap flex-sm-nowrap w-100">
                   <span class="fw-bold pe-2 fs-5 fs-sm-5">Posted:</span>
-                  <span class="text-truncate fs-5">{{ property?.addedDate }} ago
+                  <span class="text-truncate fs-5">{{ property?.addedDate }}
                   </span>
                 </div>
               </div>

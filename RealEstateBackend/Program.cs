@@ -11,6 +11,8 @@ using RealEstate.Services;
 using RealEstate.JWT;
 using RealEstate.Models;
 using RealEstate.Data;
+using RealEstate.Hubs;
+using System.Security.Claims;
 
 
 namespace RealEstate
@@ -93,18 +95,41 @@ namespace RealEstate
                 options.Password.RequiredUniqueChars = 1;
             });
 
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            options.TokenValidationParameters = new TokenValidationParameters
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                ValidAudience = builder.Configuration["Jwt:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+                    NameClaimType = ClaimTypes.NameIdentifier
+                };
+
+                // ?? ADD THIS FOR SIGNALR
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/api/Chat/chatHub"))
+                        {
+                            // Read the token from the query string
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
+
 
             // Add Scoped for repositories
             builder.Services.AddAutoMapper(typeof(Program));
@@ -141,6 +166,7 @@ namespace RealEstate
             builder.Services.AddScoped<ReviewService>();
             builder.Services.AddScoped<CartService>();
             builder.Services.AddScoped<ShippingFeesService>();
+            builder.Services.AddScoped<GoogleService>();
             
 
             // builder.Services.AddSingleton<PayPalService>();// Maybe review if it's better to use singleton or scoped here later
@@ -161,14 +187,20 @@ namespace RealEstate
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAngularApp",
-                    policy => policy
-                        .AllowAnyOrigin() // Or use .WithOrigins("http://localhost:4200") for tighter control
+                options.AddPolicy("AllowAngularApp", policy =>
+                    policy
+                        .WithOrigins("http://localhost:4200")
                         .AllowAnyHeader()
-                        .AllowAnyMethod());
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                );
             });
 
+
+            builder.Services.AddSignalR();
+
             var app = builder.Build();
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -185,6 +217,9 @@ namespace RealEstate
             app.UseStaticFiles();
 
             app.MapControllers();
+
+            app.MapHub<ChatHub>("/api/Chat/chatHub");
+
 
             app.Run();
         }

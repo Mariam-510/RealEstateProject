@@ -4,13 +4,12 @@
 
       <div class="shadow-sm" *ngIf="(order?.statusNum ??0) !== 4">
         <div class="card-body mt-5">
-          <div class="d-flex justify-content-between mt-4 align-items-center mb-4 pt-4 ps-4 rounded">
-            <div>
-              <h4 class="mb-0">
-                <i class="bi bi-receipt me-2"></i>
-                Order Number <span class="text-caffe font-weight-bold">{{ order?.id }}</span>
-              </h4>
-            </div>
+          <div class="d-flex justify-content-between mt-4 align-items-center mb-4 pt-4 px-4 rounded">
+            <h4 class="mb-0">
+              <i class="bi bi-receipt me-2"></i>
+              Order #<span class="text-caffe font-weight-bold">{{ order?.id }}</span>
+            </h4>
+            <div class="text-muted small"> {{order?.orderDate}}</div>
           </div>
 
           <div class="d-flex justify-content-between text-center ms-1">
@@ -123,7 +122,7 @@
 
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="mb-0">Total Amount</h5>
-            <h4 class="mb-0 text-caffe">{{(order?.subTotal??0) + (order?.deliveryFees??0) | currency:'EGP '}} EGP</h4>
+            <h4 class="mb-0 text-caffe">{{(order?.subTotal??0) + (order?.deliveryFees??0) | currency:'EGP '}}</h4>
           </div>
 
           <hr class="my-4">
@@ -131,9 +130,13 @@
           <div class="mb-4">
             <h5 class="mb-3">Payment Method</h5>
             <div class="d-flex align-items-center bg-light p-3 rounded">
-              <i class="bi bi-paypal fs-3 text-caffe me-3"></i>
+              <i class="bi fs-3 text-caffe me-3" [ngClass]="{
+                   'bi-paypal': order?.paymentMethod === 'PayPal',
+                   'bi-stripe': order?.paymentMethod === 'Stripe',
+                   'bi-cash': !order?.paymentMethod || (order?.paymentMethod !== 'PayPal' && order?.paymentMethod !== 'Stripe')
+                 }"></i>
               <div>
-                <h6 class="mb-0">{{order?.paymentMethod}}</h6>
+                <h6 class="mb-0">{{ order?.paymentMethod || 'Cash' }}</h6>
                 <small class="text-muted">Payment completed</small>
               </div>
             </div>
@@ -163,17 +166,29 @@
         style="background-color: #f8f9fa;">
         <div class="d-flex align-items-center">
           <div class="position-relative">
-            <img [src]="apiConfig.apiUrl + item.productImage" class="img-fluid rounded"
-              style="width: 130px; height: 140px; object-fit: cover;">
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-caffe">
-              {{ item.quantity }}
-            </span>
+            <a [routerLink]="['/products', item.productId]">
+              <img [src]="apiConfig.apiUrl + item.productImage" class="img-fluid rounded"
+                style="width: 130px; height: 140px; object-fit: cover;">
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-caffe">
+                {{ item.quantity }}
+              </span>
+            </a>
           </div>
           <div class="ms-3">
             <h6 class="mb-1 fs-5">{{ item.productName }}</h6>
+
             <div>
               <div><i class="bi bi-tag me-1 text-caffe"></i> {{ item.categoryName }}</div>
             </div>
+
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-eyedropper me-1 text-caffe"></i>
+              <div class="d-flex align-items-center gap-1">
+                <div class="color-swatch rounded-5 shadow border" [style.background]="item.color">
+                </div>
+              </div>
+            </div>
+
             <div class="mt-2">
               <button class="btn btn-sm text-caffe" style="border: none;" (click)="openReviewDialog(item)">
                 <i class="bi bi-chat-left-text me-1"></i>Add Your Review

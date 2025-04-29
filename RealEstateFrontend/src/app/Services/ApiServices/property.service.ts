@@ -106,6 +106,7 @@ export class PropertyService {
   }
 
   addProperty(createDto: CreatePropertyDTO): Observable<PropertyDTO> {
+
     const formData = new FormData();
 
     // Append all properties from the DTO
@@ -140,6 +141,7 @@ export class PropertyService {
   // ___________________________________________________________________________
   // New method to get properties by seller ID with optional status
   // Include Status only when a valid value is provided
+
   getPropertiesBySellerId(
     status?: PropertyApprovalStatus
   ): Observable<PropertyDTO[]> {

@@ -22,7 +22,8 @@
   <!-- Logo Section -->
   <div class="brand-container">
     <div class="brand-content">
-      <a routerLink="/" class="brand-logo w-25">
+      <a routerLink="/" class="brand-logo">
+        <!-- w-25 -->
         <img src="https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1" alt="UrbanNest">
       </a>
       <div class="brand-tagline">
@@ -62,8 +63,10 @@
 
     <div *ngIf="hasRoleOrNoUser('Buyer')" class="action-icons">
       <button class="icon-btn" (click)="toggleWishlist()">
-        <i class="bi bi-heart fs-4"></i>
-        <span *ngIf="wishlistCount > 0" class="badge">{{ wishlistCount }}</span>
+        <i class="bi bi-chat-dots fs-4"></i>
+        <!-- <i class="bi bi-chat-left-dots fs-4"></i> -->
+        <!-- <i class="bi bi-chat-text fs-4"></i> -->
+        <span *ngIf="messagesCount > 0" class="badge">{{ messagesCount }}</span>
       </button>
       <button class="icon-btn" (click)="toggleCart()">
         <i class="bi bi-cart fs-4"></i>
@@ -94,7 +97,9 @@
         <div *ngIf="(cart$ | async) as cart">
           <div *ngIf="(cart?.orderItemDtos?.length || 0) > 0">
             <div *ngFor="let item of cart?.orderItemDtos" class="cart-item">
-              <img [src]="apiConfig.apiUrl + item?.productImage" alt="Product image">
+              <a [routerLink]="['/products', item.productId]">
+                <img [src]="apiConfig.apiUrl + item?.productImage" alt="Product image">
+              </a>
               <div class="item-info">
                 <h5>{{ (item?.productName?.length ?? 0) > 20 ? item.productName?.slice(0, 20) + '...' : item.productName
                   }}
@@ -102,7 +107,7 @@
                 <p class="fw-semibold">{{ item.price | currency:'EGP ' }}</p>
                 <div class="d-flex align-items-center gap-2">
                   <span>{{ item.quantity }} x</span>
-                  <div class="color-swatch rounded-5" [style.background]="item.color"></div>
+                  <div class="color-swatch shadow rounded-5 border" [style.background]="item.color"></div>
                 </div>
               </div>
             </div>
@@ -161,7 +166,7 @@
           <a routerLink="/login" class="dropdown-item">
             <i class="bi bi-box-arrow-in-right" style="color: #6e5447;"></i> Sign In
           </a>
-          <a routerLink="/register" class="dropdown-item" (click)="openSigUPDialog()">
+          <a class="dropdown-item linkPointer" (click)="openSigUPDialog()">
             <i class="bi bi-person-plus" style="color: #6e5447;"></i> Sign Up
           </a>
         </ng-container>
@@ -173,7 +178,7 @@
             <!-- <p class="user-email">{{ currentUser.email }}</p> -->
             <p class="user-email">{{loggedInUser?.email ? loggedInUser?.email : 'user@gmail.com'}}</p>
           </div>
-          
+
           <div *ngIf="hasRole('Buyer')">
             <a class="dropdown-item" routerLink="/user/profile">
               <i class="bi bi-person-fill" style="color: #6e5447;"></i> Profile
@@ -227,7 +232,7 @@
               <i class="bi bi-eye-fill" style="color: #6e5447;"></i> All Appointments
             </a>
           </div>
-          
+
           <div class="dropdown-divider"></div>
           <button class="dropdown-item" (click)="handleLogout()">
             <i class="bi bi-box-arrow-right" style="color: #6e5447;"></i> Log Out

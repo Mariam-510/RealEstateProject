@@ -3,10 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { AppointmentDto, AppointmentService, AppointmentStatus } from '../../../Services/ApiServices/appointment.service';
 import { FormsModule } from '@angular/forms';
 import { API_CONFIG } from '../../../app.config';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-buyer-view-all-pointment',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule,FormsModule,RouterLink,RouterModule],
   templateUrl: './buyer-view-all-pointment.component.html',
   styleUrl: './buyer-view-all-pointment.component.css'
 })
@@ -14,144 +16,82 @@ export class BuyerViewAllPointmentComponent implements OnInit{
   propertyLinks = ['All Appointment', 'Pending', 'Confirmed', 'Cancelled', 'Completed'];
   activeLink = 'All Appointment';
   
-  // setActive(link: string, event: MouseEvent) {
-  //   event.preventDefault();   
-  //   this.activeLink = link;
-  //   this.filteredappoinment();
-  // }
-
-
-
-
-  // appointments = [
-  //   {
-  //     Id: 1001,
-  //     ScheduledTime: new Date(2023, 5, 15, 10, 30),  
-  //     Type: 'Virtual',
-  //     Status: 'Pending',
-  //     IsDeleted: false,
-  //     SellerID: 1,
-  //     Seller: {
-  //       Id: 1,
-  //       Name: "John Doe",
-  //       Type: "Seller",
-  //       Email: "john@gmail.com"
-  //     },
-  //     PropertyId: 101,
-  //     Property: {
-  //       Id: 101,
-  //       name: "Villa",
-  //       Address: "123 Main St, Cityville",
-  //       Price: 350000
-  //     }
-  //   },
-  //   {
-  //     Id: 1002,
-  //     ScheduledTime: new Date(2023, 5, 18, 14, 0),
-  //     Type: 'InPerson',
-  //     Status: 'Confirmed',
-  //     SellerID: 2,
-  //     Seller: {
-  //       Id: 2,
-  //       Name: "John Doe",
-  //       Type: "Agent",
-  //       Email: "john@gmail.com"
-  //     },
-  //     PropertyId: 102,
-  //     Property: {
-  //       Id: 102,
-  //       name: "Villa",
-  //       Address: "456 Oak Dr, Townsville",
-  //       Price: 425000
-  //     }
-  //   },
-  //   {
-  //     Id: 1003,
-  //     ScheduledTime: new Date(2023, 5, 18, 14, 0),
-  //     Type: 'Virtual',
-  //     Status: 'Confirmed',
-  //     SellerID: 3,
-  //     Seller: {
-  //       Id: 3,
-  //       Name: "John Doe",
-  //       Type: "Seller",
-  //       Email: "john@gmail.com"
-  //     },
-  //     PropertyId: 102,
-  //     Property: {
-  //       Id: 102,
-  //       name: "Apartment",
-  //       Address: "456 Oak Dr, Townsville",
-  //       Price: 425000
-  //     }
-  //   },
-  //   {
-  //     Id: 1004,
-  //     ScheduledTime: new Date(2023, 5, 18, 14, 0),
-  //     Type: 'InPerson',
-  //     Status: 'Completed',
-  //     SellerID: 1,
-  //     Seller: {
-  //       Id: 1,
-  //       Name: "John Doe",
-  //       Type: "Agent",
-  //       Email: "john@gmail.com"
-  //     },
-  //     PropertyId: 102,
-  //     Property: {
-  //       Id: 102,
-  //       name: "Apartment",
-  //       Address: "456 Oak Dr, Townsville",
-  //       Price: 425000
-  //     }
-  //   }
-  // ];
-
-  // updateStatus(appointment: any, newStatus: string) 
-  // {
-  //   const index = this.appointments.findIndex(a => a.Id === appointment.Id);
-  //   if (index !== -1) {
-  //     this.appointments[index].Status = newStatus;
-  //   }
-    
-  // }
-  // filteredappoinments = this.appointments;
-  // filteredappoinment() {
-  //   let filtered = this.appointments;
-    
-  //   if (this.activeLink !== 'All Appointment') {
-  //     filtered = filtered.filter(appointment => appointment.Status === this.activeLink);
-  //   }
-
-  //   this.filteredappoinments = filtered;
-  // }
     apiConfig = API_CONFIG;
   
   appointments: AppointmentDto[] = [];
   filteredappoinments: AppointmentDto[] = [];
   error: string | null = null;
-
-  constructor(private appointmentService: AppointmentService) {}
+  currentPage = 1;
+  pageSize = 4;
+  totalPages = 1;
+  paginatedAppointments: AppointmentDto[] = [];
+  constructor(private appointmentService: AppointmentService,private auth: AuthService,private router: Router) {}
   AppointmentStatus = AppointmentStatus;
 
-  ngOnInit() {
-    this.loadAppointments();
+  async  ngOnInit() {
+ 
+    if (this.hasRole('Buyer')) {
+      this.loadAppointments();
+    } 
+    else{
+      this.router.navigate(['/login']);
+    }
   }
+ sortAppointment: 'asc' | 'desc' = 'desc';
 
+  get sortedAppointments(): AppointmentDto[] {
+    return [...this.filteredappoinments].sort((a, b) => {
+      // Convert date strings to timestamps
+      const dateA = new Date(a.scheduledTime).getTime();
+      const dateB = new Date(b.scheduledTime).getTime();
+
+      // Handle potential invalid dates (optional)
+      if (isNaN(dateA) || isNaN(dateB)) {
+        return 0; // or handle differently if needed
+      }
+
+      // Sort based on current order
+      return this.sortAppointment === 'desc' ? dateB - dateA : dateA - dateB;
+    });
+  }
+  toggleSortAppointment(): void {
+    this.sortAppointment = this.sortAppointment === 'desc' ? 'asc' : 'desc';
+    this.applySorting();
+
+  }
+  applySorting(): void {
+    // Sort the filtered appointments based on the new sort order
+    this.filteredappoinments.sort((a, b) => {
+      const dateA = new Date(a.scheduledTime).getTime();
+      const dateB = new Date(b.scheduledTime).getTime();
+  
+      if (isNaN(dateA) || isNaN(dateB)) {
+        return 0;
+      }
+  
+      return this.sortAppointment === 'desc' ? dateB - dateA : dateA - dateB;
+    });
+  
+    // After sorting, update the pagination
+    this.updatePagination();
+  }
+  
   setActive(link: string, event: MouseEvent) {
     event.preventDefault();
     this.activeLink = link;
     this.loadAppointments();
   }
 
-  loadAppointments() {
+  async loadAppointments() {
     this.error = null;
     const status = this.activeLink !== 'All Appointment' ? this.activeLink : undefined;
-    
-    this.appointmentService.GetAppointmentsByBuyer('desc', status).subscribe({
+  
+    this.appointmentService.GetAppointments(this.sortAppointment, status).subscribe({
       next: (appointments) => {
         this.appointments = appointments;
         this.filteredappoinments = [...appointments];
+        this.currentPage = 1; // Reset to page 1 whenever we load new data
+        this.updatePagination();  // <- ADD THIS
         console.log('Appointments loaded:', this.appointments);
       },
       error: (error) => {
@@ -160,25 +100,89 @@ export class BuyerViewAllPointmentComponent implements OnInit{
       }
     });
   }
-
-  updateStatus(appointment: AppointmentDto, newStatus: AppointmentStatus) {
-    const index = this.appointments.findIndex(a => a.id === appointment.id);
-    if (index !== -1) {
-      // Update in frontend immediately for better UX
-      this.appointments[index].status = newStatus;
-      this.filteredappoinments = [...this.appointments];
   
-      // Then call the backend to persist the change
-      this.appointmentService.updateStatus(appointment.id, newStatus).subscribe({
-        next: (response) => {
-          console.log('Appointment status updated successfully.');
-        },
-        error: (error) => {
-          console.error('Failed to update appointment status.', error);
-          // Optional: Revert the change if API fails
-        }
-      });
-    }
+  updateStatus(appointment: AppointmentDto, newStatus: AppointmentStatus) {
+    this.appointmentService.updateStatus(appointment.id, newStatus).subscribe({
+      next: (updatedAppointment: AppointmentDto) => {
+        // Update the appointment status locally
+        appointment.status = updatedAppointment.status;
+  
+        // After updating, re-filter appointments based on the active link
+        this.applyFilter();
+      },
+      error: (error) => {
+        console.error('Failed to update status', error);
+      }
+    });
   }
+  
+
+  applyFilter(): void {
+    const status = this.activeLink !== 'All Appointment' ? this.activeLink : undefined;
+    
+    if (status) {
+      this.filteredappoinments = this.appointments.filter(app => app.status === status);
+    } else {
+      this.filteredappoinments = [...this.appointments];
+    }
+  
+    this.currentPage = 1; // Reset page to 1 after filter change
+    this.updatePagination();
+  }
+  
+  updatePagination(): void {
+    // Calculate total pages
+    this.totalPages = Math.ceil(this.filteredappoinments.length / this.pageSize);
+    
+    // Ensure current page stays within valid bounds
+    this.currentPage = Math.max(1, Math.min(this.currentPage, this.totalPages));
+    
+    // Calculate slice indices
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    
+    // Update paginated properties
+    this.paginatedAppointments = this.filteredappoinments.slice(startIndex, endIndex);
+  }
+    getPages(): number[] {
+      const pagesToShow = 5;
+      const startPage = Math.max(1, this.currentPage - Math.floor(pagesToShow / 2));
+      const endPage = Math.min(this.totalPages, startPage + pagesToShow - 1);
+  
+      return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+    }
+  
+    previousPage(): void {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.updatePagination();
+      }
+    }
+  
+    nextPage(): void {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.updatePagination();
+      }
+    }
+  
+    goToPage(page: number): void {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+        this.updatePagination();
+      }
+    }
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
+  }
+
   
 }

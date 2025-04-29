@@ -7,9 +7,6 @@ namespace RealEstate.Models.DTOs.ReviewDto
     public class ReviewDto
     {
         [Required]
-        public int BuyerId { get; set; }
-
-        [Required]
         public int ProductId { get; set; }
 
         [Range(1, 5)]

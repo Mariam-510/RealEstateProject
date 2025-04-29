@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography;
 using System.Transactions;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +11,7 @@ using RealEstate.Mapping;
 using RealEstate.Models.Domains;
 using RealEstate.Models.DTOs.Auction;
 using RealEstate.Models.DTOs.Category;
+using RealEstate.Models.DTOs.PropertyBidDto;
 using RealEstate.Models.DTOs.PropertyDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
@@ -20,6 +22,9 @@ namespace RealEstate.Controllers
     [ApiController]
     public class AuctionController : ControllerBase
     {
+        private readonly IMapper _mapper;
+        private readonly IPropertyBidRepository propertyBidRepository;
+
         public IAuctionRepository _AuctionRepository { get; }
         public IPropertyRepository _propertyRepository { get; }
         public IAgentRepository _AgentRepository { get; }
@@ -28,13 +33,17 @@ namespace RealEstate.Controllers
         public FileService _fileService { get; }
 
         public AuctionController(IAuctionRepository auctionRepository, IPropertyRepository propertyRepository,
-            IAgentRepository agentRepository , ISellerRepository sellerRepository, IMapper mapper)
+
+            IAgentRepository agentRepository , ISellerRepository sellerRepository, IMapper mapper,
+            IPropertyBidRepository propertyBidRepository)
         {
             _AuctionRepository = auctionRepository;
             _propertyRepository = propertyRepository;
             _AgentRepository = agentRepository;
             _SellerRepository = sellerRepository;
             _mapper = mapper;
+
+            this.propertyBidRepository = propertyBidRepository;
         }
         
 
@@ -158,7 +167,33 @@ namespace RealEstate.Controllers
         public async Task<IActionResult> GetAuctionByid(int id)
         {
 
-            Auction ActionData = await _AuctionRepository.GetByIdAsync(id);
+            var ActionData = await _AuctionRepository.GetByIdAsync(id);
+            if (ActionData == null)
+            {
+                return NotFound("Auction ID Not found!");
+            }
+
+            AuctionDTOShow ActionShow = ActionData.ToAuctionDTOShow();
+
+            var property = await _propertyRepository.GetByIdAsync(ActionShow.PropertyId);
+            ActionShow.PropertyDto = _mapper.Map<PropertyDto>(property);
+
+            var lastPropertyBid = await propertyBidRepository.GetLastBidByAuctionIdAsync(ActionShow.Id);
+            ActionShow.LastPropertyBidDto = _mapper.Map<PropertyBidDto>(lastPropertyBid);
+
+            var propertyBids = await propertyBidRepository.GetByAuctionIdAsync(ActionShow.Id);
+            ActionShow.NumOfPropertyBids = propertyBids.Count();
+
+            return Ok(ActionShow);
+
+        }
+
+
+        [HttpGet("Property/{propertyId}")]
+        public async Task<IActionResult> GetAuctionByPropertyId(int propertyId)
+        {
+
+            var ActionData = await _AuctionRepository.GetByProprtyIdAsync(propertyId);
             if (ActionData == null)
             {
                 return NotFound("Auction ID Not found!");
@@ -220,21 +255,34 @@ namespace RealEstate.Controllers
         public async Task<IActionResult> GetAll(string? sortByPrice = null, string? sortByTime = null, Status? ISLivestatus = null)
         {
         
-            var AuctionModel = await _AuctionRepository.GetAllAsync(sortByPrice, sortByTime, ISLivestatus);
-            if (AuctionModel == null)
+            var AuctionsModel = await _AuctionRepository.GetAllAsync(sortByPrice, sortByTime, ISLivestatus);
+            if (AuctionsModel == null)
             {
 
                 return NotFound("Empty Auction List!");
 
             }
-            var AuctionDto = AuctionModel.ToAuctionDTOShowList();
+            var AuctionDto = AuctionsModel.ToAuctionDTOShowList();
+
+            foreach (var auction in AuctionDto)
+            {
+                var property = await _propertyRepository.GetByIdAsync(auction.PropertyId);
+                auction.PropertyDto = _mapper.Map<PropertyDto>(property);
+               
+                var lastPropertyBid = await propertyBidRepository.GetLastBidByAuctionIdAsync(auction.Id);
+                auction.LastPropertyBidDto = _mapper.Map<PropertyBidDto>(lastPropertyBid);
+
+                var propertyBids = await propertyBidRepository.GetByAuctionIdAsync(auction.Id);
+                auction.NumOfPropertyBids = propertyBids.Count();
+            }
+
             if (AuctionDto == null)
             {
 
-                return BadRequest("Error! While Fetching Product List!");
+                return BadRequest("Error! While Fetching Auction List!");
 
             }
-            return Ok(new { message = "Auction List is :", AuctionDto });
+            return Ok(AuctionDto);
         }
 
 
@@ -286,6 +334,7 @@ namespace RealEstate.Controllers
             return BadRequest("Cant Update auction Now !");
 
         }
+
 
         [HttpGet("GetHighestBid")]
         [Authorize(Roles = "Seller,Agent")]

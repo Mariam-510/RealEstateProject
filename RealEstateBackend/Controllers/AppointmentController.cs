@@ -19,12 +19,17 @@ namespace RealEstate.Controllers
         private readonly IMapper _mapper;
         private readonly IPropertyRepository _propertyRepo;
         private readonly IBuyerRepository _buyerRepo;
-        public AppointmentController(IAppointmentRepository appointmentRepo, IPropertyRepository propertyRepo, IBuyerRepository buyerRepo, IMapper mapper)
+        private readonly ISellerRepository _sellerRepo;
+        private readonly IAgentRepository _agentRepo;
+        public AppointmentController(IAppointmentRepository appointmentRepo, IPropertyRepository propertyRepo, IBuyerRepository buyerRepo,
+            ISellerRepository sellerRepo, IAgentRepository agentRepo, IMapper mapper)
         {
             _appointmentRepo = appointmentRepo;
             _mapper = mapper;
             _propertyRepo= propertyRepo;
             _buyerRepo= buyerRepo;
+            _sellerRepo= sellerRepo;
+            _agentRepo =agentRepo;
         }
 
 
@@ -77,27 +82,48 @@ namespace RealEstate.Controllers
         //}
         [HttpGet]
         [Route("user/BuyerViewAllAppointment")]
-        [Authorize(Roles = "Buyer")]
-        public async Task<IActionResult> GetAppointmentsByBuyer([FromQuery] string sortOrder = "desc", [FromQuery] string status = null)
+        [Authorize(Roles = "Buyer,Seller,Agent")]
+        public async Task<IActionResult> GetAppointmentsForUser([FromQuery] string sortOrder = "desc", [FromQuery] string status = null)
         {
             try
             {
                 string userIdStr = User.FindFirst("userId")?.Value;
-
                 if (!int.TryParse(userIdStr, out int userId))
                     return Unauthorized("User not found.");
 
-                var buyer = await _buyerRepo.GetByIdAsync(userId);
+                List<Appointment> appointments = new List<Appointment>();
 
-                if (buyer == null)
-                    return NotFound("Buyer not found.");
+                if (User.IsInRole("Buyer"))
+                {
+                    var buyer = await _buyerRepo.GetByIdAsync(userId);
+                    if (buyer == null)
+                        return NotFound("Buyer not found.");
 
-                var appointments = await _appointmentRepo.GetAppointmentsByBuyerIdAsync(buyer.Id);
+                    appointments = (await _appointmentRepo.GetAppointmentsByBuyerIdAsync(buyer.Id)).ToList();
+                }
+                else if (User.IsInRole("Agent"))
+                {
+                    var agent = await _agentRepo.GetByIdAsync(userId);
+                    if (agent == null)
+                        return NotFound("Agent not found.");
+
+                    appointments = (await _appointmentRepo.GetAppointmentsByAgentIdAsync(agent.Id)).ToList();
+                }
+                else if (User.IsInRole("Seller"))
+                {
+                    var seller = await _sellerRepo.GetByIdAsync(userId);
+                    if (seller == null)
+                        return NotFound("Seller not found.");
+
+                    appointments = (await _appointmentRepo.GetAppointmentsBySellerIdAsync(seller.Id)).ToList();
+                }
+                else
+                {
+                    return Forbid();
+                }
 
                 if (appointments == null || !appointments.Any())
-                {
-                    return NotFound("No appointments found for this buyer.");
-                }
+                    return NotFound("No appointments found for this user.");
 
                 // Filter by status if provided
                 if (!string.IsNullOrEmpty(status))
@@ -108,14 +134,9 @@ namespace RealEstate.Controllers
                 }
 
                 // Sort by scheduled time
-                if (sortOrder.ToLower() == "asc")
-                {
-                    appointments = appointments.OrderBy(a => a.ScheduledTime).ToList();
-                }
-                else
-                {
-                    appointments = appointments.OrderByDescending(a => a.ScheduledTime).ToList();
-                }
+                appointments = sortOrder.ToLower() == "asc"
+                    ? appointments.OrderBy(a => a.ScheduledTime).ToList()
+                    : appointments.OrderByDescending(a => a.ScheduledTime).ToList();
 
                 var result = appointments.Select(a => new AppointmentResponseDto
                 {
@@ -123,6 +144,9 @@ namespace RealEstate.Controllers
                     ScheduledTime = a.ScheduledTime,
                     Type = a.Type.ToString(),
                     Status = a.Status.ToString(),
+                    buyerName = a.Buyer.FirstName + " " + a.Buyer.LastName,
+                    buyerEmail = a.Buyer.Account.Email,
+                    buyerImage=a.Buyer.Account.ImageUrl,
                     Property = new AppointmentPropertyDto
                     {
                         Id = a.Property.Id,
@@ -133,17 +157,17 @@ namespace RealEstate.Controllers
                         Images = a.Property.Images.ToList(),
                         agentId = a.Property.AgentId,
                         sellerId = a.Property.SellerId,
-                        userName = a.Property.Agent != null
-                            ? a.Property.Agent.Name
-                            : a.Property.Seller != null
-                                ? a.Property.Seller.FirstName + " " + a.Property.Seller.LastName
-                                : null,
-                        userImage = a.Property.Agent != null
-    ? a.Property.Agent.Account?.ImageUrl
-    : a.Property.Seller != null
-        ? a.Property.Seller.Account?.ImageUrl
-        : null,
 
+                        userName = a.Property.Agent != null
+                                ? a.Property.Agent.Name
+                                : a.Property.Seller != null
+                                    ? a.Property.Seller.FirstName + " " + a.Property.Seller.LastName
+                                    : null,
+                        userImage = a.Property.Agent != null
+                            ? a.Property.Agent.Account?.ImageUrl
+                            : a.Property.Seller != null
+                                ? a.Property.Seller.Account?.ImageUrl
+                                : null,
                         userType = a.Property.Agent != null ? "Agent"
                                 : a.Property.Seller != null ? "Seller"
                                 : null
@@ -154,10 +178,10 @@ namespace RealEstate.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An unexpected error occurred." });
+                return StatusCode(500, new { message = "An unexpected error occurred.", error = ex.Message });
             }
-        }
 
+        }
 
 
 
@@ -181,6 +205,8 @@ namespace RealEstate.Controllers
             var property = await _propertyRepo.GetByIdAsync(id);
             if (property == null)
                 return NotFound("Property not found.");
+            if (property.Status == PropertyStatus.Sold)
+                return NotFound("Property has been sold.");
 
             // Check if the buyer exists
             //var buyer = await _buyerRepo.GetByIdAsync(createDto.BuyerId);

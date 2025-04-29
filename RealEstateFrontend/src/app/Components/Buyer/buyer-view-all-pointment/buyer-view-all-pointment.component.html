@@ -3,25 +3,36 @@
     <nav aria-label="breadcrumb mb-0">
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item mb-0">
-                <p class="text-muted mb-0">Buyer</p>
+                <p class="text-muted mb-0">User</p>
             </li>
             <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">All Appointments</li>
         </ol>
     </nav>
 </div>
+<!-- Flex container for tabs + sort -->
+<div class="d-flex align-items-center justify-content-between mt-5 ms-4 ms-sm-3 mb-4 flex-wrap">
+    <!-- Tabs -->
+    <div class="d-flex overflow-auto py-2">
+        <div class="d-flex flex-wrap flex-m-nowrap">  
+            <a *ngFor="let link of propertyLinks" href="#"
+               (click)="setActive(link, $event)"
+               [ngClass]="{
+                   'active-tab': link === activeLink, 
+                   'text-muted': link !== activeLink
+               }"
+               class="text-decoration-none px-4 px-sm-3 py-3 py-sm-2 text-caffe">
+                {{ link }}
+                <span *ngIf="link === activeLink" class="active-indicator"></span>
+            </a>
+        </div>
+    </div>
 
-<div class="d-flex mb-4 mt-5 ms-4 ms-sm-3 overflow-auto py-2">
-    <div class="d-flex flex-wrap flex-m-nowrap">  
-        <a *ngFor="let link of propertyLinks" href="#" 
-           (click)="setActive(link, $event)" 
-           [ngClass]="{
-               'active-tab': link === activeLink, 
-               'text-muted': link !== activeLink
-           }" 
-           class="text-decoration-none px-4 px-sm-3 py-3 py-sm-2 text-caffe">
-            {{ link }}
-            <span *ngIf="link === activeLink" class="active-indicator"></span>
-        </a>
+    <!-- Sort Button -->
+    <div class="mt-2 mt-sm-0">
+        <button class="btn d-flex align-items-center gap-1 text-brown" (click)="toggleSortAppointment()">
+            <i [ngClass]="sortAppointment === 'desc' ? 'bi bi-sort-down' : 'bi bi-sort-up'" class="fs-5"></i>
+            {{ sortAppointment === "desc" ? "Latest Appointments" : "Earlier Appointments" }}
+        </button>
     </div>
 </div>
 
@@ -30,17 +41,21 @@
 <div *ngIf="error" class="alert alert-danger mx-4" role="alert">
     {{ error }}
 </div>
+<ng-container *ngIf="appointments.length > 0 && filteredappoinments.length > 0; else noAppointments">
 
 <div class="row" >
-    <div *ngFor="let appointment of appointments" class="col-12">
+    <div *ngFor="let appointment of paginatedAppointments" class="col-12">
         <div class="card border-0 shadow-sm hover-shadow transition-all ms-4 mb-4" 
              style="height: auto; min-height: 16vw; max-height: none;">
             <div class="card-body p-0 h-100">
                 <div class="row g-0 h-100">
                     <div class="col-md-4 position-relative h-100" 
                          style="min-height: 200px; height: auto;">
+                         <a [routerLink]="['/properties', appointment.property.id]" class="d-block h-100">
+
                         <img [src]="apiConfig.apiUrl + appointment.property.images[0]" class="img-fluid w-100 h-100" 
                              style="object-fit: cover; min-height: 200px;">
+                         </a>
                         <div class="position-absolute top-0 end-1 m-2">
                             <span class="badge bg-white text-dark shadow-sm py-2 px-3" style="font-size: .85rem;">
                                 <i class="bi bi-tag-fill text-caffe me-1"></i>
@@ -140,10 +155,27 @@
         </div>
     </div>
 </div>
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center mt-4">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <a class="page-link text-caffe" (click)="previousPage()">Previous</a>
+      </li>
+      <li *ngFor="let page of getPages()" class="page-item " [class.active]="currentPage === page">
+        <a class="page-link" [ngClass]="{'bg-caffe text-white': currentPage === page}" (click)="goToPage(page)">
+          {{ page }}
+        </a>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <a class="page-link text-caffe" (click)="nextPage()">Next</a>
+      </li>
+    </ul>
+  </nav>
+</ng-container>
 
-<!-- Empty State -->
-<div *ngIf="appointments.length > 0 && filteredappoinments.length === 0 " class="text-center py-5">
-    <i class="bi bi-calendar-x text-caffe" style="font-size: 60px;"></i>
-    <h3 class="fw-bold text-caffe mb-3 mt-1">No Matching Appointments</h3>
-    <p class="text-muted mb-4">Try another filters to find what you're looking for.</p>
-</div>
+<ng-template #noAppointments>
+    <div *ngIf="filteredappoinments.length === 0" class="text-center py-5">
+        <i class="bi bi-calendar-x text-caffe" style="font-size: 60px;"></i>
+        <h3 class="fw-bold text-caffe mb-3 mt-1">No Matching Appointments</h3>
+        <p class="text-muted mb-4">Try another filters to find what you're looking for.</p>
+    </div>
+</ng-template>
