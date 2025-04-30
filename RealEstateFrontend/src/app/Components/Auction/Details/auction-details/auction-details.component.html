@@ -153,7 +153,7 @@
         <div *ngIf="hasRoleOrNoUser('Buyer')">
           <h6 class=" text-uppercase fw-bold text-brown mb-2 small">Place a Bid</h6>
           <form #bidForm="ngForm" (ngSubmit)="createBid()" class="d-flex flex-column gap-2">
-            <div class="input-group">
+            <div *ngIf="hasRole('Buyer')" class="input-group">
               <input type="number" class="form-control border-brown" placeholder="Enter bid amount"
                 [(ngModel)]="bidAmount" name="bidAmount" [min]="highestBid + 1" required>
               <span class="input-group-text bg-light-caffe  border-brown text-caffe">EGP</span>

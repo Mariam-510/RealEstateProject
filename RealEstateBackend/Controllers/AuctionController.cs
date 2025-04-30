@@ -17,6 +17,7 @@ using RealEstate.Repositories;
 using RealEstate.Services;
 using Microsoft.AspNetCore.SignalR;
 using RealEstate.Hubs;
+using System;
 
 
 namespace RealEstate.Controllers
@@ -57,6 +58,10 @@ namespace RealEstate.Controllers
             var auctions = await _AuctionRepository.GetAllAsync(sortByPrice, sortByTime, ISLivestatus);
             if (auctions == null) return NotFound("Empty Auction List!");
 
+            //Status Update Start
+            auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus();
+            //Status Update End
+
             var auctionDtos = auctions.ToAuctionDTOShowList();
 
             // Sequential processing of related data
@@ -83,6 +88,12 @@ namespace RealEstate.Controllers
             if (auction == null) return NotFound("Auction ID Not found!");
 
             var auctionDto = auction.ToAuctionDTOShow();
+
+            //Status Update Start
+            auction = await _AuctionRepository.CheckAndUpdateStatus(auction.Id);
+
+            var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus();
+            //Status Update End
 
             // Sequential data loading
             var property = await _propertyRepository.GetByIdAsync(auctionDto.PropertyId);
@@ -153,6 +164,12 @@ namespace RealEstate.Controllers
 
                     var AuctionCreated = await _AuctionRepository.CreateAsync(AuctionModel);
 
+                    //Status Update Start
+                    AuctionCreated = await _AuctionRepository.CheckAndUpdateStatus(AuctionCreated.Id);
+
+                    var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus();
+                    //Status Update End
+
                     var AuctionShow = AuctionCreated.ToAuctionDTOShow();
 
 
@@ -221,6 +238,10 @@ namespace RealEstate.Controllers
                     property.Status = PropertyStatus.Available;
                     await _propertyRepository.UpdateAsync(property);
 
+                    //Status Update Start
+                    var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus();
+                    //Status Update End
+
                     AuctionDTOShow ActionShow = AuctionDeleted.ToAuctionDTOShow();
 
                     transactionScope.Complete();
@@ -242,22 +263,31 @@ namespace RealEstate.Controllers
         }
 
         //------------------------------------------------------------------------------------------
-        [HttpGet("CheckStatus/{id}")]
-        public async Task<IActionResult> CheckAuctionStatus(int id)
+        [HttpGet("CheckStatus")]
+        public async Task<IActionResult> CheckAuctionStatus()
         {
-            var auction = await _AuctionRepository.GetByIdAsync(id);
-            if (auction == null) return NotFound();
+            //Status Update Start
+            var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus();
+            //Status Update End
 
-            var updated = await _AuctionRepository.CheckAndUpdateStatus(id);
-            return Ok(updated);
+            var auctionDtos = auctions.ToAuctionDTOShowList();
+
+            // Sequential processing of related data
+            foreach (var a in auctionDtos)
+            {
+                a.PropertyDto = _mapper.Map<PropertyDto>(await _propertyRepository.GetByIdAsync(a.PropertyId));
+                var bidsModel = await propertyBidRepository.GetByAuctionIdAsync(a.Id);
+                a.bids = _mapper.Map<List<PropertyBidDto>>(bidsModel);
+                a.NumOfPropertyBids = a.bids.Count;
+                a.LastPropertyBidDto = a.bids.FirstOrDefault();  // No need for null check here
+            }
+
+            // Notify all clients of fresh auction list
+            await _hubContext.Clients.All.SendAsync("CheckStatusAllAuctions", auctionDtos);
+
+            return Ok(auctionDtos);
         }
 
-        [HttpPost("UpdateStatus/{id}")]
-        public async Task<IActionResult> ForceStatusUpdate(int id)
-        {
-            var updated = await _AuctionRepository.CheckAndUpdateStatus(id);
-            return Ok(updated);
-        }
 
         //------------------------------------------------------------------------------------------
 
