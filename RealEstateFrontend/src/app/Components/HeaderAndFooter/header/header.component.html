@@ -61,14 +61,14 @@
   <!-- User Controls -->
   <div class="user-controls">
 
-    <div *ngIf="hasRoleOrNoUser('Buyer')" class="action-icons">
-      <button class="icon-btn" (click)="toggleWishlist()">
+    <div class="action-icons">
+      <button *ngIf="!hasRole('Admin')" class="icon-btn" (click)="toggleChat()">
         <i class="bi bi-chat-dots fs-4"></i>
         <!-- <i class="bi bi-chat-left-dots fs-4"></i> -->
         <!-- <i class="bi bi-chat-text fs-4"></i> -->
         <span *ngIf="messagesCount > 0" class="badge">{{ messagesCount }}</span>
       </button>
-      <button class="icon-btn" (click)="toggleCart()">
+      <button *ngIf="hasRoleOrNoUser('Buyer')" class="icon-btn" (click)="toggleCart()">
         <i class="bi bi-cart fs-4"></i>
         <div *ngIf="(cart$ | async) as cart">
           <span *ngIf="(cart?.orderItemDtos?.length || 0) > 0" class="badge">{{ cart?.orderItemDtos?.length }}</span>
