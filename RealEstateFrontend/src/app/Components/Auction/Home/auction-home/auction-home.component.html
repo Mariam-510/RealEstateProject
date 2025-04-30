@@ -53,7 +53,9 @@
               <li>Review the legal pack(s)</li>
             </ol>
 
-            <button class="view-lots-btn w-50  d-block mx-auto p-1 rounded-2 fs-5 fw-bold">View lots</button>
+            <a [routerLink]="['/auctions', nearestAuction?.id]"
+              class="btn view-lots-btn w-50  d-block mx-auto p-1 rounded-2 fs-5 fw-bold bg-caffe text-white">View lots
+            </a>
           </div>
         </div>
       </div>
@@ -246,7 +248,7 @@
           <!-- Card Body with Property Info -->
           <div class="card-body d-flex flex-column">
             <!-- Title -->
-            <h5 class="card-title fw-bold p-3 text-caffe">{{ auction.propertyDto?.title }}</h5>
+            <h5 class="card-title fw-bold p-3 text-caffe">{{ auction.propertyDto?.title }} ({{auction?.id}})</h5>
 
 
 

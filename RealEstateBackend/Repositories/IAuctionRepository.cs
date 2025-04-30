@@ -15,5 +15,7 @@ namespace RealEstate.Repositories
         Task<Auction?> GetByProprtyIdAsync(int id);
         Task<(Property? Property, int MaxBid)> GetHighestBidForEndedAuctionsBySellerAsync(int sellerId);
         Task<(Property? Property, int MaxBid)> GetHighestBidForEndedAuctionsByAgentAsync(int agentId);
+        Task<Auction?> CheckAndUpdateStatus(int auctionId);
+        Task<List<Auction>> CheckAndUpdateAllAuctionsStatus();
     }
 }

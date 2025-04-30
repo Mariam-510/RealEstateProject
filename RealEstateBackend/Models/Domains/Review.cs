@@ -14,7 +14,7 @@ namespace RealEstate.Models.Domains
         [MaxLength(300)]
         public string? Comment { get; set; }
 
-        public DateTime Date { get; set; } = DateTime.Now;
+        public DateTime Date { get; set; } = DateTime.Now.AddHours(1);
 
         public bool IsDeleted { get; set; } = false;
 

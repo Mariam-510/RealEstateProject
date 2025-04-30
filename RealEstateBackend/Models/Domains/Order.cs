@@ -10,7 +10,7 @@ namespace RealEstate.Models.Domains
         public int Id { get; set; }
 
         [DataType(DataType.DateTime)]
-        public DateTime OrderDate { get; set; } = DateTime.Now;
+        public DateTime OrderDate { get; set; } = DateTime.Now.AddHours(1);
 
         [EnumDataType(typeof(OrderStatus))]
         public OrderStatus Status { get; set; } = OrderStatus.Pending;

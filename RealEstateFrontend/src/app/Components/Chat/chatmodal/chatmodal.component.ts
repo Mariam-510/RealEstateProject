@@ -7,6 +7,8 @@ import { AuthService, User } from '../../../Services/ApiServices/auth.service';
 import { ConversationService } from '../../../Services/ApiServices/conversation.service';
 import { MessageResponseDto, MessageService } from '../../../Services/ApiServices/message.service';
 import { API_CONFIG } from '../../../app.config';
+import { OnDestroy } from '@angular/core';
+import { ChatService, IncomingChatMessage } from '../../../Services/ApiServices/chat.service';
 
 
 enum MessageStatus {
@@ -45,6 +47,7 @@ export class ChatmodalComponent implements OnInit, AfterViewChecked, AfterViewIn
   apiConfig = API_CONFIG;
   currentUser!: User | undefined;
   // loggedInUser!: User | undefined;
+  private messageSubscription: any;
 
   ngAfterViewInit() {
     this.scrollToBottom(true); // Force initial scroll
@@ -109,15 +112,52 @@ export class ChatmodalComponent implements OnInit, AfterViewChecked, AfterViewIn
 
 // Add to component constructor
 constructor(private cd: ChangeDetectorRef, private auth: AuthService,
-    private conversationService: ConversationService, private messageService: MessageService) {}
+    private conversationService: ConversationService, private messageService: MessageService, private chatService: ChatService) {}
 
 ngOnInit(): void {
   // this.currentUserId = this.auth.getCurrentUser()?.accountId;
   this.auth.currentUser$.subscribe(user => {
     this.currentUser = user;
+    this.setupSignalR();
   });
 
 }
+
+
+private setupSignalR() {
+  this.chatService.startConnection();
+  
+  this.messageSubscription = this.chatService.messages$.subscribe((messages: IncomingChatMessage[]) => {
+    if (!messages.length || !this.conversationId) return;
+
+    const latestMessage = messages[messages.length - 1];
+    
+    // Check if message belongs to current conversation
+    if (latestMessage.conversationId === this.conversationId) {
+      const exists = this.messages.some(m => 
+        m.time.getTime() === new Date(latestMessage.sentAt).getTime() && 
+        m.text === latestMessage.content
+      );
+      
+      if (!exists) {
+        const newMessage: Message = {
+          text: latestMessage.content,
+          sent: latestMessage.senderId === this.currentUser?.accountId,
+          time: new Date(latestMessage.sentAt),
+          status: MessageStatus.Delivered,          
+          senderId: latestMessage.senderId
+        };
+        
+        this.messages = [...this.messages, newMessage];
+        this.scrollToBottom(true);
+        this.cd.detectChanges();
+      }
+    }
+  });
+}
+
+
+
 
 initializeWithRecipient(recipientId: string) {
   this.recipientId = recipientId;

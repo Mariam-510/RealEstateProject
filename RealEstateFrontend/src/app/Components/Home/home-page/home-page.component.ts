@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Product, PropertyDto, SharedService } from '../../../Services/shared.service';
 import { RecommendedComponent } from '../../Properties/Details/recommended/recommended.component';
@@ -17,6 +17,10 @@ import { PropertyDTO, PropertyService } from '../../../Services/ApiServices/prop
 import { MatDialog } from '@angular/material/dialog';
 import { SignUpRoleComponentComponent } from '../../Authentication/sign-up-role-component/sign-up-role-component.component';
 import { GoogleService } from '../../../Services/ApiServices/google.service';
+import { SignalRService } from '../../../Services/SignalRServices/signal-r.service';
+import { AuctionDTOShow, AuctionService } from '../../../Services/ApiServices/auction.service';
+import { lastValueFrom } from 'rxjs';
+
 
 interface PropertyListing {
   id: number;
@@ -26,16 +30,6 @@ interface PropertyListing {
   image: string;
   tag?: string;
 }
-
-interface AuctionProperty {
-  id: number;
-  title: string;
-  bidInfo: string;
-  timeLeft: string;
-  image: string;
-  tag?: string;
-}
-
 interface Testimonial {
   id: number;
   name: string;
@@ -51,7 +45,6 @@ interface Feature {
   description: string;
 }
 
-
 @Component({
   selector: 'app-home-page',
   imports: [CommonModule, RouterModule, DaysUntilPipe],
@@ -59,7 +52,7 @@ interface Feature {
   styleUrl: './home-page.component.css'
 })
 
-export class HomePageComponent implements OnInit {
+export class HomePageComponent implements OnInit, OnDestroy {
 
   apiConfig = API_CONFIG;
 
@@ -99,41 +92,6 @@ export class HomePageComponent implements OnInit {
       price: '$1,250,000',
       image: 'https://images.prop24.com/331109780/Crop600x400',
       tag: 'Featured'
-    }
-  ];
-
-  // Auction properties data
-  auctionProperties: AuctionProperty[] = [
-    {
-      id: 1,
-      title: 'Luxury Condo',
-      bidInfo: 'Current bid: $320,000',
-      timeLeft: 'Ends in 2 days',
-      image: 'https://images.dailynewsegypt.com/2024/09/real-estate-property.jpg',
-      tag: 'Ending Soon'
-    },
-    {
-      id: 2,
-      title: 'Commercial Building',
-      bidInfo: 'Current bid: $750,000',
-      timeLeft: 'Ends in 5 days',
-      image: 'https://images.prop24.com/331109780/Crop600x400',
-      tag: 'Hot Deal'
-    },
-    {
-      id: 3,
-      title: 'Mountain Cabin',
-      bidInfo: 'Starting bid: $180,000',
-      timeLeft: 'Ends in 10 days',
-      image: 'https://www.brinkpm.com/images/blog/bigstock-Luxurious-New-Construction-Hom-165493040.webp',
-      tag: 'New'
-    },
-    {
-      id: 4,
-      title: 'Urban Townhouse',
-      bidInfo: 'Current bid: $425,000',
-      timeLeft: 'Ends in 3 days',
-      image: 'https://u.realgeeks.media/songrealestate/_rgg/landscape_images/GreyandBeigeHome.jpg'
     }
   ];
 
@@ -190,69 +148,6 @@ export class HomePageComponent implements OnInit {
     }
   ];
 
-  // Upcoming Auctions
-  upcomingAuctions: PropertyDto[] = [
-    {
-      id: 201,
-      title: 'Waterfront Commercial Space',
-      description: 'Prime commercial space with marina access',
-      location: 'Marina Bay, Singapore',
-      price: 12000000,
-      type: 'AUCTION',
-      propertyCategory: 'Commercial',
-      status: 'UPCOMING',
-      images: [
-        'propertyImages/4.jpg'
-      ],
-      space: 2000,
-      isFavorite: true,
-      userImage: '/assets/images/avatars/global-auctions.jpg',
-      userName: 'Global Auctions',
-      date: new Date('2025-05-01'),
-      activeMap: true
-    },
-    {
-      id: 202,
-      title: 'Tech Park Office Unit',
-      description: 'Modern office space in innovation district',
-      location: 'Silicon Valley, CA',
-      price: 3500000,
-      type: 'AUCTION',
-      propertyCategory: 'Commercial',
-      status: 'UPCOMING',
-      images: [
-        'propertyImages/5.jpg'
-      ],
-      space: 1500,
-      isFavorite: false,
-      userImage: '/assets/images/avatars/tech-estate.jpg',
-      userName: 'Tech Estate',
-      date: new Date('2025-04-30'),
-      activeMap: true
-    },
-    {
-      id: 203,
-      title: 'Mountain Resort Property',
-      description: '15-acre resort property with ski access',
-      location: 'Aspen, Colorado',
-      price: 8500000,
-      type: 'AUCTION',
-      propertyCategory: 'Residential',
-      status: 'UPCOMING',
-      images: [
-        'propertyImages/6.jpg'
-      ],
-      bedrooms: 8,
-      bathrooms: 6,
-      space: 5000,
-      isFavorite: true,
-      userImage: '/assets/images/avatars/luxury-auctions.jpg',
-      userName: 'Luxury Auctions',
-      date: new Date('2025-04-27'),
-      activeMap: false
-    }
-  ];
-
   // Trust Stats
   stats = [
     { value: '5,000+', label: 'Properties Sold' },
@@ -283,13 +178,149 @@ export class HomePageComponent implements OnInit {
 
   constructor(private auth: AuthService, private wishListService: WishListService,
     private toastr: ToastrService, private productService: ProductService, private cdr: ChangeDetectorRef,
-    private propertyService: PropertyService, private dialog: MatDialog, private googleService: GoogleService) { }
+    private propertyService: PropertyService, private dialog: MatDialog, private googleService: GoogleService,
+    private auctionService: AuctionService, private signalrService: SignalRService) { }
 
   async ngOnInit() {
+
+    await this.signalrService.startConnection(); // Add this first
+
+    await this.loadAuctions();
+
+    // Bind handlers
+    this.signalrService.listenToAuctionListUpdates(this.updateSingleAuction.bind(this));
+    this.signalrService.listenToAllAuctions(this.updateAuctions.bind(this));
+    this.signalrService.listenToNewAuctions(this.addNewAuction.bind(this));
+    this.signalrService.listenToDeletedAuctions(this.removeAuction.bind(this));
+
     this.startAutoSlide();
     await this.loadProducts();
     await this.loadProperties();
   }
+
+
+  auctions: AuctionDTOShow[] = [];
+  nearestAuctions: AuctionDTOShow[] = [];
+
+  async loadAuctions(): Promise<void> {
+    try {
+
+      // Get auctions from service
+      const auctions = await lastValueFrom(
+        this.auctionService.getAllAuctions()
+      );
+
+      // Update component state
+      this.auctions = auctions;
+
+      this.auctions = auctions.map(auction => ({
+        ...auction,
+        startTime: new Date(auction.startTime),  // Convert string to Date
+        endTime: new Date(auction.endTime)      // Convert string to Date
+      }));
+
+      console.log(this.auctions);
+
+      this.nearestAuctions = this.getNearestAuctions(this.auctions);
+
+    } catch (error) {
+      console.error('Error loading auctions:', error);
+    }
+  }
+
+  private updateAuctions(auctions: AuctionDTOShow[]) {
+    this.auctions = auctions;
+    this.auctions = this.auctions.map(auction => ({
+      ...auction,
+      startTime: new Date(auction.startTime),  // Convert string to Date
+      endTime: new Date(auction.endTime)      // Convert string to Date
+    }));
+
+    this.nearestAuctions = this.getNearestAuctions(this.auctions);
+  }
+
+  private addNewAuction(auction: AuctionDTOShow) {
+    const processedAuction = {
+      ...auction,
+      startTime: new Date(auction.startTime),
+      endTime: new Date(auction.endTime)
+    };
+
+    if (!this.auctions.some(a => a.id === processedAuction.id)) {
+      this.auctions = [processedAuction, ...this.auctions];
+      this.auctions = this.auctions.map(auction => ({
+        ...auction,
+        startTime: new Date(auction.startTime),  // Convert string to Date
+        endTime: new Date(auction.endTime)      // Convert string to Date
+      }));
+
+      this.nearestAuctions = this.getNearestAuctions(this.auctions);
+    }
+  }
+
+  private removeAuction(auctionId: number) {
+    this.auctions = this.auctions.filter(a => a.id !== auctionId);
+    this.auctions = this.auctions.map(auction => ({
+      ...auction,
+      startTime: new Date(auction.startTime),  // Convert string to Date
+      endTime: new Date(auction.endTime)      // Convert string to Date
+    }));
+
+    this.nearestAuctions = this.getNearestAuctions(this.auctions);
+  }
+
+  private updateSingleAuction(updatedAuction: AuctionDTOShow) {
+    const index = this.auctions.findIndex(a => a.id === updatedAuction.id);
+
+    if (index > -1) {
+      // Merge updates
+      this.auctions[index] = {
+        ...this.auctions[index],
+        ...updatedAuction,
+        bids: updatedAuction.bids || this.auctions[index].bids,
+      };
+    } else {
+      this.auctions = [updatedAuction, ...this.auctions];
+    }
+
+    this.auctions = this.auctions.map(auction => ({
+      ...auction,
+      startTime: new Date(auction.startTime),  // Convert string to Date
+      endTime: new Date(auction.endTime)      // Convert string to Date
+    }));
+
+    this.nearestAuctions = this.getNearestAuctions(this.auctions);
+  }
+
+  private getNearestAuctions(auctions: AuctionDTOShow[]): AuctionDTOShow[] {
+    const now = new Date();
+
+    // 1. Filter upcoming auctions
+    const upcomingAuctions = auctions.filter(auction =>
+      auction.startTime.getTime() > now.getTime()
+    );
+
+    // 2. Sort by nearest start time
+    const sortedAuctions = upcomingAuctions.sort((a, b) =>
+      a.startTime.getTime() - b.startTime.getTime()
+    );
+
+    // 3. Return first 3 results
+    return sortedAuctions.slice(0, 3);
+  }
+
+
+  ngOnDestroy() {
+    this.signalrService.hubConnection.stop();
+    // Clean up listeners
+    this.signalrService.hubConnection.off('ReceiveAllAuctions');
+    this.signalrService.hubConnection.off('NewAuctionCreated');
+    this.signalrService.hubConnection.off('AuctionDeleted');
+    this.signalrService.hubConnection.off('AuctionListUpdate');
+
+  }
+
+
 
   // async loadProducts() {
   //   try {

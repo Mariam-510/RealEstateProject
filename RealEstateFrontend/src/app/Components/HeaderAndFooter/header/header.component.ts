@@ -76,7 +76,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   cart: CartDto | null = null;
   showMobileNav = false;
   showUserMenu = false;
-  messagesCount = 2;
+  messagesCount = 0;
   showCart = false;
   showCartBackdrop = false;
 
@@ -133,9 +133,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.showUserMenu) this.showMobileNav = false;
   }
 
-  toggleWishlist() {
+  toggleChat() {
     this.router.navigate(['/mainchat'])
-    console.log('Toggle wishlist');
+    console.log('Toggle chat');
   }
 
   toggleCart() {
