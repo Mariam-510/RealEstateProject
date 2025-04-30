@@ -59,7 +59,7 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
     });
     // Initialize filtered auctions and pagination
     this.filteredAuctions = [...this.auctions];
-    this.updatePagination(); // Add this line
+    this.applyFilters(); // Add this line
   }
 
 
@@ -87,7 +87,7 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
       this.nearestAuction = this.getNearestAuction(this.auctions);
 
       this.filteredAuctions = [...this.auctions];
-      this.updatePagination();
+      this.applyFilters();
     } catch (error) {
       console.error('Error loading auctions:', error);
       this.errorMessage = 'Failed to load auctions. Please try again later.';
@@ -127,7 +127,7 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
       }));
 
       this.filteredAuctions = [...this.auctions];
-      this.updatePagination();
+      this.applyFilters();
       this.nearestAuction = this.getNearestAuction(this.auctions);
     }
   }
@@ -142,7 +142,7 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
 
     // Update filteredAuctions and pagination
     this.filteredAuctions = [...this.auctions];
-    this.updatePagination();
+    this.applyFilters();
     this.nearestAuction = this.getNearestAuction(this.auctions);
   }
 
@@ -168,7 +168,7 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
 
     // Update filteredAuctions and pagination
     this.filteredAuctions = [...this.auctions];
-    this.updatePagination();
+    this.applyFilters();
     this.nearestAuction = this.getNearestAuction(this.auctions);
   }
 

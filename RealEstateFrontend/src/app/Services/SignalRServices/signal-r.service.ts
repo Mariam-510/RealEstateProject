@@ -26,24 +26,43 @@ export class SignalRService {
       .build();
   }
 
-  public startConnection(): Promise<void> {
-    if (!this.isConnectionStarted) {
-      this.isConnectionStarted = true;
-      return this.hubConnection.start()
+  // public startConnection(): Promise<void> {
+  //   // if (!this.isConnectionStarted) {
+  //   //   this.isConnectionStarted = true;
+  //   return this.hubConnection.start()
+  //     .then(() => {
+  //       console.log('SignalR connection started');
+  //       // Add reconnection handling
+  //       this.hubConnection.onreconnected(() => {
+  //         console.log('SignalR reconnected');
+  //       });
+  //     })
+  //     .catch(err => {
+  //       console.error('Error starting connection: ' + err);
+  //       // this.isConnectionStarted = false;
+  //     });
+  //   // }
+  //   return Promise.resolve();
+  // }
+
+  public startConnection(): void {
+    if (this.hubConnection.state === signalR.HubConnectionState.Disconnected) {
+      this.hubConnection.start()
         .then(() => {
           console.log('SignalR connection started');
-          // Add reconnection handling
+
           this.hubConnection.onreconnected(() => {
             console.log('SignalR reconnected');
           });
         })
         .catch(err => {
           console.error('Error starting connection: ' + err);
-          this.isConnectionStarted = false;
         });
+    } else {
+      console.warn('SignalR connection is not in a disconnected state:', this.hubConnection.state);
     }
-    return Promise.resolve();
   }
+
 
   // Listeners
   public listenToAllAuctions(callback: (auctions: AuctionDTOShow[]) => void) {

@@ -113,6 +113,7 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       this.auction = this.processAuctionDates(updatedAuction);
     }
     console.log('u', this.auction);
+    this.cdr.detectChanges(); // Add change detection
   }
 
   private handleListUpdate(updatedAuction: AuctionDTOShow) {
@@ -123,7 +124,7 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       });
     }
     console.log('l', this.auction);
-
+    this.cdr.detectChanges(); // Add change detection
   }
 
   private handleAuctionDeletion(deletedId: number) {
@@ -132,6 +133,7 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         state: { message: 'This auction has been deleted' }
       });
     }
+    this.cdr.detectChanges(); // Add change detection
   }
 
 
