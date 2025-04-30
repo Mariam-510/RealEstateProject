@@ -97,20 +97,6 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
   }
 
 
-  private updateAuctions(auctions: AuctionDTOShow[]) {
-    this.auctions = auctions;
-    this.auctions = this.auctions.map(auction => ({
-      ...auction,
-      startTime: new Date(auction.startTime),  // Convert string to Date
-      endTime: new Date(auction.endTime)      // Convert string to Date
-    }));
-
-    // Update filteredAuctions and pagination
-    this.filteredAuctions = [...this.auctions];
-    this.updatePagination();
-    this.nearestAuction = this.getNearestAuction(this.auctions);
-  }
-
   private addNewAuction(auction: AuctionDTOShow) {
     const processedAuction = {
       ...auction,
@@ -126,8 +112,9 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
         endTime: new Date(auction.endTime)      // Convert string to Date
       }));
 
-      this.filteredAuctions = [...this.auctions];
-      this.applyFilters();
+      // this.filteredAuctions = [...this.auctions];
+      this.applyFilters(false);
+      this.updatePagination();
       this.nearestAuction = this.getNearestAuction(this.auctions);
     }
   }
@@ -141,8 +128,8 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
     }));
 
     // Update filteredAuctions and pagination
-    this.filteredAuctions = [...this.auctions];
-    this.applyFilters();
+    // this.filteredAuctions = [...this.auctions];
+    this.applyFilters(false);
     this.nearestAuction = this.getNearestAuction(this.auctions);
   }
 
@@ -167,8 +154,23 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
     }));
 
     // Update filteredAuctions and pagination
-    this.filteredAuctions = [...this.auctions];
-    this.applyFilters();
+    // this.filteredAuctions = [...this.auctions];
+    this.applyFilters(false);
+    this.updatePagination();
+    this.nearestAuction = this.getNearestAuction(this.auctions);
+  }
+
+  private updateAuctions(auctions: AuctionDTOShow[]) {
+    this.auctions = auctions;
+    this.auctions = this.auctions.map(auction => ({
+      ...auction,
+      startTime: new Date(auction.startTime),  // Convert string to Date
+      endTime: new Date(auction.endTime)      // Convert string to Date
+    }));
+
+    // Update filteredAuctions and pagination
+    // this.filteredAuctions = [...this.auctions];
+    this.applyFilters(false);
     this.nearestAuction = this.getNearestAuction(this.auctions);
   }
 
@@ -584,7 +586,7 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
     this.isContentVisible = !this.isContentVisible;
   }
   // __________________________________FILTERS______________________________________
-  applyFilters(): void {
+  applyFilters(changePage: boolean = true): void {
     this.filteredAuctions = this.auctions.filter(auction => {
       // Search Filter
       if (this.searchQuery.trim()) {
@@ -652,12 +654,15 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
       }
       return true;
     });
-    this.updatePagination();
-    this.currentPage = 1;
 
-
+    if (changePage) {
+      this.updatePagination();
+      this.currentPage = 1;
+    }
 
   }
+
+
   private getWeekRange(): { start: Date, end: Date } {
     const now = new Date();
     const start = new Date(now);

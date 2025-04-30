@@ -160,13 +160,13 @@
             </div>
 
             <!-- Fix the template expressions to handle null -->
-            <div *ngIf="bidAmount !== null && bidAmount < highestBid" class="text-danger small">
+            <div *ngIf="bidAmount !== null && bidAmount <= highestBid" class="text-danger small">
               Bid must be higher than {{ highestBid | number:'1.0-0' }} EGP
             </div>
 
             <button *ngIf="hasRole('Buyer')" type="submit"
               class="btn btn-caffe w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2"
-              [disabled]="(bidAmount ?? 0) < highestBid || !bidAmount">
+              [disabled]="(bidAmount ?? 0) <= highestBid || !bidAmount">
               <i class="bi bi-hammer"></i> <!-- Bootstrap Icons hammer icon -->
               Submit Bid
             </button>
