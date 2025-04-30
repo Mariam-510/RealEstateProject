@@ -106,7 +106,7 @@ namespace RealEstate.Controllers
                     {
                         var order = new Order()
                         {
-                            OrderDate = DateTime.Now,
+                            OrderDate = DateTime.Now.AddHours(1),
                             Status = OrderStatus.Pending,
                             SubTotal = cart.TotalPrice,
                             DeliveryFees = createOrderDto.DeliveryFees,

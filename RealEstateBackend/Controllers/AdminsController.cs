@@ -102,7 +102,7 @@ namespace RealEstate.Controllers
                     }
 
                     var account = Mapper.Map<Account>(createAdminDto);
-                    account.CreatedAt = DateTime.Now;
+                    account.CreatedAt = DateTime.Now.AddHours(1);
                     account.UserName = createAdminDto.Email;
                     account.EmailConfirmationCode = null;
                     account.CodeGeneratedAt = null;

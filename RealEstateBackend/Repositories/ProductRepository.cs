@@ -149,7 +149,7 @@ namespace RealEstate.Repositories
                 updatedProduct.Price = product.Price;
                 updatedProduct.IsUsed = product.IsUsed;
                 updatedProduct.CategoryID = product.CategoryID;
-                updatedProduct.DateAdded = DateTime.Now;
+                updatedProduct.DateAdded = DateTime.Now.AddHours(1);
                 updatedProduct.Images = product.Images;
 
                 await dbcontext.SaveChangesAsync();

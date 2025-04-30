@@ -6,7 +6,7 @@ namespace RealEstate.Models.Domains
     public class Account : IdentityUser
     {
         [DataType(DataType.DateTime)]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.Now.AddHours(1);
 
         public bool IsDeleted { get; set; } = false;
 

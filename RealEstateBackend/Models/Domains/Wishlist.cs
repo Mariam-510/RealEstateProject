@@ -10,7 +10,7 @@ namespace RealEstate.Models.Domains
         public int Id { get; set; }
 
         [DataType(DataType.DateTime)]
-        public DateTime WishlistDateTime { get; set; } = DateTime.Now;
+        public DateTime WishlistDateTime { get; set; } = DateTime.Now.AddHours(1);
 
         public bool IsDeleted { get; set; } = false;
 

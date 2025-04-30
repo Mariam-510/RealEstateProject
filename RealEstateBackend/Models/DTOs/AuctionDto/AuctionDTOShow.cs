@@ -16,6 +16,7 @@ namespace RealEstate.Models.DTOs.Auction
         public int? SellerId { get; set; }
         public PropertyDto.PropertyDto? PropertyDto { get; set; }
         public PropertyBidDto.PropertyBidDto? LastPropertyBidDto { get; set; }
+        public List<PropertyBidDto.PropertyBidDto> bids { get; set; } = new List<PropertyBidDto.PropertyBidDto>();
         public int? NumOfPropertyBids { get; set; }
 
     }

@@ -57,7 +57,7 @@ export class AddProductComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!this.hasRole('admin')) {
+    if (!this.hasRole('Admin')) {
       this.router.navigate(['/login']);
       return;
     }

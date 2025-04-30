@@ -15,7 +15,7 @@ namespace RealEstate.Models.Domains
         [MaxLength(200)]
         public string Message { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.Now.AddHours(1);
 
         public bool IsDeleted { get; set; } = false;
 
