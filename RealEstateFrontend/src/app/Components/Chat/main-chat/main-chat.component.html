@@ -11,7 +11,7 @@
               <!-- Chat List Items -->
               <!-- Updated Chat List Item -->
               <li *ngFor="let chat of conversations" class="p-2 border-bottom cursor-pointer chat-list-item"
-                [class.active-chat]="selectedChat?.id === chat.id" (click)="selectChat(chat)">
+                [class.active-chat]="selectedChat?.id === chat.id" [class.new-message-pulse]="chat.unread > 0" (click)="selectChat(chat)">
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="d-flex flex-row flex-grow-1" style="min-width: 0;">
                     <img [src]="apiConfig.apiUrl + chat.otherUser.image" alt="avatar"
@@ -20,8 +20,8 @@
                       <div class="d-flex justify-content-between align-items-center">
                         <p class="fw-bold mb-0 text-truncate">
                           {{chat.otherUser.firstName }}  {{ chat.otherUser.lastName ? chat.otherUser.lastName : "" }}
-                          <span *ngIf="chat.otherUser.name === 'Loading...'"
-                            class="spinner-border spinner-border-sm"></span>
+                          <!-- <span *ngIf="chat.otherUser.name === 'Loading...'"
+                            class="spinner-border spinner-border-sm"></span> -->
                         </p>
                         <span class="small text-muted text-nowrap ms-2">
                           {{ chat.lastMessageTime ? (chat.lastMessageTime | date:'shortTime') : 'No messages' }}
