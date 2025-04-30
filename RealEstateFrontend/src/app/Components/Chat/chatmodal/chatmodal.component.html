@@ -1,14 +1,13 @@
 <div class="chat-window" *ngIf="isChatVisible">
     <div class="card">
         <!-- Header Section -->
-        <div class="card-header d-flex justify-content-between align-items-center p-3" 
-             style="border-top: 4px solid #4a2c2a;">
+        <div class="card-header d-flex justify-content-between align-items-center p-3"
+            style="border-top: 4px solid #4a2c2a;">
             <div class="d-flex flex-column w-100 position-relative">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0 fw-bold text-brown text-center w-100">Ask UrbanNest</h4>
-                    <button class="btn-close position-absolute end-0 text-caffe-dark" 
-                            (click)="toggle()" 
-                            aria-label="Close chat"></button>
+                    <button class="btn-close position-absolute end-0 text-caffe-dark" (click)="toggle()"
+                        aria-label="Close chat"></button>
                 </div>
                 <!-- Property Info -->
                 <!-- <div class="property-info mt-1">
@@ -28,41 +27,39 @@
                 </span>
             </div>
 
-            <div *ngFor="let msg of messages; trackBy: trackByMessage" class="message-wrapper">                <div class="d-flex mb-3" [ngClass]="msg.sent ? 'justify-content-end' : 'justify-content-start'">
+            <div *ngFor="let msg of messages; trackBy: trackByMessage" class="message-wrapper">
+                <div class="d-flex mb-3" [ngClass]="msg.sent ? 'justify-content-end' : 'justify-content-start'">
                     <!-- Receiver Image -->
                     <img *ngIf="!msg.sent"
-                        [src]="msg.profileImg || 'assets/default-user.png'"
-                        class="rounded-circle me-2 profile-img align-self-start"
-                        width="40"
-                        height="40"
+                        [src]="msg.profileImg || 'https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg'"
+                        class="rounded-circle me-2 profile-img align-self-start" width="40" height="40"
                         alt="User profile">
 
                     <div class="d-flex flex-column" [ngClass]="msg.sent ? 'align-items-end' : 'align-items-start'">
                         <div class="d-flex align-items-start" [ngClass]="{'flex-row-reverse': msg.sent}">
-                               <!-- Message Bubble -->
-                    <div class="message-bubble-with-meta" [ngClass]="{
+                            <!-- Message Bubble -->
+                            <div class="message-bubble-with-meta" [ngClass]="{
                         'sent-message': msg.sent,
                         'received-message': !msg.sent
                       }">
-                      <p class="mb-1">{{ msg.text }}</p>
-                      <div class="bubble-meta text-muted small d-flex justify-content-end align-items-center gap-1">
-                        <span>{{ msg.time | date:'shortTime' }}</span>
-                        <span *ngIf="msg.sent" class="status-indicator" [ngClass]="getStatusClass(msg.status)">
-                          <i *ngIf="msg.status === 'Read'" class="bi bi-check2-all"></i>
-                          <i *ngIf="msg.status === 'Delivered'" class="bi bi-check2"></i>
-                          <i *ngIf="msg.status === 'Sent'" class="bi bi-check"></i>
-                          <i *ngIf="msg.status === 'Pending'" class="bi bi-clock-history"></i>
-                          <i *ngIf="msg.status === 'Rejected'" class="bi bi-x-circle"></i>
-                        </span>
-                      </div>
-                    </div>
+                                <p class="mb-1">{{ msg.text }}</p>
+                                <div
+                                    class="bubble-meta text-muted small d-flex justify-content-end align-items-center gap-1">
+                                    <span>{{ msg.time | date:'shortTime' }}</span>
+                                    <span *ngIf="msg.sent" class="status-indicator"
+                                        [ngClass]="getStatusClass(msg.status)">
+                                        <i *ngIf="msg.status === 'Read'" class="bi bi-check2-all"></i>
+                                        <i *ngIf="msg.status === 'Delivered'" class="bi bi-check2"></i>
+                                        <i *ngIf="msg.status === 'Sent'" class="bi bi-check"></i>
+                                        <i *ngIf="msg.status === 'Pending'" class="bi bi-clock-history"></i>
+                                        <i *ngIf="msg.status === 'Rejected'" class="bi bi-x-circle"></i>
+                                    </span>
+                                </div>
+                            </div>
 
                             <!-- Sender Image -->
-                            <img *ngIf="msg.sent"
-                                src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
-                                class="rounded-circle ms-2 profile-img align-self-start"
-                                width="40"
-                                height="40"
+                            <img *ngIf="msg.sent" [src]="apiConfig.apiUrl + currentUser?.imageUrl"
+                                class="rounded-circle ms-2 profile-img align-self-start" width="40" height="40"
                                 alt="Sender profile">
                         </div>
 
@@ -92,10 +89,10 @@
         <div class="card-footer text-muted p-3">
             <div class="input-group">
                 <textarea class="form-control" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()"
-                placeholder="Type your message..." rows="1"></textarea>
-              <button class="btn btn-brown" (click)="sendMessage()">
-                <i class="bi bi-send-fill"></i>
-              </button>
+                    placeholder="Type your message..." rows="1"></textarea>
+                <button class="btn btn-brown" (click)="sendMessage()">
+                    <i class="bi bi-send-fill"></i>
+                </button>
             </div>
         </div>
     </div>

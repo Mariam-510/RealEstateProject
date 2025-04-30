@@ -29,7 +29,6 @@ namespace RealEstate.Controllers
         public IPropertyRepository _propertyRepository { get; }
         public IAgentRepository _AgentRepository { get; }
         public ISellerRepository _SellerRepository { get; }
-        public IMapper _mapper { get; }
         public FileService _fileService { get; }
 
         public AuctionController(IAuctionRepository auctionRepository, IPropertyRepository propertyRepository,
