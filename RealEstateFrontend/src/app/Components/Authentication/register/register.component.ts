@@ -53,6 +53,15 @@ export class RegisterComponent {
     },
 
   );
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
+   
+  togglePasswordVisibility(): void {
+      this.showPassword = !this.showPassword;
+  }
+  toggleConfirmcPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+}
 
 
   errorMes: string = '';

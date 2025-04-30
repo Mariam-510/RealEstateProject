@@ -10,7 +10,7 @@ import { RouterModule, Router } from '@angular/router'
   styleUrl: './seller-profile.component.css'
 })
 export class SellerProfileComponent {
-  userImage: string = 'images/Home/user.jpeg';
+  userImage: string | null = null;
   currentUser: any;
   MyForm!: FormGroup;
 
@@ -33,6 +33,7 @@ export class SellerProfileComponent {
         Validators.minLength(3),
         Validators.pattern(/^[A-Za-z]+$/)
       ]),
+      currentPassword: new FormControl(''),
       
       password: new FormControl("", [
         Validators.minLength(6),
@@ -47,7 +48,10 @@ export class SellerProfileComponent {
 }
 showPassword: boolean = false;
 showConfirmPassword: boolean = false;
-
+showCurrentPassword: boolean = false;
+toggleCurrentPasswordVisibility(): void {
+  this.showCurrentPassword = !this.showCurrentPassword;
+}     
 togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
 }
@@ -91,7 +95,10 @@ uploadImage() {
   
     input.click();
   }
+  removeImage() {
+    this.userImage = null;
   
+  }
 
   register() {
     if (this.MyForm.invalid) {
