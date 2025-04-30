@@ -2,8 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using RealEstate.Hubs;
+using RealEstate.Mapping;
 using RealEstate.Models.Domains;
 using RealEstate.Models.DTOs.PropertyBidDto;
+using RealEstate.Models.DTOs.PropertyDto;
 using RealEstate.Repositories;
 
 namespace RealEstate.Controllers
@@ -16,14 +20,21 @@ namespace RealEstate.Controllers
         private readonly IMapper _mapper;
         private readonly IAuctionRepository _auctionRepository;
         private readonly IBuyerRepository _buyerRepository;
-        public PropertyBidController(IPropertyBidRepository propertyBidRepo, IAuctionRepository auctionRepository, IBuyerRepository buyerRepository, IMapper mapper)
+        private readonly IHubContext<AuctionHub> _hubContext;
+        private readonly IPropertyRepository _propertyRepository;
+
+        public PropertyBidController(IPropertyBidRepository propertyBidRepo, IAuctionRepository auctionRepository, IBuyerRepository buyerRepository,
+            IMapper mapper, IHubContext<AuctionHub> hubContext, IPropertyRepository propertyRepository)
         {
             _propertyBidRepo = propertyBidRepo;
             _mapper = mapper;
             _auctionRepository= auctionRepository;
             _buyerRepository= buyerRepository;
+            _hubContext = hubContext;
+            _propertyRepository = propertyRepository;
         }
 
+        //signal r
         [HttpPost]
         [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> Create([FromBody] CreatePropertyBidDto createDto)
@@ -78,13 +89,77 @@ namespace RealEstate.Controllers
 
             var createdBid = await _propertyBidRepo.AddAsync(propertyBid);
 
-            var bidDto = _mapper.Map<PropertyBidDto>(createdBid);
+            // Update auction status first
+            auction = await _auctionRepository.CheckAndUpdateStatus(createDto.AuctionId);
 
-            bidDto.TimeAgo = GetTimeAgo(bidDto.Timestamp);
-            
-            return CreatedAtAction(nameof(GetById), new { id = bidDto.Id }, bidDto);
+            // Get updated bid information
+            var allBids = await _propertyBidRepo.GetByAuctionIdAsync(createDto.AuctionId);
+            var bidDtos = allBids.Select(b =>
+            {
+                var dto = _mapper.Map<PropertyBidDto>(b);
+                dto.TimeAgo = GetTimeAgo(b.Timestamp);
+                return dto;
+            }).ToList();
+
+            // Get associated property and auction
+            auction = await _auctionRepository.GetByIdAsync(createDto.AuctionId);
+            var property = await _propertyRepository.GetByIdAsync(auction.PropertyId.Value);
+
+            var realtimeData = new
+            {
+                AuctionId = createDto.AuctionId,
+                AllBids = bidDtos,
+                BidCount = bidDtos.Count,
+                LastBid = bidDtos.FirstOrDefault(),
+                PropertyStatus = property.Status.ToString(),
+                AuctionStatus = auction.Status.ToString()
+            };
+
+            // Send real-time updates
+            await _hubContext.Clients.Group($"Auction-{createDto.AuctionId}")
+                .SendAsync("AllBidsUpdated", realtimeData);
+
+            var auctionDto = auction.ToAuctionDTOShow();
+
+            // Sequential data loading
+            auctionDto.PropertyDto = _mapper.Map<PropertyDto>(property);
+            auctionDto.bids = bidDtos;
+            auctionDto.NumOfPropertyBids = auctionDto.bids.Count;
+            auctionDto.LastPropertyBidDto = auctionDto.bids.FirstOrDefault();
+
+            await _hubContext.Clients.All.SendAsync("AuctionListUpdate", auctionDto);
+
+
+            return CreatedAtAction(nameof(GetById), new { id = createdBid.Id },
+            _mapper.Map<PropertyBidDto>(createdBid));
+
         }
 
+        //signal r
+        [HttpGet("auction/{auctionId}")]
+        public async Task<IActionResult> GetByAuctionId(int auctionId)
+        {
+            var bids = await _propertyBidRepo.GetByAuctionIdAsync(auctionId);
+            if (bids == null) return NotFound("No bids found for this auction.");
+
+            var bidDtos = bids.Select(b =>
+            {
+                var dto = _mapper.Map<PropertyBidDto>(b);
+                dto.TimeAgo = GetTimeAgo(b.Timestamp);
+                return dto;
+            }).ToList();
+
+            // Broadcast to all connected clients
+            await _hubContext.Clients.All.SendAsync("BidHistoryUpdated", new
+            {
+                AuctionId = auctionId,
+                Bids = bidDtos
+            });
+
+            return Ok(bidDtos);
+        }
+       
+        //-------------------------------------------------------------------------------------------------------
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -102,7 +177,7 @@ namespace RealEstate.Controllers
         {
             var bid = await _propertyBidRepo.GetLastBidByAuctionIdAsync(auctionId);
             if (bid == null)
-                return NotFound();
+                return Ok();
 
             var bidDto = _mapper.Map<PropertyBidDto>(bid);
             
@@ -111,26 +186,9 @@ namespace RealEstate.Controllers
             return Ok(bidDto);
         }
 
-        [HttpGet("auction/{auctionId}")]
-        public async Task<IActionResult> GetByAuctionId(int auctionId)
-        {
-            var bids = await _propertyBidRepo.GetByAuctionIdAsync(auctionId);
-            if (bids == null)
-                return NotFound("No bids found for this auction.");
-
-            // Map and set TimeAgo
-            var bidDtos = _mapper.Map<List<PropertyBidDto>>(bids);
-            foreach (var dto in bidDtos)
-            {
-                dto.TimeAgo = GetTimeAgo(dto.Timestamp);
-            }
-
-            return Ok(bidDtos);
-        }
-
         private string GetTimeAgo(DateTime time)
         {
-            var span = DateTime.Now - time;
+            var span = DateTime.Now.AddHours(1) - time;
 
             if (span.TotalDays >= 1)
                 return $"{(int)span.TotalDays} day{(span.TotalDays >= 2 ? "s" : "")} ago";

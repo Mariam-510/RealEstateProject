@@ -37,7 +37,7 @@ namespace RealEstate.Models.Domains
         [Column(TypeName = "decimal(18,2)")]
         public decimal Space { get; set; }
 
-        public DateTime AddedDate { get; set; } = DateTime.Now;
+        public DateTime AddedDate { get; set; } = DateTime.Now.AddHours(1);
 
         public bool IsDeleted { get; set; } = false;
 

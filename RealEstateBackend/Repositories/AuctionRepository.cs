@@ -136,7 +136,7 @@ namespace RealEstate.Repositories
 
         public async Task<(Property? Property, int MaxBid)> GetHighestBidForEndedAuctionsBySellerAsync(int sellerId)
         {
-            var currentTime = DateTime.Now;
+            var currentTime = DateTime.Now.AddHours(1);
 
             var result = await dbcontext.Auctions
                 .Where(a => a.Property != null &&
@@ -158,7 +158,7 @@ namespace RealEstate.Repositories
 
         public async Task<(Property? Property, int MaxBid)> GetHighestBidForEndedAuctionsByAgentAsync(int agentId)
         {
-            var currentTime = DateTime.Now;
+            var currentTime = DateTime.Now.AddHours(1);
 
             var result = await dbcontext.Auctions
                 .Where(a => a.Property != null &&
@@ -177,5 +177,34 @@ namespace RealEstate.Repositories
                 ? (result.Property, (int)result.Bid)
                 : (null, 0);
         }
+
+
+        //------------------------------------------------------------------------------------------------------
+        public async Task<Auction?> CheckAndUpdateStatus(int auctionId)
+        {
+            var auction = await dbcontext.Auctions.FindAsync(auctionId);
+            if (auction == null) return null;
+
+            var now = DateTime.Now.AddHours(1);
+            var originalStatus = auction.Status;
+
+            if (auction.Status == Status.Scheduled && now >= auction.StartTime)
+            {
+                auction.Status = Status.Active;
+            }
+            else if (auction.Status == Status.Active && now >= auction.EndTime)
+            {
+                auction.Status = Status.Finished;
+            }
+
+            if (auction.Status != originalStatus)
+            {
+                await dbcontext.SaveChangesAsync();
+            }
+
+            return auction;
+        }
+
+
     }
 }

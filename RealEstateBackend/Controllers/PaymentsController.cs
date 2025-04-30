@@ -58,7 +58,7 @@ namespace RealEstate.Controllers
             {
                 Amount = amount,
                 PaymentMethod = Models.Domains.PaymentMethod.PayPal,
-                PaidAt = DateTime.Now,
+                PaidAt = DateTime.Now.AddHours(1),
                 BuyerId = buyerId
             };
 
@@ -86,7 +86,7 @@ namespace RealEstate.Controllers
             {
                 Amount = amount,
                 PaymentMethod = Models.Domains.PaymentMethod.Stripe,
-                PaidAt = DateTime.Now,
+                PaidAt = DateTime.Now.AddHours(1),
                 BuyerId = buyerId
             };
 
@@ -113,7 +113,7 @@ namespace RealEstate.Controllers
             {
                 Amount = request.Amount,
                 PaymentMethod = Models.Domains.PaymentMethod.Stripe,
-                PaidAt = DateTime.Now, // not paid yet!
+                PaidAt = DateTime.Now.AddHours(1), // not paid yet!
                 BuyerId = buyerId
             };
             payment = await _paymentRepository.AddAsync(payment);
@@ -126,7 +126,7 @@ namespace RealEstate.Controllers
                 BuyerId = buyerId,
                 PaymentId = payment.Id,
                 Status = OrderStatus.Pending, // or whatever you use
-                OrderDate = DateTime.Now,
+                OrderDate = DateTime.Now.AddHours(1),
                 AddressId = request.SelectedAddressId,
                 DeliveryFees = deliveryFees,
                 SubTotal = request.Amount - deliveryFees

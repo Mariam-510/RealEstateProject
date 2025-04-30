@@ -10,7 +10,7 @@ namespace RealEstate.Models.Domains
         public int Id { get; set; }
 
         [DataType(DataType.DateTime)]
-        public DateTime PaidAt { get; set; } = DateTime.Now;
+        public DateTime PaidAt { get; set; } = DateTime.Now.AddHours(1);
 
         [Column(TypeName = "decimal(18,2)")]
         [NonNegative]

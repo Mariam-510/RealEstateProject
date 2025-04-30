@@ -14,8 +14,7 @@ namespace RealEstate.Models.Domains
         [NonNegative]
         public decimal BidAmount { get; set; }
 
-        [DataType(DataType.DateTime)]
-        public DateTime Timestamp { get; set; } = DateTime.Now;
+        public DateTime Timestamp { get; set; } = DateTime.Now.AddHours(1);
 
         public bool IsDeleted { get; set; } = false;
 

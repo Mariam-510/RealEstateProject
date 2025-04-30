@@ -94,7 +94,7 @@ namespace RealEstate.Controllers
                     }
 
                     var account = Mapper.Map<Account>(registerSellerOrBuyerDto);
-                    account.CreatedAt = DateTime.Now;
+                    account.CreatedAt = DateTime.Now.AddHours(1);
                     account.UserName = registerSellerOrBuyerDto.Email;
                     account.EmailConfirmationCode = null;
                     account.CodeGeneratedAt = null;
@@ -182,7 +182,7 @@ namespace RealEstate.Controllers
 
                         // Store the code temporarily (in DB or cache)
                         account.EmailConfirmationCode = confirmationCode;
-                        account.CodeGeneratedAt = DateTime.Now;
+                        account.CodeGeneratedAt = DateTime.Now.AddHours(1);
                         await UserManager.UpdateAsync(account);
 
                         string emailBody = $@"
@@ -254,7 +254,7 @@ namespace RealEstate.Controllers
                     }
 
                     var account = Mapper.Map<Account>(registerAgentDto);
-                    account.CreatedAt = DateTime.Now;
+                    account.CreatedAt = DateTime.Now.AddHours(1);
                     account.UserName = registerAgentDto.Email;
                     account.EmailConfirmationCode = null;
                     account.CodeGeneratedAt = null;
@@ -303,7 +303,7 @@ namespace RealEstate.Controllers
 
                             // Store the code temporarily (in DB or cache)
                             account.EmailConfirmationCode = confirmationCode;
-                            account.CodeGeneratedAt = DateTime.Now;
+                            account.CodeGeneratedAt = DateTime.Now.AddHours(1);
                             await UserManager.UpdateAsync(account);
 
                             string emailBody = $@"
@@ -464,7 +464,7 @@ namespace RealEstate.Controllers
                 return Conflict(new { message = "Email is already confirmed." });
 
             // Optional: Expire the code after 2 minutes
-            if (user.CodeGeneratedAt.HasValue && (DateTime.Now - user.CodeGeneratedAt.Value).TotalMinutes > 2)
+            if (user.CodeGeneratedAt.HasValue && (DateTime.Now.AddHours(1) - user.CodeGeneratedAt.Value).TotalMinutes > 2)
                 return BadRequest(new { message = "The confirmation code has expired." });
 
             if (user.EmailConfirmationCode != code)
@@ -509,7 +509,7 @@ namespace RealEstate.Controllers
 
                     // Store the code temporarily (in DB or cache)
                     account.EmailConfirmationCode = confirmationCode;
-                    account.CodeGeneratedAt = DateTime.Now;
+                    account.CodeGeneratedAt = DateTime.Now.AddHours(1);
                     await UserManager.UpdateAsync(account);
 
                     string emailBody = $@"
@@ -705,7 +705,7 @@ namespace RealEstate.Controllers
                         {
                             Email = userInfo.Email,
                             UserName = userInfo.Email,
-                            CreatedAt = DateTime.Now,
+                            CreatedAt = DateTime.Now.AddHours(1),
                             ImageUrl = null,
                             EmailConfirmationCode = null,
                             CodeGeneratedAt = null,
@@ -822,7 +822,7 @@ namespace RealEstate.Controllers
                         {
                             Email = dto.Email,
                             UserName = dto.Email,
-                            CreatedAt = DateTime.Now,
+                            CreatedAt = DateTime.Now.AddHours(1),
                             ImageUrl = null,
                             EmailConfirmationCode = null,
                             CodeGeneratedAt = null,

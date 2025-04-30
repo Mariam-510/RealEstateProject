@@ -180,21 +180,23 @@
     <div class="line-divider" style="width: 60px; height: 2px; background: #c38e79;"></div>
   </div>
   <div class="gallery-container">
-    <div *ngFor="let auction of upcomingAuctions" class="gallery-item">
-      <div class="gallery-image position-absolute" [style.background-image]="'url(' + auction.images[0] + ')'">
-
+    <div *ngFor="let auction of nearestAuctions" class="gallery-item">
+      <!-- <div *ngIf="auction?.propertyDto?.images" class="gallery-image position-absolute"
+        [style.background-image]="'url(' + auction?.propertyDto?.images[0] + ')'"> -->
+      <div [routerLink]="['/auctions',auction.id]" class="gallery-image position-absolute"
+        [style.background-image]="'url('  + apiConfig.apiUrl +  (auction?.propertyDto?.images?.[0] ?? 'assets/default-image.jpg') + ')'">
       </div>
 
       <span class="badge position-relative top-0 start-0 m-2" style="background-color: #2a5f8b;">Starting On: {{
-        auction.date | date }}</span>
+        auction.startTime | date:'medium' }}</span>
       <span class="badge bg-success position-absolute top-0 end-0 m-2">
-        {{ auction.date | daysUntil }} Days Left
+        {{ auction.startTime | daysUntil }} Days Left
       </span>
 
-      <div class="gallery-overlay">
-        <h3>{{ auction.title }}</h3>
-        <p>Starting Bid: {{ auction.price | currency:'EGP ' }}</p>
-        <p>{{ auction.location }}</p>
+      <div [routerLink]="['/auctions',auction.id]" class="gallery-overlay">
+        <h3>{{ auction?.propertyDto?.title }}</h3>
+        <p>Starting Bid: {{ auction?.startPrice | currency:'EGP ' }}</p>
+        <p>{{ auction?.propertyDto?.location }}</p>
         <!-- <p>{{ auction.date | date }}</p> -->
       </div>
     </div>

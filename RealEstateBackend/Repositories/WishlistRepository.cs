@@ -91,7 +91,7 @@ namespace RealEstate.Repositories
                return null;
             }
             Wishlist.IsDeleted = isDeleted;
-            Wishlist.WishlistDateTime=DateTime.Now;
+            Wishlist.WishlistDateTime=DateTime.Now.AddHours(1);
             await dbcontext.SaveChangesAsync();
             return Wishlist;
         }
@@ -105,7 +105,7 @@ namespace RealEstate.Repositories
                 return null;
             }
             Wishlist.IsDeleted = isDeleted;
-            Wishlist.WishlistDateTime = DateTime.Now;
+            Wishlist.WishlistDateTime = DateTime.Now.AddHours(1);
             await dbcontext.SaveChangesAsync();
             return Wishlist;
         }
