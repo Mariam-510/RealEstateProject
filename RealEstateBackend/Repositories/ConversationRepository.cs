@@ -40,6 +40,17 @@ namespace RealEstate.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Conversation> GetByAccountIdsAsync(string account1Id, string account2Id, ConversationStatus? status = null)
+        {
+            return await _context.Conversations
+                .Include(c => c.FirstAccount)
+                .Include(c => c.SecondAccount)
+                .Where(c => ((c.FirstAccountId == account1Id && c.SecondAccountId == account2Id) ||
+                              (c.FirstAccountId == account2Id && c.SecondAccountId == account1Id)) &&
+                             (!status.HasValue || c.Status == status.Value) && !c.IsDeleted)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<bool> ExistsAsync(string account1Id, string account2Id, ConversationStatus? status = null)
         {
             return await _context.Conversations.AnyAsync(c =>

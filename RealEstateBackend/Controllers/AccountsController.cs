@@ -23,6 +23,8 @@ using System.Transactions;
 
 using Account = RealEstate.Models.Domains.Account;
 using System.Text.Json;
+using RealEstate.Models.Dtos.BuyerDto;
+using RealEstate.Models.DTOs.AccountDto;
 
 namespace RealEstate.Controllers
 {
@@ -42,11 +44,12 @@ namespace RealEstate.Controllers
         public ISubscriptionRepository SubscriptionRepository { get; }
         public ISubscriptionPlanRepository SubscriptionPlanRepository { get; }
         public GoogleService GoogleService { get; }
+        public IPropertyRepository PropertyRepository { get; }
 
         public AccountsController(UserManager<Account> userManager, JWTService tokenService, IMapper Mapper, EmailService emailService,
             IBuyerRepository buyerRepository, ISellerRepository sellerRepository, IAgentRepository agentRepository, FileService fileService,
             ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, ISubscriptionPlanRepository subscriptionPlanRepository,
-            GoogleService googleService)
+            GoogleService googleService, IPropertyRepository propertyRepository)
         {
             UserManager = userManager;
             TokenService = tokenService;
@@ -60,6 +63,7 @@ namespace RealEstate.Controllers
             SubscriptionRepository = subscriptionRepository;
             SubscriptionPlanRepository = subscriptionPlanRepository;
             GoogleService = googleService;
+            PropertyRepository = propertyRepository;
         }
 
 
@@ -915,5 +919,95 @@ namespace RealEstate.Controllers
         }
 
 
+        [HttpGet("GetRecipientAccountId/{propertyId}")]
+        [Authorize(Roles = "Buyer")]
+        //public async Task<ActionResult<UserDto>> GetByPropertyId(int propertyId)
+        public async Task<ActionResult> GetByPropertyId(int propertyId)
+        {
+            // Fetch the property details to get the OwnerId
+            var property = await PropertyRepository.GetByIdAsync(propertyId);
+
+            if (property == null)
+            {
+                return NotFound(new { message = "Property not found." });
+            }
+
+            // Fetch the owner of the property
+            var owner = await UserManager.FindByIdAsync(property.AgentId != null ? property.Agent.AccountId : property.Seller.AccountId); // Assuming Property entity has OwnerId
+
+            if (owner == null)
+            {
+                return NotFound(new { message = "Property owner not found." });
+            }
+
+            // Retrieve the user's roles
+            var roles = await UserManager.GetRolesAsync(owner);
+
+            // Map the user data to the DTO
+            //var userDto = new UserDto
+            //{
+            //    AccountId = owner.Id,  // From IdentityUser
+            //    UserId = null,
+            //    Email = owner.Email,
+            //    FirstName = owner.UserName,
+            //    LastName = null,
+            //    ImageUrl = owner.ImageUrl,
+            //    Roles = roles.ToList(),
+            //    TokenExpiration = null  // Example expiration logic
+            //};
+
+            return Ok(owner.Id);
+        }
+
+        [HttpGet("GetUserInfo/{accountId}")]
+        public async Task<IActionResult> GetUserByAccountId(string accountId)
+        {
+            var buyer = await BuyerRepository.GetByAccountIdAsync(accountId);
+            if (buyer != null)
+            {
+                var dto = new UserDto
+                {
+                    UserId = buyer.Id,
+                    FirstName = buyer.FirstName,
+                    LastName = buyer.LastName,
+                    AccountId = buyer.AccountId!,
+                    ImageUrl = buyer.Account.ImageUrl,
+                    Roles = ["Buyer"]
+                };
+                return Ok(dto);
+            }
+
+            var seller = await SellerRepository.GetByAccountIdAsync(accountId);
+            if (seller != null)
+            {
+                var dto = new UserDto
+                {
+                    UserId = seller.Id,
+                    FirstName = seller.FirstName,
+                    LastName = seller.LastName,
+                    AccountId = seller.AccountId!,
+                    ImageUrl = seller.Account.ImageUrl,
+                    Roles = ["Seller"]
+                };
+                return Ok(dto);
+            }
+
+            var agent = await AgentRepository.GetByAccountIdAsync(accountId);
+            if (agent != null)
+            {
+                var dto = new UserDto
+                {
+                    UserId = agent.Id,
+                    FirstName = agent.Name,
+                    LastName = null,
+                    AccountId = agent.AccountId!,
+                    ImageUrl = agent.Account.ImageUrl,
+                    Roles = ["Agent"]
+                };
+                return Ok(dto);
+            }
+
+            return NotFound($"No user found with AccountId: {accountId}");
+        }
     }
 }

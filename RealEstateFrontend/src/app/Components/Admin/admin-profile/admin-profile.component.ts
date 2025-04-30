@@ -12,7 +12,7 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angula
 export class AdminProfileComponent {
 
 
-  userImage: string = 'images/Home/user.jpeg';
+  userImage: string | null = null;
   currentUser: any;
   MyForm!: FormGroup;
 
@@ -28,8 +28,8 @@ export class AdminProfileComponent {
         Validators.minLength(3),
         Validators.pattern(/^[A-Za-z]+$/)
       ]),
+      currentPassword: new FormControl(''),
       password: new FormControl("", [
-        Validators.required,
         Validators.minLength(6),
         Validators.maxLength(10),
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*?&])[A-Za-z\d@#$!%*?&]{6,10}$/)
@@ -42,13 +42,22 @@ export class AdminProfileComponent {
   );
 }
 removeImage() {
-  this.userImage = 'images/Home/user.jpeg';
+  this.userImage = null;
  
-  if (this.currentUser) {
-    this.currentUser.avatar = null;
-  }
+}
+showPassword: boolean = false;
+showConfirmPassword: boolean = false;
+showCurrentPassword: boolean = false;
+toggleCurrentPasswordVisibility(): void {
+  this.showCurrentPassword = !this.showCurrentPassword;
+}    
+togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
 }
 
+toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+}
 uploadImage() {
     const input = document.createElement('input');
     input.type = 'file';

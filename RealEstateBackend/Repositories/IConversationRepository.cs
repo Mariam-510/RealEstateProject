@@ -10,6 +10,8 @@ namespace RealEstate.Repositories
 
         Task<List<Conversation>> GetAllAsync(string accountId);
 
+        Task<Conversation> GetByAccountIdsAsync(string account1Id, string account2Id, ConversationStatus? status = null);
+
         Task<bool> ExistsAsync(string account1Id, string account2Id, ConversationStatus? status = null);
 
         Task<Conversation> AddAsync(Conversation conversation);
