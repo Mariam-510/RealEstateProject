@@ -1,4 +1,6 @@
-﻿using System.Transactions;
+﻿using System.Security.Claims;
+using System.Transactions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -47,9 +49,12 @@ namespace RealEstate.Controllers
         }
 
         [HttpGet]
-        [Route("GetByConversationId/{conversationId}")]
-        public async Task<IActionResult> GetByConversationId(int conversationId, string currentUserAccountId = "415f3e96-5745-4341-b9c2-5d154eef02fe")
+        [Route("GetAllMessages/{conversationId}")]
+        public async Task<IActionResult> GetByConversationId(int conversationId)
         {
+            var currentUserAccountId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserAccountId == null) return Unauthorized();
+
             //var currentUserAccountId = User.FindFirst("UserAccountId")?.Value;
 
             var conversation = await _conversationRepository.GetByIdAsync(conversationId);
@@ -71,9 +76,13 @@ namespace RealEstate.Controllers
 
         [HttpPost]
         [Route("Create")]
-        public async Task<IActionResult> Create([FromBody]CreateMessageDto createMessageDto, string currentUserAccountId = "fb074e1e-a722-405b-878b-68db2038cd35")
+        [Authorize(Roles = "Buyer,Seller,Agent")]
+        public async Task<IActionResult> CreateMessage([FromBody]CreateMessageDto createMessageDto)
         {
             //var currentUserAccountId = User.FindFirst("UserAccountId")?.Value;
+
+            var currentUserAccountId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserAccountId == null) return Unauthorized();
 
             if (createMessageDto == null)
                 return BadRequest("Invalid message data!");

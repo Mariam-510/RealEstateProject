@@ -9,6 +9,7 @@ using RealEstate.Models.DTOs.OrderDto;
 using RealEstate.Models.DTOs.ReviewDto;
 using RealEstate.Models.Dtos.ProductStockDto;
 using System.Globalization;
+using RealEstate.Models.DTOs.AccountDto;
 
 namespace RealEstate.Mapping
 {
@@ -16,7 +17,6 @@ namespace RealEstate.Mapping
     {
         //----------------------------------------------------------------------------------------
         // Conversation
-
         public static ConversationResponseDto ConversationResponseDto(this Conversation conversation)
         {
             return new ConversationResponseDto

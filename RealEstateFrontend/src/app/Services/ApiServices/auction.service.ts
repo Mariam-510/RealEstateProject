@@ -88,5 +88,8 @@ export class AuctionService {
   }
 
   //-----------------------------------------------------------------------------------------------
-
+  // In AuctionService
+  getAuctionByPropertyId(propertyId: number): Observable<AuctionDTOShow> {
+    return this.http.get<AuctionDTOShow>(`${this.apiUrl}/Property/${propertyId}`);
+  }
 }
