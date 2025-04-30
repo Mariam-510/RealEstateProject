@@ -54,6 +54,7 @@ export class ProfileComponent implements OnInit {
   }
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
+  showCurrentPassword: boolean = false;
   
   togglePasswordVisibility(): void {
       this.showPassword = !this.showPassword;
@@ -62,6 +63,9 @@ export class ProfileComponent implements OnInit {
   toggleConfirmPasswordVisibility(): void {
       this.showConfirmPassword = !this.showConfirmPassword;
   }
+  toggleCurrentPasswordVisibility(): void {
+    this.showCurrentPassword = !this.showCurrentPassword;
+}
   private _initializeForm() {
     this.MyForm = new FormGroup({
       firstName: new FormControl('', [

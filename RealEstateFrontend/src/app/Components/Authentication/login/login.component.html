@@ -1,6 +1,6 @@
 <div class="d-flex w-100 min-vh-100 shadow overflow-hidden">
-  <div class="left-section bg-white d-flex flex-column justify-content-center">
-    <h2 class="text-caffe mt-3 text-center "><i class="bi bi-box-arrow-in-right me-2 mt-5 fs-2"></i> Log In</h2>
+  <div class="left-section bg-white d-flex flex-column ">
+    <h2 class="text-caffe mt-4 text-center "><i class="bi bi-box-arrow-in-right me-2 fs-2"></i> Log In</h2>
 
     <form [formGroup]="Loginform" (ngSubmit)="login()">
       <div class="mb-3 mt-4 ">
@@ -74,9 +74,9 @@
       </button>
     </div>
 
-    <p class="text-center mt-4 mb-0">
+    <p class="text-center mt-3 mb-0">
       Don't have account?
-      <button class="btn btn-link text-decoration-none fw-bold text-caffe p-0" (click)="openSigUPDialog()">
+      <button class="btn btn-link text-decoration-none fw-bold text-caffe p-0 mb-1" (click)="openSigUPDialog()">
         Sign Up
       </button>
     </p>
