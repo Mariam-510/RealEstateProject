@@ -1,12 +1,28 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AfterViewChecked, ElementRef, ViewChild,AfterViewInit } from '@angular/core';
-import { ConversationResponseDto, ConversationService } from '../../../Services/ApiServices/conversation.service';
+import {
+  AfterViewChecked,
+  ElementRef,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
+import {
+  ConversationResponseDto,
+  ConversationService,
+} from '../../../Services/ApiServices/conversation.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { AccountService } from '../../../Services/ApiServices/account.service';
 import { API_CONFIG } from '../../../app.config';
-import { CreateMessageDto, MessageResponseDto, MessageService } from '../../../Services/ApiServices/message.service';
+import {
+  CreateMessageDto,
+  MessageResponseDto,
+  MessageService,
+} from '../../../Services/ApiServices/message.service';
+import {
+  ChatService,
+  IncomingChatMessage,
+} from '../../../Services/ApiServices/chat.service';
 
 enum MessageStatus {
   Pending = 'Pending',
@@ -19,13 +35,13 @@ enum MessageStatus {
 enum UserRole {
   Buyer = 'Buyer',
   Seller = 'Seller',
-  Agent = 'Agent'
+  Agent = 'Agent',
 }
 
 enum ConversationStatus {
   Pending = 'Pending',
   Active = 'Active',
-  Closed = 'Closed'
+  Closed = 'Closed',
 }
 interface Message {
   text: string;
@@ -53,154 +69,169 @@ interface Chat {
   selector: 'app-main-chat',
   imports: [CommonModule, FormsModule],
   templateUrl: './main-chat.component.html',
-  styleUrl: './main-chat.component.css'
+  styleUrl: './main-chat.component.css',
 })
-export class MainChatComponent  implements OnInit, AfterViewChecked ,AfterViewInit{
+export class MainChatComponent
+  implements OnInit, AfterViewChecked, AfterViewInit, OnDestroy
+{
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
-  
+
   currentUserId: string | undefined;
   apiConfig = API_CONFIG;
 
-  constructor(private conversationService: ConversationService, private auth: AuthService,
-      private account: AccountService, private messageService: MessageService) {}
+  constructor(
+    private conversationService: ConversationService,
+    private auth: AuthService,
+    private account: AccountService,
+    private messageService: MessageService,
+    private chatService: ChatService
+  ) {}
 
   ngOnInit() {
     this.currentUserId = this.auth.getCurrentUser()?.accountId;
     this.loadConversations();
     // this.loadUserDetailsForConversations();
+    this.setupSignalR();
     console.log(this.conversations);
   }
 
-//   loadConversations() {
-//     this.conversationService.getAllConversations().subscribe({
-//         next: (conversations: ConversationResponseDto[]) => {
-//             this.conversations = conversations.map(dto => this.mapDtoToChat(dto));
-//         },
-//         error: (err) => {
-//             console.error('Error loading conversations:', err);
-//             this.conversations = [];
-//         }
-//     });
-// }
+  ngOnDestroy() {
+    this.chatService.stopConnection();
+  }
 
-// loadConversations() {
-//   this.conversationService.getAllConversations().subscribe({
-//       next: (conversations: ConversationResponseDto[]) => {
-//           // Filter conversations with messages and map to Chat
-//           this.conversations = conversations
-//               .filter(dto => 
-//                   dto.lastMessageAt !== null &&  // Conversation has at least one message
-//                   dto.lastMessageAt !== undefined
-//               )
-//               .map(dto => this.mapDtoToChat(dto));
-          
-//           // Optional: Sort by last message time (newest first)
-//           this.conversations.sort((a, b) => 
-//               new Date(b.lastMessageTime).getTime() - 
-//               new Date(a.lastMessageTime).getTime()
-//           );
-//       },
-//       error: (err) => {
-//           console.error('Error loading conversations:', err);
-//           this.conversations = [];
-//       }
-//   });
-// }
+  //   loadConversations() {
+  //     this.conversationService.getAllConversations().subscribe({
+  //         next: (conversations: ConversationResponseDto[]) => {
+  //             this.conversations = conversations.map(dto => this.mapDtoToChat(dto));
+  //         },
+  //         error: (err) => {
+  //             console.error('Error loading conversations:', err);
+  //             this.conversations = [];
+  //         }
+  //     });
+  // }
 
-loadConversations() {
-  this.conversationService.getAllConversations().subscribe({
-    next: async (conversations: ConversationResponseDto[]) => {
-      const validConversations = conversations.filter(dto => 
-        dto.lastMessageAt !== null && dto.lastMessageAt !== undefined
-      );
+  // loadConversations() {
+  //   this.conversationService.getAllConversations().subscribe({
+  //       next: (conversations: ConversationResponseDto[]) => {
+  //           // Filter conversations with messages and map to Chat
+  //           this.conversations = conversations
+  //               .filter(dto =>
+  //                   dto.lastMessageAt !== null &&  // Conversation has at least one message
+  //                   dto.lastMessageAt !== undefined
+  //               )
+  //               .map(dto => this.mapDtoToChat(dto));
 
-      // Load all messages for each conversation
-      this.conversations = await Promise.all(
-        validConversations.map(async dto => {
-          const chat = this.mapDtoToChat(dto);
-          
-          try {
-            // Get ALL messages (no pagination)
-            const messages = await this.messageService.getAllMessages(chat.id).toPromise();
-            if (messages?.length) {
-              // Store all messages but keep only last for list view
-              chat.messages = messages
-                .map(msg => this.mapMessageDto(msg))
-                .sort((a, b) => a.time.getTime() - b.time.getTime()); // Sort ascending
+  //           // Optional: Sort by last message time (newest first)
+  //           this.conversations.sort((a, b) =>
+  //               new Date(b.lastMessageTime).getTime() -
+  //               new Date(a.lastMessageTime).getTime()
+  //           );
+  //       },
+  //       error: (err) => {
+  //           console.error('Error loading conversations:', err);
+  //           this.conversations = [];
+  //       }
+  //   });
+  // }
+
+  loadConversations() {
+    this.conversationService.getAllConversations().subscribe({
+      next: async (conversations: ConversationResponseDto[]) => {
+        const validConversations = conversations.filter(
+          (dto) => dto.lastMessageAt !== null && dto.lastMessageAt !== undefined
+        );
+
+        // Load all messages for each conversation
+        this.conversations = await Promise.all(
+          validConversations.map(async (dto) => {
+            const chat = this.mapDtoToChat(dto);
+
+            try {
+              // Get ALL messages (no pagination)
+              const messages = await this.messageService
+                .getAllMessages(chat.id)
+                .toPromise();
+              if (messages?.length) {
+                // Store all messages but keep only last for list view
+                chat.messages = messages
+                  .map((msg) => this.mapMessageDto(msg))
+                  .sort((a, b) => a.time.getTime() - b.time.getTime()); // Sort ascending
+              }
+            } catch (error) {
+              console.error('Error loading messages:', error);
             }
-          } catch (error) {
-            console.error('Error loading messages:', error);
-          }
-          
-          return chat;
-        })
-      );
 
-      // Sort conversations by last message time
-      this.conversations.sort((a, b) => 
-        (b.messages[b.messages.length - 1]?.time?.getTime() || 0) - 
-        (a.messages[a.messages.length - 1]?.time?.getTime() || 0)
-      );
-    },
-    error: (err) => {
-      console.error('Error loading conversations:', err);
-      this.conversations = [];
-    }
-  });
-}
+            return chat;
+          })
+        );
 
-private mapMessageDto(dto: MessageResponseDto): Message {
-  return {
-    text: dto.content,
-    sent: dto.senderId === this.currentUserId,
-    time: new Date(dto.sentAt),
-    status: dto.status as MessageStatus,
-    senderId: dto.senderId
-  };
-}
+        // Sort conversations by last message time
+        this.conversations.sort(
+          (a, b) =>
+            (b.messages[b.messages.length - 1]?.time?.getTime() || 0) -
+            (a.messages[a.messages.length - 1]?.time?.getTime() || 0)
+        );
+      },
+      error: (err) => {
+        console.error('Error loading conversations:', err);
+        this.conversations = [];
+      },
+    });
+  }
 
+  private mapMessageDto(dto: MessageResponseDto): Message {
+    return {
+      text: dto.content,
+      sent: dto.senderId === this.currentUserId,
+      time: new Date(dto.sentAt),
+      status: dto.status as MessageStatus,
+      senderId: dto.senderId,
+    };
+  }
 
   private mapDtoToChat(dto: ConversationResponseDto): Chat {
     // Determine which account is the other user
-    const otherAccountId = dto.firstAccountId === this.currentUserId 
-        ? dto.secondAccountId 
+    const otherAccountId =
+      dto.firstAccountId === this.currentUserId
+        ? dto.secondAccountId
         : dto.firstAccountId;
 
     // Create initial chat object with loading state
     const chat: Chat = {
-        id: dto.id,
-        status: dto.status,
-        otherUser: {
-            userId: otherAccountId,
-            firstName: 'Loading...',
-            lastName: '',
-            image: 'PropertyImages/10-1.jpg' // Temporary image
-        },
-        messages: [],
-        unread: 0,
-        lastMessageTime: dto.lastMessageAt
+      id: dto.id,
+      status: dto.status,
+      otherUser: {
+        userId: otherAccountId,
+        firstName: 'Loading...',
+        lastName: '',
+        image: 'PropertyImages/10-1.jpg', // Temporary image
+      },
+      messages: [],
+      unread: 0,
+      lastMessageTime: dto.lastMessageAt,
     };
 
     // Fetch user details asynchronously
     this.account.getUserInfo(otherAccountId).subscribe({
-        next: (user) => {
-            chat.otherUser = {
-                userId: user.userId,
-                firstName: user.firstName,
-                lastName: user.lastName || '',
-                image: user.imageUrl || 'PropertyImages/10-1.jpg'
-            };
-        },
-        error: (err) => {
-            console.error('Failed to load user info:', err);
-            chat.otherUser.firstName = 'Unknown User';
-            chat.otherUser.lastName = 'Unknown User';
-            chat.otherUser.image = 'PropertyImages/10-1.jpg';
-        }
+      next: (user) => {
+        chat.otherUser = {
+          userId: user.userId,
+          firstName: user.firstName,
+          lastName: user.lastName || '',
+          image: user.imageUrl || 'PropertyImages/10-1.jpg',
+        };
+      },
+      error: (err) => {
+        console.error('Failed to load user info:', err);
+        chat.otherUser.firstName = 'Unknown User';
+        chat.otherUser.lastName = 'Unknown User';
+        chat.otherUser.image = 'PropertyImages/10-1.jpg';
+      },
     });
 
     return chat;
-}
+  }
 
   // private loadUserDetailsForConversations() {
   //   this.conversations.forEach(conv => {
@@ -227,7 +258,8 @@ private mapMessageDto(dto: MessageResponseDto): Message {
   private checkScrollPosition() {
     const element = this.messagesContainer?.nativeElement;
     if (element) {
-      const isAtBottom = element.scrollHeight - element.clientHeight <= element.scrollTop + 50; // Increased threshold
+      const isAtBottom =
+        element.scrollHeight - element.clientHeight <= element.scrollTop + 50; // Increased threshold
       this.shouldScroll = isAtBottom;
     }
   }
@@ -249,108 +281,108 @@ private mapMessageDto(dto: MessageResponseDto): Message {
     }
   }
 
+  // selectChat(chat: Chat) {
+  //   this.selectedChat = chat;
+  //   this.newMessage = '';
+  //   chat.unread = 0;
+  //   console.log('Conversation ID:', chat.id);
 
+  //   // Force immediate scroll without animation
+  //   setTimeout(() => {
+  //     const element = this.messagesContainer?.nativeElement;
+  //     if (element) {
+  //       element.style.scrollBehavior = 'auto'; // Disable smooth scrolling
+  //       element.scrollTop = element.scrollHeight;
+  //       element.style.scrollBehavior = ''; // Reset to default
+  //     }
+  //   }, 0); // Zero delay after change detection
+  // }
 
-// selectChat(chat: Chat) {
-//   this.selectedChat = chat;
-//   this.newMessage = '';
-//   chat.unread = 0;
-//   console.log('Conversation ID:', chat.id);
-  
-//   // Force immediate scroll without animation
-//   setTimeout(() => {
-//     const element = this.messagesContainer?.nativeElement;
-//     if (element) {
-//       element.style.scrollBehavior = 'auto'; // Disable smooth scrolling
-//       element.scrollTop = element.scrollHeight;
-//       element.style.scrollBehavior = ''; // Reset to default
-//     }
-//   }, 0); // Zero delay after change detection
-// }
+  selectChat(chat: Chat) {
+    this.selectedChat = chat;
+    this.newMessage = '';
+    chat.unread = 0;
 
-selectChat(chat: Chat) {
-  this.selectedChat = chat;
-  this.newMessage = '';
-  chat.unread = 0;
+    // Load messages for the selected conversation
+    this.messageService.getAllMessages(chat.id).subscribe({
+      next: (messages: MessageResponseDto[]) => {
+        // Map and sort messages in ascending order
+        const mappedMessages = messages
+          .map(
+            (msg) =>
+              ({
+                text: msg.content,
+                sent: msg.senderId === this.currentUserId,
+                time: new Date(msg.sentAt),
+                status: msg.status as MessageStatus,
+                senderId: msg.senderId,
+              } as Message)
+          )
+          .sort((a, b) => a.time.getTime() - b.time.getTime()); // Ascending sort
 
-  // Load messages for the selected conversation
-  this.messageService.getAllMessages(chat.id).subscribe({
-    next: (messages: MessageResponseDto[]) => {
-      // Map and sort messages in ascending order
-      const mappedMessages = messages.map(msg => ({
-        text: msg.content,
-        sent: msg.senderId === this.currentUserId,
-        time: new Date(msg.sentAt),
-        status: msg.status as MessageStatus,
-        senderId: msg.senderId
-      } as Message)).sort((a, b) => a.time.getTime() - b.time.getTime()); // Ascending sort
+        // Update chat messages
+        this.selectedChat!.messages = mappedMessages;
 
-      // Update chat messages
-      this.selectedChat!.messages = mappedMessages;
+        // Scroll after messages render
+        setTimeout(() => this.scrollToBottom(true), 100);
+      },
+      error: (err) => {
+        console.error('Error fetching messages:', err);
+      },
+    });
 
-      // Scroll after messages render
-      setTimeout(() => this.scrollToBottom(true), 50);
-    },
-    error: (err) => {
-      console.error('Error fetching messages:', err);
-    }
-  });
+    // Existing scroll initialization
+    setTimeout(() => {
+      const element = this.messagesContainer?.nativeElement;
+      if (element) {
+        element.style.scrollBehavior = 'auto';
+        element.scrollTop = element.scrollHeight;
+        element.style.scrollBehavior = '';
+      }
+    }, 0);
+  }
 
-  // Existing scroll initialization
-  setTimeout(() => {
-    const element = this.messagesContainer?.nativeElement;
-    if (element) {
-      element.style.scrollBehavior = 'auto';
-      element.scrollTop = element.scrollHeight;
-      element.style.scrollBehavior = '';
-    }
-  }, 0);
-}
+  // selectChat(chat: Chat) {
+  //   this.selectedChat = chat;
+  //   this.newMessage = '';
+  //   chat.unread = 0;
 
+  //   // Load messages for the selected conversation
+  //   this.messageService.getAllMessages(chat.id).subscribe({
+  //     next: (messages: MessageResponseDto[]) => {
+  //       // Map and sort messages
+  //       const mappedMessages = messages.map(msg => ({
+  //         text: msg.content,
+  //         sent: msg.senderId === this.currentUserId,
+  //         time: new Date(msg.sentAt),
+  //         status: msg.status as MessageStatus,
+  //         senderId: msg.senderId
+  //       } as Message));
 
-// selectChat(chat: Chat) {
-//   this.selectedChat = chat;
-//   this.newMessage = '';
-//   chat.unread = 0;
+  //       // Sort by sentAt descending (newest first)
+  //       mappedMessages.sort((a, b) => a.time.getTime() - b.time.getTime());
 
-//   // Load messages for the selected conversation
-//   this.messageService.getAllMessages(chat.id).subscribe({
-//     next: (messages: MessageResponseDto[]) => {
-//       // Map and sort messages
-//       const mappedMessages = messages.map(msg => ({
-//         text: msg.content,
-//         sent: msg.senderId === this.currentUserId,
-//         time: new Date(msg.sentAt),
-//         status: msg.status as MessageStatus,
-//         senderId: msg.senderId
-//       } as Message));
+  //       // Update chat messages
+  //       this.selectedChat!.messages = mappedMessages;
 
-//       // Sort by sentAt descending (newest first)
-//       mappedMessages.sort((a, b) => a.time.getTime() - b.time.getTime());
+  //       // Scroll after messages render
+  //       setTimeout(() => this.scrollToBottom(true), 50);
+  //     },
+  //     error: (err) => {
+  //       console.error('Error fetching messages:', err);
+  //     }
+  //   });
 
-//       // Update chat messages
-//       this.selectedChat!.messages = mappedMessages;
-
-//       // Scroll after messages render
-//       setTimeout(() => this.scrollToBottom(true), 50);
-//     },
-//     error: (err) => {
-//       console.error('Error fetching messages:', err);
-//     }
-//   });
-
-//   // Existing scroll initialization
-//   setTimeout(() => {
-//     const element = this.messagesContainer?.nativeElement;
-//     if (element) {
-//       element.style.scrollBehavior = 'auto';
-//       element.scrollTop = element.scrollHeight;
-//       element.style.scrollBehavior = '';
-//     }
-//   }, 0);
-// }
-
-
+  //   // Existing scroll initialization
+  //   setTimeout(() => {
+  //     const element = this.messagesContainer?.nativeElement;
+  //     if (element) {
+  //       element.style.scrollBehavior = 'auto';
+  //       element.scrollTop = element.scrollHeight;
+  //       element.style.scrollBehavior = '';
+  //     }
+  //   }, 0);
+  // }
 
   selectedChat: Chat | null = null;
   // chats: Chat[] = [
@@ -395,15 +427,14 @@ selectChat(chat: Chat) {
   //     lastMessageTime: new Date(Date.now() - 3600000)
   //   },
   // ];
-  
 
   isChatVisible = false;
   newMessage = '';
   today = new Date();
   currentUser = {
-    role: UserRole.Buyer,  // ✅ Either Seller or Agent
+    role: UserRole.Buyer, // ✅ Either Seller or Agent
     id: '456',
-    name: 'Lora Agent'
+    name: 'Lora Agent',
   };
 
   activeConversation = {
@@ -412,9 +443,9 @@ selectChat(chat: Chat) {
     otherUser: {
       id: '123',
       name: 'John Buyer',
-      avatar: 'https://example.com/buyer-avatar.jpg'
+      avatar: 'https://example.com/buyer-avatar.jpg',
     },
-    initiator: UserRole.Buyer
+    initiator: UserRole.Buyer,
   };
 
   toggle() {
@@ -422,18 +453,22 @@ selectChat(chat: Chat) {
   }
 
   getStatusClass(status: MessageStatus): string {
-    switch(status) {
-      case MessageStatus.Read: return 'status-read';
-      case MessageStatus.Delivered: return 'status-delivered';
-      case MessageStatus.Pending: return 'status-pending';
-      default: return '';
+    switch (status) {
+      case MessageStatus.Read:
+        return 'status-read';
+      case MessageStatus.Delivered:
+        return 'status-delivered';
+      case MessageStatus.Pending:
+        return 'status-pending';
+      default:
+        return '';
     }
   }
   // get showAcceptReject(): boolean {
   //   const isReceiverSellerOrAgent = [UserRole.Seller, UserRole.Agent].includes(this.currentUser.role);
   //   const isPending = this.activeConversation.status === ConversationStatus.Pending;
   //   const noPreviousMessages = this.messages.length === 1 && this.messages[0].senderId.startsWith('buyer');
-  
+
   //   return isReceiverSellerOrAgent && isPending && noPreviousMessages;
   // }
   // acceptConversation() {
@@ -464,40 +499,40 @@ selectChat(chat: Chat) {
   // sendMessage() {
   //   const currentChat = this.selectedChat;
   //   if (!currentChat || !this.newMessage.trim()) return;
-  
+
   //   // Create DTO
   //   const dto: CreateMessageDto = {
   //     conversationId: currentChat.id,
   //     content: this.newMessage.trim()
   //   };
-  
+
   //   // Create optimistic message
   //   const optimisticMessage: Message = {
   //     text: dto.content,
   //     sent: true, // Assume message is from current user
   //     time: new Date(),
-  //     status: currentChat.status === ConversationStatus.Pending 
-  //              ? MessageStatus.Pending 
+  //     status: currentChat.status === ConversationStatus.Pending
+  //              ? MessageStatus.Pending
   //              : MessageStatus.Sent,
   //     senderId: this.currentUserId!
   //   };
-  
+
   //   // Add to UI immediately and sort
   //   currentChat.messages.push(optimisticMessage);
   //   currentChat.messages.sort((a, b) => a.time.getTime() - b.time.getTime());
   //   currentChat.lastMessageTime = new Date();
   //   this.newMessage = '';
   //   this.scrollToBottom(true);
-  
+
   //   // Send to API
   //   this.messageService.createMessage(dto).subscribe({
   //     next: (response) => {
   //       // Replace optimistic message with actual response
-  //       const index = currentChat.messages.findIndex(m => 
-  //         m.time === optimisticMessage.time && 
+  //       const index = currentChat.messages.findIndex(m =>
+  //         m.time === optimisticMessage.time &&
   //         m.text === optimisticMessage.text
   //       );
-        
+
   //       if (index > -1) {
   //         const actualMessage = this.mapResponseToMessage(response);
   //         currentChat.messages[index] = actualMessage;
@@ -508,8 +543,8 @@ selectChat(chat: Chat) {
   //     error: (error) => {
   //       console.error('Message send failed:', error);
   //       // Remove optimistic message on error
-  //       const index = currentChat.messages.findIndex(m => 
-  //         m.time === optimisticMessage.time && 
+  //       const index = currentChat.messages.findIndex(m =>
+  //         m.time === optimisticMessage.time &&
   //         m.text === optimisticMessage.text
   //       );
   //       if (index > -1) {
@@ -525,54 +560,106 @@ selectChat(chat: Chat) {
   sendMessage() {
     const currentChat = this.selectedChat;
     if (!currentChat || !this.newMessage.trim()) return;
-  
+
     // Create DTO
     const dto: CreateMessageDto = {
       conversationId: currentChat.id,
-      content: this.newMessage.trim()
+      content: this.newMessage.trim(),
     };
-  
+
     // Create optimistic message
     const optimisticMessage: Message = {
       text: dto.content,
       sent: true,
       time: new Date(),
-      status: currentChat.status === ConversationStatus.Pending 
-               ? MessageStatus.Pending 
-               : MessageStatus.Sent,
-      senderId: this.currentUserId!
+      status:
+        currentChat.status === ConversationStatus.Pending
+          ? MessageStatus.Pending
+          : MessageStatus.Sent,
+      senderId: this.currentUserId!,
     };
-  
+
     // Add to UI immediately (no sorting here)
     currentChat.messages = [...currentChat.messages, optimisticMessage]; // Add to end
     currentChat.lastMessageTime = new Date();
     this.newMessage = '';
     this.scrollToBottom(true);
-  
+
     // Send to API
     this.messageService.createMessage(dto).subscribe({
       next: (response) => {
         // Replace optimistic message with actual response
-        currentChat.messages = currentChat.messages.map(m => 
+        currentChat.messages = currentChat.messages.map((m) =>
           m === optimisticMessage ? this.mapResponseToMessage(response) : m
         );
       },
       error: (error) => {
         // Remove optimistic message on error
-        currentChat.messages = currentChat.messages.filter(m => m !== optimisticMessage);
+        currentChat.messages = currentChat.messages.filter(
+          (m) => m !== optimisticMessage
+        );
         this.scrollToBottom();
-      }
+      },
     });
   }
 
-  
   private mapResponseToMessage(response: MessageResponseDto): Message {
     return {
       text: response.content,
       sent: response.senderId === this.currentUserId,
       time: new Date(response.sentAt),
       status: response.status,
-      senderId: response.senderId
+      senderId: response.senderId,
     };
+  }
+
+  // Add to MainChatComponent class
+  private setupSignalR() {
+    this.chatService.startConnection();
+
+    this.chatService.messages$.subscribe((messages: IncomingChatMessage[]) => {
+      if (!messages.length) return;
+
+      const latestMessage = messages[messages.length - 1];
+
+      // Find the conversation this message belongs to
+      const conversation = this.conversations.find(
+        (c) => c.id === latestMessage.conversationId
+      );
+      if (!conversation) return;
+
+      // Check if we already have this message
+      const messageExists = conversation.messages.some(
+        (m: { time: { getTime: () => number }; text: string }) =>
+          m.time.getTime() === new Date(latestMessage.sentAt).getTime() &&
+          m.text === latestMessage.content
+      );
+
+      if (!messageExists) {
+        const newMessage: Message = {
+          text: latestMessage.content,
+          sent: latestMessage.senderId === this.currentUserId,
+          time: new Date(latestMessage.sentAt),
+          status: MessageStatus.Delivered,
+          senderId: latestMessage.senderId,
+        };
+
+        conversation.messages.push(newMessage);
+        conversation.lastMessageTime = new Date(latestMessage.sentAt);
+
+        // Sort messages by time
+        conversation.messages.sort(
+          (
+            a: { time: { getTime: () => number } },
+            b: { time: { getTime: () => number } }
+          ) => a.time.getTime() - b.time.getTime()
+        );
+
+        // If this is the currently selected chat, scroll to bottom
+        if (this.selectedChat?.id === conversation.id) {
+          setTimeout(() => this.scrollToBottom(true), 100);
+        }
+      }
+    });
   }
 }

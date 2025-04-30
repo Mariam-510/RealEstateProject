@@ -7,13 +7,15 @@ import { API_CONFIG } from '../../app.config';
 
 import { BehaviorSubject, Observable } from 'rxjs';
 
-export interface ChatMessage {
+export interface IncomingChatMessage {
   id: number;
-  senderId: string;
-  receiverId: string;
   content: string;
   sentAt: Date;
-  isRead: boolean;
+  status: number;
+  senderId?: string;
+  receiverId?: string;
+  // isRead: boolean;
+  conversationId?: number;
 }
 
 @Injectable({
@@ -23,7 +25,7 @@ export class ChatService {
   private hubConnection?: signalR.HubConnection;
   private apiUrl = `${API_CONFIG.apiUrl}api/Chat`;
 
-  private messagesSubject = new BehaviorSubject<ChatMessage[]>([]);
+  private messagesSubject = new BehaviorSubject<IncomingChatMessage[]>([]);
   public messages$ = this.messagesSubject.asObservable();
 
   constructor(
@@ -45,21 +47,22 @@ export class ChatService {
         .then(() => {
             console.log('SignalR connection started');
             // Join the user's group
-            const userId = this.authService.getCurrentUser()?.userId.toString();
-            if (userId) {
-                this.hubConnection?.invoke('JoinChat', userId);
-            }
+            // const userId = this.authService.getCurrentUser()?.userId.toString();
+            // if (userId) {
+            //     this.hubConnection?.invoke('JoinChat', userId);
+            // }
         })
         .catch(err => console.error('Error starting SignalR connection:', err));
 
-    this.hubConnection.on('ReceiveMessage', (senderId: string, message: string) => {
-      const newMessage: ChatMessage = {
-        id: 0, // Temporary ID
-        senderId,
+    this.hubConnection.on('ReceiveMessage', (response: IncomingChatMessage) => {
+      const newMessage: IncomingChatMessage = {
+        id: response.id, // Temporary ID
+        content: response.content,
+        sentAt:  new Date(response.sentAt),
+        senderId: response.senderId,
         receiverId: this.authService.getCurrentUser()?.userId.toString() || '',
-        content: message,
-        sentAt: new Date(),
-        isRead: false
+        conversationId: response.conversationId,
+        status: response.status,
       };
       this.messagesSubject.next([...this.messagesSubject.value, newMessage]);
     });
@@ -77,7 +80,7 @@ export class ChatService {
 }
 
 
-  public getChatHistory(otherUserId: string): Observable<ChatMessage[]> {
-    return this.http.get<ChatMessage[]>(`${this.apiUrl}/history/${otherUserId}`);
-  }
+  // public getChatHistory(otherUserId: string): Observable<ChatMessage[]> {
+  //   return this.http.get<ChatMessage[]>(`${this.apiUrl}/history/${otherUserId}`);
+  // }
 }

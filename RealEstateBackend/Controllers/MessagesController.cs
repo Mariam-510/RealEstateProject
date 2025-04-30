@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using RealEstate.Hubs;
 using RealEstate.Mapping;
 using RealEstate.Models.Domains;
 using RealEstate.Models.DTOs.ConversationDto;
@@ -18,13 +20,16 @@ namespace RealEstate.Controllers
     {
         public IMessageRepository _messageRepository { get; }
         public IConversationRepository _conversationRepository { get; }
+
+        private readonly IHubContext<ChatHub> _hubContext;
         public UserManager<Account> _userManager { get; }
 
-        public MessagesController(IMessageRepository messageRepository, IConversationRepository conversationRepository, UserManager<Account> userManager)
+        public MessagesController(IMessageRepository messageRepository, IConversationRepository conversationRepository, IHubContext<ChatHub> hubContext, UserManager<Account> userManager)
         {
             _messageRepository = messageRepository;
             _conversationRepository = conversationRepository;
             _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         [HttpGet]
@@ -84,12 +89,18 @@ namespace RealEstate.Controllers
             var currentUserAccountId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (currentUserAccountId == null) return Unauthorized();
 
-            if (createMessageDto == null)
-                return BadRequest("Invalid message data!");
-
+            //Get receiver account id through conversation
             var conversation = await _conversationRepository.GetByIdAsync(createMessageDto.ConversationId);
             if (conversation == null)
                 return NotFound("Conversation not found!");
+            string otherUserId = conversation.FirstAccountId == currentUserAccountId
+            ? conversation.SecondAccountId
+            : conversation.FirstAccountId;
+
+
+            if (createMessageDto == null)
+                return BadRequest("Invalid message data!");
+
 
             bool isParticipant = conversation.FirstAccountId == currentUserAccountId
                       || conversation.SecondAccountId == currentUserAccountId;
@@ -147,6 +158,9 @@ namespace RealEstate.Controllers
             await _conversationRepository.UpdateAsync(conversation);
 
             var response = addedMessage.MessageResponseDto();
+
+            //Update chat realtime 
+            await _hubContext.Clients.Group(otherUserId).SendAsync("ReceiveMessage", response);
 
             return Ok(response);
         }
