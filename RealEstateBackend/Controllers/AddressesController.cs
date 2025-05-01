@@ -53,24 +53,24 @@ namespace RealEstate.Controllers
 
         // GET: api/Address/5
         [HttpGet("{id}")]
-        [Authorize(Roles = "Buyer")]
+        [Authorize(Roles = "Buyer,Admin")]
         public async Task<IActionResult> GetById(int id)
         {
-            string buyerIdStr = User.FindFirst("userId")?.Value;
+            //string buyerIdStr = User.FindFirst("userId")?.Value;
 
-            if (!int.TryParse(buyerIdStr, out int buyerId))
-            {
-                return Unauthorized("Buyer not found.");
-            }
+            //if (!int.TryParse(buyerIdStr, out int buyerId))
+            //{
+            //    return Unauthorized("Buyer not found.");
+            //}
 
             var address = await _addressRepository.GetByIdAsync(id);
             if (address == null)
                 return NotFound("Address not found!");
 
-            if (address.BuyerId != buyerId)
-            {
-                return Unauthorized("Not allowed to delete this address.");
-            }
+            //if (address.BuyerId != buyerId)
+            //{
+            //    return Unauthorized("Not allowed to delete this address.");
+            //}
 
             var dto = _mapper.Map<AddressDto>(address); 
             return Ok(dto);
