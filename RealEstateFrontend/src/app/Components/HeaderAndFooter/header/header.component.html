@@ -196,6 +196,20 @@
               <i class="bi bi-star-fill" style="color: #6e5447;"></i> Reviews
             </a>
           </div>
+          <div *ngIf="hasRole('Admin')">
+            <a class="dropdown-item" routerLink="/admin/profile">
+              <i class="bi bi-person-fill" style="color: #6e5447;"></i> Profile
+            </a>
+            <a class="dropdown-item" routerLink="admin/dashboard">
+              <i class="bi  bi-grid" style="color: #6e5447;"></i> Dashboard
+            </a>
+            <a class="dropdown-item" routerLink="/admin/viewAllOrder">
+              <i class="bi bi-eye" style="color: #6e5447;"></i> View All order
+            </a>
+            <a class="dropdown-item" routerLink="admin/createAdmin">
+              <i class="bi bi-three-dots-vertical" style="color: #6e5447;"></i> More
+            </a>
+          </div>
 
           <div *ngIf="hasRole('Seller')">
             <a class="dropdown-item" routerLink="/seller/profile">
