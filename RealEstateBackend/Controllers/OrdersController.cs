@@ -70,7 +70,7 @@ namespace RealEstate.Controllers
 
         [HttpGet]
         [Route("getById/{id}")]
-        [Authorize(Roles = "Buyer")]
+        [Authorize(Roles = "Buyer,Admin")]
         public async Task<IActionResult> GetById(int id)
         {
             var order = await _orderRepository.GetByIdAsync(id);
@@ -194,22 +194,21 @@ namespace RealEstate.Controllers
                     if(updateOrderDto.Status == OrderStatus.Cancelled)
                     {
                         var orderItems = await _orderItemRepository.GetAllByOrderAsync(existingOrder.Id);
-                        if (orderItems == null || orderItems.Any())
+                        if (orderItems != null)
                         {
-                            return NotFound("Order Items not found");
-                        }
 
-                        foreach (var orderItem in orderItems)
-                        {
-                            var product = await _productRepository.GetByIdAsync((int)orderItem.ProductId);
-
-                            if (product != null)
+                            foreach (var orderItem in orderItems)
                             {
-                                var productStock = await ProductStockRepository.GetByColorAsync(product.Id, orderItem.Color);
-                                if (productStock != null)
+                                var product = await _productRepository.GetByIdAsync((int)orderItem.ProductId);
+
+                                if (product != null)
                                 {
-                                    productStock.Quantity += orderItem.Quantity;
-                                    await ProductStockRepository.UpdateAsync(productStock.Id, productStock);
+                                    var productStock = await ProductStockRepository.GetByColorAsync(product.Id, orderItem.Color);
+                                    if (productStock != null)
+                                    {
+                                        productStock.Quantity += orderItem.Quantity;
+                                        await ProductStockRepository.UpdateAsync(productStock.Id, productStock);
+                                    }
                                 }
                             }
                         }

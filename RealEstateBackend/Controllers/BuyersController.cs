@@ -67,6 +67,21 @@ namespace RealEstate.Controllers
 
             return Ok(buyerDto);
         }
+        [HttpGet("{buyerId}")]
+        [Authorize(Roles = "Buyer,Admin")]
+        public async Task<IActionResult> GetBuyerById(int buyerId)
+        {
+            var buyer = await BuyerRepository.GetByIdAsync(buyerId);
+
+            if (buyer == null)
+            {
+                return NotFound();
+            }
+
+            var buyerDto = Mapper.Map<BuyerDto>(buyer);
+
+            return Ok(buyerDto);
+        }
 
         [HttpGet]
         [Route("account/{accountId}")]
