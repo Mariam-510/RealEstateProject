@@ -14,7 +14,6 @@ import { API_CONFIG } from '../../../app.config';
 })
 export class AllReviewComponent implements OnInit {
   apiConfig = API_CONFIG;
-
   constructor(private router: Router, private auth: AuthService, private reviewService: ReviewService) { }
 
   reviews: ReviewResponseDto[] = []
