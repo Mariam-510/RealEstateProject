@@ -99,4 +99,17 @@ export class AuctionService {
   getAuctionByPropertyId(propertyId: number): Observable<AuctionDTOShow> {
     return this.http.get<AuctionDTOShow>(`${this.apiUrl}/Property/${propertyId}`);
   }
+
+  //-----------------------------------------------------------------------------------------------
+  // Add to AuctionService
+  // checkAuctionStatus(): Observable<AuctionDTOShow[]> {
+  //   return this.http.get<AuctionDTOShow[]>(`${this.apiUrl}/CheckStatus`);
+  // }
+
+  // Update service method signature
+  checkAuctionStatus(): Observable<AuctionDTOShow[]> {
+    return this.http.get<AuctionDTOShow[]>(
+      `${this.apiUrl}/CheckStatus`
+    );
+  }
 }
