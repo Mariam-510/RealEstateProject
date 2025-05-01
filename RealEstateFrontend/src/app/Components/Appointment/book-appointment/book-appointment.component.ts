@@ -104,20 +104,23 @@ images: any[] = [];    // for images
   
   onSubmit() {
     if (!this.propertyId || !this.selectedDate || !this.timeValue) {
-      alert('All fields are required');
+      this.toastr.error('All fields are required', 'Error');
       return;
     }
   
-    const [hours, minutes] = this.timeValue.split(':');
     const scheduledTime = this.createScheduledTime();
-    
-    scheduledTime.setHours(parseInt(hours), parseInt(minutes));
   
-    // Instead of sending Date object, format it manually
+    // Check if selected time is in the past
+    if (scheduledTime <= new Date()) {
+      this.toastr.error('Please select a future time', 'Invalid Time');
+      return;
+    }
+  
+    // Rest of your existing submission logic
     const formattedDateTime = this.formatDateTimeLocal(scheduledTime);
   
     const appointmentData: CreateAppointmentDto = {
-      scheduledTime: formattedDateTime, // <-- send as string
+      scheduledTime: formattedDateTime,
       type: this.appointmentType,
       status: 'Pending'
     };
@@ -129,15 +132,15 @@ images: any[] = [];    // for images
     ).subscribe({
       next: (response) => {
         this.toastr.success('Appointment created successfully!', 'Success');
+        setTimeout(() => {
+          this.router.navigate(['/user/BuyerViewAllAppointment']);
+        }, 1000);
       },
       error: (error) => {
         console.error('Error creating appointment:', error);
         this.toastr.error('Error creating appointment. Please try again.', 'Error');
       }
     });
-    setTimeout(() => {
-      this.router.navigate(['/user/BuyerViewAllAppointment']); // <-- replace with the page you want
-    }, 1000); // 1 second delay
   }
   
   days: Day[] = [];

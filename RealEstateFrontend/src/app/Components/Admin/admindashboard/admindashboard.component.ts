@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
 import { CommonModule } from '@angular/common';
@@ -8,64 +8,12 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Chart } from 'chart.js';
+import { AdminDashboardService, DashboardTotals } from '../../../Services/ApiServices/admin-dashboard.service';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { Router } from '@angular/router';
 Chart.register(ChartDataLabels);
 
 
-enum PropertyCategory {
-  Apartment = 'Apartment',
-  Villa = 'Villa',
-  House = 'House',
-  Studio = 'Studio',
-  Penthouse = 'Penthouse',
-  Duplex = 'Duplex',
-  Townhouse = 'Townhouse',
-  Mansion = 'Mansion'
-}
-
-enum PropertyStatus {
-  Available = 'Available',
-  Sold = 'Sold',
-  Auctioned = 'Auctioned'
-}
-
-enum PropertyType {
-  Sell = 'Sell',
-  Rent = 'Rent'
-}
-interface Category {
-  id: number;
-  name: string;
-  color: string;
-}
-
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  quantity: number;
-  isUsed: boolean;
-  isDeleted: boolean;
-  images: string[];
-  categoryID: number;
-  averageRating: number;
-  orderItems: any[];
-  wishlist: any[];
-  reviews: any[];
-  categoryName?: string;
-  stock: number;
-  sold: number;
-}
-interface Property {
-  id: number;
-  title: string;
-  location: string;
-  type: PropertyType;
-  price: number;
-  isAuction: boolean;
-  status: PropertyStatus;
-  category: PropertyCategory;
-}
 @Component({
   selector: 'app-admindashboard',
   imports: [
@@ -78,230 +26,179 @@ interface Property {
   ], templateUrl: './admindashboard.component.html',
   styleUrls: ['./admindashboard.component.css']
 })
-export class AdmindashboardComponent {
-  products: Product[] = [
-    {
-      id: 1,
-      name: 'Modern Leather Sofa',
-      description: 'Premium quality leather sofa with comfortable cushions',
-      price: 1299.99,
-      quantity: 50,
-      isUsed: false,
-      isDeleted: false,
-      images: ['sofa1.jpg', 'sofa2.jpg'],
-      categoryID: 1,
-      averageRating: 4.8,
-      orderItems: [],
-      wishlist: [],
-      reviews: [],
-      categoryName: 'Living Room',
-      stock: 50,
-      sold: 10
-    },
-    {
-      id: 2,
-      name: 'King Size Bed Frame',
-      description: 'Solid wood bed frame with upholstered headboard',
-      price: 899.99,
-      quantity: 30,
-      isUsed: false,
-      isDeleted: false,
-      images: ['bed1.jpg', 'bed2.jpg'],
-      categoryID: 2,
-      averageRating: 4.7,
-      orderItems: [],
-      wishlist: [],
-      reviews: [],
-      categoryName: 'Bedroom',
-      stock: 30,
-      sold: 25
-    },
-    {
-      id: 3,
-      name: 'Dining Table Set',
-      description: '6-seater dining table with chairs, modern design',
-      price: 799.99,
-      quantity: 25,
-      isUsed: false,
-      isDeleted: false,
-      images: ['dining1.jpg', 'dining2.jpg'],
-      categoryID: 3,
-      averageRating: 4.5,
-      orderItems: [],
-      wishlist: [],
-      reviews: [],
-      categoryName: 'Dining Room',
-      stock: 25,
-      sold: 30
-    },
-    {
-      id: 4,
-      name: 'Executive Office Desk',
-      description: 'Large L-shaped desk with cable management',
-      price: 599.99,
-      quantity: 40,
-      isUsed: false,
-      isDeleted: false,
-      images: ['desk1.jpg', 'desk2.jpg'],
-      categoryID: 4,
-      averageRating: 4.6,
-      orderItems: [],
-      wishlist: [],
-      reviews: [],
-      categoryName: 'Office',
-      stock: 40,
-      sold: 5
-    },
-    {
-      id: 5,
-      name: 'Modern Leather Sofa',
-      description: 'Premium quality leather sofa with comfortable cushions',
-      price: 1299.99,
-      quantity: 50,
-      isUsed: true,
-      isDeleted: false,
-      images: ['sofa1.jpg', 'sofa2.jpg'],
-      categoryID: 5,
-      averageRating: 4.8,
-      orderItems: [],
-      wishlist: [],
-      reviews: [],
-      categoryName: 'Living Room',
-      stock: 50,
-      sold: 20
+export class AdmindashboardComponent implements OnInit{
+  totals!: DashboardTotals;
+  
+  constructor(private dashboardService: AdminDashboardService,private auth: AuthService,private router: Router) {}
+  ngOnInit(): void {
+    if (this.hasRole('Admin')) {
+      this.loadDashboardData();
+    } 
+    else{
+      this.router.navigate(['/login']);
     }
-  ]
-  categories: Category[] = [
-    { id: 1, name: 'Living Room', color: '#4e73df' },
-    { id: 2, name: 'Bedroom', color: '#1cc88a' },
-    { id: 3, name: 'Dining Room', color: '#36b9cc' },
-    { id: 4, name: 'Office', color: '#f6c23e' },
-    { id: 5, name: 'Outdoor', color: '#e74a3b' }
-  ];
-
-  properties: Property[] = [
-    { id: 1, title: 'Luxury Apartment', location: 'Downtown', type: PropertyType.Sell, price: 750000, isAuction: false, status: PropertyStatus.Sold, category: PropertyCategory.Apartment },
-    { id: 2, title: 'Seaside Villa', location: 'Coastline', type: PropertyType.Sell, price: 250000, isAuction: false, status: PropertyStatus.Available, category: PropertyCategory.Villa },
-    { id: 3, title: 'Urban Studio', location: 'City Center', type: PropertyType.Rent, price: 650000, isAuction: false, status: PropertyStatus.Sold, category: PropertyCategory.Studio },
-    { id: 4, title: 'Hillside Mansion', location: 'Suburbs', type: PropertyType.Sell, price: 350000, isAuction: true, status: PropertyStatus.Auctioned, category: PropertyCategory.Mansion },
-    { id: 5, title: 'Townhouse', location: 'Urban District', type: PropertyType.Sell, price: 950000, isAuction: false, status: PropertyStatus.Sold, category: PropertyCategory.Townhouse },
-    { id: 6, title: 'Executive Penthouse', location: 'Business District', type: PropertyType.Rent, price: 750000, isAuction: false, status: PropertyStatus.Available, category: PropertyCategory.Penthouse },
-    { id: 7, title: 'Luxury Apartment', location: 'Downtown', type: PropertyType.Rent, price: 650000, isAuction: false, status: PropertyStatus.Sold, category: PropertyCategory.Apartment },
-    { id: 8, title: 'Townhouse', location: 'Downtown', type: PropertyType.Rent, price: 150000, isAuction: false, status: PropertyStatus.Sold, category: PropertyCategory.Apartment },
-    { id: 9, title: 'Townhouse', location: 'Suburbs', type: PropertyType.Sell, price: 350000, isAuction: false, status: PropertyStatus.Auctioned, category: PropertyCategory.Mansion },
-
-
-  ];
-
-  get availableProperties(): number {
-    return this.properties.filter(p => p.status === PropertyStatus.Available).length;
-  }
-  get soldProperties(): number {
-    return this.properties.filter(p => p.type === PropertyType.Sell && p.status === PropertyStatus.Sold).length;
-  }
-  get propertiesForSaleCount(): number {
-    return this.properties.filter(p => p.type === PropertyType.Sell).length;
-  }
-  get propertiesForSaleAvailable(): number {
-    return this.properties.filter(p => p.type === PropertyType.Sell && p.status === PropertyStatus.Available).length;
   }
 
-  get RentedProperties(): number {
-    return this.properties.filter(p => p.type === PropertyType.Rent && p.status === PropertyStatus.Sold).length;
-  }
-  get propertiesForRentAvailable(): number {
-    return this.properties.filter(p => p.type === PropertyType.Rent && p.status === PropertyStatus.Available).length;
+  private loadDashboardData(): void {
+    this.dashboardService.getTotals().subscribe({
+      next: (data) => {
+        this.totals = data;
+        this.updateCategoryChart();
+        this.updateSubscriptionChart();
+        this.updateTopProductsChart(); 
+
+
+      },
+      error: (error) => {
+        console.error('Error loading dashboard data:', error);
+      }
+    });
   }
 
-  get propertiesForRentCount(): number {
-    return this.properties.filter(p => p.type === PropertyType.Rent).length;
-  }
+ 
+// ---------------------------------LINKED---------------------------
+get availableProperties(): number {
+  return this.totals?.availableProperties || 0;
+}
+get newProductsCount(): number {
+  return this.totalProducts - this.totalUsedProducts;
+}
+get soldProperties(): number {
+  return this.totals?.soldProperties || 0;
+}
 
-  get soldAndRentedCount(): number {
-    return this.soldProperties + this.RentedProperties;
-  }
-  get ActiveAuctionProperties(): number {
-    return this.properties.filter(p => p.status === PropertyStatus.Auctioned && p.isAuction == true).length;
-  }
-  get EndedAuctionProperties(): number {
-    return this.properties.filter(p => p.status === PropertyStatus.Auctioned && p.isAuction == false).length;
-  }
-  get auctionedCount(): number {
-    return this.ActiveAuctionProperties + this.EndedAuctionProperties;
-  }
+get propertiesForSaleCount(): number {
+  return this.totals?.saleProperties || 0;
+}
 
-  get totalProducts(): number {
-    return this.products.length;
-  }
+get propertiesForRentCount(): number {
+  return this.totals?.rentProperties || 0;
+}
 
-  get totalSold(): number {
-    return this.products.reduce((sum, product) => sum + product.sold, 0);
-  }
+get soldAndRentedCount(): number {
+  return this.soldProperties ;
+}
 
-  get totalUsedProducts(): number {
-    return this.products.filter(product => product.isUsed).length;
-  }
-  get totalNewProducts(): number {
-    return this.products.filter(product => product.isUsed == false).length;
-  }
+get ActiveAuctionProperties(): number {
+  return this.totals?.activeAuctions || 0;
+}
 
-  get totalCategories(): number {
-    return this.categories.length;
-  }
-  get auctionProgressWidth(): string {
-    return (this.ActiveAuctionProperties / (this.ActiveAuctionProperties + this.EndedAuctionProperties) * 100) + '%';
-  }
-  get totalStock(): number {
-    return this.products.reduce((sum, product) => sum + product.stock, 0);
-  }
+get auctionedCount(): number {
+  return this.ActiveAuctionProperties + (this.totals?.endingAuctions || 0);
+}
 
-  get newProductsCount(): number {
-    return this.totalProducts - this.totalUsedProducts;
-  }
+get totalProducts(): number {
+  return this.totals?.totalProducts || 0;
+}
 
-  get SellerNumber(): number {
-    return 350;
-  }
+get totalSold(): number {
+  return this.totals?.soldProducts || 0;
+}
 
-  get BuyerNumber(): number {
-    return 1200;
-  }
+get totalUsedProducts(): number {
+  return this.totals?.usedProducts || 0;
+}
 
-  get AgentNumber(): number {
-    return 700;
-  }
+get totalNewProducts(): number {
+  return this.totals?.newProducts || 0;
+}
 
-  get BasicSellSubscriptionPlanNumber(): number {
-    return 40;
-  }
+get auctionProgressWidth(): string {
+  if (!this.totals) return '0%';
+  const total = (this.totals.upcomingAuctions || 0) + (this.totals.endingAuctions || 0);
+  return total > 0 ? 
+    `${(this.totals.activeAuctionsPrecentage || 0).toFixed(2)}%` : 
+    '0%';
+}
 
-  get EnterpeiseSubscriptionPlanNumber(): number {
-    return 15;
-  }
+// User-related getters
+get SellerNumber(): number {
+  return this.totals?.totalSellers || 0;
+}
 
-  get proSubscriptionPlanNumber(): number {
-    return 25;
-  }
+get BuyerNumber(): number {
+  return this.totals?.totalBuyers || 0;
+}
 
-  get FreeSubscriptionNumber(): number {
-    return 100;
-  }
+get AgentNumber(): number {
+  return this.totals?.totalAgents || 0;
+}
 
-  public subscriptionPlanChart: ChartConfiguration<'bar'>['data'] = {
-    labels: ['Free', 'Basic Sell', 'Pro', 'Enterprise'],
-    datasets: [{
-      label: 'Number of Subscriptions',
-      data: [
-        this.FreeSubscriptionNumber,
-        this.BasicSellSubscriptionPlanNumber,
-        this.proSubscriptionPlanNumber,
-        this.EnterpeiseSubscriptionPlanNumber
-      ],
-      backgroundColor: ['#c38e79', '#D5C7A3', '#E9DFC3', '#F5EEDD'],
-      borderRadius: 4,
-      barThickness: 40
-    }]
-  };
+// ---------------------------------LINKED---------------------------
+
+public subscriptionPlanChart: ChartConfiguration<'bar'>['data'] = {
+  labels: [],
+  datasets: [{
+    label: 'Number of Subscriptions',
+    data: [],
+    backgroundColor: [],
+    borderRadius: 4,
+    barThickness: 40
+  }]
+};
+
+private updateSubscriptionChart(): void {
+  if (this.totals?.subscriptionPlans && this.totals.subscriptionCounts) {
+    const colorPalette = ['#c38e79', '#D5C7A3', '#E9DFC3', '#F5EEDD', '#B17F59', '#E8C999'];
+
+    const numberOfBars = this.totals.subscriptionPlans.length;
+    const dynamicBarThickness = numberOfBars > 6 ? 20 : 40;
+    const dataValues = this.totals.subscriptionPlans.map(plan => this.totals.subscriptionCounts[plan] || 0);
+const maxCount = Math.max(...dataValues);
+
+
+    this.subscriptionPlanChart = {
+      labels: this.totals.subscriptionPlans,
+      datasets: [{
+        label: 'Number of Subscriptions',
+        data: this.totals.subscriptionPlans.map(plan => this.totals.subscriptionCounts[plan] || 0),
+        backgroundColor: colorPalette.slice(0, numberOfBars),
+        borderRadius: 6,
+        barThickness: dynamicBarThickness
+      }]
+    };
+
+    this.subscriptionPlanOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        datalabels: {
+          anchor: 'end',
+          align: 'end',
+          color: '#000',
+          font: {
+            weight: 'bold'
+          },
+          formatter: (value: any) => value
+        },
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false // 🔴 Hide vertical lines
+          },
+          ticks: {
+            autoSkip: false,
+            maxRotation: 45,
+            minRotation: 0
+          }
+        },
+        y: {
+          beginAtZero: true,
+          max: maxCount + 1,
+
+          ticks: {
+            stepSize: 1
+          }
+        }
+      }
+    };
+  }
+}
+
 
   public subscriptionPlanOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: true,
@@ -336,24 +233,37 @@ export class AdmindashboardComponent {
     },
   };
 
-  public categoryDistributionChart: ChartConfiguration<'pie'>['data'] = {
-    labels: this.categories.map(c => c.name),
-    datasets: [{
-      label: 'Product Distribution',
-      data: this.categories.map(category =>
-        this.products.filter(product => product.categoryID === category.id).length
-      ),
-      backgroundColor: [
-        '#c38e79',
-        '#D5C7A3',
-        '#B17F59',
-        '#F5EEDD',
-        '#E8C999',
-        '#F5EEDD'
-      ], borderWidth: 1
-    }]
-  };
+// Replace the existing categoryDistributionChart with this:
+public categoryDistributionChart: ChartConfiguration<'pie'>['data'] = {
+  labels: [],
+  datasets: [{
+    label: 'Product Distribution',
+    data: [],
+    backgroundColor: [
+      '#C38E79', // muted rosewood
+      '#D6C6A3', // sandy beige
+      '#B17F59', // terra cotta
+      '#F3E9D7', // soft cream
+      '#E2BB89', // warm sand
+      '#A76A4C', // cinnamon
+      '#EBD8C3'  // peachy cream
+    ],
+    
+    borderWidth: 1
+  }]
+};
 
+// Add this method to update the chart when data loads
+private updateCategoryChart(): void {
+  if (this.totals?.categoryPercentages) {
+    this.categoryDistributionChart.labels = Object.keys(this.totals.categoryPercentages);
+    this.categoryDistributionChart.datasets[0].data = Object.values(this.totals.categoryPercentages);
+  }
+}
+hasCategoryData(): boolean {
+  return this.totals?.categoryPercentages && 
+         Object.keys(this.totals.categoryPercentages).length > 0;
+}
   public categoryDistributionOptions: ChartConfiguration<'pie'>['options'] = {
     responsive: true,
     plugins: {
@@ -386,29 +296,28 @@ export class AdmindashboardComponent {
     }
   };
 
+ 
   public topProductsChart: ChartConfiguration<'bar'>['data'] = {
-    labels: [...this.products]
-      .sort((a, b) => b.sold - a.sold)
-      .slice(0, 5)
-      .map(p => p.name),
+    labels: [],
     datasets: [{
       label: 'Units Sold',
-      data: [...this.products]
-        .sort((a, b) => b.sold - a.sold)
-        .slice(0, 5)
-        .map(p => p.sold),
+      data: [],
       backgroundColor: ['#c38e79', '#E8C999', '#D5C7A3', '#E9DFC3', '#F5EEDD'],
       borderRadius: 4
     }]
   };
-
+  
   public topProductsOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
     indexAxis: 'y',
     scales: {
       x: {
-        beginAtZero: true
+        beginAtZero: true,
+        max: Math.max(...(this.totals?.topProducts?.map(p => p.totalSold) || [0])) * 1.1, // 10% padding
+        ticks: {
+          stepSize: Math.ceil((Math.max(...(this.totals?.topProducts?.map(p => p.totalSold) || [0])) * 1.1) / 5)
+        }
       },
       y: {
         grid: {
@@ -427,7 +336,69 @@ export class AdmindashboardComponent {
         formatter: (value) => value.toString(),
       },
       legend: { display: false },
-    },
-
+    }
   };
+  
+  private updateTopProductsChart(): void {
+    if (this.totals?.topProducts) {
+      const salesData = this.totals.topProducts.map(p => p.totalSold);
+      const uniqueValues = [...new Set(salesData)].sort((a, b) => a - b);
+  
+      this.topProductsOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        scales: {
+          x: {
+            type: 'linear',
+            beginAtZero: true,
+            ticks: {
+              precision: 0,
+              stepSize: 1,
+              callback: (value) => uniqueValues.includes(value as number) ? value : ''
+            },
+            grid: {
+              color: (context) => 
+                context.tick.value === 0 || uniqueValues.includes(context.tick.value) 
+                  ? 'rgba(0, 0, 0, 0.1)' 
+                  : 'transparent'
+            }
+          },
+          y: {
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          datalabels: {
+            display: true,
+            color: 'rgba(51, 51, 51, 0.7)',
+            font: { weight: 'bold', size: 11 },
+            formatter: (value) => value.toString(),
+          },
+          legend: { display: false }
+        }
+      };
+  
+      this.topProductsChart = {
+        labels: this.totals.topProducts.map(p => p.productName),
+        datasets: [{
+          label: 'Units Sold',
+          data: salesData,
+          backgroundColor: ['#c38e79', '#E8C999', '#D5C7A3', '#E9DFC3', '#F5EEDD'],
+          borderRadius: 4
+        }]
+      };
+    }
+  }
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
+  }
 }

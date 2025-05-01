@@ -49,8 +49,8 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
   constructor(private fb: FormBuilder, private router: Router, private propertyService: PropertyService,
     private auth: AuthService, private toastr: ToastrService) {
     this.propertyForm = this.fb.group({
-      title: ['', [Validators.required, Validators.maxLength(15)]],
-      description: ['', [Validators.required, Validators.maxLength(40)]],
+      title: ['', [Validators.required, Validators.maxLength(50)]],
+      description: ['', [Validators.required, Validators.maxLength(200)]],
       price: ['', [Validators.required, Validators.min(0)]],
       propertyCategory: ['', Validators.required],
       // status: ['', Validators.required],

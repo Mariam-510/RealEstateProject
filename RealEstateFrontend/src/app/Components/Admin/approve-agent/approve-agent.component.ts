@@ -1,113 +1,99 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-
-interface Agent {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  crNumber: string;
-  timeAgo: string;
-  status: string;
-  processedDate?: string;
-}
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { agentDto, AgentService} from '../../../Services/ApiServices/agent.service';
+import { API_CONFIG } from '../../../app.config';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { Router } from '@angular/router';
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-approve-agent',
-  imports: [CommonModule],
+  imports: [CommonModule,FormsModule],
   templateUrl: './approve-agent.component.html',
   styleUrl: './approve-agent.component.css'
 })
-export class ApproveAgentComponent {
-  StatusLinks = ['Pending', 'Approved', 'Rejected'];
-  activeLink = 'Pending';
-  filteredAgents: Agent[] = [];
+export class ApproveAgentComponent implements OnInit {
+  // activeLink = 'Pending';
+  // filteredAgents: Agent[] = [];
+    apiConfig = API_CONFIG;
   
-  agents: Agent[] = [
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'john@example.com',
-      phone: '+966 50 123 4567',
-      crNumber: '12345678',
-      timeAgo: '2 days ago',
-      status: 'pending'
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      email: 'jane@example.com',
-      phone: '+966 50 987 6543',
-      crNumber: '87654321',
-      timeAgo: '1 week ago',
-      status: 'approved',
-      processedDate: '2023-05-15'
-    },
-    {
-      id: 3,
-      name: 'Ahmed Ali',
-      email: 'ahmed@example.com',
-      phone: '+966 50 555 1234',
-      crNumber: '11223344',
-      timeAgo: '3 days ago',
-      status: 'pending'
-    },
-    {
-      id: 4,
-      name: 'Sarah Johnson',
-      email: 'sarah@example.com',
-      phone: '+966 50 789 0123',
-      crNumber: '55667788',
-      timeAgo: '2 weeks ago',
-      status: 'rejected',
-      processedDate: '2023-05-10'
-    },
-    {
-      id: 5,
-      name: 'Ahmed Ali',
-      email: 'ahmed@example.com',
-      phone: '+966 50 555 1234',
-      crNumber: '11223344',
-      timeAgo: '3 days ago',
-      status: 'pending'
-    },
-  ];
+  StatusLinks = ['Pending', 'Approved', 'Rejected'];
 
-  ngOnInit(): void {
-    this.filterAgents();
+  
+  activeLink: string = 'Pending';
+  filteredAgents: agentDto[] = [];
+  isLoading = false;
+  constructor(private agentService: AgentService,private auth: AuthService,private router: Router,  private toastr: ToastrService) {}
+
+ async  ngOnInit(){
+  if (this.hasRole('Admin')) {
+    this.loadAgents();
+  } 
+  else{
+    this.router.navigate(['/login']);
+  }
   }
 
-  setActive(link: string, event: MouseEvent) {
+  private loadAgents(): void {
+    console.log("aaaaaaaaaaaaaaaaaa")
+    this.isLoading = true;
+    this.agentService.getAgents(this.activeLink)
+      .subscribe({
+        next: (agents) => {
+          this.filteredAgents = agents;
+          
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Failed to load agents:', error);
+          this.isLoading = false;
+        }
+      });
+  }
+
+  setActive(link: string, event: MouseEvent): void {
     event.preventDefault();
     this.activeLink = link;
-    this.filterAgents();
+    this.loadAgents();
   }
 
-  filterAgents(): void {
-    let filtered = this.agents;
-    filtered = filtered.filter(agent => 
-        agent.status.toLowerCase() === this.activeLink.toLowerCase() );  
-    this.filteredAgents = filtered;
-  }
+  // filterAgents(): void {
+  //   let filtered = this.agents;
+  //   filtered = filtered.filter(agent => 
+  //       agent.status.toLowerCase() === this.activeLink.toLowerCase() );  
+  //   this.filteredAgents = filtered;
+  // }
 
-  approveAgent(id: number): void {
-    const agent = this.agents.find(a => a.id === id);
-    if (agent) {
-      agent.status = 'approved';
-      agent.processedDate = new Date().toISOString();
-      this.filterAgents();
+// Updated Component Methods with Enhanced Logging
+totalAgents: number = 0;
+approveAgent(id: number): void {
+  this.agentService.updateApprovalStatus(id, true).subscribe({
+    next: () => {
+      console.log('Agent approved successfully');
+      this.toastr.success('Agent approved successfully'); // Add toast
+      this.loadAgents();
+    },
+    error: (error) => {
+      console.error('Approval failed:', error);
+      this.toastr.error('Approval failed. Please try again.'); // Add toast
     }
-  }
+  });
+}
 
-  rejectAgent(id: number): void {
-    const agent = this.agents.find(a => a.id === id);
-    if (agent) {
-      agent.status = 'rejected';
-      agent.processedDate = new Date().toISOString();
-      this.filterAgents();
+rejectAgent(id: number): void {
+  this.agentService.updateApprovalStatus(id, false).subscribe({
+    next: () => {
+      console.log('Agent rejected successfully');
+      this.toastr.success('Agent rejected successfully'); // Add toast
+      this.loadAgents();
+    },
+    error: (error) => {
+      console.error('Rejection failed:', error);
+      this.toastr.error('Rejection failed. Please try again.'); // Add toast
     }
-  }
-
+  });
+}
   copyToClipboard(elementId: string): void {
     const element = document.getElementById(elementId);
     if (element) {
@@ -117,4 +103,16 @@ export class ApproveAgentComponent {
       });
     }
   }
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
+  }
+
 }

@@ -27,9 +27,9 @@
                           class="me-4 text-decoration-none text-caffe" style="font-size: 1.05rem;"> {{ link }}
                         </a>
                     </div>
-                    <div class="text-muted">
-                        Showing {{ filteredAgents.length }} of {{ agents.length }} agents
-                    </div>
+                    <!-- <div class="text-muted">
+                        Showing {{ filteredAgents.length }} of {{ totalAgents }} agents
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -41,16 +41,24 @@
         <div class="card h-100 border-light shadow-sm">
             <div class="card-body position-relative">
                 <span class="badge position-absolute top-0 end-0 mt-4 me-3 bg-caffe">                      
-                    {{ agent.status | titlecase }}
+                    {{ agent.approvalStatus}}
                 </span>
                 
                 <div class="d-flex align-items-center mb-3">
-                    <div class="bg-caffe text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                        <i class="bi bi-person-fill"></i>
+                    <div class="text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <!-- <i class="bi bi-person-fill"></i> -->
+                        <ng-container *ngIf="agent.imageUrl; else defaultIcon">
+                            <img [src]="apiConfig.apiUrl + agent.imageUrl" class="seller-avatar rounded-circle shadow-sm"
+                              alt="Seller avatar" style="width: 50px; height: 50px;object-fit: cover;">
+                            </ng-container>
+              
+                            <ng-template #defaultIcon>
+                              <i class="bi bi-person-circle text-brown me-2" style="font-size: 2.5rem;"></i>
+                            </ng-template>
                     </div>
                     <div class="ms-3 mt-1">
                         <h5 class="fw-bold mb-0">{{ agent.name }}</h5>
-                        <small class="text-muted">{{ agent.timeAgo }}</small>
+                        <small class="text-muted">{{ agent.processedDate }}</small>
                     </div>
                 </div>
                 
@@ -67,7 +75,7 @@
                         <div>
                             <h6 class="mb-0 mt-2">Commercial Register</h6>
                             <div class="d-flex align-items-center">
-                                <p class="text-muted mb-0" [id]="'crNumber-' + i">{{ agent.crNumber }}</p>
+                                <p class="text-muted mb-0" [id]="'crNumber-' + i">{{ agent.commercialRegister }}</p>
                                 <button class="btn py-0 copy-btn text-caffe" 
                                     [attr.data-target]="'crNumber-' + i" 
                                     title="Copy"
@@ -77,8 +85,8 @@
                             </div>
                         </div>
                     </div>
-                    <div *ngIf="agent.status === 'pending'" class="mt-2 mb-2">
-                        <p class="text-muted text-center mb-0">
+                    <div *ngIf="agent.approvalStatus === 'Pending'" class="mt-2 mb-2">
+                        <p class="text-muted text-start ms-3 mb-0">
                             <i class="bi bi-info-circle me-1 text-caffe"></i>
                             You can validate CR from 
                             <a href="https://digital.gov.eg/categories/terms/%D8%A7%D8%B3%D8%AA%D8%B9%D9%84%D8%A7%D9%85-%D8%B9%D9%86-%D8%B3%D8%AC%D9%84-%D8%AA%D8%AC%D8%A7%D8%B1%D9%8A" target="_blank">
@@ -87,14 +95,14 @@
                         </p>
                     </div>                
                 </div>
-                
-                <div class="d-flex justify-content-end" *ngIf="agent.status === 'pending'">
-                    <button class="btn bg-caffe text-white me-3 mb-2 mt-2" 
-                            (click)="approveAgent(agent.id)">
+                <!-- (click)="approveAgent(agent.id)"
+                 (click)="rejectAgent(agent.id)" -->
+
+                <div class="d-flex justify-content-end" *ngIf="agent.approvalStatus === 'Pending'">
+                    <button class="btn bg-caffe text-white me-3 mb-2 mt-2" (click)="approveAgent(agent.id)">
                         <i class="bi bi-check-lg"></i> Approve
                     </button>
-                    <button class="btn text-caffe border-caffe me-3 mb-2 mt-2 "
-                            (click)="rejectAgent(agent.id)">
+                    <button class="btn text-caffe border-caffe me-3 mb-2 mt-2" (click)="rejectAgent(agent.id)">
                         <i class="bi bi-x-lg"></i> Reject
                     </button>
                 </div>
