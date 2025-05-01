@@ -57,6 +57,12 @@ import { CreateadminComponent } from './Components/Admin/createadmin/createadmin
 import { ChatComponent } from './Components/TestChat/chat/chat.component';
 import { ApproveAgentComponent } from './Components/Admin/approve-agent/approve-agent.component';
 import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
+<<<<<<< Updated upstream
+=======
+import { SubscriptionPlanComponent } from './Components/subscription-plan/subscription-plan.component';
+import { ViewAllAuctionsComponent } from './Components/PagesSellerAndAgent/view-all-auctions/view-all-auctions.component';
+import { ViewBuyerAuctionsComponent } from './Components/Buyer/view-buyer-auctions/view-buyer-auctions.component';
+>>>>>>> Stashed changes
 
 
 //----------------------------------------------------------------------------------------
@@ -92,7 +98,13 @@ export const routes: Routes = [
       { path: 'addAuction', component: AddAuctionComponent, title: "Add Auction" },
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
       { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
+<<<<<<< Updated upstream
       { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" }
+=======
+      { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" },
+      {path:'ViewAllAuctions',component:ViewAllAuctionsComponent,title:"View All Auction"},
+
+>>>>>>> Stashed changes
     ]
   },
 
@@ -106,7 +118,13 @@ export const routes: Routes = [
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
       { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
       { path: 'PropertiesPending', component: ViewPendingPropertiesComponent, title: "View Pending Properties" },
+<<<<<<< Updated upstream
       { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" }
+=======
+      { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" },
+      {path:'ViewAllAuctions',component:ViewAllAuctionsComponent,title:"View All Auction"},
+
+>>>>>>> Stashed changes
     ]
   },
 
@@ -120,7 +138,8 @@ export const routes: Routes = [
       { path: "reviews", component: AllReviewComponent, title: "All Review" },
       { path: 'FavoriteProducts', component: FavoriteProductsComponent, title: "Favorite Products" },
       { path: 'wishlist', component: WishlistComponent, title: "Wishlist" },
-      { path: 'BuyerViewAllAppointment', component: BuyerViewAllPointmentComponent, title: "View All Appointment" }
+      { path: 'BuyerViewAllAppointment', component: BuyerViewAllPointmentComponent, title: "View All Appointment" },
+      {path:'ViewAllAuctions',component:ViewBuyerAuctionsComponent,title:"View All Auction"},
 
     ]
   },
