@@ -55,11 +55,11 @@ namespace RealEstate.Controllers
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll(string? sortByPrice = null, string? sortByTime = null, Status? ISLivestatus = null)
         {
-            var auctions = await _AuctionRepository.GetAllAsync(sortByPrice, sortByTime, ISLivestatus);
-            if (auctions == null) return NotFound("Empty Auction List!");
+            var auctionsAll = await _AuctionRepository.GetAllAsync(sortByPrice, sortByTime, ISLivestatus);
+            if (auctionsAll == null) return NotFound("Empty Auction List!");
 
             //Status Update Start
-            auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus();
+            var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus();
             //Status Update End
 
             var auctionDtos = auctions.ToAuctionDTOShowList();
@@ -267,7 +267,7 @@ namespace RealEstate.Controllers
         public async Task<IActionResult> CheckAuctionStatus()
         {
             //Status Update Start
-            var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus();
+            var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus(true);
             //Status Update End
 
             var auctionDtos = auctions.ToAuctionDTOShowList();
@@ -282,8 +282,7 @@ namespace RealEstate.Controllers
                 a.LastPropertyBidDto = a.bids.FirstOrDefault();  // No need for null check here
             }
 
-            // Notify all clients of fresh auction list
-            await _hubContext.Clients.All.SendAsync("CheckStatusAllAuctions", auctionDtos);
+           await _hubContext.Clients.All.SendAsync("CheckStatusAllAuctions", auctionDtos);
 
             return Ok(auctionDtos);
         }

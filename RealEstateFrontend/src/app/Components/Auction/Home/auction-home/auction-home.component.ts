@@ -51,6 +51,10 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
     this.signalrService.listenToAllAuctions(this.updateAuctions.bind(this));
     this.signalrService.listenToNewAuctions(this.addNewAuction.bind(this));
     this.signalrService.listenToDeletedAuctions(this.removeAuction.bind(this));
+    this.signalrService.listenToCheckStatusUpdates(this.checkStatus.bind(this));
+
+
+    // this.checkAuctionStatusEndpoint();
 
     // Update the countdown every 1 second using RxJS interval
     this.countdownSubscription = interval(1000).subscribe(() => {
@@ -60,6 +64,12 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
     // Initialize filtered auctions and pagination
     this.filteredAuctions = [...this.auctions];
     this.applyFilters(); // Add this line
+
+    //timer
+    // this.startStatusTimer();
+    this.nextCheckTime = this.calculateNextCheck(this.auctions);
+    this.setNextTimeout();
+
   }
 
 
@@ -96,7 +106,7 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
     }
   }
 
-
+  //-------------------------------------------------------------------------------
   private addNewAuction(auction: AuctionDTOShow) {
     const processedAuction = {
       ...auction,
@@ -116,6 +126,9 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
       this.applyFilters(false);
       this.updatePagination();
       this.nearestAuction = this.getNearestAuction(this.auctions);
+
+      this.updateAuctionsStatus();
+      this.cdr.detectChanges();
     }
   }
 
@@ -131,6 +144,15 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
     // this.filteredAuctions = [...this.auctions];
     this.applyFilters(false);
     this.nearestAuction = this.getNearestAuction(this.auctions);
+
+    this.countdownSubscription?.unsubscribe();
+    this.countdownSubscription = interval(1000).subscribe(() => {
+      this.updateCountdown();
+      this.cdr.detectChanges();
+    });
+
+    this.updateAuctionsStatus();
+    this.cdr.detectChanges();
   }
 
   private updateSingleAuction(updatedAuction: AuctionDTOShow) {
@@ -156,8 +178,16 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
     // Update filteredAuctions and pagination
     // this.filteredAuctions = [...this.auctions];
     this.applyFilters(false);
-    this.updatePagination();
     this.nearestAuction = this.getNearestAuction(this.auctions);
+
+    this.countdownSubscription?.unsubscribe();
+    this.countdownSubscription = interval(1000).subscribe(() => {
+      this.updateCountdown();
+      this.cdr.detectChanges();
+    });
+
+    this.updateAuctionsStatus();
+    this.cdr.detectChanges();
   }
 
   private updateAuctions(auctions: AuctionDTOShow[]) {
@@ -172,8 +202,43 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
     // this.filteredAuctions = [...this.auctions];
     this.applyFilters(false);
     this.nearestAuction = this.getNearestAuction(this.auctions);
+
+    this.countdownSubscription?.unsubscribe();
+    this.countdownSubscription = interval(1000).subscribe(() => {
+      this.updateCountdown();
+      this.cdr.detectChanges();
+    });
+
+    this.updateAuctionsStatus();
+    this.cdr.detectChanges();
   }
 
+  private checkStatus(auctions: AuctionDTOShow[]) {
+
+    console.log('checkstatus');
+
+    this.auctions = auctions;
+    this.auctions = this.auctions.map(auction => ({
+      ...auction,
+      startTime: new Date(auction.startTime),  // Convert string to Date
+      endTime: new Date(auction.endTime)      // Convert string to Date
+    }));
+
+    this.applyFilters(false);
+    this.nearestAuction = this.getNearestAuction(this.auctions);
+
+    console.log('ner', this.nearestAuction);
+    console.log('signal r auctions', this.auctions);
+
+    this.countdownSubscription?.unsubscribe();
+    this.countdownSubscription = interval(1000).subscribe(() => {
+      this.updateCountdown();
+      this.cdr.detectChanges();
+    });
+
+    this.updateAuctionsStatus();
+    this.cdr.detectChanges();
+  }
 
   ngOnDestroy() {
     this.countdownSubscription?.unsubscribe();
@@ -183,6 +248,7 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
     this.signalrService.hubConnection.off('NewAuctionCreated');
     this.signalrService.hubConnection.off('AuctionDeleted');
     this.signalrService.hubConnection.off('AuctionListUpdate');
+    this.signalrService.hubConnection.off('CheckStatusAllAuctions');
 
     // Unsubscribe to prevent memory leaks
     if (this.countdownSubscription) {
@@ -191,9 +257,96 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
     if (this.autoScrollInterval) {
       clearInterval(this.autoScrollInterval);
     }
+
+    this.clearTimer();
+  }
+
+  //-------------------------------------------------------------------------------
+  private timeout: any;
+  private nextCheckTime: Date | null = null;
+
+  startStatusTimer() {
+    this.clearTimer();
+    this.checkAuctionStatusEndpoint();
+  }
+
+  private clearTimer() {
+    clearTimeout(this.timeout);
+  }
+
+  private calculateNextCheck(auctions: AuctionDTOShow[]) {
+    const now = new Date().getTime();
+    console.log(new Date().toLocaleString());
+    let nearestTime = Infinity;
+
+    auctions.forEach(auction => {
+      const start = auction.startTime.getTime();
+      const end = auction.endTime.getTime();
+
+      if (now < start) {
+        nearestTime = Math.min(nearestTime, start);
+      }
+      else if (now < end) {
+        nearestTime = Math.min(nearestTime, end);
+      }
+
+    });
+
+    return nearestTime !== Infinity ? new Date(nearestTime) : null;
+  }
+
+  checkAuctionStatusEndpoint() {
+    console.log('check status endpoint');
+
+    this.auctionService.checkAuctionStatus().subscribe({
+      next: (auctions) => {
+        this.auctions = auctions;
+        this.auctions = this.auctions.map(auction => ({
+          ...auction,
+          startTime: new Date(auction.startTime),  // Convert string to Date
+          endTime: new Date(auction.endTime)      // Convert string to Date
+        }));
+
+        console.log('Status changes detected:', this.auctions);
+        console.log('Status changes detected auctions:', auctions);
+
+        // Always set up next check even if no changes
+        this.nextCheckTime = this.calculateNextCheck(this.auctions);
+        this.setNextTimeout();
+        this.updateAuctionsStatus();
+        this.cdr.detectChanges();
+
+        // Update SignalR listeners or other real-time features here
+      },
+      error: (err) => console.error('Error checking status:', err)
+    });
+  }
+
+  private setNextTimeout() {
+    this.clearTimer();
+
+    if (!this.nextCheckTime) {
+      console.log('No upcoming status changes');
+      return;
+    }
+
+    const now = new Date().getTime();
+    const timeDiff = this.nextCheckTime.getTime() - now;
+
+    if (timeDiff > 0) {
+      console.log('Next check scheduled at', this.nextCheckTime);
+      this.timeout = setTimeout(() => {
+        this.checkAuctionStatusEndpoint();
+      }, timeDiff);
+    }
+    else {
+      // If time already passed, check immediately
+      this.checkAuctionStatusEndpoint();
+    }
   }
 
 
+  //-------------------------------------------------------------------------------
   private getNearestAuction(auctions: AuctionDTOShow[]): AuctionDTOShow | null {
     const now = new Date();
 
@@ -243,23 +396,23 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
   }
 
 
-
   private updateAuctionsStatus(): void {
     const now = new Date();
     this.auctions.forEach(auction => {
       // Update status
-      if (now < auction.startTime) {
-        auction.status = 'Scheduled';
-      } else if (now > auction.endTime) {
-        auction.status = 'Finished';
-      } else {
-        auction.status = 'Active';
-      }
+      // if (now < auction.startTime) {
+      //   auction.status = 'Scheduled';
+      // } else if (now > auction.endTime) {
+      //   auction.status = 'Finished';
+      // } else {
+      //   auction.status = 'Active';
+      // }
 
       // Calculate progress here
       auction.timeProgress = this.getTimeProgress(auction);
     });
   }
+
   // Modify your existing ngOnInit to include status updates
 
   private updateCountdown(): void {

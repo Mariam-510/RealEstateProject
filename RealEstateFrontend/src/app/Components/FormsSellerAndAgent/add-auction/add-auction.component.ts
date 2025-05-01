@@ -76,7 +76,7 @@ export class AddAuctionComponent implements OnInit {
         // Call with parameter 1 (assuming you want Approved status)
         this.propertyService.getPropertiesBySellerId(1).subscribe({
           next: (properties) => {
-            this.properties = properties.filter(p => 
+            this.properties = properties.filter(p =>
               p.status === 'Available' // Filter available properties
             );
           },
@@ -89,7 +89,7 @@ export class AddAuctionComponent implements OnInit {
     {
       this.propertyService.getPropertiesByAgentId().subscribe({
         next: (properties) => {
-          this.properties = properties.filter(p => 
+          this.properties = properties.filter(p =>
             p.status === 'Available' // Filter available properties
           );
         },
@@ -98,7 +98,7 @@ export class AddAuctionComponent implements OnInit {
         }
       });
     }
-    
+
   }
 
   private updateFormValidity(): void {
