@@ -3,7 +3,7 @@
     <div class="d-flex align-items-center">  
       <i class="bi bi-stars fs-4 me-2"></i>
       <div>
-        <h4 class="mt-2 mb-0">Upgrade to {{ data.selectedPlan.Name }}</h4>
+        <h4 class="mt-2 mb-0">Upgrade to {{ data.selectedPlan.name }}</h4>
         <p class="mb-0 small">Unlock exclusive features on our website</p>
       </div>
     </div>
@@ -17,20 +17,15 @@
   </div>
 </div>
 
-<!-- Add max-height and overflow-auto to modal-body -->
 <div class="modal-body p-3" style="max-height: 75vh; overflow-y: auto;">
-  <!-- Compact Plan Summary Card -->
   <div class="mb-3 pt-2 pb-2 ps-3 pe-3 rounded shadow-sm">
     <div class="d-flex justify-content-between align-items-center">
       <div>
-        <h4 class="mb-0 text-caffe">{{ data.selectedPlan.Name }}</h4>
-        <small class="text-muted">Up to {{ data.selectedPlan.MaxAllowedProperties }} properties</small>
+        <h4 class="mb-0 text-caffe">{{ data.selectedPlan.name }}</h4>
+        <small class="text-muted">Up to {{ data.selectedPlan.maxAllowedProperties }} properties</small>
       </div>
       <div class="text-end">
-        <div class="fw-bold text-caffe">{{ data.selectedPlan.Price }}</div>
-        <small class="text-success" *ngIf="data.selectedPlan.Discount">
-          <i class="bi bi-tag-fill"></i> {{ data.selectedPlan.Discount }} off
-        </small>
+        <div class="fw-bold text-caffe">{{ data.selectedPlan.price }}</div>
       </div>
     </div>
   </div>

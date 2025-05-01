@@ -49,5 +49,7 @@ export class OrderService {
   getAllByBuyer(): Observable<OrderResponseDto[]> {
     return this.http.get<OrderResponseDto[]>(`${this.apiUrl}/buyer`);
   }
-
+  getAll(): Observable<OrderResponseDto[]> {
+    return this.http.get<OrderResponseDto[]>(`${this.apiUrl}/all`);
+  }
 }
