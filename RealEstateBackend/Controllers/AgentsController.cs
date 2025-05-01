@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -40,6 +41,8 @@ namespace RealEstate.Controllers
 
 
         [HttpGet]
+        [Route("admin/approveAgent")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll([FromQuery] ApprovalStatus? approvalStatus)
         {
             var agents = await AgentRepository.GetAllAsync(approvalStatus);
@@ -198,6 +201,7 @@ namespace RealEstate.Controllers
 
         [HttpPut]
         [Route("Approve/{id}")]
+
         public async Task<IActionResult> UpdateApprovalStatus(int id, [FromForm] ApproveAgentDto approveAgentDto)
         {
             if (!ModelState.IsValid)

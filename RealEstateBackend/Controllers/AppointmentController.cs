@@ -122,8 +122,8 @@ namespace RealEstate.Controllers
                     return Forbid();
                 }
 
-                if (appointments == null || !appointments.Any())
-                    return NotFound("No appointments found for this user.");
+                //if (!appointments.Any())
+                //    return NotFound("No appointments found for this user.");
 
                 // Filter by status if provided
                 if (!string.IsNullOrEmpty(status))
