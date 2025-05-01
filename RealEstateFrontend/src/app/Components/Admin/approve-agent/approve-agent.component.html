@@ -16,7 +16,7 @@
     </div>
 </div>
 
-<div class="row mt-4 ms-4 me-4">
+<div class="row ms-4 me-4" *ngIf="agents.length > 0">
     <div class="col-md-12">
         <div class="card border-0 mt-5">
             <div class="card-body py-2">
@@ -27,9 +27,6 @@
                           class="me-4 text-decoration-none text-caffe" style="font-size: 1.05rem;"> {{ link }}
                         </a>
                     </div>
-                    <!-- <div class="text-muted">
-                        Showing {{ filteredAgents.length }} of {{ totalAgents }} agents
-                    </div> -->
                 </div>
             </div>
         </div>

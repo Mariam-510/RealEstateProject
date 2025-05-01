@@ -19,8 +19,7 @@ export class ApproveAgentComponent implements OnInit {
     apiConfig = API_CONFIG;
   
   StatusLinks = ['Pending', 'Approved', 'Rejected'];
-
-  
+  agents: agentDto[] = [];  
   activeLink: string = 'Pending';
   filteredAgents: agentDto[] = [];
   isLoading = false;
@@ -36,11 +35,11 @@ export class ApproveAgentComponent implements OnInit {
   }
 
   private loadAgents(): void {
-    console.log("aaaaaaaaaaaaaaaaaa")
     this.isLoading = true;
     this.agentService.getAgents(this.activeLink)
       .subscribe({
         next: (agents) => {
+          this.agents = agents;
           this.filteredAgents = agents;
           
           this.isLoading = false;
