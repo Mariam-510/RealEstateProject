@@ -42,7 +42,6 @@ interface Message {
   text: string;
   sent: boolean;
   time: Date;
-  status: MessageStatus;
   senderId: string | undefined;
 }
 
@@ -177,7 +176,6 @@ export class MainChatComponent
       text: dto.content,
       sent: dto.senderId === this.currentUserId,
       time: new Date(dto.sentAt),
-      status: dto.status as MessageStatus,
       senderId: dto.senderId,
     };
   }
@@ -264,7 +262,6 @@ export class MainChatComponent
     this.updateUnreadCount(chat.id, 0);
     this.selectedChat = chat;
     this.newMessage = '';
-    this.pendingMessage = chat.messages.find(m => m.status === MessageStatus.Pending) || null;
     this.showAcceptReject = chat.status === 'Pending' && this.isAgentOrSeller();
 
     this.messageService.getAllMessages(chat.id).subscribe({
@@ -306,7 +303,6 @@ export class MainChatComponent
       text: dto.content,
       sent: true,
       time: new Date(),
-      status: messageStatus,
       senderId: this.currentUserId!,
     };
 
@@ -376,7 +372,6 @@ export class MainChatComponent
             content: message.content,
             senderId: message.senderId,
             sentAt: message.sentAt,
-            status: MessageStatus.Delivered,
             conversationId: message.conversationId,
           });
 
@@ -442,7 +437,6 @@ export class MainChatComponent
       text: response.content,
       sent: response.senderId === this.currentUserId,
       time: new Date(response.sentAt),
-      status: response.status,
       senderId: response.senderId,
     };
   }
@@ -491,10 +485,11 @@ export class MainChatComponent
       error: (err) => console.error('Reject failed:', err)
     });
   }
-}
+
 
   trackByConversationId(index: number, chat: Chat): number {
     return chat.id; // Helps Angular recognize reordered items
   }
 }
+
 

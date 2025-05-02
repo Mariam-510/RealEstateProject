@@ -75,13 +75,6 @@
                         <p class="mb-1">{{ msg.text }}</p>
                         <div class="bubble-meta text-muted small d-flex justify-content-end align-items-center gap-1">
                           <span>{{ msg.time | date:'shortTime' }}</span>
-                          <span *ngIf="msg.sent" class="status-indicator" [ngClass]="getStatusClass(msg.status)">
-                            <i *ngIf="msg.status === 'Read'" class="bi bi-check2-all"></i>
-                            <i *ngIf="msg.status === 'Delivered'" class="bi bi-check2"></i>
-                            <i *ngIf="msg.status === 'Sent'" class="bi bi-check"></i>
-                            <i *ngIf="msg.status === 'Pending'" class="bi bi-clock-history"></i>
-                            <i *ngIf="msg.status === 'Rejected'" class="bi bi-x-circle"></i>
-                          </span>
                         </div>
                       </div>
                     </div>
