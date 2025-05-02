@@ -8,19 +8,10 @@ export interface CreateMessageDto {
   content: string;
 }
 
-export enum MessageStatus {
-  Pending = 'Pending',
-  Sent = 'Sent',
-  Rejected = 'Rejected',
-  Delivered = 'Delivered',
-  Read = 'Read'
-}
-
 export interface MessageResponseDto {
   id: number;
   content: string;
   sentAt: Date;
-  status: MessageStatus;
   senderId?: string | undefined;
   conversationId?: number | null;
 }

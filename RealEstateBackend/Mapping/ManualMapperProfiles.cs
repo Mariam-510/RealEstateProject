@@ -22,7 +22,7 @@ namespace RealEstate.Mapping
             return new ConversationResponseDto
             {
                 Id = conversation.Id,
-                Status = conversation.Status,
+                Status = conversation.Status.ToString(),
                 CreatedAt = conversation.CreatedAt,
                 LastMessageAt = conversation.LastMessageAt,
                 FirstAccountId = conversation.FirstAccountId,

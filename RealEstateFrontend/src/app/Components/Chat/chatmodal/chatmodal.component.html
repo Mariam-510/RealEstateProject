@@ -3,8 +3,7 @@
     <!-- Header Section -->
     <div
       class="card-header d-flex justify-content-between align-items-center p-3"
-      style="border-top: 4px solid #4a2c2a"
-    >
+      style="border-top: 4px solid #4a2c2a">
       <div class="d-flex flex-column w-100 position-relative">
         <div class="d-flex justify-content-between align-items-center">
           <h4 class="mb-0 fw-bold text-brown text-center w-100">
@@ -76,29 +75,6 @@
                   class="bubble-meta text-muted small d-flex justify-content-end align-items-center gap-1"
                 >
                   <span>{{ msg.time | date : "shortTime" }}</span>
-                  <span
-                    *ngIf="msg.sent"
-                    class="status-indicator"
-                    [ngClass]="getStatusClass(msg.status)"
-                  >
-                    <i
-                      *ngIf="msg.status === 'Read'"
-                      class="bi bi-check2-all"
-                    ></i>
-                    <i
-                      *ngIf="msg.status === 'Delivered'"
-                      class="bi bi-check2"
-                    ></i>
-                    <i *ngIf="msg.status === 'Sent'" class="bi bi-check"></i>
-                    <i
-                      *ngIf="msg.status === 'Pending'"
-                      class="bi bi-clock-history"
-                    ></i>
-                    <i
-                      *ngIf="msg.status === 'Rejected'"
-                      class="bi bi-x-circle"
-                    ></i>
-                  </span>
                 </div>
                 
 
@@ -107,53 +83,48 @@
               <!-- Sender Image -->
               <img
                 *ngIf="msg.sent"
-                [src]="apiConfig.apiUrl + currentUser?.imageUrl"
+                src="https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1"
                 class="rounded-circle ms-2 profile-img align-self-start"
                 width="40"
                 height="40"
                 alt="Sender profile"
               />
-              
-                
-
-
             </div>
-
-            <!-- Message Metadata -->
-            <!-- <div class="message-metadata d-flex justify-content-between w-100 small mt-1">
-                            <span class="text-muted" *ngIf="!msg.sent">
-                                {{ msg.time | date:'shortTime' }}
-                            </span>
-                            <div *ngIf="msg.sent" class="d-flex align-items-center gap-2">
-                                <span class="text-muted">{{ msg.time | date:'shortTime' }}</span>
-                                <span class="status-indicator" [ngClass]="getStatusClass(msg.status)">
-                                    <i *ngIf="msg.status === 'Read'" class="bi bi-check2-all"></i>
-                                    <i *ngIf="msg.status === 'Delivered'" class="bi bi-check2"></i>
-                                    <i *ngIf="msg.status === 'Sent'" class="bi bi-check"></i>
-                                    <i *ngIf="msg.status === 'Pending'" class="bi bi-clock-history"></i>
-                                    <i *ngIf="msg.status === 'Rejected'" class="bi bi-x-circle"></i>
-                                    
-                                </span>
-                            </div>
-                        </div> -->
           </div>
         </div>
       </div>
     </div>
 
     <!-- Footer Section -->
-    <div class="card-footer text-muted p-3">
-      <div class="input-group">
+    <!-- [class.disabled]="disabled" -->
+    <div class="card-footer" >
+      <div class="input-group" *ngIf="!disabled">
         <textarea
           class="form-control"
           [(ngModel)]="newMessage"
-          (keyup.enter)="sendMessage()"
+          (keydown.enter)="!disabled && sendMessage($event)"
           placeholder="Type your message..."
           rows="1"
+          [readonly]="disabled"
+          [attr.disabled]="disabled ? 'disabled' : null"
         ></textarea>
-        <button class="btn btn-brown" (click)="sendMessage()">
+        <button 
+          class="btn btn-brown" 
+          (click)="sendMessage($event)" 
+          [disabled]="disabled || !newMessage.trim()"
+          [attr.disabled]="(disabled || !newMessage.trim()) ? 'disabled' : null"
+        >
           <i class="bi bi-send-fill"></i>
         </button>
+      </div>
+      
+      <div *ngIf="disabled" class="status-message d-flex justify-content-center">
+          <span *ngIf="this.conversation?.status === 'Closed'" class="text-caffe">
+            <i class="bi bi-lock"></i> Message not approved. This conversation is now closed.
+          </span>
+          <span *ngIf="this.conversation?.status === 'Pending'" class="text-caffe">
+            <i class="bi bi-hourglass"></i> Message received! It's waiting for approval.
+          </span>
       </div>
     </div>
   </div>

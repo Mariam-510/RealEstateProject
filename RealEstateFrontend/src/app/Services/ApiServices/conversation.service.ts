@@ -8,11 +8,16 @@ export interface ConversationResponseDto {
   id: number;
   firstAccountId: string;
   secondAccountId: string;
-  status: 'Pending' | 'Active' | 'Closed';
+  status: string;
   lastMessageAt?: Date;
   createdAt: Date;
 }
 
+export enum ConversationStatus {
+  Pending = 'Pending',
+  Active = 'Active',
+  Closed = 'Closed'
+}
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +42,14 @@ export class ConversationService {
     );
   }
 
+  getByConversationId(conversationId: number): Observable<ConversationResponseDto> {
+    return this.http.get<ConversationResponseDto>(
+      `${this.apiUrl}/GetById/${conversationId}`
+    ).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   getAllConversations(): Observable<any> {
     return this.http.get<any[]>(`${this.apiUrl}/getall`).pipe(
       catchError(this.handleError)
@@ -54,6 +67,18 @@ export class ConversationService {
     return this.http.get<ConversationResponseDto>(
       `${this.apiUrl}/GetConversation`,
       { params: { SecondAccountId: secondAccountId } }
+    ).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  updateConversationStatus(
+    conversationId: number, 
+    newStatus: 'Active' | 'Closed'
+  ): Observable<ConversationResponseDto> {
+    return this.http.put<ConversationResponseDto>(
+      `${this.apiUrl}/UpdateStatus/${conversationId}/${newStatus}`,
+      {}
     ).pipe(
       catchError(this.handleError)
     );

@@ -428,19 +428,17 @@ export class PropertyDetailsComponent implements OnInit ,AfterViewInit {
 //   });
 // }
 
-// Update the openChat method in parent component
 openChat() {
   if (!this.property) return;
 
   const currentUserId = this.auth.getCurrentUser()?.accountId;
   if (!currentUserId) return;
 
+  this.chatWindow.toggle();
+
   this.account.getRecipientAccountId(this.property.id).subscribe({
     next: (accountId) => {
       this.recipientId = accountId;
-
-      console.log(currentUserId);
-      console.log(this.recipientId);
 
       // First check if conversation exists
       this.conversationService.existingConversation(this.recipientId).subscribe({
@@ -450,31 +448,42 @@ openChat() {
             this.conversationService.getConversationBetweenUsers(accountId).subscribe({
               next: (conversation) => {
                 this.chatWindow.initializeChat(conversation.id);
-                this.chatWindow.toggle();
               },
               error: (err) => {
                 console.error('Error fetching conversation:', err);
-                this.chatWindow.toggle();
+                // Keep chat open but show error state
+                this.chatWindow.initializeChat(null); 
               }
             });
           } else {
-            // Create new conversation
+            // Optimistically create a temporary conversation state
+            // this.chatWindow.initializeWithRecipient(accountId);
+            
+            // Then create real conversation in backend
             this.conversationService.createConversation(accountId).subscribe({
               next: (newConversation) => {
+                // Replace temp state with real conversation
                 this.chatWindow.initializeChat(newConversation.id);
-                this.chatWindow.toggle();
               },
               error: (convError) => {
                 console.error('Conversation creation failed:', convError);
                 this.toastr.error('Failed to start conversation');
+                // Keep chat open but in error state
+                this.chatWindow.initializeChat(null); 
               }
             });
           }
         },
-        error: (err) => console.error('Error checking conversation:', err)
+        error: (err) => {
+          console.error('Error checking conversation:', err);
+          this.chatWindow.initializeChat(null);
+        }
       });
     },
-    error: (err) => console.error('Error fetching recipient:', err)
+    error: (err) => {
+      console.error('Error fetching recipient:', err);
+      this.chatWindow.initializeChat(null);
+    }
   });
 }
   
