@@ -26,9 +26,10 @@ namespace RealEstate.Controllers
 
         [HttpGet]
         [Route("GetById/{conversationId}")]
-        public async Task<IActionResult> GetById(int conversationId, string currentUserAccountId = "415f3e96-5745-4341-b9c2-5d154eef02fe")
+        public async Task<IActionResult> GetByConversationId(int conversationId)
         {
-            //var currentUserAccountId = User.FindFirst("UserAccountId")?.Value;
+            var currentUserAccountId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserAccountId == null) return Unauthorized();
 
             var conversation = await _conversationRepository.GetByIdAsync(conversationId);
             if (conversation == null)
@@ -80,10 +81,12 @@ namespace RealEstate.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateConversationStatus/{conversationId}/{status}")]
-        public async Task<IActionResult> UpdateConversationStatus(int conversationId, string status, string currentUserAccountId = "fb074e1e-a722-405b-878b-68db2038cd35")
+        [Route("UpdateStatus/{conversationId}/{status}")]
+        [Authorize(Roles = "Seller,Agent")]
+        public async Task<IActionResult> UpdateConversationStatus(int conversationId, string status)
         {
-            //var currentUserAccountId = User.FindFirst("UserAccountId")?.Value;
+            var currentUserAccountId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserAccountId == null) return Unauthorized();
 
             var conversation = await _conversationRepository.GetByIdAsync(conversationId);
             if (conversation == null)
@@ -103,7 +106,7 @@ namespace RealEstate.Controllers
             if (conversation.Status != ConversationStatus.Pending)
                 return BadRequest("Can only update status of pending conversations");
 
-            conversation.Status = status == "accept" ? ConversationStatus.Active : ConversationStatus.Closed;
+            conversation.Status = status == "Active" ? ConversationStatus.Active : ConversationStatus.Closed;
 
             conversation.LastMessageAt = DateTime.Now;
             await _conversationRepository.UpdateAsync(conversation);
@@ -166,7 +169,8 @@ namespace RealEstate.Controllers
                 FirstAccount = sender,
                 FirstAccountId = sender.Id,
                 SecondAccount = recipient,
-                SecondAccountId = recipient.Id
+                SecondAccountId = recipient.Id,
+                Status = ConversationStatus.Pending,
             };
 
             var createdConversation = await _conversationRepository.AddAsync(newConversation);

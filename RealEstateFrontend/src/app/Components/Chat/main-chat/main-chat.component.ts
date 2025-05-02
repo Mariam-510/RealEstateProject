@@ -56,6 +56,8 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
   newMessage = '';
   isChatVisible = false;
   private shouldScroll = true;
+  pendingMessage: Message | null = null;
+  showAcceptReject = false;
 
   constructor(
     private conversationService: ConversationService,
@@ -71,6 +73,8 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
       this.auth.logout();
       return;
     }
+
+    console.log(this.selectedChat?.status)
 
     this.currentUserId = this.auth.getCurrentUser()?.accountId;
     this.initializeUnreadCounts();
@@ -101,9 +105,12 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
   loadConversations() {
     this.conversationService.getAllConversations().subscribe({
       next: async (conversations: ConversationResponseDto[]) => {
-        const validConversations = conversations.filter(
-          (dto) => dto.lastMessageAt !== null && dto.lastMessageAt !== undefined
-        );
+        let validConversations = conversations;
+        if (!this.isAgentOrSeller()) {
+          validConversations = conversations.filter(
+            (dto) => dto.lastMessageAt !== null && dto.lastMessageAt !== undefined
+          );
+        }
 
         const storedCounts = this.getUnreadCounts();
 
@@ -150,7 +157,7 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
     const otherAccountId = dto.firstAccountId === this.currentUserId
       ? dto.secondAccountId
       : dto.firstAccountId;
-  
+
     const chat: Chat = {
       id: dto.id,
       status: dto.status,
@@ -164,7 +171,7 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
       unread: 0,
       lastMessageTime: dto.lastMessageAt,
     };
-  
+
     this.account.getUserInfo(otherAccountId).subscribe({
       next: (user) => {
         chat.otherUser = {
@@ -173,16 +180,16 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
           lastName: user.lastName || '',
           image: user.imageUrl || 'PropertyImages/10-1.jpg',
         };
-        this.cdr.markForCheck(); // Trigger update
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load user info:', err);
         chat.otherUser.firstName = 'Unknown User';
         chat.otherUser.lastName = '';
-        this.cdr.markForCheck(); // Trigger update even on error
+        this.cdr.markForCheck();
       }
     });
-  
+
     return chat;
   }
 
@@ -224,6 +231,8 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
     this.updateUnreadCount(chat.id, 0);
     this.selectedChat = chat;
     this.newMessage = '';
+    this.pendingMessage = chat.messages.find(m => m.status === MessageStatus.Pending) || null;
+    this.showAcceptReject = chat.status === 'Pending' && this.isAgentOrSeller();
 
     this.messageService.getAllMessages(chat.id).subscribe({
       next: (messages: MessageResponseDto[]) => {
@@ -236,20 +245,35 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
     });
   }
 
+  private isBuyer(): boolean {
+    return this.auth.hasRole('Buyer');
+  }
+
   sendMessage() {
     const currentChat = this.selectedChat;
     if (!currentChat || !this.newMessage.trim()) return;
+
+    if (currentChat.status === 'Pending' && this.isBuyer() && currentChat.messages.length > 0) {
+      alert('Please wait for agent/seller response before sending more messages');
+      return;
+    }
 
     const dto: CreateMessageDto = {
       conversationId: currentChat.id,
       content: this.newMessage.trim(),
     };
 
+    const messageStatus = this.isAgentOrSeller() 
+      ? MessageStatus.Sent
+      : currentChat.status === 'Pending' 
+        ? MessageStatus.Pending 
+        : MessageStatus.Sent;
+
     const optimisticMessage: Message = {
       text: dto.content,
       sent: true,
       time: new Date(),
-      status: MessageStatus.Sent,
+      status: messageStatus,
       senderId: this.currentUserId!,
     };
 
@@ -264,7 +288,10 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
           m === optimisticMessage ? this.mapResponseToMessage(response) : m
         );
         
-        // Update receiver's unread count if they're not viewing the chat
+        if (currentChat.status === 'Pending' && this.isBuyer()) {
+          currentChat.status = 'Pending';
+        }
+
         if (response.senderId !== this.currentUserId) {
           const conversation = this.conversations.find(c => c.id === currentChat.id);
           if (conversation && conversation !== this.selectedChat) {
@@ -279,6 +306,15 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
         this.scrollToBottom();
       }
     });
+  }
+
+  shouldDisableInput(): boolean {
+    if (!this.selectedChat) return true;
+    if (this.selectedChat.status === 'Closed') return true;
+    if (this.isBuyer() && this.selectedChat.status === 'Pending' && this.selectedChat.messages.length > 0) {
+      return true;
+    }
+    return false;
   }
 
   private setupSignalR() {
@@ -325,7 +361,6 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
 
   @HostListener('window:beforeunload')
   saveState() {
-    // Save all current unread counts
     const unreadCounts = this.conversations.reduce((acc, chat) => {
       acc[chat.id.toString()] = chat.unread;
       return acc;
@@ -355,5 +390,49 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
       status: response.status,
       senderId: response.senderId,
     };
+  }
+
+  private isAgentOrSeller(): boolean {
+    return this.auth.hasRole('Agent') || this.auth.hasRole('Seller');
+  }
+
+  acceptConversation() {
+    if (!this.selectedChat) return;
+
+    this.conversationService.updateConversationStatus(this.selectedChat.id, 'Active').subscribe({
+      next: (updatedConversation) => {
+        this.selectedChat!.status = 'Active';
+        this.showAcceptReject = false;
+        
+        const index = this.conversations.findIndex(c => c.id === this.selectedChat!.id);
+        if (index > -1) {
+          this.conversations[index].status = 'Active';
+          this.conversations[index].lastMessageTime = new Date();
+        }
+        
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Accept failed:', err)
+    });
+  }
+    
+  rejectConversation() {
+    if (!this.selectedChat) return;
+
+    this.conversationService.updateConversationStatus(this.selectedChat.id, 'Closed').subscribe({
+      next: (updatedConversation) => {
+        this.selectedChat!.status = 'Closed';
+        this.showAcceptReject = false;
+
+        const index = this.conversations.findIndex(c => c.id === this.selectedChat!.id);
+        if (index > -1) {
+          this.conversations[index].status = 'Closed';
+          this.conversations[index].lastMessageTime = new Date();
+        }
+
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Reject failed:', err)
+    });
   }
 }

@@ -82,9 +82,10 @@ namespace RealEstate.Controllers
         [HttpPost]
         [Route("Create")]
         [Authorize(Roles = "Buyer,Seller,Agent")]
-        public async Task<IActionResult> CreateMessage([FromBody]CreateMessageDto createMessageDto)
+        public async Task<IActionResult> CreateMessage([FromBody] CreateMessageDto createMessageDto)
         {
-            //var currentUserAccountId = User.FindFirst("UserAccountId")?.Value;
+            if (createMessageDto == null)
+                return BadRequest("Invalid message data!");
 
             var currentUserAccountId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (currentUserAccountId == null) return Unauthorized();
@@ -93,14 +94,10 @@ namespace RealEstate.Controllers
             var conversation = await _conversationRepository.GetByIdAsync(createMessageDto.ConversationId);
             if (conversation == null)
                 return NotFound("Conversation not found!");
+
             string otherUserId = conversation.FirstAccountId == currentUserAccountId
-            ? conversation.SecondAccountId
-            : conversation.FirstAccountId;
-
-
-            if (createMessageDto == null)
-                return BadRequest("Invalid message data!");
-
+                ? conversation.SecondAccountId
+                : conversation.FirstAccountId;
 
             bool isParticipant = conversation.FirstAccountId == currentUserAccountId
                       || conversation.SecondAccountId == currentUserAccountId;
@@ -111,36 +108,19 @@ namespace RealEstate.Controllers
             var currentUser = await _userManager.FindByIdAsync(currentUserAccountId);
             var currentUserRole = (await _userManager.GetRolesAsync(currentUser)).FirstOrDefault();
 
-            //if (createMessageDto.IsResponse.HasValue)
-            //{
-            //    if (conversation.Status != ConversationStatus.Pending)
-            //        return BadRequest("Can only respond to pending conversations");
-
-            //    bool isRecipient = conversation.SecondAccountId == currentUserAccountId;
-            //    bool isSellerOrAgent = currentUserRole == "Seller" || currentUserRole == "Agent";
-
-            //    if (!isRecipient || !isSellerOrAgent)
-            //        return Forbid("Only the recipient seller/agent can respond");
-
-            //    // Update conversation status
-            //    conversation.Status = createMessageDto.IsResponse.Value ? ConversationStatus.Active : ConversationStatus.Closed;
-
-            //    // If rejecting, don't create a new message
-            //    if (!createMessageDto.IsResponse.Value)
-            //    {
-            //        conversation.LastMessageAt = DateTime.Now;
-            //        await _conversationRepository.UpdateAsync(conversation);
-            //        return Ok(conversation);
-            //    }
-            //}
-
             if (conversation.Status == ConversationStatus.Closed)
                 return BadRequest("This conversation is closed");
 
             if (conversation.Status == ConversationStatus.Pending)
             {
+                var existingMessages = await _messageRepository.GetByConversationIdAsync(conversation.Id);
+
+                // Only allow one message when conversation is pending
+                if (existingMessages.Any())
+                    return BadRequest("Cannot send more messages until the conversation is accepted");
+
                 if (currentUserRole != "Buyer")
-                    return BadRequest("Only buyers can initiate chats");
+                    return BadRequest("Only buyer can initiate conversation");
             }
 
             var newMessage = new Message
@@ -148,12 +128,12 @@ namespace RealEstate.Controllers
                 Content = createMessageDto.Content,
                 SenderId = currentUserAccountId,
                 ConversationId = conversation.Id,
-                Status = conversation.Status == ConversationStatus.Pending ? MessageStatus.Pending : MessageStatus.Sent,
+                Status = conversation.Status == ConversationStatus.Pending ? MessageStatus.Sent : MessageStatus.Sent,
                 SentAt = DateTime.Now
             };
 
             var addedMessage = await _messageRepository.AddAsync(newMessage);
-            
+
             conversation.LastMessageAt = DateTime.Now;
             await _conversationRepository.UpdateAsync(conversation);
 
@@ -203,7 +183,7 @@ namespace RealEstate.Controllers
         //        }
         //    }
 
-            
+
         //    await _messageRepository.UpdateAsync(existingMessage);
 
         //    if (updateMessageDto.Status == MessageStatus.Rejected)

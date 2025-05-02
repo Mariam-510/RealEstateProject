@@ -9,7 +9,6 @@
           <div class="card-body overflow-auto p-0">
             <ul class="list-unstyled mb-0">
               <!-- Chat List Items -->
-              <!-- Updated Chat List Item -->
               <li *ngFor="let chat of conversations" class="p-2 border-bottom cursor-pointer chat-list-item"
                 [class.active-chat]="selectedChat?.id === chat.id" (click)="selectChat(chat)">
                 <div class="d-flex justify-content-between align-items-center">
@@ -20,8 +19,6 @@
                       <div class="d-flex justify-content-between align-items-center">
                         <p class="fw-bold mb-0 text-truncate">
                           {{chat.otherUser.firstName }}  {{ chat.otherUser.lastName ? chat.otherUser.lastName : "" }}
-                          <!-- <span *ngIf="chat.otherUser.name === 'Loading...'"
-                            class="spinner-border spinner-border-sm"></span> -->
                         </p>
                         <span class="small text-muted text-nowrap ms-2">
                           {{ chat.lastMessageTime ? (chat.lastMessageTime | date:'shortTime') : 'No messages' }}
@@ -43,13 +40,10 @@
           </div>
         </div>
       </div>
+
       <!-- Right Column -->
-
-      <!-- Right Column - Modified for data binding -->
-
       <div class="col-md-6 col-lg-7 col-xl-8 d-flex flex-column">
         <ng-container *ngIf="selectedChat; else noChatSelected">
-
           <div class="card flex-grow-1 d-flex flex-column justify-content-between">
             <!-- Chat Header -->
             <div class="chat-header d-flex align-items-center px-3 py-2 shadow-sm">
@@ -59,14 +53,10 @@
                 <h6 class="mb-0 fw-bold">{{selectedChat.otherUser.firstName }}  {{ selectedChat.otherUser.lastName ? selectedChat.otherUser.lastName : "" }}</h6>
               </div>
             </div>
-            <!-- Accept / Reject Buttons -->
-            <!-- <div *ngIf="showAcceptReject" class="d-flex gap-2 px-3 py-2">
-    <button class="btn btn-brown" (click)="acceptConversation()">Accept</button>
-    <button class="btn btn-outline-brown" (click)="rejectConversation()">Reject</button>
-  </div> -->
 
-            <!-- 👇 Now the scrollable container starts -->
+            <!-- Messages Container -->
             <div class="card-body messages-container" #messagesContainer>
+              <!-- Date Separator -->
               <div class="date-separator text-center mb-3">
                 <span class="badge bg-light-brown text-brown">
                   {{ today | date:'MMMM d, y' }}
@@ -76,13 +66,11 @@
               <!-- Messages -->
               <div *ngFor="let msg of selectedChat.messages" class="message-wrapper ps-4">
                 <div class="d-flex mb-3" [ngClass]="msg.sent ? 'justify-content-end' : 'justify-content-start'">
-
-
                   <div class="d-flex flex-column" [ngClass]="msg.sent ? 'align-items-end' : 'align-items-start'">
                     <div class="d-flex align-items-start" [ngClass]="{'flex-row-reverse': msg.sent}">
                       <!-- Message Bubble -->
                       <div class="message-bubble-with-meta"
-                        [ngClass]="{'sent-message': msg.sent,'received-message': !msg.sent}">
+                        [ngClass]="{'sent-message': msg.sent, 'received-message': !msg.sent}">
                         <p class="mb-1">{{ msg.text }}</p>
                         <div class="bubble-meta text-muted small d-flex justify-content-end align-items-center gap-1">
                           <span>{{ msg.time | date:'shortTime' }}</span>
@@ -95,29 +83,52 @@
                           </span>
                         </div>
                       </div>
-
-
                     </div>
-
+                    <!-- Accept/Reject Banner -->
+            <div *ngIf="showAcceptReject && selectedChat?.status === 'Pending'" class="alert alert-info m-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <span>New conversation request - please accept or reject</span>
+                <div>
+                  <button class="btn btn-success btn-sm me-2" (click)="acceptConversation()">
+                    <i class="bi bi-check-circle"></i> Accept
+                  </button>
+                  <button class="btn btn-danger btn-sm" (click)="rejectConversation()">
+                    <i class="bi bi-x-circle"></i> Reject
+                  </button>
+                </div>
+              </div>
+            </div>
                   </div>
                 </div>
               </div>
             </div>
+            
+            <!-- Closed Conversation Warning -->
+            <div *ngIf="selectedChat?.status === 'Closed'" class="alert alert-warning m-2">
+              This conversation has been closed. No new messages can be sent.
+            </div>
 
-            <!-- Footer -->
             <!-- Message Input -->
-            <div class="card-footer text-muted p-3">
+            <div class="card-footer" [class.pe-none]="selectedChat?.status === 'Closed'" 
+                  [class.opacity-50]="selectedChat.status === 'Closed'">
               <div class="input-group">
-                <textarea class="form-control" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()"
-                  placeholder="Type your message..." rows="2"></textarea>
-                <button class="btn btn-brown" (click)="sendMessage()">
+                <textarea class="form-control" 
+                          [(ngModel)]="newMessage" 
+                          (keyup.enter)="sendMessage()"
+                          placeholder="Type your message..." 
+                          rows="2"
+                          [disabled]="shouldDisableInput()"></textarea>
+                <button class="btn btn-brown" 
+                        (click)="sendMessage()"
+                        [disabled]="selectedChat.status === 'Closed'">
                   <i class="bi bi-send-fill"></i>
                 </button>
               </div>
             </div>
-
           </div>
         </ng-container>
+
+        <!-- No Chat Selected State -->
         <ng-template #noChatSelected>
           <div class="card h-100 empty-state-card border-0">
             <div class="card-body  d-flex flex-column justify-content-center align-items-center text-center p-4">
@@ -137,7 +148,6 @@
           </div>
         </ng-template>
       </div>
-
     </div>
   </div>
 </section>
