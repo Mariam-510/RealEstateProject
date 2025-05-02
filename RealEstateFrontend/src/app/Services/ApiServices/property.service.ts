@@ -193,4 +193,7 @@ export class PropertyService {
   getRevenueByPropertyCategory(): Observable<{ category: string, totalSalesRevenue: number, totalRentalRevenue: number }[]> {
     return this.http.get<{ category: string, totalSalesRevenue: number, totalRentalRevenue: number }[]>(`${this.apiUrl}/GetRevenueByPropertyCategory`);
   }
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/Delete/${id}`);
+  }
 }

@@ -14,13 +14,24 @@ export class AdminSideBarComponent {
 
 
   isCollapsed = false;
-
+  dropdownOpen = false;
+  olddropdownOpen = false; // Store the previous state of the dropdown
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
+    if (this.isCollapsed) 
+      {
+          this.olddropdownOpen = this.dropdownOpen;
+          this.dropdownOpen = false; 
+      }
+    else 
+      {
+          this.dropdownOpen = this.olddropdownOpen; // Restore the previous state
+      }
   }
-  dropdownOpen = false;
+
 
   toggleDropdown() {
+    this.isCollapsed=false;
     this.dropdownOpen = !this.dropdownOpen;
   }
 

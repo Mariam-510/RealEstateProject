@@ -5,7 +5,8 @@ import { RouterModule, Router } from '@angular/router'
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { SellerDto, SellerService } from '../../../Services/ApiServices/seller.service';
 import { API_CONFIG } from '../../../app.config';
-import { lastValueFrom } from 'rxjs';  // Important import
+import { catchError, lastValueFrom, Observable, of, startWith, switchMap } from 'rxjs';  // Important import
+import { SubscriptionDto, SubscriptionService } from '../../../Services/ApiServices/subscription.service';
 
 @Component({
   selector: 'app-seller-profile',
@@ -23,8 +24,11 @@ export class SellerProfileComponent {
   selectedImage: File | null = null;
   removeImageFlag = false;
 
+  subscription$!: Observable<SubscriptionDto | null>;
+
+
   constructor(private router: Router, private auth: AuthService,
-    private sellerService: SellerService) { }
+    private sellerService: SellerService, private subscriptionService: SubscriptionService) { }
 
   async ngOnInit() {
 
@@ -39,12 +43,31 @@ export class SellerProfileComponent {
     await this.loadSeller(); // Load data AFTER
     this._patchFormValues(); // Update form
 
+    this.subscriptionCall();
+
     this.userImage = this.seller?.imageUrl ? (this.apiConfig.apiUrl + this.seller?.imageUrl) : null;
+  }
+
+
+  subscriptionCall() {
+    this.subscription$ = this.subscriptionService.subscriptionUpdated$.pipe(
+      startWith(null),
+      switchMap(() => {
+        return this.subscriptionService.getCurrentUserSubscription().pipe(
+          catchError((error) => {
+            console.error('Error loading subscription:', error);
+            return of(null);
+          })
+        );
+      })
+    );
   }
 
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
   showCurrentPassword: boolean = false;
+  subscription?: SubscriptionDto | null;
+
   toggleCurrentPasswordVisibility(): void {
     this.showCurrentPassword = !this.showCurrentPassword;
   }
@@ -60,8 +83,6 @@ export class SellerProfileComponent {
   async loadSeller(): Promise<void> {
     try {
       this.seller = await lastValueFrom(this.sellerService.getSeller());
-      // Add date conversion logic here if needed
-      // Example: this.seller.createdAt = new Date(this.seller.createdAt);
       // console.log(this.seller);
 
     } catch (err) {

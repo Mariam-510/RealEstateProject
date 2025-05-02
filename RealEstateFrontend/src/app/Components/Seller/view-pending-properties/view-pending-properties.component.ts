@@ -142,9 +142,6 @@ updatePagination(): void {
         }
       } catch (err) {
         console.error('API Error:', err);
-        this.properties = await lastValueFrom(
-          this.propertyService.getPropertiesBySellerId()
-        );
         this.updatePagination();
       }
     }
