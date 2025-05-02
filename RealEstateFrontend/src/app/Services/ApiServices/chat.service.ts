@@ -32,6 +32,9 @@ export class ChatService {
   private conversationStatusSubject = new BehaviorSubject<ConversationResponseDto | null>(null);
   public conversationStatusUpdates$ = this.conversationStatusSubject.asObservable();
 
+  private newConversationSubject = new BehaviorSubject<ConversationResponseDto | null>(null);
+  public newConversation$ = this.newConversationSubject.asObservable();
+
   constructor(
     private http: HttpClient,
     private authService: AuthService
@@ -74,6 +77,10 @@ export class ChatService {
     this.hubConnection.on('ConversationStatusUpdated', (updatedConversation: ConversationResponseDto) => {
       this.conversationStatusSubject.next(updatedConversation);
   });
+
+  this.hubConnection.on('NewConversation', (newConv: ConversationResponseDto) => {
+    this.newConversationSubject.next(newConv);
+});
   }
 
   public stopConnection(): void {

@@ -185,6 +185,8 @@ namespace RealEstate.Controllers
 
             var response = createdConversation.ConversationResponseDto();
 
+            await _hubContext.Clients.Group(recipient.Id).SendAsync("NewConversation", response);
+
             return Ok(response);
         }
 
