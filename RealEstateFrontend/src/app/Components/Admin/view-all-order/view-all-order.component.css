@@ -1,13 +1,20 @@
 .order-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: all 0.5s ease;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.5s ease;
 }
+
 a.active-order {
-    color: #c38e79 !important;
-    border-bottom: 2px solid #c38e79;
-  }
+  color: #c38e79 !important;
+  border-bottom: 2px solid #c38e79;
+}
+
 select option:disabled {
-    color: #bebaba !important;
-    background-color: #f8f9fab7;
-  }
+  color: #bebaba !important;
+  background-color: #f8f9fab7;
+}
+
+.details-link:hover .bi-eye,
+.details-link:hover .fa-info-circle {
+  color: #495057 !important;
+}

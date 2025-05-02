@@ -24,7 +24,8 @@ export class ApproveAgentComponent implements OnInit {
   activeLink: string = 'Pending';
   filteredAgents: AgentDto[] = [];
   isLoading = false;
-  constructor(private agentService: AgentService, private auth: AuthService, private router: Router, private toastr: ToastrService) { }
+  constructor(private agentService: AgentService, private auth: AuthService,
+    private router: Router, private toastr: ToastrService) { }
 
   async ngOnInit() {
     if (this.hasRole('Admin')) {
@@ -99,6 +100,7 @@ export class ApproveAgentComponent implements OnInit {
     if (element) {
       const text = element.innerText;
       navigator.clipboard.writeText(text).then(() => {
+        this.toastr.success('Copied to clipboard')
         console.log('Copied to clipboard:', text);
       });
     }

@@ -80,10 +80,11 @@ export const routes: Routes = [
       { path: "profile", component: AdminProfileComponent, title: "Profile" },
       { path: 'dashboard', component: AdmindashboardComponent, title: "Dashboard" },
       { path: 'viewAllOrder', component: ViewAllOrderComponent, title: "View All Order" },
+      { path: 'viewAllOrder/:id', component: OrderDetailsComponent, title: "Order Details" },
       { path: 'addProduct', component: AddProductComponent, title: "Add Product" },
       { path: "addCatgory", component: AddCategoryComponent, title: "Add Category" },
       { path: "addSubscriptionPlan", component: AddSubscriptionplanComponent, title: "Add Subscription Plan" },
-      { path: 'approveProperty', component: ApprovePropertyComponent, title: "Approve Property"},
+      { path: 'approveProperty', component: ApprovePropertyComponent, title: "Approve Property" },
       { path: "createAdmin", component: CreateadminComponent, title: "Create Admin" },
       { path: "approveAgent", component: ApproveAgentComponent, title: "Approve Agent" },
     ]
@@ -99,7 +100,7 @@ export const routes: Routes = [
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
       { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
       { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" },
-      {path:'ViewAllAuctions',component:ViewAllAuctionsComponent,title:"View All Auction"},
+      { path: 'ViewAllAuctions', component: ViewAllAuctionsComponent, title: "View All Auction" },
     ]
   },
 
@@ -114,7 +115,7 @@ export const routes: Routes = [
       { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
       { path: 'PropertiesPending', component: ViewPendingPropertiesComponent, title: "View Pending Properties" },
       { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" },
-      {path:'ViewAllAuctions',component:ViewAllAuctionsComponent,title:"View All Auction"},
+      { path: 'ViewAllAuctions', component: ViewAllAuctionsComponent, title: "View All Auction" },
 
     ]
   },
@@ -130,7 +131,7 @@ export const routes: Routes = [
       { path: 'FavoriteProducts', component: FavoriteProductsComponent, title: "Favorite Products" },
       { path: 'wishlist', component: WishlistComponent, title: "Wishlist" },
       { path: 'ViewAllAppointment', component: BuyerViewAllPointmentComponent, title: "View All Appointment" },
-      {path:'ViewAllAuctions',component:ViewBuyerAuctionsComponent,title:"View All Auction"},
+      { path: 'ViewAllAuctions', component: ViewBuyerAuctionsComponent, title: "View All Auction" },
 
     ]
   },

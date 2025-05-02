@@ -179,18 +179,18 @@
           </div> -->
 
           <div class="user-info">
-            <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="d-flex align-items-center gap-3">
               <div>
-                <h2 class="user-name mb-1 fs-5 fw-semibold">
+                <p class="user-name mb-1">
                   {{ loggedInUser?.firstName + ' ' + (loggedInUser?.lastName || '') || 'Guest User' }}
-                </h2>
+                </p>
                 <div class="user-email text-muted small">
                   {{ loggedInUser?.email || 'user@example.com' }}
                 </div>
               </div>
             </div>
 
-            <div class="subscription-details bg-caffe-light rounded p-1">
+            <div *ngIf="subscription$ | async as sub" class="mt-3 subscription-details bg-caffe-light rounded p-1">
               <div *ngIf="subscription$ | async as sub" class="d-flex flex-column gap-2">
                 <div class="d-flex align-items-center justify-content-between">
                   <div class="d-flex align-items-center gap-2">

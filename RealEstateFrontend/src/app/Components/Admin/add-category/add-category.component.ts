@@ -1,5 +1,5 @@
 // add-category.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -136,13 +136,37 @@ export class AddCategoryComponent implements OnInit {
     });
   }
 
+  // resetForm(): void {
+  //   this.categoryForm.reset();
+  //   this.imagePreview = null;
+  //   this.selectedFile = null;
+  //   // Reset form validation states
+  //   Object.keys(this.categoryForm.controls).forEach((key) => {
+  //     this.categoryForm.get(key)?.setErrors(null);
+  //   });
+  // }
+
+  @ViewChild('fileInput') fileInput!: ElementRef;
+  // Update your resetForm() method
   resetForm(): void {
-    this.categoryForm.reset();
+    // Reset form controls
+    this.categoryForm.reset({
+      name: '',
+      image: null
+    });
+
+    // Clear image preview and file
     this.imagePreview = null;
     this.selectedFile = null;
+    this.categoryForm.get('image')?.setValue(null);
+
+    // Reset the file input element
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
+
     // Reset form validation states
-    Object.keys(this.categoryForm.controls).forEach((key) => {
-      this.categoryForm.get(key)?.setErrors(null);
-    });
+    this.categoryForm.markAsUntouched();
+    this.categoryForm.markAsPristine();
   }
 }
