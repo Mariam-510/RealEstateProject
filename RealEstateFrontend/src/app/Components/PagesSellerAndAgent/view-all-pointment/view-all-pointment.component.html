@@ -19,11 +19,11 @@
 <div class="d-flex align-items-center justify-content-between mt-5 ms-4 ms-sm-3 mb-4 flex-wrap">
     <!-- Tabs -->
     <div class="d-flex overflow-auto py-2">
-        <div class="d-flex flex-wrap flex-m-nowrap">  
+        <div class="d-flex flex-wrap flex-m-nowrap">
             <a *ngFor="let link of propertyLinks" href="#"
                (click)="setActive(link, $event)"
                [ngClass]="{
-                   'active-tab': link === activeLink, 
+                   'active-tab': link === activeLink,
                    'text-muted': link !== activeLink
                }"
                class="text-decoration-none px-4 px-sm-3 py-3 py-sm-2 text-caffe" style="font-size: 1.1rem;">
@@ -46,16 +46,17 @@
 
 <div class="row">
     <div *ngFor="let appointment of paginatedAppointments" class="col-12">
-        <div class="card border-0 shadow-sm hover-shadow transition-all ms-4 mb-4" 
+        <div class="card border-0 shadow-sm hover-shadow transition-all ms-4 mb-4"
              style="height: auto; min-height: 16vw; max-height: none;">
             <div class="card-body p-0 h-100">
                 <div class="row g-0 h-100">
-                    <div class="col-md-4 position-relative h-100" 
-                         style="min-height: 200px; height: auto;">
+
+                  <div class="col-md-4 position-relative"
+                         style="height: 263px;">
                          <a [routerLink]="['/properties', appointment.property.id]" class="d-block h-100">
 
-                            <img [src]="apiConfig.apiUrl + appointment.property.images[0]" class="img-fluid w-100 h-100" 
-                                 style="object-fit: cover; min-height: 200px;">
+                            <img [src]="apiConfig.apiUrl + appointment.property.images[0]" class="img-fluid w-100 h-100"
+                                 style="object-fit: cover;">
                              </a>
                         <div class="position-absolute top-0 end-1 m-2">
                             <span class="badge bg-white text-dark shadow-sm py-2 px-3" style="font-size: .85rem;">
@@ -65,7 +66,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 px-1 py-2 h-100">
+                    <div class="col-md-4 px-1 pt-3 py-2 h-100">
                         <h5 class="card-title fw-bold mt-2 ms-3" style="font-size: 1.2rem;">{{appointment.property.title}}
 
                         </h5>
@@ -116,13 +117,13 @@
                                 <img  [src]="apiConfig.apiUrl+ appointment.buyerImage"
                                 alt="Seller avatar" class="rounded-circle me-2" width="50" height="50">
                               </ng-container>
-                
-                            
+
+
                             <!-- <img  [src]="apiConfig.apiUrl+ appointment.property.userImage"
                                 alt="Seller avatar" class="rounded-circle me-2" width="50" height="50"> -->
                             <div>
                                 <h6 class="mb-0 fw-bold small">{{appointment.buyerName}}</h6>
-                                <small class="text-muted small text-truncate d-block" style="max-width: 150px;"> 
+                                <small class="text-muted small text-truncate d-block" style="max-width: 150px;">
                                     {{appointment.buyerEmail}}
                                 </small>
                             </div>
@@ -130,7 +131,7 @@
 
                         <div class="bg-light rounded-3 pt-2 ps-3 mt-2" style="height: auto;">
                             <div class="d-flex align-items-center">
-                                <i [ngClass]="{ 
+                                <i [ngClass]="{
                                         'bi bi-camera-video-fill fs-6': appointment.type === 'Virtual',
                                         'bi bi-building fs-6': appointment.type === 'InPerson'
                                       }" class="me-2 text-caffe"></i>

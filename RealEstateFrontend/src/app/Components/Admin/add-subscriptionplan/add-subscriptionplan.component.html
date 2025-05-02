@@ -1,137 +1,147 @@
 <div class="mt-5 ms-5 me-5">
-    <div>
-        <h2 class="fw-bold">
-            <span style="font-size: 0.9em;">
-                <i class="bi bi-credit-card text-caffe"></i> Add Subscription Plan
-            </span>
-        </h2>
-        <nav aria-label="breadcrumb" class="mt-2">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item mb-0">
-                    <p class="text-muted mb-0">Admin</p>
-                </li>
-                <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">Add plan</li>
-            </ol>
-        </nav>
-    </div>
+  <div>
+    <h2 class="fw-bold">
+      <span style="font-size: 0.9em;">
+        💰 Add Subscription Plan
+      </span>
+    </h2>
+    <nav aria-label="breadcrumb" class="mt-2">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item mb-0">
+          <p class="text-muted mb-0">Admin</p>
+        </li>
+        <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">Add Subscription plan</li>
+      </ol>
+    </nav>
+  </div>
 </div>
 
 <div class="new-Subscription-page d-flex mt-4 align-items-center">
-    <div class="container py-4">
-        <div class="row justify-content-center">
-            <div class="col-lg-9">
-                <div class="bg-white p-4 rounded-3 shadow border-0">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="mb-0">
-                            Add New Subscription Plan
-                        </h3>
-                        <a routerLink="/products" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-left me-2"></i>Back
-                        </a>
-                    </div>
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <div class="bg-white p-4 rounded-3 shadow border-0">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0">
+              Add New Subscription Plan
+            </h3>
+            <!-- <a routerLink="/products" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-2"></i>Back
+            </a> -->
+          </div>
 
-                    <hr style="border: 2px solid #c38e79" />
+          <hr style="border: 2px solid #c38e79" />
 
-                    <form [formGroup]="subscriptionForm" (ngSubmit)="AddPlan()">
-                        <div class="mb-4">
-                            <h5 class="mb-3 text-caffe">Plan Information</h5>
+          <form [formGroup]="subscriptionForm" (ngSubmit)="AddPlan()">
+            <div class="mb-4">
+              <h5 class="mb-3 text-caffe">Plan Information</h5>
 
 
-                            <div class="row g-4">
-                                <!-- Subscription Name -->
-                                <div class="col-md-12">
-                                    <label for="name" class="form-label">Plan Name</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i
-                                                class="bi bi-card-heading text-caffe"></i></span>
-                                        <input type="text" id="name" class="form-control " placeholder="Premium Plan"
-                                            formControlName="name" required />
-                                    </div>
-                                    <div *ngIf="subscriptionForm.get('name')?.hasError('required') && subscriptionForm.get('name')?.touched"
-                                        class="text-danger small ps-2">
-                                        Name is required.
-                                    </div>
-                                    <div *ngIf="subscriptionForm.get('name')?.hasError('minlength') && subscriptionForm.get('name')?.touched"
-                                        class="text-danger small ps-2">
-                                        Name at least 1 characters.
-                                    </div>
-                                    <div *ngIf="subscriptionForm.get('name')?.hasError('maxlength') && subscriptionForm.get('name')?.touched"
-                                        class="text-danger small ps-2">
-                                        Name at most 10 characters.
-                                    </div>
-                                    <div *ngIf="subscriptionForm.get('name')?.hasError('pattern') && subscriptionForm.get('name')?.touched"
-                                        class="text-danger small ps-2">
-                                        Name must be characters only.
-                                    </div>
-                                </div>
+              <div class="row g-4">
+                <!-- Subscription Name -->
+                <div class="col-md-12">
+                  <label for="name" class="form-label">Plan Name</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-card-heading text-caffe"></i></span>
+                    <input type="text" id="name" class="form-control " placeholder="Premium Plan" formControlName="name"
+                      required />
+                  </div>
+                  <div
+                    *ngIf="subscriptionForm.get('name')?.hasError('required') && subscriptionForm.get('name')?.touched"
+                    class="text-danger small ps-2">
+                    Name is required.
+                  </div>
+                  <div
+                    *ngIf="subscriptionForm.get('name')?.hasError('minlength') && subscriptionForm.get('name')?.touched"
+                    class="text-danger small ps-2">
+                    Name at least 1 characters.
+                  </div>
+                  <div
+                    *ngIf="subscriptionForm.get('name')?.hasError('maxlength') && subscriptionForm.get('name')?.touched"
+                    class="text-danger small ps-2">
+                    Name at most 10 characters.
+                  </div>
+                  <div
+                    *ngIf="subscriptionForm.get('name')?.hasError('pattern') && subscriptionForm.get('name')?.touched"
+                    class="text-danger small ps-2">
+                    Name must be characters only.
+                  </div>
+                </div>
 
-                                <!-- Subscription Price -->
-                                <div class="col-md-12">
-                                    <label for="price" class="form-label">Plan Price</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i
-                                                class="bi bi-coin text-caffe"></i></span>
-                                        <input type="text" id="price" class="form-control"
-                                            placeholder="Write your Price" formControlName="price" required />
-                                    </div>
-                                    <div *ngIf="subscriptionForm.get('price')?.hasError('required') && subscriptionForm.get('price')?.touched"
-                                        class="text-danger small ps-2">
-                                        price is required.
-                                    </div>
-                                    <div *ngIf="subscriptionForm.get('price')?.hasError('pattern') && subscriptionForm.get('price')?.touched"
-                                        class="text-danger small ps-2">
-                                        price must be positive Number only.
-                                    </div>
-                                </div>
+                <!-- Subscription Price -->
+                <div class="col-md-12">
+                  <label for="price" class="form-label">Plan Price</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-coin text-caffe"></i></span>
+                    <input type="text" id="price" class="form-control" placeholder="Write your Price"
+                      formControlName="price" required />
+                  </div>
+                  <div
+                    *ngIf="subscriptionForm.get('price')?.hasError('required') && subscriptionForm.get('price')?.touched"
+                    class="text-danger small ps-2">
+                    price is required.
+                  </div>
+                  <div
+                    *ngIf="subscriptionForm.get('price')?.hasError('pattern') && subscriptionForm.get('price')?.touched"
+                    class="text-danger small ps-2">
+                    price must be positive Number only.
+                  </div>
+                </div>
 
-                                <!-- Max Allowed Properties -->
-                                <div class="col-md-12">
-                                    <label for="Max" class="form-label">Max Properties</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i
-                                                class="bi bi-building text-caffe"></i></span>
-                                        <input type="text" id="Max" class="form-control"
-                                            placeholder="Write Plan Max Properties" formControlName="MaxAllowd"
-                                            required />
-                                    </div>
-                                    <div *ngIf="subscriptionForm.get('MaxAllowd')?.hasError('required') && subscriptionForm.get('MaxAllowd')?.touched"
-                                        class="text-danger small ps-2">
-                                        MaxAllowd properties is required.
-                                    </div>
-                                    <div *ngIf="subscriptionForm.get('MaxAllowd')?.hasError('pattern') && subscriptionForm.get('MaxAllowd')?.touched"
-                                        class="text-danger small ps-2">
-                                        MaxAllowd properties must be positive Number only.
-                                    </div>
-                                </div>
+                <!-- Max Allowed Properties -->
+                <div class="col-md-12">
+                  <label for="Max" class="form-label">Max Properties</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-building text-caffe"></i></span>
+                    <input type="text" id="Max" class="form-control" placeholder="Write Plan Max Properties"
+                      formControlName="MaxAllowd" required />
+                  </div>
+                  <div
+                    *ngIf="subscriptionForm.get('MaxAllowd')?.hasError('required') && subscriptionForm.get('MaxAllowd')?.touched"
+                    class="text-danger small ps-2">
+                    MaxAllowd properties is required.
+                  </div>
+                  <div
+                    *ngIf="subscriptionForm.get('MaxAllowd')?.hasError('pattern') && subscriptionForm.get('MaxAllowd')?.touched"
+                    class="text-danger small ps-2">
+                    MaxAllowd properties must be positive Number only.
+                  </div>
+                </div>
 
-                                <!-- Description -->
-                                <div class="col-md-12">
-                                    <label class="form-label">Description</label>
-                                    <textarea class="form-control" id="description" formControlName="description"
-                                        rows="3" maxlength="150"></textarea>
-                                    <small class="text-muted">{{
-                                        subscriptionForm.get("description")?.value?.length || 0
-                                        }}/150 characters</small>
-                                    <div *ngIf="
+                <!-- Description -->
+                <div class="col-md-12">
+                  <label class="form-label">Description</label>
+                  <textarea class="form-control" id="description" formControlName="description" rows="3"
+                    maxlength="150"></textarea>
+                  <small class="text-muted">{{
+                    subscriptionForm.get("description")?.value?.length || 0
+                    }}/150 characters</small>
+                  <div *ngIf="
                                       subscriptionForm.get('description')?.invalid &&
                                       subscriptionForm.get('description')?.touched
                                     " class="text-danger small ps-2">
-                                        Description must be less than 150 characters
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
-                        <!-- Form Actions -->
-                        <div class="d-flex justify-content-center gap-3 mt-5 mb-3">
-                            <button type="submit" class="btn bg-caffe rounded-pill px-4 text-light">
-                                <i class="bi bi-save me-2"></i>Add Plan
-                            </button>
-                        </div>
-                    </form>
+                    Description must be less than 150 characters
+                  </div>
                 </div>
+
+              </div>
+
             </div>
+            <!-- Form Actions -->
+            <!-- <div class="d-flex justify-content-center gap-3 mt-5 mb-3">
+              <button type="submit" class="btn bg-caffe rounded-pill px-4 text-light">
+                <i class="bi bi-save me-2"></i>Add Plan
+              </button>
+            </div> -->
+
+            <div class="d-grid mt-4">
+              <button type="submit" class="btn bg-caffe text-white" [disabled]="subscriptionForm.invalid">
+                Add Plan
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 </div>

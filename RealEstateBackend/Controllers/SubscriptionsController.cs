@@ -37,7 +37,6 @@ namespace RealEstate.Controllers
         //Authorize admin
         [HttpGet("user")]
         [Authorize(Roles = "Agent,Seller")]
-
         public async Task<IActionResult> GetByUserId()
         {
 
@@ -77,15 +76,6 @@ namespace RealEstate.Controllers
 
             return Ok(_mapper.Map<SubscriptionDto>(sub));
         }
-
-        ////Authorize admin
-        //[HttpGet("current/{userId}")]
-        //public async Task<IActionResult> GetCurrentActive(int userId)
-        //{
-        //    var sub = await _subscriptionRepository.GetCurrentActiveByUserIdAsync(userId);
-        //    if (sub == null) return NotFound();
-        //    return Ok(_mapper.Map<SubscriptionDto>(sub));
-        //}
 
 
         [HttpPost]
@@ -127,31 +117,6 @@ namespace RealEstate.Controllers
             sub.SellerId = sellerId;
             sub.SubscriptionDate = DateTime.Now.AddHours(1);
 
-            //switch (dto.userType)
-            //{
-            //    case UserType.Seller:
-            //        if (await _sellerRepository.ExistsAsync(dto.UserId))
-            //        {
-            //            sub.SellerId = dto.UserId;
-            //        }
-            //        else
-            //        {
-            //            return BadRequest("Invalid seller id.");
-            //        }
-            //        break;
-            //    case UserType.Agent:
-
-            //        if (await _agentRepository.ExistsAsync(dto.UserId))
-            //        {
-            //            sub.AgentId = dto.UserId;
-            //        }
-            //        else
-            //        {
-            //            return BadRequest("Invalid agent id.");
-            //        }
-            //        break;
-            //}
-
             if (!(await _subscriptionPlanRepository.ExistsAsync((dto.SubscriptionPlanId))))
             {
                 return BadRequest("Invalid subscription plan.");
@@ -191,27 +156,9 @@ namespace RealEstate.Controllers
 
 
         [HttpPut]
-        [Authorize]
+        [Authorize(Roles = "Agent,Seller")]
         public async Task<IActionResult> UpdateSubscription(CreateSubscriptionDto dto)
         {
-
-            //switch (dto.userType)
-            //{
-            //    case UserType.Seller:
-
-            //        if (!(await _sellerRepository.ExistsAsync(dto.UserId)))
-            //        {
-            //            return BadRequest("Invalid seller id.");
-            //        }
-            //        break;
-            //    case UserType.Agent:
-            //        if(!(await _agentRepository.ExistsAsync(dto.UserId)))
-            //        {
-            //            return BadRequest("Invalid agent id.");
-            //        }
-            //        break;
-            //}
-
             UserType userType;
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -254,7 +201,6 @@ namespace RealEstate.Controllers
             if (subscriptionPayment != null)
             {
 
-                //var sub = await _subscriptionRepository.GetLastByUserIdAsync(dto.UserId);
                 var sub = await _subscriptionRepository.GetLastByUserIdAsync((int) uId, userType);
                 if (sub == null) return NotFound();
 

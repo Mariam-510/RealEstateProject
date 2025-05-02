@@ -44,7 +44,7 @@ namespace RealEstate.Controllers
 
 
         [HttpPost("PayPal")]
-        [Authorize(Roles = "Buyer")]
+        [Authorize]
         public async Task<IActionResult> CreatePayPalOrder([FromBody] decimal amount)
         {
             string buyerIdStr = User.FindFirst("userId")?.Value;
@@ -72,7 +72,7 @@ namespace RealEstate.Controllers
 
         // PaymentsController.cs
         [HttpPost("Stripe")]
-        [Authorize(Roles = "Buyer")]
+        [Authorize]
         public async Task<IActionResult> CreateStripePayment([FromBody] decimal amount)
         {
             string buyerIdStr = User.FindFirst("userId")?.Value;
@@ -98,7 +98,7 @@ namespace RealEstate.Controllers
         }
 
         [HttpPost("Stripe/CreateSession")]
-        [Authorize(Roles = "Buyer")]
+        [Authorize]
         public async Task<IActionResult> CreateStripeSession([FromBody] StripeSessionRequest request)
         {
             string buyerIdStr = User.FindFirst("userId")?.Value;
@@ -168,7 +168,7 @@ namespace RealEstate.Controllers
 
 
         [HttpPost("Stripe/VerifySession")]
-        [Authorize(Roles = "Buyer")]
+        [Authorize]
         public async Task<IActionResult> VerifyStripeSession([FromBody] string sessionId)
         {
             var isValid = await _stripeService.VerifySessionAsync(sessionId);

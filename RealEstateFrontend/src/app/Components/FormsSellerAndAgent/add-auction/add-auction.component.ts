@@ -27,8 +27,8 @@ export class AddAuctionComponent implements OnInit {
   properties: PropertyDTO[] = [];
 
   constructor(private fb: FormBuilder, private router: Router,
-      private auctionService: AuctionService, private propertyService: PropertyService,
-        private auth: AuthService, private toastr: ToastrService) {
+    private auctionService: AuctionService, private propertyService: PropertyService,
+    private auth: AuthService, private toastr: ToastrService) {
     // Set minimum date to current datetime
     const now = new Date();
     this.minDate = now.toISOString().slice(0, 16);
@@ -71,22 +71,20 @@ export class AddAuctionComponent implements OnInit {
 
   private loadProperties(): void {
 
-    if (this.auth.hasRole('Seller'))
-    {
-        // Call with parameter 1 (assuming you want Approved status)
-        this.propertyService.getPropertiesBySellerId(1).subscribe({
-          next: (properties) => {
-            this.properties = properties.filter(p =>
-              p.status === 'Available' // Filter available properties
-            );
-          },
-          error: (err) => {
-            console.error('Error loading properties:', err);
-          }
-        });
+    if (this.auth.hasRole('Seller')) {
+      // Call with parameter 1 (assuming you want Approved status)
+      this.propertyService.getPropertiesBySellerId(1).subscribe({
+        next: (properties) => {
+          this.properties = properties.filter(p =>
+            p.status === 'Available' // Filter available properties
+          );
+        },
+        error: (err) => {
+          console.error('Error loading properties:', err);
+        }
+      });
     }
-    else
-    {
+    else {
       this.propertyService.getPropertiesByAgentId().subscribe({
         next: (properties) => {
           this.properties = properties.filter(p =>
@@ -143,6 +141,24 @@ export class AddAuctionComponent implements OnInit {
     return null;
   }
 
+
+  resetForm(): void {
+    this.auctionForm.reset({
+      propertyId: '',
+      startTime: '',
+      endTime: '',
+      startPrice: ''
+    });
+
+    // Reset validation states
+    this.auctionForm.markAsUntouched();
+    this.auctionForm.markAsPristine();
+
+    // If you need to reload available properties (optional)
+    this.loadProperties();
+  }
+
+
   onSubmit(): void {
     this.auctionForm.markAllAsTouched();
 
@@ -159,7 +175,8 @@ export class AddAuctionComponent implements OnInit {
         next: (response) => {
           // console.log('Auction created:', response);
           this.toastr.success('Auction created successfully!');
-          this.router.navigate(['/auctions']);
+          this.resetForm(); // Call reset here
+          // this.router.navigate(['/auctions']);
         },
         error: (err) => {
           console.error('Error creating auction:', err);
@@ -172,5 +189,18 @@ export class AddAuctionComponent implements OnInit {
         }
       });
     }
+  }
+
+
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
   }
 }

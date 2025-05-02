@@ -11,71 +11,79 @@
     <ul class="nav flex-column mt-3 ms-2">
       <li class="nav-item">
         <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="profile"
-          routerLinkActive="active">
+          routerLinkActive="active" (click)="closeDropdown()">
           <i class="bi bi-person-circle me-2 text-caffe"></i>
           <span class="d-md-inline d-none" *ngIf="!isCollapsed">Admin Info</span>
         </a>
       </li>
+
       <li class="nav-item">
         <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="dashboard"
-          routerLinkActive="active">
+          routerLinkActive="active" (click)="closeDropdown()">
           <i class="bi bi-receipt me-2 text-caffe"></i>
           <span class="d-md-inline d-none" *ngIf="!isCollapsed">Dashboard</span>
         </a>
       </li>
+
       <li class="nav-item">
         <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
-          routerLink="viewAllOrder" routerLinkActive="active">
+          routerLink="viewAllOrder" routerLinkActive="active" (click)="closeDropdown()">
           <i class="bi bi-eye me-2 text-caffe"></i>
           <span class="d-md-inline d-none" *ngIf="!isCollapsed">View All Order</span>
         </a>
       </li>
+
       <li class="nav-item">
         <div class="dropdown" #dropdown>
           <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
-             (click)="toggleDropdown()" [class.active]="isDropdownItemActive()">
+            (click)="toggleDropdown()" [class.active]="isDropdownItemActive()" style="cursor: pointer;">
             <i class="bi bi-three-dots-vertical me-2 text-caffe"></i>
             <span class="d-md-inline d-none" *ngIf="!isCollapsed">More Actions</span>
           </a>
           <ul class="dropdown-menu" [class.show]="dropdownOpen">
             <li>
-              <a class="dropdown-item d-flex align-items-center" routerLink="createAdmin" 
-                 routerLinkActive="active" (click)="preventClose($event)">
+              <a class="dropdown-item d-flex align-items-center" routerLink="createAdmin" routerLinkActive="active"
+                (click)="preventClose($event)">
                 <i class="bi bi-person me-2 text-caffe"></i>
                 <span>Create Admin</span>
               </a>
             </li>
+
             <li>
-              <a class="dropdown-item d-flex align-items-center" routerLink="addProduct" 
-                 routerLinkActive="active" (click)="preventClose($event)">
+              <a class="dropdown-item d-flex align-items-center" routerLink="addProduct" routerLinkActive="active"
+                (click)="preventClose($event)">
                 <i class="bi bi-box-seam me-2 text-caffe"></i>
                 <span>Add Product</span>
               </a>
             </li>
+
             <li>
-              <a class="dropdown-item d-flex align-items-center" routerLink="addCatgory" 
-                 routerLinkActive="active" (click)="preventClose($event)">
+              <a class="dropdown-item d-flex align-items-center" routerLink="addCatgory" routerLinkActive="active"
+                (click)="preventClose($event)">
                 <i class="bi bi-collection me-2 text-caffe"></i>
                 <span>Add Category</span>
               </a>
             </li>
+
             <li>
-              <a class="dropdown-item d-flex align-items-center" routerLink="addSubscriptionPlan" 
-                 routerLinkActive="active" (click)="preventClose($event)">
+              <a class="dropdown-item d-flex align-items-center" routerLink="addSubscriptionPlan"
+                routerLinkActive="active" (click)="preventClose($event)">
                 <i class="bi bi-credit-card me-2 text-caffe"></i>
                 <span>Add Subscription</span>
               </a>
             </li>
+
             <li>
-              <a class="dropdown-item d-flex align-items-center" routerLink="approveProperty" 
-                 routerLinkActive="active" (click)="preventClose($event)">
+              <a class="dropdown-item d-flex align-items-center" routerLink="approveProperty" routerLinkActive="active"
+                (click)="preventClose($event)">
                 <i class="bi bi-house-check me-2 text-caffe"></i>
                 <span>Approve Property</span>
               </a>
             </li>
+
             <li>
-              <a class="dropdown-item d-flex align-items-center" routerLink="approveAgent" 
-                 routerLinkActive="active" (click)="preventClose($event)">
+              <a class="dropdown-item d-flex align-items-center" routerLink="approveAgent" routerLinkActive="active"
+                (click)="preventClose($event)">
                 <i class="bi bi-person-check me-2 text-caffe"></i>
                 <span>Approve Agent</span>
               </a>
