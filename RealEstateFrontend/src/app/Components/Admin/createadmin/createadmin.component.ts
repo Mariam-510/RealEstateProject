@@ -1,10 +1,11 @@
 // createadmin.component.ts
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AdminService } from '../../../Services/ApiServices/admin.service';
 import { ToastrService } from '../../../Services/toastr.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
 
 @Component({
   selector: 'app-createadmin',
@@ -12,9 +13,17 @@ import { CommonModule } from '@angular/common';
   templateUrl: './createadmin.component.html',
   styleUrls: ['./createadmin.component.css']
 })
-export class CreateadminComponent {
+export class CreateadminComponent implements OnInit {
+
+  ngOnInit(): void {
+    if (!this.hasRole('Admin')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+  }
+
   isLoading = false;
-  
+
   createAdminForm = new FormGroup({
     Name: new FormControl('', [
       Validators.required,
@@ -22,7 +31,7 @@ export class CreateadminComponent {
       Validators.pattern(/^[A-Za-z\s]+$/) // Allow spaces in names
     ]),
     email: new FormControl('', [
-      Validators.required, 
+      Validators.required,
       Validators.pattern(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)
     ]),
     pass: new FormControl("", [
@@ -40,8 +49,9 @@ export class CreateadminComponent {
   constructor(
     private adminService: AdminService,
     private toastr: ToastrService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private auth: AuthService
+  ) { }
 
   onFileChange(event: any): void {
     const file = event.target.files[0];
@@ -70,7 +80,7 @@ export class CreateadminComponent {
     formData.append('Email', this.createAdminForm.value.email || '');
     formData.append('Password', this.createAdminForm.value.pass || '');
     formData.append('ConfirmPassword', this.createAdminForm.value.confirmPassword || '');
-    
+
     // Append image if exists
     if (this.createAdminForm.value.Image) {
       formData.append('Image', this.createAdminForm.value.Image);
@@ -86,7 +96,7 @@ export class CreateadminComponent {
       error: (error) => {
         this.isLoading = false;
         console.error('Error creating admin:', error);
-        
+
         if (error.error?.message) {
           this.toastr.error(error.error.message, 'Error');
         } else {
@@ -94,5 +104,17 @@ export class CreateadminComponent {
         }
       }
     });
+  }
+
+  hasRole(requiredRole: string) {
+    return this.auth.hasRole(requiredRole);
+  }
+
+  hasRoleOrNoUser(requiredRole: string) {
+    return !this.auth.isAuthenticated() || this.auth.hasRole(requiredRole);
+  }
+
+  hasUser() {
+    return this.auth.isAuthenticated();
   }
 }

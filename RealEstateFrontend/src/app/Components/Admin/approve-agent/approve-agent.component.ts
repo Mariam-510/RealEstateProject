@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { agentDto, AgentService} from '../../../Services/ApiServices/agent.service';
+import { AgentDto, AgentService } from '../../../Services/ApiServices/agent.service';
 import { API_CONFIG } from '../../../app.config';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { Router } from '@angular/router';
@@ -9,30 +9,30 @@ import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-approve-agent',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './approve-agent.component.html',
   styleUrl: './approve-agent.component.css'
 })
 export class ApproveAgentComponent implements OnInit {
   // activeLink = 'Pending';
   // filteredAgents: Agent[] = [];
-    apiConfig = API_CONFIG;
-  
+  apiConfig = API_CONFIG;
+
   StatusLinks = ['Pending', 'Approved', 'Rejected'];
 
-  
-  activeLink: string = 'Pending';
-  filteredAgents: agentDto[] = [];
-  isLoading = false;
-  constructor(private agentService: AgentService,private auth: AuthService,private router: Router,  private toastr: ToastrService) {}
 
- async  ngOnInit(){
-  if (this.hasRole('Admin')) {
-    this.loadAgents();
-  } 
-  else{
-    this.router.navigate(['/login']);
-  }
+  activeLink: string = 'Pending';
+  filteredAgents: AgentDto[] = [];
+  isLoading = false;
+  constructor(private agentService: AgentService, private auth: AuthService, private router: Router, private toastr: ToastrService) { }
+
+  async ngOnInit() {
+    if (this.hasRole('Admin')) {
+      this.loadAgents();
+    }
+    else {
+      this.router.navigate(['/login']);
+    }
   }
 
   private loadAgents(): void {
@@ -42,7 +42,7 @@ export class ApproveAgentComponent implements OnInit {
       .subscribe({
         next: (agents) => {
           this.filteredAgents = agents;
-          
+
           this.isLoading = false;
         },
         error: (error) => {
@@ -60,40 +60,40 @@ export class ApproveAgentComponent implements OnInit {
 
   // filterAgents(): void {
   //   let filtered = this.agents;
-  //   filtered = filtered.filter(agent => 
-  //       agent.status.toLowerCase() === this.activeLink.toLowerCase() );  
+  //   filtered = filtered.filter(agent =>
+  //       agent.status.toLowerCase() === this.activeLink.toLowerCase() );
   //   this.filteredAgents = filtered;
   // }
 
-// Updated Component Methods with Enhanced Logging
-totalAgents: number = 0;
-approveAgent(id: number): void {
-  this.agentService.updateApprovalStatus(id, true).subscribe({
-    next: () => {
-      console.log('Agent approved successfully');
-      this.toastr.success('Agent approved successfully'); // Add toast
-      this.loadAgents();
-    },
-    error: (error) => {
-      console.error('Approval failed:', error);
-      this.toastr.error('Approval failed. Please try again.'); // Add toast
-    }
-  });
-}
+  // Updated Component Methods with Enhanced Logging
+  totalAgents: number = 0;
+  approveAgent(id: number): void {
+    this.agentService.updateApprovalStatus(id, true).subscribe({
+      next: () => {
+        console.log('Agent approved successfully');
+        this.toastr.success('Agent approved successfully'); // Add toast
+        this.loadAgents();
+      },
+      error: (error) => {
+        console.error('Approval failed:', error);
+        this.toastr.error('Approval failed. Please try again.'); // Add toast
+      }
+    });
+  }
 
-rejectAgent(id: number): void {
-  this.agentService.updateApprovalStatus(id, false).subscribe({
-    next: () => {
-      console.log('Agent rejected successfully');
-      this.toastr.success('Agent rejected successfully'); // Add toast
-      this.loadAgents();
-    },
-    error: (error) => {
-      console.error('Rejection failed:', error);
-      this.toastr.error('Rejection failed. Please try again.'); // Add toast
-    }
-  });
-}
+  rejectAgent(id: number): void {
+    this.agentService.updateApprovalStatus(id, false).subscribe({
+      next: () => {
+        console.log('Agent rejected successfully');
+        this.toastr.success('Agent rejected successfully'); // Add toast
+        this.loadAgents();
+      },
+      error: (error) => {
+        console.error('Rejection failed:', error);
+        this.toastr.error('Rejection failed. Please try again.'); // Add toast
+      }
+    });
+  }
   copyToClipboard(elementId: string): void {
     const element = document.getElementById(elementId);
     if (element) {

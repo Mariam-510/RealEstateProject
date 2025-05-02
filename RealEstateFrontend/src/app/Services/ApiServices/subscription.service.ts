@@ -18,7 +18,9 @@ export interface SubscriptionDto {
 })
  export class SubscriptionService {
     private apiUrl = `${API_CONFIG.apiUrl}api/Subscriptions`;
+
     constructor(private http: HttpClient) { }
+
     getCurrentUserSubscription(): Observable<SubscriptionDto> {
       return this.http.get<SubscriptionDto>(`${this.apiUrl}/user`);
     }
