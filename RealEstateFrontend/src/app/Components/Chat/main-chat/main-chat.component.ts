@@ -353,42 +353,28 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
 
     this.chatService.messages$.subscribe((messages: IncomingChatMessage[]) => {
       messages.forEach((message) => {
-        const conversation = this.conversations.find(
-          (c) => c.id === message.conversationId
-        );
-        if (!conversation) return;
-
-        const messageExists = conversation.messages.some(
-          (m) =>
-            m.time.getTime() === new Date(message.sentAt).getTime() &&
-            m.text === message.content
-        );
-
-        if (!messageExists) {
-          const newMessage = this.mapMessageDto({
-            id: message.id,
-            content: message.content,
-            senderId: message.senderId,
-            sentAt: message.sentAt,
-            conversationId: message.conversationId,
-          });
-
-          conversation.messages.push(newMessage);
-          conversation.lastMessageTime = new Date(message.sentAt);
-
-          if (this.selectedChat?.id === conversation.id) {
-            this.cdr.detectChanges(); // Force UI update
-            this.scrollToBottom(true);
+          // Add type guard for conversationId
+          if (typeof message.conversationId !== 'number') return;
+  
+          let conversation = this.conversations.find(c => c.id === message.conversationId);
+          
+          if (!conversation) {
+              this.conversationService.getByConversationId(message.conversationId).subscribe({
+                  next: (convDto) => {
+                      if (!convDto) return; // Handle undefined response
+                      const newChat = this.mapDtoToChat(convDto);
+                      this.conversations.push(newChat);
+                      this.sortConversations();
+                      this.processMessage(message, newChat);
+                  },
+                  error: (err) => console.error('Error fetching conversation:', err)
+              });
+          } else {
+              this.processMessage(message, conversation);
           }
-
-          if (this.selectedChat?.id !== conversation.id && !newMessage.sent) {
-            conversation.unread++;
-            this.updateUnreadCount(conversation.id, conversation.unread);
-            this.sortConversations();
-          }
-        }
       });
-    });
+  });
+  
 
     this.chatService.conversationStatusUpdates$.subscribe(updatedConv => {
       if (!updatedConv) return; // Null check
@@ -404,7 +390,51 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
           this.cdr.detectChanges();
       }
   });
+
+  this.chatService.newConversation$.subscribe(newConv => {
+    if (!newConv) return;
+    
+    const exists = this.conversations.some(c => c.id === newConv.id);
+    if (!exists) {
+        const newChat = this.mapDtoToChat(newConv);
+        this.conversations.push(newChat);
+        this.sortConversations();
+        this.cdr.detectChanges();
+    }
+});
   }
+
+  private processMessage(message: IncomingChatMessage, conversation?: Chat) {
+    if (!conversation) return;
+    
+    const exists = conversation.messages.some(m => 
+        m.time.getTime() === new Date(message.sentAt).getTime() && 
+        m.text === message.content
+    );
+    
+    if (!exists) {
+        const newMessage = this.mapMessageDto({
+            id: message.id,
+            content: message.content,
+            senderId: message.senderId,
+            sentAt: message.sentAt,
+            conversationId: message.conversationId
+        });
+        
+        conversation.messages.push(newMessage);
+        conversation.lastMessageTime = new Date(message.sentAt);
+        
+        if (this.selectedChat?.id === conversation.id) {
+            this.scrollToBottom(true);
+        } else if (!newMessage.sent) {
+            conversation.unread++;
+            this.updateUnreadCount(conversation.id, conversation.unread);
+        }
+        
+        this.sortConversations();
+        this.cdr.detectChanges();
+    }
+}
 
   private sortConversations() {
     console.log(this.conversations);
