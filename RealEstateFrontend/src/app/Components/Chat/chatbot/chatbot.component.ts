@@ -38,12 +38,29 @@ export class ChatbotComponent implements AfterViewChecked {
       await this.addMessage(userMessage, 'user');
       this.newMessage = '';
   
+      // Add a temporary loading message
+      const loadingMessage: ChatMessage = {
+        content: '<i>Typing...</i>',
+        timestamp: new Date(),
+        role: 'bot',
+        loading: true
+      };
+      this.messages.push(loadingMessage);
+  
       const response = await this.http.post<any>(environment.openaiUrl, {
-        model: "gpt-4o-mini",
-        messages: [{ role: "user", content: userMessage }]
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: userMessage }]
       }).toPromise();
   
-      await this.addMessage(response.choices[0].message.content, 'bot');
+      const parsedContent = await marked.parse(response.choices[0].message.content);
+  
+      // Replace the loading message with actual content
+      Object.assign(loadingMessage, {
+        content: parsedContent,
+        timestamp: new Date(),
+        loading: false
+      });
+  
     } catch (error) {
       this.errorMessage = 'Error communicating with the AI assistant';
       console.error('API Error:', error);
@@ -51,6 +68,7 @@ export class ChatbotComponent implements AfterViewChecked {
       this.isLoading = false;
     }
   }
+  
   
 
   private async addMessage(content: string, role: 'user' | 'bot') {
