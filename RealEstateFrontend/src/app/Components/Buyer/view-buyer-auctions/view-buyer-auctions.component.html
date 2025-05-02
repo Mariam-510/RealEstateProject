@@ -1,0 +1,214 @@
+<div class="mt-5 ms-5 ms-md-5 ms-sm-3">
+    <h2 class="fw-bold"><span style="font-size: 0.9em;">🔨</span> All Auctions</h2>
+    <nav aria-label="breadcrumb mb-0">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item mb-0">
+                <p class="text-muted mb-0">
+                    Buyer
+                </p>
+            </li>
+            <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">All Auctions</li>
+        </ol>
+    </nav>
+</div>
+
+@if (auctions.length > 0) {
+<div class="row g-3 g-md-4 pt-3 px-3 px-md-5 mt-5">
+    <div *ngFor="let auction of paginatedAuctions" class="col-12 col-lg-6 col-xl-4">
+        <div class="card-body shadow-sm d-flex flex-column justify-content-between min-height-500">
+            <div class="auction-card card h-100 shadow-sm rounded-0">
+                <div class="slider-container rounded-0" style="height: 30vh; min-height: 250px" 
+                     (mouseenter)="startSlider(auction, $event)"
+                     (mousemove)="handleMouseMove(auction, $event)" 
+                     (mouseleave)="resetSlider(auction)">
+
+                    <!-- Bids Badge -->
+                    <div class="position-absolute top-0 start-0 m-2 z-3">
+                        <span *ngIf="(auction.numOfPropertyBids ?? 0) > 0 && auction.status !== 'Finished'"
+                            class="badge bg-warning text-dark fs-6">
+                          <i class="bi bi-hammer me-1"></i>
+                          {{ auction.numOfPropertyBids ?? 0 }} Bid{{ (auction.numOfPropertyBids ?? 0) !== 1 ? 's' : '' }}
+                      </span>
+                      
+                        <span *ngIf="auction.numOfPropertyBids === 0 && auction.status !== 'Finished'"
+                              class="badge bg-light text-dark fs-6">
+                            <i class="bi bi-hourglass-split me-1"></i>
+                            No bids yet
+                        </span>
+                        <span *ngIf="auction.status === 'Finished'" class="badge bg-success text-white fs-6">
+                            <i class="bi bi-tag-fill me-1"></i>
+                            Sold for {{ auction.lastPropertyBidDto?.bidAmount | number }}
+                        </span>
+                    </div>
+
+                    <!-- Image Slider -->
+                    <div class="slider-track rounded-0"
+     [style.transform]="'translateX(' + (-100 * (auction.currentImageIndex ?? 0)) + '%)'">
+     
+    <div *ngFor="let image of auction.propertyDto?.images" class="slide">
+        <a [routerLink]="['/auctions', auction.id]">
+
+        <img [src]="apiConfig.apiUrl + image" 
+             class="img-fluid rounded-0" 
+             alt="Auction item" 
+             style="max-height: 40vh">
+        </a>
+    </div>
+</div>
+<div *ngIf="auction.status === 'Finished'"
+class="finished-overlay d-flex justify-content-center align-items-center">
+</div>
+                    <!-- Image Counter -->
+                    <div class="position-absolute bottom-0 start-0 m-2 px-2 py-1 bg-dark bg-opacity-75 text-white rounded small z-3">
+                        <i class="bi bi-images me-1"></i>
+                        {{ (auction.currentImageIndex ?? 0) + 1 }} / {{ auction.propertyDto?.images?.length || 0 }}
+                    </div>
+
+                    <!-- Sale Type Badge -->
+                    <div class="position-absolute bottom-0 end-0 m-2 z-3">
+                        <span *ngIf="auction.propertyDto?.type === 'Sell' && auction.status !== 'Finished'"
+                            class=" status-badge badge bg-sell-badge fs-6">
+                            <i class="bi bi-house-door"></i> For Sale
+                        </span>
+                        <span *ngIf="auction.propertyDto?.type === 'Rent'&& auction.status !== 'Finished'"
+                            class=" status-badge badge bg-rent-badge fs-6">
+                            <i class="bi bi-building"></i> For Rent
+                        </span>
+                    </div>
+
+                    <!-- Navigation Dots -->
+                    <div class="slider-dots">
+                        <div *ngFor="let dot of auction.propertyDto?.images; let i = index" 
+                             class="dot"
+                             [class.active]="i === (auction.currentImageIndex ?? 0)" 
+                             (mouseenter)="goToImage(auction, i)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="auction-progress" (mouseenter)="showTimeTooltip(auction)"
+                    (mouseleave)="hideTimeTooltip()">
+                    <div class="progress rounded-0" style="height: 5px;">
+                        <div class="progress-bar" role="progressbar" [style.width.%]="auction.timeProgress"
+                        [ngClass]="{
+                            'bg-warning': auction.status === 'Scheduled',
+                            'bg-success': (auction.timeProgress ?? 0) <= 90 && auction.status === 'Active',
+                            'bg-danger': (auction.timeProgress ?? 0) > 90 && auction.status === 'Active',
+                            'bg-secondary': auction.status === 'Finished'
+                        }">
+                          
+                        </div>
+                    </div>
+                    <div class="time-tooltip" *ngIf="hoveredAuction === auction.id">
+                        <div class="tooltip-content">
+                            <ng-container *ngIf="auction.status !== 'Finished'; else endedTemplate">
+                                <div class="d-flex justify-content-between text-nowrap pe-1">
+                                    <span>Time Passed: </span>
+                                    <span class="fw-bold"> {{getElapsedTime(auction)}}</span>
+                                </div>
+                                <div class="d-flex justify-content-between text-nowrap ">
+                                    <span>Time Remaining: </span>
+                                    <span class="fw-bold "> {{getRemainingTime(auction)}}</span>
+                                </div>
+                                <div class="status-message text-center mt-2">
+                                    {{getAuctionStatusMessage(auction)}}
+                                </div>
+                            </ng-container>
+
+                            <ng-template #endedTemplate>
+                                <div class="ended-message">
+                                    Auction Ended
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-bold p-2 p-md-3 text-caffe h6 h-md-5">
+                    {{ auction.propertyDto?.title || 'No Title' }}
+                </h5>
+                <p class="location mb-2 mb-md-3 px-2 px-md-3 small">
+                    <i class="bi bi-geo-alt-fill text-caffe me-1"></i>
+                    <span class="fw-semibold text-caffe-dark">
+                        {{ auction.propertyDto?.location || 'Unknown Location' }}
+                    </span>
+                </p>
+
+                <div class="custumBottomBorder mb-2 mx-2"></div>
+
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 px-2 px-md-3">
+                    <div class="text-nowrap mb-2 mb-md-0">
+                        <span class="fw-semibold text-caffe-dark small">Starting Bid: </span>
+                        <span class="text-caffe-dark fw-bold fs-6">
+                            EGP {{ auction.startPrice | number }}
+                        </span>
+                    </div>
+                    <div class="status-text fs-6 ms-md-3 fw-semibold d-flex align-items-center"
+                         [ngClass]="{
+                             'text-warning status-scheduled': auction.status === 'Scheduled',
+                             'text-success': auction.status === 'Active',
+                             'text-secondary': auction.status === 'Finished'
+                         }">
+                         <i *ngIf="auction.status === 'Scheduled'" class="bi bi-stopwatch me-1"></i>
+                         <i *ngIf="auction.status === 'Active'" class="bi bi-activity me-1"></i>
+                         <i *ngIf="auction.status === 'Finished'" class="bi bi-check2-all me-1"></i>
+                        {{ auction.status }}
+                    </div>
+                </div>
+
+                <!-- Time Left & Bid Button -->
+                <div class="d-flex align-items-center gap-2 pb-2">
+                    <div class="text-caffe-dark ms-3 flex-grow-1">
+                        <i class="bi bi-clock-history me-1"></i>
+                        <span class="fw-semibold">
+                            {{ getDaysLeft(auction.endTime, auction.status) }}
+                        </span>
+                    </div>
+                    <button class="btn bid-now-button fw-bold pe-2 fs-5">
+                        Bid Now <i class="bi bi-caret-right-fill ms-2 pt-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center mt-4">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link text-caffe" (click)="previousPage()" aria-label="Previous">
+                Previous
+            </a>
+        </li>
+        <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="currentPage === page">
+            <a class="page-link" 
+               [ngClass]="{
+                   'text-white bg-caffe border-caffe': currentPage === page,
+                   'text-caffe': currentPage !== page
+               }" 
+               (click)="goToPage(page)">
+                {{ page }}
+            </a>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a class="page-link text-caffe" (click)="nextPage()" aria-label="Next">
+                Next
+            </a>
+        </li>
+    </ul>
+</nav>
+}
+
+@else {
+<div class="text-center my-5 py-5">
+    <div class="empty-state">
+        <i class="bi bi-hammer display-3 text-caffe"></i>
+        <h3 class="mt-3 fw-bold">No Auctions Found</h3>
+        <p class="text-muted">Try adjusting your search or filters</p>
+    </div>
+</div>
+}

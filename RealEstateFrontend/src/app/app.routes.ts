@@ -58,6 +58,9 @@ import { ChatComponent } from './Components/TestChat/chat/chat.component';
 import { ApproveAgentComponent } from './Components/Admin/approve-agent/approve-agent.component';
 import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
 import { SubscriptionPlanComponent } from './Components/subscription-plan/subscription-plan.component';
+import { ViewAllAuctionsComponent } from './Components/PagesSellerAndAgent/view-all-auctions/view-all-auctions.component';
+import { ViewBuyerAuctionsComponent } from './Components/Buyer/view-buyer-auctions/view-buyer-auctions.component';
+
 
 
 //----------------------------------------------------------------------------------------
@@ -96,7 +99,7 @@ export const routes: Routes = [
       { path: 'addProperty', component: AddPropertyComponent, title: "Add Property" },
       { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
       { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" },
-
+      {path:'ViewAllAuctions',component:ViewAllAuctionsComponent,title:"View All Auction"},
     ]
   },
 
@@ -111,6 +114,7 @@ export const routes: Routes = [
       { path: 'Properties', component: ViewAllPropertiesComponent, title: "View All Properties" },
       { path: 'PropertiesPending', component: ViewPendingPropertiesComponent, title: "View Pending Properties" },
       { path: 'ViewAllAppointment', component: ViewAllPointmentComponent, title: "View All Appointment" },
+      {path:'ViewAllAuctions',component:ViewAllAuctionsComponent,title:"View All Auction"},
 
     ]
   },
@@ -125,7 +129,8 @@ export const routes: Routes = [
       { path: "reviews", component: AllReviewComponent, title: "All Review" },
       { path: 'FavoriteProducts', component: FavoriteProductsComponent, title: "Favorite Products" },
       { path: 'wishlist', component: WishlistComponent, title: "Wishlist" },
-      { path: 'BuyerViewAllAppointment', component: BuyerViewAllPointmentComponent, title: "View All Appointment" }
+      { path: 'ViewAllAppointment', component: BuyerViewAllPointmentComponent, title: "View All Appointment" },
+      {path:'ViewAllAuctions',component:ViewBuyerAuctionsComponent,title:"View All Auction"},
 
     ]
   },
