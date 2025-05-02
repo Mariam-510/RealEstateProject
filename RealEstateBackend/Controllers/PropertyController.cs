@@ -621,9 +621,6 @@ namespace RealEstate.Controllers
                 propertiesCount = await _propertyRepo.GetFilteredByAgentIdAsync(userId, type, status);
             }
 
-            if (propertiesCount == 0)
-                return NotFound("No properties found matching the specified criteria.");
-
             return Ok(new { PropertyCount = propertiesCount });
         }
 

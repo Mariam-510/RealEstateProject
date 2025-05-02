@@ -11,6 +11,7 @@ namespace RealEstate.Models.DTOs.MessageDto
         [MinLength(1)]
         public string Content { get; set; }
         public int ConversationId { get; set; }
+        //public string ReceiverId { get; set; }
         //public bool? IsResponse { get; set; }
     }
 }

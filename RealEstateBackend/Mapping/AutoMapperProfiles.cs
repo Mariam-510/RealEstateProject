@@ -32,8 +32,12 @@ namespace RealEstate.Mapping
             //CreateMap<Property, PropertyDto>();
 
             CreateMap<Property, PropertyDto>()
+                // Map UserName: Seller.FirstName -> Agent.FirstName
                 .ForMember(dest => dest.AddedDate, opt => opt.MapFrom(src => 
                     src.AddedDate.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)
+                ))
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src =>
+                      src.AddedDate
                 ))
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src =>
                     src.Seller != null
@@ -73,11 +77,14 @@ namespace RealEstate.Mapping
 
             //------------------------------------------------------------------------------------------------
 
-            CreateMap<CreatePropertyBidDto, PropertyBid>()
-               .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => DateTime.Now))
-               .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false));
+            CreateMap<CreatePropertyBidDto, PropertyBid>();
+               //.ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => DateTime.Now.AddHours(1)))
+               //.ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false));
             
-            CreateMap<PropertyBid, PropertyBidDto>();
+            CreateMap<PropertyBid, PropertyBidDto>()
+                .ForMember(dest => dest.BuyerFirstName, opt => opt.MapFrom(src => src.Buyer.FirstName))
+                .ForMember(dest => dest.BuyerLastName, opt => opt.MapFrom(src => src.Buyer.LastName))
+                .ForMember(dest => dest.BuyerImage, opt => opt.MapFrom(src => src.Buyer.Account.ImageUrl));
 
             //------------------------------------------------------------------------------------------------
 

@@ -11,7 +11,7 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class AgentProfileComponent {
 
-  userImage: string = 'images/Home/user.jpeg';
+  userImage: string | null = null;
   currentUser: any;
   MyForm!: FormGroup;
 
@@ -29,18 +29,30 @@ export class AgentProfileComponent {
         Validators.minLength(3),
         Validators.pattern(/^[A-Za-z]+$/)
       ]),
+      currentPassword: new FormControl(''),
       password: new FormControl("", [
-        Validators.required,
         Validators.minLength(6),
         Validators.maxLength(10),
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*?&])[A-Za-z\d@#$!%*?&]{6,10}$/)
 
       ]),
-      confirmPassword: new FormControl("", [
-        Validators.required
-      ])
+      confirmPassword: new FormControl('')
+
     },
   );
+}
+showPassword: boolean = false;
+showConfirmPassword: boolean = false;
+showCurrentPassword: boolean = false;
+toggleCurrentPasswordVisibility(): void {
+  this.showCurrentPassword = !this.showCurrentPassword;
+}   
+togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+}
+
+toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
 }
   
 
@@ -80,7 +92,10 @@ export class AgentProfileComponent {
   
     input.click();
   }
-  
+  removeImage() {
+    this.userImage = null;
+   
+  }
 
   register() {
     if (this.MyForm.invalid) {

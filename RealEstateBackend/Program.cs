@@ -197,11 +197,10 @@ namespace RealEstate
                 );
             });
 
-
+            // Add SignalR
             builder.Services.AddSignalR();
 
             var app = builder.Build();
-
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -220,6 +219,9 @@ namespace RealEstate
             app.MapControllers();
 
             app.MapHub<ChatHub>("/api/Chat/chatHub");
+
+            // Map Hub
+            app.MapHub<AuctionHub>("/auctionHub");
 
 
             app.Run();

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
@@ -43,9 +45,11 @@ namespace RealEstate.Controllers
 
         [HttpGet]
         [Route("GetAll")]
-        public async Task<IActionResult> GetAll(string currentUserAccountId = "415f3e96-5745-4341-b9c2-5d154eef02fe")
+        [Authorize(Roles = "Buyer,Seller,Agent")]
+        public async Task<IActionResult> GetAll()
         {
-            //var currentUserAccountId = User.FindFirst("UserAccountId")?.Value;
+            var currentUserAccountId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserAccountId == null) return Unauthorized();
 
             var conversations = await _conversationRepository.GetAllAsync(currentUserAccountId);
             if (conversations == null || !conversations.Any())
@@ -53,6 +57,25 @@ namespace RealEstate.Controllers
 
             var response = conversations.Select(c => c.ConversationResponseDto()).ToList();
 
+            return Ok(response);
+        }
+
+        [HttpGet("GetConversation")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<IActionResult> GetConversationBetweenUsers(string SecondAccountId)
+        {
+            var FirstAccountId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (FirstAccountId == null) return Unauthorized();
+
+            if (SecondAccountId == null)
+                return NotFound("Reciever not found!");
+
+            var conversation = await _conversationRepository.GetByAccountIdsAsync(FirstAccountId, SecondAccountId);
+
+            if (conversation == null)
+                return NotFound("Conversation not found!");
+
+            var response = conversation.ConversationResponseDto();
             return Ok(response);
         }
 
@@ -90,23 +113,42 @@ namespace RealEstate.Controllers
             return Ok(response);
         }
 
+        [HttpGet("IsConversationExisting")]
+        [Authorize(Roles = "Buyer")]
+        public async Task<bool> ExistingConversation(string SecondAccountId)
+        {
+            var FirstAccountId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (FirstAccountId == null) return false;
+
+            var conversationExists = await _conversationRepository.ExistsAsync(FirstAccountId, SecondAccountId);
+            if (conversationExists)
+                return true;
+
+            return false;
+        }
+
         [HttpPost]
         [Route("Create")]
-        public async Task<IActionResult> Create([FromBody]CreateConversationDto createConversationDto)
+        [Authorize(Roles = "Buyer")]
+        //public async Task<IActionResult> Create([FromBody]CreateConversationDto createConversationDto)
+        public async Task<IActionResult> CreateConversation(string SecondAccountId)
         {
-            if (createConversationDto == null)
-                return BadRequest("Invalid conversation data!");
+            var FirstAccountId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (FirstAccountId == null) return Unauthorized();
+
+            if (SecondAccountId == null)
+                return NotFound("Reciever not found!");
 
             //var currentUserAccountId = User.FindFirst("UserAccountId")?.Value;
 
-            var sender = await _userManager.FindByIdAsync(createConversationDto.FirstAccountId);
+            var sender = await _userManager.FindByIdAsync(FirstAccountId);
             if (sender == null)
                 return NotFound("Sender account not found.");
 
             if (!await _userManager.IsInRoleAsync(sender, "Buyer"))
                 return BadRequest("Only buyers can initiate conversations.");
 
-            var recipient = await _userManager.FindByIdAsync(createConversationDto.SecondAccountId);
+            var recipient = await _userManager.FindByIdAsync(SecondAccountId);
             if (recipient == null)
                 return NotFound("Recipient account not found.");
 

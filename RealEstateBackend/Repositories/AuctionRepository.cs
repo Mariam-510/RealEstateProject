@@ -134,31 +134,152 @@ namespace RealEstate.Repositories
             return await dbcontext.Auctions.Where(A => A.PropertyBids.Any(P => P.BuyerId == BuyerID)).ToListAsync();
         }
 
-        public async Task<decimal?> GetHighestBidForEndedAuctionsBySellerAsync(int sellerId)
+        public async Task<(Property? Property, int MaxBid)> GetHighestBidForEndedAuctionsBySellerAsync(int sellerId)
         {
-            var currentTime = DateTime.Now;
+            var currentTime = DateTime.Now.AddHours(1);
 
-            var maxBid = await dbcontext.Auctions
-                .Where(a => a.Property != null && a.Property.SellerId == sellerId)
-                .Where(a => a.EndTime <= currentTime || a.Status == Status.Finished)
+            var result = await dbcontext.Auctions
+                .Where(a => a.Property != null &&
+                           a.Property.SellerId == sellerId &&
+                           (a.EndTime <= currentTime || a.Status == Status.Finished))
+                .Include(a => a.Property)
                 .SelectMany(a => a.PropertyBids)
-                .MaxAsync(b => (decimal?)b.BidAmount);
+                .OrderByDescending(b => b.BidAmount)
+                .Select(b => new {
+                    Bid = b.BidAmount,
+                    Property = b.Auction.Property
+                })
+                .FirstOrDefaultAsync();
 
-            return maxBid;
+            return result != null
+                ? (result.Property, (int)result.Bid)
+                : (null, 0);
         }
 
-        public async Task<decimal?> GetHighestBidForEndedAuctionsByAgentAsync(int agentId)
+        public async Task<(Property? Property, int MaxBid)> GetHighestBidForEndedAuctionsByAgentAsync(int agentId)
         {
-            var currentTime = DateTime.Now;
+            var currentTime = DateTime.Now.AddHours(1);
 
-            var maxBid = await dbcontext.Auctions
-                .Where(a => a.Property != null && a.Property.AgentId == agentId)
-                .Where(a => a.EndTime <= currentTime || a.Status == Status.Finished)
+            var result = await dbcontext.Auctions
+                .Where(a => a.Property != null &&
+                           a.Property.AgentId == agentId &&
+                           (a.EndTime <= currentTime || a.Status == Status.Finished))
+                .Include(a => a.Property)
                 .SelectMany(a => a.PropertyBids)
-                .MaxAsync(b => (decimal?)b.BidAmount);
+                .OrderByDescending(b => b.BidAmount)
+                .Select(b => new {
+                    Bid = b.BidAmount,
+                    Property = b.Auction.Property
+                })
+                .FirstOrDefaultAsync();
 
-            return maxBid;
+            return result != null
+                ? (result.Property, (int)result.Bid)
+                : (null, 0);
         }
+
+
+        //------------------------------------------------------------------------------------------------------
+        public async Task<Auction?> CheckAndUpdateStatus(int auctionId)
+        {
+            var auction = await dbcontext.Auctions
+                .Where(a => a.Id == auctionId && !a.IsDeleted)
+                .FirstOrDefaultAsync();
+
+            if (auction == null) return null;
+
+            var now = DateTime.Now.AddHours(1);
+            var originalStatus = auction.Status;
+
+            if (auction.Status == Status.Scheduled && now >= auction.StartTime)
+            {
+                auction.Status = Status.Active;
+            }
+            else if (auction.Status == Status.Active && now >= auction.EndTime)
+            {
+                auction.Status = Status.Finished;
+            }
+
+            if (auction.Status != originalStatus)
+            {
+                await dbcontext.SaveChangesAsync();
+            }
+
+            return auction;
+        }
+
+        //public async Task<List<Auction>> CheckAndUpdateAllAuctionsStatus()
+        //{
+        //    var now = DateTime.Now.AddHours(1);
+        //    var auctions = await dbcontext.Auctions.Where(A => A.IsDeleted == false).ToListAsync();
+        //    bool anyChanges = false;
+
+        //    foreach (var auction in auctions)
+        //    {
+        //        var originalStatus = auction.Status;
+
+        //        if (auction.Status == Status.Scheduled && now >= auction.StartTime)
+        //        {
+        //            auction.Status = Status.Active;
+        //            anyChanges = true;
+        //        }
+        //        else if (auction.Status == Status.Active && now >= auction.EndTime)
+        //        {
+        //            auction.Status = Status.Finished;
+        //            anyChanges = true;
+        //        }
+        //    }
+
+        //    if (anyChanges)
+        //    {
+        //        await dbcontext.SaveChangesAsync();
+        //    }
+
+        //    return auctions;
+        //}
+
+        public async Task<List<Auction>> CheckAndUpdateAllAuctionsStatus(bool flag)
+        {
+            var now = DateTime.Now.AddHours(1);
+            //if (flag)
+            //{
+            //    now = DateTime.Now.AddMinutes(2);
+            //}
+
+            var auctions = await dbcontext.Auctions
+                .Where(a => !a.IsDeleted)
+                .ToListAsync();
+
+
+
+            foreach (var auction in auctions)
+            {
+                //var originalStatus = auction.Status;
+
+                // Pure time-based status determination
+                if (now.AddMinutes(1) >= auction.EndTime)
+                {
+                    auction.Status = Status.Finished;
+                }
+                else if (now.AddMinutes(1) >= auction.StartTime)
+                {
+                    auction.Status = Status.Active;
+                }
+                else
+                {
+                    auction.Status = Status.Scheduled;
+                }
+                //if(auction.Id==17)
+                //{
+                //    auction.Status = Status.Finished;
+                //    auction.EndTime = now;
+                //}
+            }
+            await dbcontext.SaveChangesAsync();
+
+            return auctions;
+        }
+
 
     }
 

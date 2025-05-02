@@ -4,6 +4,7 @@ import { API_CONFIG } from '../../app.config';
 import { Observable } from 'rxjs';
 import { PropertyDTO } from './property.service';
 import { PropertyBidDto } from './property-bid.service';
+import { SignalRService } from '../SignalRServices/signal-r.service';
 
 export interface AuctionDTO {
   StartTime: Date;
@@ -29,12 +30,12 @@ export interface AuctionDTOShow {
   sellerId: number | null;
   propertyDto: PropertyDTO | null;
   lastPropertyBidDto: PropertyBidDto | null;
+  bids: PropertyBidDto[];
   numOfPropertyBids: number | null;
   timeProgress: number | null;
   mouseStartX?: number | null;
   currentImageIndex: number | null;
 }
-
 
 @Injectable({
   providedIn: 'root'
@@ -43,7 +44,7 @@ export class AuctionService {
 
   private apiUrl = `${API_CONFIG.apiUrl}api/Auction`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private signalR: SignalRService) { }
 
   createAuction(auctionDto: AuctionDTO): Observable<{ message: string, ActionShow: AuctionDTOShow }> {
 
@@ -59,6 +60,10 @@ export class AuctionService {
       `${this.apiUrl}/Add`,
       formData
     );
+  }
+
+  getHighestBidForEndedAuctions(): Observable<{ highestBid: number, property: PropertyDTO }> {
+    return this.http.get<{ highestBid: number, property: PropertyDTO }>(`${this.apiUrl}/GetHighestBid`);
   }
 
   //-----------------------------------------------------------------------------------------------
@@ -84,15 +89,18 @@ export class AuctionService {
   }
 
   //-----------------------------------------------------------------------------------------------
+  // Add to AuctionService
+  getAuctionById(id: number): Observable<AuctionDTOShow> {
+    return this.http.get<AuctionDTOShow>(`${this.apiUrl}/GetAuctionByID/${id}`);
+  }
 
-<<<<<<< Updated upstream
-  
-=======
   //-----------------------------------------------------------------------------------------------
   // In AuctionService
   getAuctionByPropertyId(propertyId: number): Observable<AuctionDTOShow> {
     return this.http.get<AuctionDTOShow>(`${this.apiUrl}/Property/${propertyId}`);
   }
+
+
 
   // Add to AuctionService
 getAuctionsByUserId(): Observable<AuctionDTOShow[] > {
@@ -110,5 +118,17 @@ getAuctionsByBuyerId(): Observable<AuctionDTOShow[] > {
 deleteAuction(id: number): Observable<any> {
   return this.http.delete(`${this.apiUrl}/DeleteAuction/${id}`);
 }
->>>>>>> Stashed changes
+
+  //-----------------------------------------------------------------------------------------------
+  // Add to AuctionService
+  // checkAuctionStatus(): Observable<AuctionDTOShow[]> {
+  //   return this.http.get<AuctionDTOShow[]>(`${this.apiUrl}/CheckStatus`);
+  // }
+
+  // Update service method signature
+  checkAuctionStatus(): Observable<AuctionDTOShow[]> {
+    return this.http.get<AuctionDTOShow[]>(
+      `${this.apiUrl}/CheckStatus`
+    );
+  }
 }

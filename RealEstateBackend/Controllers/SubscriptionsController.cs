@@ -36,7 +36,7 @@ namespace RealEstate.Controllers
 
         //Authorize admin
         [HttpGet("user")]
-        [Authorize]
+        [Authorize(Roles = "Agent,Seller")]
 
         public async Task<IActionResult> GetByUserId()
         {
@@ -125,7 +125,7 @@ namespace RealEstate.Controllers
             var sub = new Subscription();
             sub.AgentId = agentId;
             sub.SellerId = sellerId;
-            sub.SubscriptionDate = DateTime.Now;
+            sub.SubscriptionDate = DateTime.Now.AddHours(1);
 
             //switch (dto.userType)
             //{
@@ -266,7 +266,7 @@ namespace RealEstate.Controllers
                 // Update available properties based on the new plan
                 sub.AvailableProperties += newPlan.MaxAllowedProperties;
                 sub.SubscriptionPlanId = newPlan.Id;
-                sub.SubscriptionDate = DateTime.Now;
+                sub.SubscriptionDate = DateTime.Now.AddHours(1);
 
                 await _subscriptionRepository.UpdateAsync(sub);
 

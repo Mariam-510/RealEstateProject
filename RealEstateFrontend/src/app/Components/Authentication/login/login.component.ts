@@ -32,7 +32,11 @@ export class LoginComponent {
     this.dialog.open(SignUpRoleComponentComponent);
   }
 
+  showPassword: boolean = false;
 
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
   errorMes = "";
   login() {
     if (this.Loginform.invalid) {

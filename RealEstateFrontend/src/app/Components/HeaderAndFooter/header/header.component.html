@@ -61,14 +61,14 @@
   <!-- User Controls -->
   <div class="user-controls">
 
-    <div *ngIf="hasRoleOrNoUser('Buyer')" class="action-icons">
-      <button class="icon-btn" (click)="toggleWishlist()">
+    <div class="action-icons">
+      <button *ngIf="!hasRole('Admin')" class="icon-btn" (click)="toggleChat()">
         <i class="bi bi-chat-dots fs-4"></i>
         <!-- <i class="bi bi-chat-left-dots fs-4"></i> -->
         <!-- <i class="bi bi-chat-text fs-4"></i> -->
         <span *ngIf="messagesCount > 0" class="badge">{{ messagesCount }}</span>
       </button>
-      <button class="icon-btn" (click)="toggleCart()">
+      <button *ngIf="hasRoleOrNoUser('Buyer')" class="icon-btn" (click)="toggleCart()">
         <i class="bi bi-cart fs-4"></i>
         <div *ngIf="(cart$ | async) as cart">
           <span *ngIf="(cart?.orderItemDtos?.length || 0) > 0" class="badge">{{ cart?.orderItemDtos?.length }}</span>
@@ -196,6 +196,20 @@
               <i class="bi bi-star-fill" style="color: #6e5447;"></i> Reviews
             </a>
           </div>
+          <div *ngIf="hasRole('Admin')">
+            <a class="dropdown-item" routerLink="/admin/profile">
+              <i class="bi bi-person-fill" style="color: #6e5447;"></i> Profile
+            </a>
+            <a class="dropdown-item" routerLink="admin/dashboard">
+              <i class="bi  bi-grid" style="color: #6e5447;"></i> Dashboard
+            </a>
+            <a class="dropdown-item" routerLink="/admin/viewAllOrder">
+              <i class="bi bi-eye" style="color: #6e5447;"></i> View All order
+            </a>
+            <a class="dropdown-item" routerLink="admin/createAdmin">
+              <i class="bi bi-three-dots-vertical" style="color: #6e5447;"></i> More
+            </a>
+          </div>
 
           <div *ngIf="hasRole('Seller')">
             <a class="dropdown-item" routerLink="/seller/profile">
@@ -212,6 +226,9 @@
             </a>
             <a class="dropdown-item" routerLink="/seller/ViewAllAppointment">
               <i class="bi bi-eye-fill" style="color: #6e5447;"></i> All Appointments
+            </a>
+            <a class="dropdown-item" routerLink="/subscriptionPlan">
+              <i class="bi bi-upload" style="color: #6e5447;"></i> Upgrade
             </a>
           </div>
 
@@ -230,6 +247,9 @@
             </a>
             <a class="dropdown-item" routerLink="/agent/ViewAllAppointment">
               <i class="bi bi-eye-fill" style="color: #6e5447;"></i> All Appointments
+            </a>
+            <a class="dropdown-item" routerLink="/subscriptionPlan">
+              <i class="bi bi-upload" style="color: #6e5447;"></i> upgrade
             </a>
           </div>
 

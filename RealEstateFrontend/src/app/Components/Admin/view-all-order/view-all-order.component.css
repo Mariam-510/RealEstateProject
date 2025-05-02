@@ -7,4 +7,7 @@ a.active-order {
     color: #c38e79 !important;
     border-bottom: 2px solid #c38e79;
   }
-  
+select option:disabled {
+    color: #bebaba !important;
+    background-color: #f8f9fab7;
+  }

@@ -21,7 +21,7 @@ namespace RealEstate.Models.Domains
         public int? AgentId { get; set; }
         public virtual Agent? Agent { get; set; }
 
-        public DateTime SubscriptionDate { get; set; } = DateTime.Now;
+        public DateTime SubscriptionDate { get; set; } = DateTime.Now.AddHours(1);
 
         [ForeignKey("Payment")]
         public int? PaymentId { get; set; }

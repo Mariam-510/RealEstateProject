@@ -46,7 +46,7 @@ export class AddCategoryComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    if (!this.hasRole('admin')) {
+    if (!this.hasRole('Admin')) {
       this.router.navigate(['/login']);
       return;
     }

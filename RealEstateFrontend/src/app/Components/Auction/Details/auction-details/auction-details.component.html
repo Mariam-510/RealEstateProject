@@ -1,594 +1,652 @@
 <div #heroSection class="position-relative d-flex  pt-2">
-
-    <div style="padding-right:.5rem !important" style="width: 70%;">
-        <section id="overview" class="p-1  ">
-            <div class="lightbox" data-mdb-lightbox-init>
-                <div class="row ms-0 border-0 hover-effect ">
-                    <div class="p-0  pe-2 ">
-                        <div class="img-wrapper " style="height: 430px;">
-                            <img [src]="property.images[0]" [alt]="property.title"
-                                class="w-100 mb-2 mb-md-4 shadow-1-strong rounded-0" />
-                            <div class="overlay rounded">
-                            </div>
-                            <button class="custom-btn position-absolute bottom-0 start-0 m-3 rounded-2 text-caffe">
-                                <i class="bi bi-box text-caffe me-1 pe-2"></i>3D View</button>
-                            <button type="button"
-                                class="custom-btn position-absolute bottom-0 end-0 m-3 rounded-2 text-caffe"
-                                data-bs-toggle="modal" data-bs-target="#photosModal">
-                                <i class="bi bi-images me-1 pe-2 text-caffe"></i>Photos
-                            </button>
-                            <app-property-photo-modal #photoModal></app-property-photo-modal>
-                        </div>
-                        <div class="position-relative">
-                            <div class="bg-caffe text-white p-3 ps-3 rounded-0">
-                                <h5 class="fw-bold mb-2 fs-4">{{ property.title }}</h5>
-                                <p class="mb-1 fs-5"><i class="bi bi-geo-alt"></i> {{ property.location }}</p>
-                                <p class="mb-0">Unit ID: <strong>{{property.id}}</strong></p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <div #AuctionCard
-        class="printCart shadow-sm position-absolute end-0  smooth-card custom-card card border-0 d-none d-lg-block me-3 print-visible mt-3"
-        style="width: 28vw;">
-        <!-- Card Header -->
-        <div
-            class="cartTitle text-white p-3 rounded-top rounded-bottom text-center d-flex align-items-center justify-content-center position-relative">
-            <div class="m-0 fw-semibold">
-                {{auction.property.title}}
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="card-body p-0">
-            <!-- Time & Seller Section -->
-            <div class="px-4 py-2 custumBottomBorder border-2 border-brown">
-                <div class="d-flex flex-column ">
-                    <!-- Countdown Timer -->
-                    <div>
-                        <h6 class="fw-bold text-brown mb-2 small text-uppercase">
-                            Auction {{ auction.status === statusEnum.Scheduled ? 'Starts' : 'Ends' }} In
-                          </h6>
-                      <div class="d-flex gap-2 justify-content-between">
-                            <div class="countdown-item">
-                                <div class="countdown-value">{{ days }}</div>
-                                <small class="countdown-label">Days</small>
-                            </div>
-                            <div class="countdown-separator">:</div>
-                            <div class="countdown-item">
-                                <div class="countdown-value">{{ hours }}</div>
-                                <small class="countdown-label">Hours</small>
-                            </div>
-                            <div class="countdown-separator">:</div>
-                            <div class="countdown-item">
-                                <div class="countdown-value">{{ minutes }}</div>
-                                <small class="countdown-label">Mins</small>
-                            </div>
-                            <div class="countdown-separator">:</div>
-                            <div class="countdown-item">
-                                <div class="countdown-value">{{ seconds }}</div>
-                                <small class="countdown-label">Secs</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Listed By -->
-                    <!-- Listed By + Current Bid on same line -->
-
-
-                </div>
-            </div>
-            <div class=" custumBottomBorder   d-flex justify-content-between flex-wrap   py-2 px-4 gap-3">
-
-                <!-- Listed By -->
-                <div class="d-flex align-items-center gap-3 flex-grow-1">
-                    <div class="position-relative">
-                        <div class="avatar-border"></div>
-                        <img [src]="auction.seller.imageUrl" class="seller-avatar rounded-circle shadow-sm"
-                            alt="Seller avatar" style="width: 45px; height: 45px; object-fit: cover;">
-                    </div>
-
-                    <!-- Listed By section -->
-                    <div>
-                        <div class="text-brown small text-uppercase fw-bold">Listed By</div>
-                        <div class="fw-semibold text-caffe">{{ auction.seller.name }}</div>
-                    </div>
-                    <!-- Seller type on the right -->
-                    <div class="ms-auto text-end">
-                        <small class="text-brown text-uppercase fw-bold">{{ auction.seller.type }}</small>
-                    </div>
-                </div>
-
-
-
-            </div>
-            <!-- Current Bid -->
-            <div class="px-4 py-1">
-                <div class="text-uppercase small fw-bold text-brown mb-1 pt-1">Current Bid</div>
-                <h3 class="fw-bold text-caffe mb-0">{{ highestBid | number:'1.0-0' }} EGP</h3>
-            </div>
-            <div class="px-4 py-3">
-                <h6 class="text-uppercase fw-bold text-brown mb-2 small">Place a Bid</h6>
-                <form #bidForm="ngForm" (ngSubmit)="placeBid()" class="d-flex flex-column gap-2">
-                    <div class="input-group">
-                        <input type="number" class="form-control border-brown" placeholder="Enter bid amount"
-                            [(ngModel)]="bidAmount" name="bidAmount" [min]="highestBid + 1" required>
-                        <span class="input-group-text bg-light-caffe  border-brown text-caffe">EGP</span>
-                    </div>
-
-                    <!-- Fix the template expressions to handle null -->
-                    <div *ngIf="bidAmount !== null && bidAmount < highestBid" class="text-danger small">
-                        Bid must be higher than {{ highestBid | number:'1.0-0' }} EGP
-                    </div>
-
-                    <button type="submit"
-                        class="btn btn-caffe w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2"
-                        [disabled]="(bidAmount ?? 0) < highestBid || !bidAmount">
-                        <i class="bi bi-hammer"></i> <!-- Bootstrap Icons hammer icon -->
-                        Submit Bid
-                    </button>
-                </form>
-                <!-- Bid Alerts -->
-                <div class="px-4 pt-3">
-                    <!-- <div *ngIf="showBidSuccess" class="alert alert-success alert-dismissible fade show">
-      Bid placed successfully!
-      <button type="button" class="btn-close" (click)="showBidSuccess = false"></button>
-    </div> -->
-
-                    <div *ngIf="showBidError" class="alert alert-danger alert-dismissible fade show">
-                        {{ bidErrorMessage }}
-                        <button type="button" class="btn-close" (click)="showBidError = false"></button>
-                    </div>
-
-
-                </div>
-                <div class="px-3  text-center">
-                    <strong class="text-brown">{{auction.propertyBids.length}} other people are Bidding this
-                        property</strong>
-                </div>
-            </div>
-            <!-- Current Bid Section -->
-            <!-- <div class="px-4 py-3 col-6">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="text-uppercase small fw-bold text-brown mb-1">Current Bid</div>
-                    <h3 class="fw-bold text-caffe mb-0">{{ highestBid | number:'1.0-0' }} EGP</h3>
-                </div>
-
-            </div>
-        </div> -->
-
-            <!-- Bid History -->
-            <!-- <div class="px-4 py-3">
-            <h6 class="text-uppercase fw-bold text-brown mb-3 small">Bidding Activity</h6>
-            
-            <div class="bid-list">
-                <div *ngFor="let bid of auction.propertyBids.slice(0, showAllBids ? auction.propertyBids.length : 3)"
-                     class="bid-item d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="bidder-avatar bg-light rounded-circle text-center"
-                             style="width: 32px; height: 32px; line-height: 32px;">
-                            {{ bid.bidderName.charAt(0) }}
-                        </div>
-                        <div>
-                            <div class="fw-semibold small">{{ bid.bidderName }}</div>
-                            <div class="text-muted x-small">{{ bid.bidTime | date:'MMM d, y, h:mm a' }}</div>
-                        </div>
-                    </div>
-                    <div class="fw-bold text-caffe">{{ bid.amount | number:'1.0-0' }} EGP</div>
-                </div>
+  <div style="padding-right:.5rem !important" style="width: 70%;">
+    <section id="overview" class="p-1  ">
+      <div class="lightbox" data-mdb-lightbox-init>
+        <div class="row ms-0 border-0 hover-effect ">
+          <div class="p-0  pe-2 ">
+            <div *ngIf="auction && auction.propertyDto && auction.propertyDto.images" class="img-wrapper"
+              style="height: 430px;">
+              <img [src]="apiConfig.apiUrl + (auction.propertyDto!.images!)[0]" [alt]="auction.propertyDto!.title"
+                class="w-100 mb-2 mb-md-4 shadow-1-strong rounded-0" />
+              <div class="overlay rounded">
+              </div>
+              <button class="custom-btn position-absolute bottom-0 start-0 m-3 rounded-2 text-caffe">
+                <i class="bi bi-box text-caffe me-1 pe-2"></i>3D View</button>
+              <button type="button" class="custom-btn position-absolute bottom-0 end-0 m-3 rounded-2 text-caffe"
+                data-bs-toggle="modal" data-bs-target="#photosModal">
+                <i class="bi bi-images me-1 pe-2 text-caffe"></i>Photos
+              </button>
+              <!-- <app-property-photo-modal #photoModal></app-property-photo-modal> -->
+              <ng-container *ngIf="!isLoading && auction">
+                <app-property-photo-modal [images]="auction.propertyDto.images" #photoModal></app-property-photo-modal>
+              </ng-container>
             </div>
 
-            <div *ngIf="auction.propertyBids.length > 3" 
-                 class="text-center mt-3">
-                <button class="btn btn-link text-caffe p-0 small text-decoration-none" 
-                        (click)="showAllBids = !showAllBids">
-                    {{ showAllBids ? 'Show fewer bids' : 'Show all ' + auction.propertyBids.length + ' bids' }}
-                    <i class="bi bi-chevron-down ms-1"></i>
-                </button>
-            </div>
-        </div> -->
-
-            <!-- <div class="px-4 py-3">
-            <h6 class="text-uppercase fw-bold text-brown mb-3 small">Bidding Activity</h6>
-            
-            <div class="bid-list">
-              <div *ngFor="let bid of auction.propertyBids.slice().reverse().slice(0, showAllBids ? auction.propertyBids.length : 3)"
-                   class="bid-item d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                <div class="d-flex align-items-center gap-2">
-                  <div class="bidder-avatar bg-light rounded-circle text-center"
-                       style="width: 32px; height: 32px; line-height: 32px;">
-                    {{ bid.bidderName.charAt(0) }}
-                  </div>
-                  <div>
-                    <div class="fw-semibold small">{{ bid.bidderName }}</div>
-                    <div class="text-muted x-small">{{ bid.bidTime | date:'MMM d, y, h:mm a' }}</div>
-                  </div>
-                </div>
-                <div class="fw-bold text-caffe">{{ bid.amount | number:'1.0-0' }} EGP</div>
+            <div class="position-relative">
+              <div class="bg-caffe text-white p-3 ps-3 rounded-0">
+                <h5 class="fw-bold mb-2 fs-4">{{ auction?.propertyDto?.title }}</h5>
+                <p class="mb-1 fs-5"><i class="bi bi-geo-alt"></i> {{ auction?.propertyDto?.location }}</p>
+                <p class="mb-0">Unit ID: <strong>{{auction?.propertyDto?.id}}</strong></p>
               </div>
             </div>
-          
-           
-          </div> -->
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div #AuctionCard
+    class="printCart shadow-sm position-absolute end-0  smooth-card custom-card card border-0 d-none d-lg-block me-3 print-visible mt-3"
+    style="width: 28vw;">
+    <!-- Card Header -->
+    <div
+      class="cartTitle text-white p-3 rounded-top rounded-bottom text-center d-flex align-items-center justify-content-center position-relative">
+      <div class="m-0 fw-semibold">
+        {{auction?.propertyDto?.title}}
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="card-body p-0">
+      <!-- Time & Seller Section -->
+      <div class="px-4 py-2 custumBottomBorder border-2 border-brown">
+        <div class="d-flex flex-column ">
+          <!-- Countdown Timer -->
+          <div *ngIf="auction?.status !== 'Finished'; else endedMessage">
+
+            <div>
+              <h6 class="fw-bold text-brown mb-2 small text-uppercase">
+                Auction {{ auction?.status === 'Scheduled' ? 'Starts' : 'Ends' }} In
+              </h6>
+              <div class="d-flex gap-2 justify-content-between">
+                <div class="countdown-item">
+                  <div class="countdown-value">{{ days }}</div>
+                  <small class="countdown-label">Days</small>
+                </div>
+                <div class="countdown-separator">:</div>
+                <div class="countdown-item">
+                  <div class="countdown-value">{{ hours }}</div>
+                  <small class="countdown-label">Hours</small>
+                </div>
+                <div class="countdown-separator">:</div>
+                <div class="countdown-item">
+                  <div class="countdown-value">{{ minutes }}</div>
+                  <small class="countdown-label">Mins</small>
+                </div>
+                <div class="countdown-separator">:</div>
+                <div class="countdown-item">
+                  <div class="countdown-value">{{ seconds }}</div>
+                  <small class="countdown-label">Secs</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #endedMessage>
+            <div class="text-center">
+              <h6 class="fw-bold text-brown mb-2 text-uppercase">
+                Auction Ended
+                <!-- <i class="bi bi-flag-fill text-brown" style="font-size: 1.2rem;"></i> -->
+              </h6>
+              <div class="d-flex flex-column align-items-center gap-2">
+
+                <p class="mb-0 text-caffe fw-medium">
+                  This auction ended on {{ auction?.endTime | date:'medium' }}
+                </p>
+              </div>
+            </div>
+          </ng-template>
+
+          <!-- Listed By -->
+          <!-- Listed By + Current Bid on same line -->
+        </div>
+      </div>
+
+      <!-- Listed By -->
+      <div class=" custumBottomBorder d-flex justify-content-between flex-wrap   py-2 px-4 gap-3">
+        <!-- Listed By -->
+        <div class="d-flex align-items-center gap-3 flex-grow-1">
+          <div class="position-relative">
+            <div class=""></div>
+            <!-- <img [src]="apiConfig.apiUrl + auction?.propertyDto?.userImage"
+                class="seller-avatar rounded-circle shadow-sm" alt="Seller avatar"
+                style="width: 45px; height: 45px; object-fit: cover;"> -->
+
+            <ng-container *ngIf="auction?.propertyDto?.userImage; else defaultIcon">
+              <img [src]="apiConfig.apiUrl + auction?.propertyDto?.userImage"
+                class="seller-avatar rounded-circle shadow-sm" alt="Seller avatar"
+                style="width: 45px; height: 45px; object-fit: cover;">
+            </ng-container>
+
+            <ng-template #defaultIcon>
+              <i class="bi bi-person-circle text-brown" style="font-size: 3rem;"></i>
+            </ng-template>
+          </div>
+
+          <!-- Listed By section -->
+          <div>
+            <div class="text-brown small text-uppercase fw-bold">Listed By</div>
+            <div class="fw-semibold text-caffe">{{ auction?.propertyDto?.userName }}</div>
+          </div>
+          <!-- Seller type on the right -->
+          <div class="ms-auto text-end">
+            <small class="text-brown fw-bold">{{ auction?.sellerId ? 'Seller' : 'Agent' }}</small>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Current Bid -->
+      <div class="px-4 py-1">
+        <div class="text-uppercase small fw-bold text-brown mb-1 pt-1">
+          <span *ngIf="auction?.status==='Active'">Current Bid</span>
+          <span *ngIf="auction?.status==='Scheduled'">Start Bid</span>
+          <span *ngIf="auction?.status==='Finished'">Ended Bid</span>
+        </div>
+        <h3 class="fw-bold text-caffe mb-0">{{ highestBid | number:'1.0-0' }} EGP</h3>
+      </div>
+
+      <!-- Create Bid -->
+      <div class="px-4 py-3" *ngIf="auction?.status === 'Active'; else nonActiveState">
+
+        <div *ngIf="hasRoleOrNoUser('Buyer')">
+          <h6 class=" text-uppercase fw-bold text-brown mb-2 small">Place a Bid</h6>
+          <form #bidForm="ngForm" (ngSubmit)="createBid()" class="d-flex flex-column gap-2">
+            <div *ngIf="hasRole('Buyer')" class="input-group">
+              <input type="number" class="form-control border-brown" placeholder="Enter bid amount"
+                [(ngModel)]="bidAmount" name="bidAmount" [min]="highestBid + 1" required>
+              <span class="input-group-text bg-light-caffe  border-brown text-caffe">EGP</span>
+            </div>
+
+            <!-- Fix the template expressions to handle null -->
+            <div *ngIf="bidAmount !== null && bidAmount <= highestBid" class="text-danger small">
+              Bid must be higher than {{ highestBid | number:'1.0-0' }} EGP
+            </div>
+
+            <button *ngIf="hasRole('Buyer')" type="submit"
+              class="btn btn-caffe w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2"
+              [disabled]="(bidAmount ?? 0) <= highestBid || !bidAmount">
+              <i class="bi bi-hammer"></i> <!-- Bootstrap Icons hammer icon -->
+              Submit Bid
+            </button>
+
+            <a *ngIf="!hasUser()" routerLink="/login"
+              class="btn btn-caffe w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2">
+              <i class="bi bi-box-arrow-in-right me-1"></i>Sign In to place bids
+            </a>
+
+          </form>
+        </div>
+
+        <div *ngIf="!hasRoleOrNoUser('Buyer')" class="alert bg-caffe-light d-flex align-items-center gap-3">
+          <i class="bi bi-person-slash fs-5 text-brown"></i>
+          <div>
+            <h6 class="text-uppercase fw-bold text-brown mb-1 small">Buyer Access Required</h6>
+            <p class="mb-0 text-caffe">
+              Your current account doesn't have bidding privileges.
+            </p>
+          </div>
+        </div>
+
+        <!-- Bid Alerts -->
+        <div *ngIf="hasRoleOrNoUser('Buyer')" class="px-4 pt-3">
+          <div *ngIf="showBidError" class="alert alert-danger alert-dismissible fade show">
+            {{ bidErrorMessage }}
+            <button type="button" class="btn-close" (click)="showBidError = false"></button>
+          </div>
+        </div>
+
+        <div class="px-3  text-center">
+          <strong class="text-brown">{{this.auction?.bids?.length}} other people are Bidding this
+            property</strong>
+        </div>
+      </div>
+
+    </div>
+
+
+    <ng-template #nonActiveState>
+      <div class="px-4 py-3">
+        <!-- Scheduled Auction -->
+        <div *ngIf="auction?.status === 'Scheduled'"
+          class="d-flex align-items-center gap-3 p-3 custumBottomBorder border-2 border-brown">
+          <i class="bi bi-calendar2-check text-brown" style="font-size: 1.5rem;"></i>
+          <div>
+            <h6 class="text-uppercase fw-bold text-brown mb-1 small">Bidding Has Not Open Yet</h6>
+            <p class="mb-0 text-caffe">
+              Starts on {{ auction?.startTime | date:'MMM d, y, h:mm a' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Finished Auction -->
+        <div *ngIf="auction?.status === 'Finished'"
+          class="d-flex align-items-center gap-3 p-3 custumBottomBorder border-2 border-brown">
+          <i class="bi bi-flag-fill text-brown" style="font-size: 1.5rem;"></i>
+          <div>
+            <h6 class="text-uppercase fw-bold text-brown mb-1 small">Bidding Closed</h6>
+            <p class="mb-0 text-caffe">
+              <span *ngIf="this.auction?.lastPropertyBidDto">Bidding successfully completed</span>
+              <span *ngIf="!this.auction?.lastPropertyBidDto">No bids were placed</span>
+            </p>
+            <p class="mb-0 text-caffe">
+              <span *ngIf="this.auction?.lastPropertyBidDto">
+                Winning bid: EGP {{ this.auction?.lastPropertyBidDto?.bidAmount | number }} by
+                <span class="fw-semibold"> {{ this.auction?.lastPropertyBidDto?.buyerFirstName || 'Anonymous' }}
+                  {{ this.auction?.lastPropertyBidDto?.buyerLastName || '' }}
+                </span>
+              </span>
+            </p>
+
+          </div>
         </div>
 
 
+      </div>
+    </ng-template>
 
 
-    </div>
+  </div>
 
 </div>
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 
-<div #tabLinks class="tab-links px-5 py-4 d-flex flex-wrap justify-content-center justify-content-xl-start gap-3">
+<div #tabLinks class=" tab-links px-5 py-4 d-flex flex-wrap justify-content-center justify-content-xl-start gap-3">
 
-    <a href="#auction" (click)="scrollToSection($event, 'auction')" class="active ms-2 me-3">
-        <i class="bi bi-hammer me-2 fs-6"></i> <span class="fs-5">Auction </span>
-    </a>
+  <a href="#auction" (click)="scrollToSection($event, 'auction')" class="active ms-4 me-3">
+    <i class="bi bi-hammer me-2 fs-6"></i> <span class="fs-5">Auction </span>
+  </a>
 
-    <a href="#property" (click)="scrollToSection($event, 'property')" class="me-3">
-        <!-- <i class="bi bi-tag-fill me-2 fs-6"></i> -->
-        <i class="bi bi-house-door-fill  me-2 fs-6"></i>
-        <span class="fs-5">Property Overview</span>
-    </a>
+  <a href="#property" (click)="scrollToSection($event, 'property')" class="me-3">
+    <!-- <i class="bi bi-tag-fill me-2 fs-6"></i> -->
+    <i class="bi bi-house-door-fill  me-2 fs-6"></i>
+    <span class="fs-5">Property Overview</span>
+  </a>
 
-    <a href="#location" (click)="scrollToSection($event, 'location')" class="me-3">
-        <i class="bi bi-geo-alt-fill me-2 fs-6"></i>
-        <span class="fs-5">Property Location</span>
-    </a>
+  <a href="#location" (click)="scrollToSection($event, 'location')" class="me-3">
+    <i class="bi bi-geo-alt-fill me-2 fs-6"></i>
+    <span class="fs-5">Property Location</span>
+  </a>
 
-   
+
 </div>
 <!-- ____________________________________________________________________________________________ -->
 <div class="px-5 ms-4 me-5">
 
-    <!-- Overview Section -->
-    <section id="auction" class="mt-3 p-2 col-lg-8">
-        <!-- Section Title -->
-        <div class="d-flex align-items-center mb-4  pb-2">
-            <i class="bi bi-hammer text-caffe fs-4 me-2"></i>
-            <h2 class="mb-0 h4 fw-bold text-brown">Auction </h2>
-        </div>
+  <!-- Overview Section -->
+  <section id="auction" class="mt-3 p-2 col-lg-8">
+    <!-- Section Title -->
+    <div class="d-flex align-items-center mb-4  pb-2">
+      <i class="bi bi-hammer text-caffe fs-4 me-2"></i>
+      <h2 class="mb-0 h4 fw-bold text-brown">Auction </h2>
+    </div>
 
-        <!-- Bidding Activity -->
-        <div class="card shadow-sm mb-4 border-brown">
-            <div class="card-body p-3">
-                <!-- Header Section: Status + Title + Bid Stats -->
-                <div class="d-flex align-items-center justify-content-center gap-3 my-2 flex-wrap text-center">
-                    <h6 class="text-brown fw-bold mb-0 d-flex align-items-center gap-2 fs-5">
-                        <i class="bi bi-activity text-caffe"></i>
-                        Bidding Activity
-                    </h6>
+    
+    <!-- Bidding Activity -->
+    <div class="card shadow-sm mb-4 border-brown">
+      <div class="card-body p-3">
+        <!-- Header Section: Status + Title + Bid Stats -->
+        <div class="d-flex align-items-center justify-content-center gap-3 my-2 flex-wrap text-center">
+          <h6 class="text-brown fw-bold mb-0 d-flex align-items-center gap-2 fs-5">
+            <i class="bi bi-activity text-caffe"></i>
+            Bidding Activity
+          </h6>
 
-                    <div class="vr custom-vr"></div>
-                    <!-- Status Badge -->
-                    <span class="badge rounded-pill fs-6 py-2 d-flex align-items-center
-              {{ auction.status === 'Active' ? 'bg-active text-caffe' : 
-                 auction.status === 'Scheduled' ? 'bg-scheduled text-brown' : 'bg-finished text-brown' }}">
+          <div class="vr custom-vr"></div>
+          <!-- Status Badge -->
+          <span class="badge rounded-pill fs-6 py-2 d-flex align-items-center
+              {{ auction?.status === 'Active' ? 'bg-active text-caffe' :
+                 auction?.status === 'Scheduled' ? 'bg-scheduled text-brown' : 'bg-finished text-brown' }}">
 
-                        <!-- Beige dot icon -->
-                        <i class="bi bi-circle-fill me-2 fs-xxsmall text-beige"></i>
+            <!-- Beige dot icon -->
+            <i class="bi bi-circle-fill me-2 fs-xxsmall text-caffe"></i>
 
-                        <!-- "Status" label always brown -->
-                        <span class="text-brown fw-bold fs-6 me-2">Status</span>
+            <!-- "Status" label always brown -->
+            <span class="text-brown fw-bold fs-6 me-2">Status:</span>
 
-                        <!-- Status text, brown only if Active -->
-                        <span [ngClass]="{'fw-semibold text-brown small': auction.status === 'Active'}">
-                            {{ auction.status }}
-                        </span>
-                    </span>
+            <!-- Status text, brown only if Active -->
+            <span class="fw-semibold text-brown" style="font-size: 1rem;">
+              {{ auction?.status }}
+            </span>
+          </span>
 
-                    <div class="vr custom-vr"></div>
+          <div class="vr custom-vr"></div>
 
-                    <!-- Title -->
+          <!-- Title -->
 
 
-                    <!-- Bid Stats -->
-                    <div class="d-flex align-items-center gap-4 flex-wrap justify-content-center mb-0">
-                        <!-- Starting Bid -->
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="bi bi-cash-coin text-caffe fs-5"></i>
-                            <span class="text-brown fw-bold fs-6">Starting Bid</span>
-                            <span class="fw-semibold text-brown small">EGP {{ auction.startPrice | number }}</span>
-                        </div>
-
-                        <div class="vr custom-vr"></div>
-
-                        <!-- Highest Bid -->
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="bi bi-graph-up-arrow text-caffe fs-5"></i>
-                            <span class="text-brown fw-bold fs-6">Highest Bid</span>
-                            <span class="fw-semibold text-brown small">EGP {{ highestBid | number }}</span>
-                        </div>
-                    </div>
-
-                </div>
+          <!-- Bid Stats -->
+          <div class="d-flex align-items-center gap-4 flex-wrap justify-content-center mb-0">
+            <!-- Starting Bid -->
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-cash-coin text-caffe fs-5"></i>
+              <span class="text-brown fw-bold fs-6">Starting Bid:</span>
+              <span class="fw-semibold text-brown" style="font-size: 1rem;">EGP {{ auction?.startPrice |
+                number
+                }}</span>
             </div>
-        </div>
 
+            <div class="vr custom-vr"></div>
 
-
-
-        <!-- Bid History -->
-        <div class="card shadow-sm border-brown">
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="text-brown mb-0 d-flex align-items-center gap-2">
-                        <i class="bi bi-list-columns-reverse text-caffe"></i>
-                        Bid History
-                    </h5>
-                    <div class="badge bg-light-caffe text-brown fw-normal me-4">
-                        <i class="bi bi-arrow-up-right me-1"></i>{{ auction.propertyBids.length }} Bids Placed
-                    </div>
-                </div>
-
-                <div class="bid-list" style="max-height: 300px; overflow-y: auto;">
-                    <div *ngFor="let bid of auction.propertyBids.slice().reverse(); let i = index"
-                        class="bid-item d-flex align-items-center gap-3 p-2 rounded mb-2 shadow-sm hover-effect pt-3">
-
-                        <!-- Bidder Image Avatar -->
-                        <div class="position-relative">
-                            <img [src]="bid.bidderImage" alt="Bidder Image" class="rounded-circle border border-brown"
-                                style="width: 50px; height: 50px; object-fit: cover;">
-                        </div>
-
-                        <!-- Bidder Details -->
-                        <div class="flex-grow-1">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <p class="mb-0 fw-medium text-brown">{{ bid.bidderName }}</p>
-                                        <span *ngIf="i === 0" class="badge bg-success rounded-pill fs-xxsmall">
-                                            <i class="bi bi-trophy-fill"></i> Winner
-                                        </span>
-                                    </div>
-                                    <p class="mb-0 xsmall text-muted">
-                                        <i class="bi bi-clock me-1"></i>
-                                        {{ transform(bid.bidTime) }}
-                                    </p>
-                                </div>
-                                <div class="text-end">
-                                    <p class="mb-0 h6 text-caffe fw-bold">EGP {{ bid.amount | number }}</p>
-                                    <p class="mb-0 xsmall text-success" *ngIf="i === 0">
-                                        <i class="bi bi-arrow-up"></i>Winning Bid
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- <div class="bid-list" style="max-height: 300px; overflow-y: auto;">
-                    <div *ngFor="let bid of auction.propertyBids.slice().reverse(); let i = index" 
-                         class="bid-item d-flex align-items-center gap-3 p-2 rounded mb-2 shadow-sm hover-effect pt-3">
-                
-=                        <div class="position-relative ">
-                            <img [src]="bid.bidderImage" alt="Bidder Image"
-                                 class="rounded-circle border border-brown"
-                                 style="width: 50px; height: 50px; object-fit: cover;">
-                            
-                            <span *ngIf="i === 0" class="position-absolute  top-0  start-100 translate-middle 
-                                         badge bg-success rounded-pill fs-xxsmall">
-                                <i class="bi bi-trophy-fill"></i>
-                            </span>
-                        </div>
-                
-                        <div class="flex-grow-1">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <p class="mb-0 fw-medium text-brown">{{ bid.bidderName }}</p>
-                                    <p class="mb-0 xsmall text-muted">
-                                        <i class="bi bi-clock me-1"></i>
-                                        {{ transform(bid.bidTime) }}
-                                    </p>
-                                </div>
-                                <div class="text-end">
-                                    <p class="mb-0 h6 text-caffe fw-bold">EGP {{ bid.amount | number }}</p>
-                                    <p class="mb-0 xsmall text-success" *ngIf="i === 0">
-                                        <i class="bi bi-arrow-up"></i>Winning Bid
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
-
+            <!-- Highest Bid -->
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-graph-up-arrow text-caffe fs-5"></i>
+              <span class="text-brown fw-bold fs-6">Highest Bid:</span>
+              <span *ngIf="auction?.status!='Scheduled'" class="fw-semibold text-brown" style="font-size: 1rem;">EGP {{
+                highestBid | number
+                }}</span>
+              <span *ngIf="auction?.status==='Scheduled'" class="fw-semibold text-brown" style="font-size: 1rem;"><i
+                  class="bi bi-dash"></i></span>
             </div>
-            
+          </div>
+
         </div>
-        <hr class="mt-4">
-
-    </section>
-
-    <section id="property" class="mt-3 p-2 col-lg-8">
-        <div class="d-flex align-items-center mb-4  ">
-            <i class="bi bi-house-door-fill  fs-4 me-2  text-caffe"></i>
-
-            <h2 class="mb-0 h4 fw-bold text-brown">Property Overview </h2>
-        </div>
-         <!-- Subtitle Before Description -->
-      <div class="d-flex align-items-center gap-3 ms-2 ">
-        <h4 style="color: #4a2c2a;"><i class="bi bi-lightbulb me-2"></i> What You Need To Know</h4>
-
-       
       </div>
+    </div>
 
-        <!-- Section Title -->
-        <div class="ps-5 my-2">
-            <div class="ms-3 text-justify text-muted mb-2 no-print" style="font-size: 1.2rem;">
-                {{ auction.property.description.length > 200 ? (showMore ? auction.property.description : auction.property.description.slice(0, 200) +
-                '...') :
-                auction.property.description }}
-              </div>
-        
-              <div class="ms-3 text-justify text-muted mb-2 print-full-description d-none print-full-description"
-                style="font-size: 1.2rem;">
-                {{auction.property.description }}
-              </div>
-        
-              <!-- Interactive Elements -->
-              <div *ngIf="auction.property.description.length > 200" class="text-center mt-3 no-print">
-        
-                <!-- <button class="btn btn-link text-caffe p-0" (click)="showMore = !showMore" aria-controls="descriptionContent"
-                  [attr.aria-label]="showMore ? 'Collapse description' : 'Expand description'">
-                  <span class="d-inline-block animate-bounce">
-                    <i class="bi" [ngClass]="showMore ? 'bi-chevron-double-up' : 'bi-chevron-double-down'"
-                      style="font-size: 1.5rem;"></i>
-                  </span>
-                  <span class="ms-2 fw-medium">
-                    {{ showMore ? 'Show Less' : 'Show More' }}
-                  </span>
-                </button> -->
-        
-        
-                <div *ngIf="!showMore" class="d-flex justify-content-center align-items-center">
-                  <button class="buttonDes expand-button bg-caffe" (click)="showMore = !showMore"
-                    aria-controls="descriptionContent">
-                    <svg class="svgIcon arrowDown" viewBox="0 0 384 512">
-                      <path
-                        d="M374.6 310.6l-160 160c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 370.8V64c0-17.7 14.3-32 32-32s32 14.3 32 32v306.7l105.4-105.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3z">
-                      </path>
-                    </svg>
-                  </button>
-                </div>
-        
-        
-                <div *ngIf="showMore" class="d-flex justify-content-center align-items-center">
-                  <button class="buttonDes collapse-button  bg-caffe" (click)="showMore = !showMore"
-                    aria-controls="descriptionContent">
-                    <svg class="svgIcon arrowUp" viewBox="0 0 384 512">
-                      <path
-                        d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z">
-                      </path>
-                    </svg>
-                  </button>
-                </div>
-        
-              </div>
 
-              
+    <!-- Bid History -->
+    <div class="card shadow-sm border-brown">
+      <div class="card-body p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="text-brown mb-0 d-flex align-items-center gap-2">
+            <i class="bi bi-list-columns-reverse text-caffe"></i>
+            Bid History
+          </h5>
+          <div class="badge bg-light-caffe text-brown fw-normal me-4">
+            <i class="bi bi-arrow-up-right me-1"></i>{{ this.auction?.bids?.length }} Bids Placed
           </div>
-          <div class="d-flex align-items-center gap-3 ms-2 mb-2">
-            <h4 style="color: #4a2c2a;"><i class="bi bi-lightning-charge me-2"></i>Quick Highlights</h4>
-    
-           
-          </div>
-          <div class=" my-4 ps-5 ">
-            <div class="row g-3 justify-content-between">
-                <!-- Beds -->
-                <div class="col-6 col-md-4 col-lg-2">
-                    <div class="bg-caffe-light rounded-pill p-2 d-flex align-items-center justify-content-center gap-2">
-                        <i class="fas fa-bed text-caffe fs-5"></i>
-                        <span class="text-brown fs-5">3 Beds</span>
-                    </div>
-                </div>
-        
-                <!-- Baths -->
-                <div class="col-6 col-md-4 col-lg-2">
-                    <div class="bg-caffe-light rounded-pill p-2 d-flex align-items-center justify-content-center gap-2">
-                        <i class="fas fa-bath text-caffe fs-5"></i>
-                        <span class="text-brown fs-5">2 Baths</span>
-                    </div>
-                </div>
-        
-                <!-- Area -->
-                <div class="col-6 col-md-4 col-lg-2">
-                    <div class="bg-caffe-light rounded-pill p-2 d-flex align-items-center justify-content-center gap-2">
-                        <i class="fas fa-ruler-combined text-caffe fs-5"></i>
-                        <span class="text-brown fs-5">1800 sqft</span>
-                    </div>
-                </div>
-        
-                <!-- Property Type -->
-                <div class="col-6 col-md-4 col-lg-2">
-                    <div class="bg-caffe-light rounded-pill p-2 d-flex align-items-center justify-content-center gap-2">
-                        <i class="fas fa-home text-caffe fs-5"></i>
-                        <span class="text-brown fs-5">Villa</span>
-                    </div>
-                </div>
-        
-                <!-- Sale/Rent -->
-                <div class="col-6 col-md-4 col-lg-2">
-                    <div class="bg-caffe-light rounded-pill p-2 d-flex align-items-center justify-content-center gap-2">
-                        <i class="fas fa-tag text-caffe fs-5"></i>
-                        <span class="text-brown fs-5">For Sale</span>
-                    </div>
-                </div>
-            </div>
         </div>
-        
-        <!-- Add Font Awesome for icons -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-          <hr class="mt-4">
-       
-    </section>
-    <section id="location" class="mt-3 p-2 col-lg-8">
-        <div class="d-flex align-items-center mb-4  ">
-            <i class="bi bi-geo-alt-fill  fs-4 me-2  text-caffe"></i>
 
-            <h2 class="mb-0 h4 fw-bold text-brown">Property Location </h2>
-        </div>
-        <div class=" my-4 ps-5 pb-3">
-    
-            <!-- Flexbox Container for Location & Map -->
-            <div class="d-flex align-items-start mt-2 mb-4">
-    
-              <!-- Buttons: Hide Map & Share Location -->
-              <div class="mt-3">
-                <button class="btn btn-light text-caffe fw-bold me-2" (click)="toggleMap()">
-                  <i class="bi" [ngClass]="isMapVisible ? 'bi-eye-slash' : 'bi-eye'"></i>
-                  {{ isMapVisible ? 'Hide Map' : 'Show Map' }}
-                </button>
-    
-                <!-- Share Location Button -->
-                <button class="btn bg-caffe text-white" (click)="openShareModal()">
-                  <i class="bi bi-share-fill"></i> Share Location
-                </button>
-    
-                <!-- Bootstrap Modal -->
-                <div class="modal fade" id="shareLocationModal" tabindex="-1" aria-labelledby="shareLocationModalLabel"
-                  aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="shareLocationModalLabel">Share Location</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                        <p>Copy the link below to share the location:</p>
-                        <input type="text" class="form-control" [value]="locationUrl" readonly>
-                      </div>
-                      <div class="modal-footer">
-                        <button class="btn bg-caffe text-white" (click)="copyToClipboard()">Copy Link</button>
-                        <button type="button" class="btn btn-light text-caffe" data-bs-dismiss="modal">Close</button>
-                      </div>
+        <div class="bid-list" style="max-height: 300px; overflow-y: auto;">
+
+          <div *ngIf="this.auction?.bids?.length; else noBids">
+
+            <div *ngFor="let bid of this.auction?.bids?.slice(); let i = index"
+              class="bid-item d-flex align-items-center gap-3 p-2 rounded mb-2 shadow-sm hover-effect pt-3">
+
+              <!-- Bidder Image Avatar -->
+              <div class="position-relative">
+                <!-- <img [src]="apiConfig.apiUrl + bid.buyerImage" alt="Bidder Image"
+                  class="rounded-circle border border-brown" style="width: 50px; height: 50px; object-fit: cover;"> -->
+
+                <ng-container *ngIf="bid.buyerImage; else defaultIcon">
+                  <img [src]="apiConfig.apiUrl + bid.buyerImage" alt="Bidder Image"
+                    class="rounded-circle border border-brown" style="width: 50px; height: 50px; object-fit: cover;">
+                </ng-container>
+
+                <ng-template #defaultIcon>
+                  <i class="bi bi-person-circle text-brown me-2" style="font-size: 2.5rem;"></i>
+                </ng-template>
+
+              </div>
+
+              <!-- Bidder Details -->
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="d-flex align-items-center gap-2">
+                      <p class="mb-0 fw-medium text-brown">{{ bid?.buyerFirstName ?? '' + ' '
+                        + bid?.buyerLastName ??
+                        ''}}
+                      </p>
+                      <span *ngIf="i === 0 && auction?.status === 'Finished'"
+                        class="badge bg-success rounded-pill fs-xxsmall">
+                        <i class="bi bi-trophy-fill"></i> Winner
+                      </span>
                     </div>
+                    <p class="mb-0 xsmall text-muted">
+                      <i class="bi bi-clock me-1"></i>
+                      {{bid.timestamp | date:'medium' }} ({{transform(bid.timestamp)}})
+                    </p>
+                  </div>
+                  <div class="text-end">
+                    <p class="mb-0 h6 text-caffe fw-bold">EGP {{ bid.bidAmount | number }}</p>
+                    <p class="mb-0 xsmall text-success" *ngIf="i === 0">
+                      <i class="bi bi-arrow-up"></i>
+                      <span *ngIf="auction?.status === 'Finished'">Winning Bid</span>
+                      <span *ngIf="auction?.status != 'Finished'">Highest Bid</span>
+                    </p>
                   </div>
                 </div>
-    
-    
               </div>
             </div>
-    
-    
-            <app-leaflet-map *ngIf="isMapVisible" [locationName]="property.location" [styleTxt]="{
+          </div>
+
+          <!-- No bids message -->
+          <ng-template #noBids>
+            <div class="text-center p-4 text-muted">
+              <div class="d-flex flex-column align-items-center justify-content-center gap-2"
+                style="min-height: 150px;">
+                <!-- Scheduled Auction -->
+                <div *ngIf="auction?.status === 'Scheduled'">
+                  <i class="bi bi-calendar-event text-caffe" style="font-size: 2.5rem;"></i>
+                  <p class="mb-0 fw-medium">Bidding has not started yet</p>
+                  <small class="text-secondary">
+                    This auction begins on {{ auction?.startTime | date:'medium' }}
+                  </small>
+                </div>
+
+                <!-- Active Auction -->
+                <div *ngIf="auction?.status === 'Active'">
+                  <i class="bi bi-clipboard2-x-fill text-caffe" style="font-size: 2.5rem;"></i>
+                  <p class="mb-0 fw-medium">No bids yet</p>
+                  <small class="text-secondary">Be the first to place a bid!</small>
+                </div>
+
+                <!-- Finished Auction -->
+                <div *ngIf="auction?.status === 'Finished'">
+                  <i class="bi bi-exclamation-triangle text-caffe" style="font-size: 2.5rem;"></i>
+                  <p class="mb-0 fw-medium">No bids placed</p>
+                  <small class="text-secondary">This auction ended with no bids</small>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+
+        </div>
+
+      </div>
+
+    </div>
+    <hr class="mt-4">
+
+  </section>
+
+  <section id="property" class="mt-3 p-2 col-lg-8">
+    <!-- <div class="d-flex align-items-center mb-4  ">
+      <i class="bi bi-house-door-fill  fs-4 me-2  text-caffe"></i>
+      <h2 class="mb-0 h4 fw-bold text-brown">Property Overview </h2>
+    </div> -->
+
+    <div class="d-flex align-items-center mb-4 gap-2">
+      <i class="bi bi-house-door-fill fs-4 text-caffe"></i>
+
+      <div class="d-flex align-items-baseline gap-2">
+        <h2 class="mb-0 h4 fw-bold text-brown">Property Overview</h2>
+
+        <a *ngIf="auction?.propertyDto?.id" [routerLink]="['/properties', auction?.propertyId]"
+          class="badge bg-light-caffe text-caffe text-decoration-none px-3 py-1 rounded-pill"
+          aria-label="View full property details">
+          <span class="fw-medium" style="font-size: 0.9rem;">View Full Details</span>
+          <i class="bi bi-arrow-right-short ms-1" style="font-size: 0.9rem;"></i>
+        </a>
+      </div>
+
+    </div>
+
+
+    <!-- Subtitle Before Description -->
+    <div class="d-flex align-items-center gap-3 ms-2 ">
+      <h4 style="color: #4a2c2a;"><i class="bi bi-lightbulb me-2"></i> What You Need To Know</h4>
+    </div>
+
+    <!-- Section Title -->
+    <div class="ps-5 my-2">
+      <div class="ms-3 text-justify text-muted mb-2 no-print" style="font-size: 1.2rem;">
+        {{ (auction?.propertyDto?.description?.length ?? 0) > 200 ? (showMore ?
+        auction?.propertyDto?.description :
+        auction?.propertyDto?.description?.slice(0, 200) +
+        '...') :
+        auction?.propertyDto?.description }}
+      </div>
+
+      <div class="ms-3 text-justify text-muted mb-2 print-full-description d-none print-full-description"
+        style="font-size: 1.2rem;">
+        {{auction?.propertyDto?.description }}
+      </div>
+
+      <!-- Interactive Elements -->
+      <div *ngIf="(auction?.propertyDto?.description?.length ?? 0) > 200" class="text-center mt-3 no-print">
+
+        <div *ngIf="!showMore" class="d-flex justify-content-center align-items-center">
+          <button class="buttonDes expand-button bg-caffe" (click)="showMore = !showMore"
+            aria-controls="descriptionContent">
+            <svg class="svgIcon arrowDown" viewBox="0 0 384 512">
+              <path
+                d="M374.6 310.6l-160 160c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 370.8V64c0-17.7 14.3-32 32-32s32 14.3 32 32v306.7l105.4-105.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3z">
+              </path>
+            </svg>
+          </button>
+        </div>
+
+
+        <div *ngIf="showMore" class="d-flex justify-content-center align-items-center">
+          <button class="buttonDes collapse-button  bg-caffe" (click)="showMore = !showMore"
+            aria-controls="descriptionContent">
+            <svg class="svgIcon arrowUp" viewBox="0 0 384 512">
+              <path
+                d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z">
+              </path>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+
+      <div *ngIf="(auction?.propertyDto?.description?.length ?? 0) <= 200" class="mb-4"></div>
+
+    </div>
+    <div class="d-flex align-items-center gap-3 ms-2">
+      <h4 style="color: #4a2c2a;"><i class="bi bi-lightning-charge me-2"></i>Quick Highlights</h4>
+    </div>
+    <div class=" my-3 ps-5 ">
+      <div class="row g-3 justify-content-between">
+        <!-- Beds -->
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="bg-caffe-light rounded-pill p-2 d-flex align-items-center justify-content-center gap-2">
+            <i class="fas fa-bed text-caffe fs-5"></i>
+            <span class="text-brown fs-5">{{auction?.propertyDto?.bedRooms}} Beds</span>
+          </div>
+        </div>
+
+        <!-- Baths -->
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="bg-caffe-light rounded-pill p-2 d-flex align-items-center justify-content-center gap-2">
+            <i class="fas fa-bath text-caffe fs-5"></i>
+            <span class="text-brown fs-5">{{auction?.propertyDto?.bathRooms}} Baths</span>
+          </div>
+        </div>
+
+        <!-- Area -->
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="bg-caffe-light rounded-pill p-2 d-flex align-items-center justify-content-center gap-2">
+            <i class="fas fa-ruler-combined text-caffe fs-5"></i>
+            <span class="text-brown fs-5">{{auction?.propertyDto?.space}} sqft</span>
+          </div>
+        </div>
+
+        <!-- Property Type -->
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="bg-caffe-light rounded-pill p-2 d-flex align-items-center justify-content-center gap-2">
+            <i class="fas fa-home text-caffe fs-5"></i>
+            <span class="text-brown fs-5">{{auction?.propertyDto?.propertyCategory}}</span>
+          </div>
+        </div>
+
+        <!-- Sale/Rent -->
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="bg-caffe-light rounded-pill p-2 d-flex align-items-center justify-content-center gap-2">
+            <i class="fas fa-tag text-caffe fs-5"></i>
+            <span class="text-brown fs-5">For {{auction?.propertyDto?.type ==='Sell' ? 'Sale' :
+              'Rent'}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <hr class="mt-4">
+
+  </section>
+
+
+  <section id="location" class="mt-3 p-2 col-lg-8">
+    <div class="d-flex align-items-center mb-4  ">
+      <i class="bi bi-geo-alt-fill  fs-4 me-2  text-caffe"></i>
+
+      <h2 class="mb-0 h4 fw-bold text-brown">Property Location </h2>
+    </div>
+    <div class=" my-4 ps-5 pb-3">
+
+      <!-- Flexbox Container for Location & Map -->
+      <div class="d-flex align-items-start mt-2 mb-4">
+
+        <!-- Buttons: Hide Map & Share Location -->
+        <div class="mt-1">
+          <button class="btn btn-light text-caffe fw-bold me-2" (click)="toggleMap()">
+            <i class="bi" [ngClass]="isMapVisible ? 'bi-eye-slash' : 'bi-eye'"></i>
+            {{ isMapVisible ? 'Hide Map' : 'Show Map' }}
+          </button>
+
+          <!-- Share Location Button -->
+          <button class="btn bg-caffe text-white" (click)="openShareModal()">
+            <i class="bi bi-share-fill"></i> Share Location
+          </button>
+
+          <!-- Bootstrap Modal -->
+          <div class="modal fade" id="shareLocationModal" tabindex="-1" aria-labelledby="shareLocationModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="shareLocationModalLabel">Share Location</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <p>Copy the link below to share the location:</p>
+                  <input type="text" class="form-control" [value]="locationUrl" readonly>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn bg-caffe text-white" (click)="copyToClipboard()">Copy Link</button>
+                  <button type="button" class="btn btn-light text-caffe" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+      <div *ngIf="!isLoading">
+        <app-leaflet-map *ngIf="isMapVisible" [locationName]="auction?.propertyDto?.location ?? ''" [styleTxt]="{
                   'height': '350px',
                   'width': '95%',
                   'display': 'block',
                   'margin-left': '15px'
                 }">
-            </app-leaflet-map>
-    
-    
-          </div>
-          <hr class="mt-4 pb-4">
-    </section>
-    <div id="stop-scroll" class="mt-3 p-2 ">
-       <app-more-auctions></app-more-auctions>
+        </app-leaflet-map>
+      </div>
+
     </div>
+    <hr class="mt-4 pb-4">
+  </section>
+  <div id="stop-scroll" class="mt-3 p-2 ">
+    <div *ngIf="!isLoading">
+      <app-more-auctions [auctionModel]="auction"></app-more-auctions>
+    </div>
+  </div>
 </div>

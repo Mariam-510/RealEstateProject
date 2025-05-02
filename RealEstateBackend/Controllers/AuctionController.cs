@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Transactions;
 using AutoMapper;
@@ -15,6 +15,10 @@ using RealEstate.Models.DTOs.PropertyBidDto;
 using RealEstate.Models.DTOs.PropertyDto;
 using RealEstate.Repositories;
 using RealEstate.Services;
+using Microsoft.AspNetCore.SignalR;
+using RealEstate.Hubs;
+using System;
+
 
 namespace RealEstate.Controllers
 {
@@ -24,26 +28,92 @@ namespace RealEstate.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IPropertyBidRepository propertyBidRepository;
-
         public IAuctionRepository _AuctionRepository { get; }
         public IPropertyRepository _propertyRepository { get; }
         public IAgentRepository _AgentRepository { get; }
         public ISellerRepository _SellerRepository { get; }
         public FileService _fileService { get; }
+        private readonly IHubContext<AuctionHub> _hubContext;
 
         public AuctionController(IAuctionRepository auctionRepository, IPropertyRepository propertyRepository,
+
             IAgentRepository agentRepository , ISellerRepository sellerRepository, IMapper mapper,
-            IPropertyBidRepository propertyBidRepository)
+            IPropertyBidRepository propertyBidRepository, IHubContext<AuctionHub> hubContext)
         {
             _AuctionRepository = auctionRepository;
             _propertyRepository = propertyRepository;
             _AgentRepository = agentRepository;
             _SellerRepository = sellerRepository;
             _mapper = mapper;
+            _hubContext = hubContext;
+
             this.propertyBidRepository = propertyBidRepository;
         }
-        
 
+
+        //signal r
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll(string? sortByPrice = null, string? sortByTime = null, Status? ISLivestatus = null)
+        {
+            var auctionsAll = await _AuctionRepository.GetAllAsync(sortByPrice, sortByTime, ISLivestatus);
+            if (auctionsAll == null) return NotFound("Empty Auction List!");
+
+            //Status Update Start
+            var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus();
+            //Status Update End
+
+            var auctionDtos = auctions.ToAuctionDTOShowList();
+
+            // Sequential processing of related data
+            foreach (var a in auctionDtos)
+            {
+                a.PropertyDto = _mapper.Map<PropertyDto>(await _propertyRepository.GetByIdAsync(a.PropertyId));
+                var bidsModel = await propertyBidRepository.GetByAuctionIdAsync(a.Id);
+                a.bids = _mapper.Map<List<PropertyBidDto>>(bidsModel);
+                a.NumOfPropertyBids = a.bids.Count;
+                a.LastPropertyBidDto = a.bids.FirstOrDefault();  // No need for null check here
+            }
+
+            // Notify all clients of fresh auction list
+            await _hubContext.Clients.All.SendAsync("ReceiveAllAuctions", auctionDtos);
+
+            return Ok(auctionDtos);
+        }
+
+        //signal r
+        [HttpGet("GetAuctionByID/{id}")]
+        public async Task<IActionResult> GetAuctionByid(int id)
+        {
+            var auction = await _AuctionRepository.GetByIdAsync(id);
+            if (auction == null) return NotFound("Auction ID Not found!");
+
+            var auctionDto = auction.ToAuctionDTOShow();
+
+            //Status Update Start
+            auction = await _AuctionRepository.CheckAndUpdateStatus(auction.Id);
+
+            var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus();
+            //Status Update End
+
+            // Sequential data loading
+            var property = await _propertyRepository.GetByIdAsync(auctionDto.PropertyId);
+            var bids = await propertyBidRepository.GetByAuctionIdAsync(auctionDto.Id);
+
+            auctionDto.PropertyDto = _mapper.Map<PropertyDto>(property);
+            auctionDto.bids = _mapper.Map<List<PropertyBidDto>>(bids);
+            auctionDto.NumOfPropertyBids = auctionDto.bids.Count;
+            auctionDto.LastPropertyBidDto = auctionDto.bids.FirstOrDefault();
+
+            // Notify client to join group and send updates
+            //await _hubContext.Clients.Group($"Auction-{id}")
+            //    .SendAsync("ReceiveAuctionDetails", auctionDto);
+            
+            await _hubContext.Clients.All.SendAsync("ReceiveAuctionDetails", auctionDto);
+
+            return Ok(auctionDto);
+        }
+
+        //signal r
         [HttpPost("Add")]
         [Authorize(Roles = "Seller,Agent")]
         public async Task<IActionResult> CreateAuction([FromForm] AuctionDTO AuctionDtO)
@@ -92,13 +162,36 @@ namespace RealEstate.Controllers
                     else if (User.IsInRole("Agent"))
                         AuctionModel.AgentId = userId;
 
-                    var ActionCreated = await _AuctionRepository.CreateAsync(AuctionModel);
+                    var AuctionCreated = await _AuctionRepository.CreateAsync(AuctionModel);
 
-                    var ActionShow = ActionCreated.ToAuctionDTOShow();
+                    //Status Update Start
+                    AuctionCreated = await _AuctionRepository.CheckAndUpdateStatus(AuctionCreated.Id);
+
+                    var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus();
+                    //Status Update End
+
+                    var AuctionShow = AuctionCreated.ToAuctionDTOShow();
+
+
+                    property = await _propertyRepository.GetByIdAsync(AuctionShow.PropertyId);
+                    var bids = await propertyBidRepository.GetByAuctionIdAsync(AuctionShow.Id);
+
+                    AuctionShow.PropertyDto = _mapper.Map<PropertyDto>(property);
+                    AuctionShow.bids = _mapper.Map<List<PropertyBidDto>>(bids);
+                    AuctionShow.NumOfPropertyBids = AuctionShow.bids.Count;
+                    AuctionShow.LastPropertyBidDto = AuctionShow.bids.FirstOrDefault();
+
+
 
                     transactionScope.Complete();
 
-                    return Ok(new { message = "Auction Created Successfully!", ActionShow });
+
+                    // Real-time notifications
+                    await _hubContext.Clients.All.SendAsync("NewAuctionCreated", AuctionShow);
+                    //await _hubContext.Clients.Group($"Auction-{AuctionShow.Id}")
+                    //    .SendAsync("AuctionUpdated", AuctionShow);
+
+                    return Ok(new { message = "Auction Created Successfully!", AuctionShow });
                 }
                 catch (Exception ex)
                 {
@@ -109,7 +202,7 @@ namespace RealEstate.Controllers
             
         }
 
-
+        //signal r
         [HttpDelete("DeleteAuction/{id}")]
         [Authorize(Roles = "Seller,Agent")]
         public async Task<IActionResult> DeleteAuction(int id)
@@ -145,20 +238,20 @@ namespace RealEstate.Controllers
                     property.Status = PropertyStatus.Available;
                     await _propertyRepository.UpdateAsync(property);
 
+                    //Status Update Start
+                    var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus();
+                    //Status Update End
+
                     AuctionDTOShow ActionShow = AuctionDeleted.ToAuctionDTOShow();
 
                     transactionScope.Complete();
-<<<<<<< Updated upstream
-                    return Ok(new { message = "Auction deleted successfully.", ActionShow });
-=======
 
                     // Real-time notifications
                     await _hubContext.Clients.All.SendAsync("AuctionDeleted", id);
                     //await _hubContext.Clients.Group($"Auction-{id}")
                     //    .SendAsync("AuctionRemoved", id);
 
-                    return Ok(ActionShow );
->>>>>>> Stashed changes
+                    return Ok(new { message = "Auction deleted successfully.", ActionShow });
                 }
                 catch (Exception ex)
                 {
@@ -169,32 +262,33 @@ namespace RealEstate.Controllers
           
         }
 
-
-        [HttpGet("GetAuctionByID/{id}")]
-        public async Task<IActionResult> GetAuctionByid(int id)
+        //------------------------------------------------------------------------------------------
+        [HttpGet("CheckStatus")]
+        public async Task<IActionResult> CheckAuctionStatus()
         {
+            //Status Update Start
+            var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus(true);
+            //Status Update End
 
-            var ActionData = await _AuctionRepository.GetByIdAsync(id);
-            if (ActionData == null)
+            var auctionDtos = auctions.ToAuctionDTOShowList();
+
+            // Sequential processing of related data
+            foreach (var a in auctionDtos)
             {
-                return NotFound("Auction ID Not found!");
+                a.PropertyDto = _mapper.Map<PropertyDto>(await _propertyRepository.GetByIdAsync(a.PropertyId));
+                var bidsModel = await propertyBidRepository.GetByAuctionIdAsync(a.Id);
+                a.bids = _mapper.Map<List<PropertyBidDto>>(bidsModel);
+                a.NumOfPropertyBids = a.bids.Count;
+                a.LastPropertyBidDto = a.bids.FirstOrDefault();  // No need for null check here
             }
 
-            AuctionDTOShow ActionShow = ActionData.ToAuctionDTOShow();
+           await _hubContext.Clients.All.SendAsync("CheckStatusAllAuctions", auctionDtos);
 
-            var property = await _propertyRepository.GetByIdAsync(ActionShow.PropertyId);
-            ActionShow.PropertyDto = _mapper.Map<PropertyDto>(property);
-
-            var lastPropertyBid = await propertyBidRepository.GetLastBidByAuctionIdAsync(ActionShow.Id);
-            ActionShow.LastPropertyBidDto = _mapper.Map<PropertyBidDto>(lastPropertyBid);
-
-            var propertyBids = await propertyBidRepository.GetByAuctionIdAsync(ActionShow.Id);
-            ActionShow.NumOfPropertyBids = propertyBids.Count();
-
-            return Ok(ActionShow);
-
+            return Ok(auctionDtos);
         }
 
+
+        //------------------------------------------------------------------------------------------
 
         [HttpGet("Property/{propertyId}")]
         public async Task<IActionResult> GetAuctionByPropertyId(int propertyId)
@@ -207,111 +301,68 @@ namespace RealEstate.Controllers
             }
             AuctionDTOShow ActionShow = ActionData.ToAuctionDTOShow();
 
-            return Ok(new { message = "Auction is", ActionShow });
+            return Ok(ActionShow);
 
         }
 
 
         [HttpGet("GetAuctionByUserID")]
-        [Authorize(Roles = "Seller,Agent")]
-        public async Task<IActionResult> GetAuctionByUserID()
+        public async Task<IActionResult> GetAuctionByUserID(int? AgentID = null, int? SellerID = null)
         {
-            string userIdStr = User.FindFirst("userId")?.Value;
-                if (!int.TryParse(userIdStr, out int userId))
-                    return Unauthorized("User not found.");
-            List<Auction> ActionData = null;
-
-            if (User.IsInRole("Seller"))
+            if (AgentID.HasValue && SellerID.HasValue)
             {
-                var seller = await _SellerRepository.GetByIdAsync(userId);
-                
+                return BadRequest("Please provide at least one field.");
+            }
+            if (!AgentID.HasValue && !SellerID.HasValue)
+            {
+                return BadRequest("Please provide at least one field.");
+            }
+            if (AgentID != null)
+            {
+                var Agent = await _AgentRepository.GetByIdAsync(AgentID.Value);
+                if (Agent == null)
+                {
+                    return NotFound("Agent ID Not Found");
+                }
+            }
+            if (SellerID != null)
+            {
+                var seller = await _SellerRepository.GetByIdAsync(SellerID.Value);
+
                 if (seller == null)
-                    return NotFound("seller not found.");
-                ActionData = await _AuctionRepository.GetByUserID(null, userId);
-
-
+                {
+                    return NotFound("Seller ID not Found");
+                }
             }
-            else if (User.IsInRole("Agent"))
+
+            List<Auction> ActionData = await _AuctionRepository.GetByUserID(AgentID, SellerID);
+
+            if (ActionData == null || !ActionData.Any())
             {
-                var agent = await _AgentRepository.GetByIdAsync(userId);
-                if (agent == null)
-                    return NotFound("Agent not found.");
-                ActionData = await _AuctionRepository.GetByUserID(userId, null);
-
+                return NotFound("No auctions found for the given input.");
             }
-            else
-            {
-                return Unauthorized("Invalid role.");
-            }
-
-         
 
             List<AuctionDTOShow> ActionShowList = ActionData.Select(a => a.ToAuctionDTOShow()).ToList();
-            foreach (var a in ActionShowList)
-            {
-                a.PropertyDto = _mapper.Map<PropertyDto>(await _propertyRepository.GetByIdAsync(a.PropertyId));
-                var bidsModel = await propertyBidRepository.GetByAuctionIdAsync(a.Id);
-                a.bids = _mapper.Map<List<PropertyBidDto>>(bidsModel);
-                a.NumOfPropertyBids = a.bids.Count;
-                a.LastPropertyBidDto = a.bids.FirstOrDefault();  // No need for null check here
-            }
 
-            return Ok(
-            
-              ActionShowList
-           );
+            return Ok(new
+            {
+                message = "Auctions are",
+                auctions = ActionShowList
+            });
         }
 
-
-        [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll(string? sortByPrice = null, string? sortByTime = null, Status? ISLivestatus = null)
-        {
         
-<<<<<<< Updated upstream
-            var AuctionsModel = await _AuctionRepository.GetAllAsync(sortByPrice, sortByTime, ISLivestatus);
-            if (AuctionsModel == null)
-            {
-
-                return NotFound("Empty Auction List!");
-
-            }
-            var AuctionDto = AuctionsModel.ToAuctionDTOShowList();
-
-            foreach (var auction in AuctionDto)
-            {
-                var property = await _propertyRepository.GetByIdAsync(auction.PropertyId);
-                auction.PropertyDto = _mapper.Map<PropertyDto>(property);
-               
-                var lastPropertyBid = await propertyBidRepository.GetLastBidByAuctionIdAsync(auction.Id);
-                auction.LastPropertyBidDto = _mapper.Map<PropertyBidDto>(lastPropertyBid);
-
-                var propertyBids = await propertyBidRepository.GetByAuctionIdAsync(auction.Id);
-                auction.NumOfPropertyBids = propertyBids.Count();
-            }
-
-            if (AuctionDto == null)
-            {
-
-                return BadRequest("Error! While Fetching Auction List!");
-
-            }
-            return Ok(AuctionDto);
-        }
-
-
         [HttpGet("GetByBuyerID/{id}")]
         public async Task<IActionResult> GetByBuyerID(int id )
-=======
-        [HttpGet("GetByBuyerID")]
-        [Authorize(Roles = "Buyer")]
-        public async Task<IActionResult> GetByBuyerID( )
->>>>>>> Stashed changes
         {
-            string userIdStr = User.FindFirst("userId")?.Value;
-            if (!int.TryParse(userIdStr, out int buyerId))
-                return Unauthorized("Buyer not found.");
 
-            List<Auction>  AuctionModel = await _AuctionRepository.GetByBuyerID(buyerId);
+            List<Auction>  AuctionModel = await _AuctionRepository.GetByBuyerID(id);
+            if (AuctionModel == null||!AuctionModel.Any())
+            {
+
+                return NotFound("BuyerID dont have Auction!");
+
+            }
             var AuctionDto = AuctionModel.ToAuctionDTOShowList();
             if (AuctionDto == null)
             {
@@ -319,15 +370,7 @@ namespace RealEstate.Controllers
                 return BadRequest("Error! While Fetching Product List!");
 
             }
-            foreach (var a in AuctionDto)
-            {
-                a.PropertyDto = _mapper.Map<PropertyDto>(await _propertyRepository.GetByIdAsync(a.PropertyId));
-                var bidsModel = await propertyBidRepository.GetByAuctionIdAsync(a.Id);
-                a.bids = _mapper.Map<List<PropertyBidDto>>(bidsModel);
-                a.NumOfPropertyBids = a.bids.Count;
-                a.LastPropertyBidDto = a.bids.FirstOrDefault();  // No need for null check here
-            }
-            return Ok( AuctionDto );
+            return Ok(new { message = "Action List is :", AuctionDto });
         }
 
 
@@ -373,17 +416,19 @@ namespace RealEstate.Controllers
                 if (User.IsInRole("Seller"))
                 {
                     var seller = await _SellerRepository.GetByIdAsync(userId);
-
                     if (seller == null || seller.IsDeleted)
                         return NotFound($"Seller with ID {userId} does not exist or is deleted!");
 
-                    var highestBid = await _AuctionRepository.GetHighestBidForEndedAuctionsBySellerAsync(userId);
+                    var (property, maxBid) = await _AuctionRepository.GetHighestBidForEndedAuctionsBySellerAsync(userId);
 
-                    if (!highestBid.HasValue)
+                    if (property == null || maxBid == 0)
                         return NotFound("No bids found for this seller's ended auctions");
 
-                    return Ok(new { HighestBid = highestBid });
-
+                    return Ok(new
+                    {
+                        HighestBid = maxBid,
+                        Property = _mapper.Map<PropertyDto>(property)
+                    });
                 }
                 else
                 {
@@ -391,14 +436,17 @@ namespace RealEstate.Controllers
                     if (agent == null || agent.IsDeleted)
                         return NotFound($"Agent with ID {userId} does not exist or is deleted!");
 
-                    var highestBid = await _AuctionRepository.GetHighestBidForEndedAuctionsByAgentAsync(userId);
+                    var (property, maxBid) = await _AuctionRepository.GetHighestBidForEndedAuctionsByAgentAsync(userId);
 
-                    if (!highestBid.HasValue)
-                        return NotFound("No bids found for this seller's ended auctions");
+                    if (property == null || maxBid == 0)
+                        return NotFound("No bids found for this agent's ended auctions");
 
-                    return Ok(new { HighestBid = highestBid });
+                    return Ok(new
+                    {
+                        HighestBid = maxBid,
+                        Property = _mapper.Map<PropertyDto>(property)
+                    });
                 }
-                
             }
             catch (Exception ex)
             {

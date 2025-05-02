@@ -6,7 +6,7 @@ namespace RealEstate.Models.DTOs.ConversationDto
 {
     public class CreateConversationDto
     {
-        public string? FirstAccountId { get; set; }
+        //public string? FirstAccountId { get; set; }
 
         public string? SecondAccountId { get; set; }
     }

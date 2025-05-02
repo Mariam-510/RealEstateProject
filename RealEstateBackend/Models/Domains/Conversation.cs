@@ -10,7 +10,7 @@ namespace RealEstate.Models.Domains
         public int Id { get; set; }
 
         [EnumDataType(typeof(ConversationStatus))]
-        public ConversationStatus Status { get; set; } = ConversationStatus.Pending;
+        public ConversationStatus Status { get; set; } = ConversationStatus.Active;
         
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.Now;

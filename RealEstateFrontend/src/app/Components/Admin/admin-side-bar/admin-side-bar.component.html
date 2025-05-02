@@ -1,88 +1,94 @@
 <div class="dashboard-container d-flex min-vh-100 p-3 bg-light gap-3">
-    <!-- Sidebar -->
-    <div class="sidebar bg-white shadow-sm p-3 position-relative rounded border flex-shrink-0"
-      [class.collapsed]="isCollapsed">
-      <div class="sidebar-header d-flex align-items-center">
-        <button class="btn  fs-3 border-0 menu-btn" (click)="toggleSidebar()">
-          <i class="bi bi-list text-caffe"></i>
-        </button>
-      </div>
-  
-      <ul class="nav flex-column mt-3 ms-2">
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="profile"
-            routerLinkActive="active">
-            <i class="bi bi-person-circle me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Admin Info</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="dashboard"
-            routerLinkActive="active">
-            <i class="bi bi-receipt me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Dashboard</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="viewAllOrder"
-            routerLinkActive="active">
-            <i class="bi bi-eye me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">View All Order</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="CreateAdmin"
-            routerLinkActive="active">
-            <i class="bi bi-person me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Create Admin</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="addProduct"
-            routerLinkActive="active">
-            <i class="bi  bi-box-seam me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Add Product</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="addCatgory"
-            routerLinkActive="active">
-            <i class="bi bi-collection me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Add Category</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="addSubscriptionPlan"
-            routerLinkActive="active">
-            <i class="bi bi-credit-card me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Add Subscription</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="approveproperty"
-            routerLinkActive="active">
-            <i class="bi bi-house-check me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Approve Property</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="approveAgent"            routerLinkActive="active">
-            <i class="bi bi-person-check me-2 text-caffe"></i>
-            <span class="d-md-inline d-none" *ngIf="!isCollapsed">Approve Agent</span>
-          </a>
-        </li>
-      
-      </ul>
+  <!-- Sidebar -->
+  <div class="sidebar bg-white shadow-sm p-3 position-relative rounded border flex-shrink-0"
+    [class.collapsed]="isCollapsed">
+    <div class="sidebar-header d-flex align-items-center">
+      <button class="btn fs-3 border-0 menu-btn" (click)="toggleSidebar()">
+        <i class="bi bi-list text-caffe"></i>
+      </button>
     </div>
-  
-  
-    <!-- Content Area -->
-    <main class="content-area flex-grow-1 bg-white shadow-sm px-4 rounded border d-flex flex-column"
-      style="min-height: 5vh; height: auto;">
-      <router-outlet></router-outlet>
-    </main>
-  
-  
-  
+
+    <ul class="nav flex-column mt-3 ms-2">
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="profile"
+          routerLinkActive="active">
+          <i class="bi bi-person-circle me-2 text-caffe"></i>
+          <span class="d-md-inline d-none" *ngIf="!isCollapsed">Admin Info</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="dashboard"
+          routerLinkActive="active">
+          <i class="bi bi-receipt me-2 text-caffe"></i>
+          <span class="d-md-inline d-none" *ngIf="!isCollapsed">Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
+          routerLink="viewAllOrder" routerLinkActive="active">
+          <i class="bi bi-eye me-2 text-caffe"></i>
+          <span class="d-md-inline d-none" *ngIf="!isCollapsed">View All Order</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <div class="dropdown" #dropdown>
+          <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
+             (click)="toggleDropdown()" [class.active]="isDropdownItemActive()">
+            <i class="bi bi-three-dots-vertical me-2 text-caffe"></i>
+            <span class="d-md-inline d-none" *ngIf="!isCollapsed">More Actions</span>
+          </a>
+          <ul class="dropdown-menu" [class.show]="dropdownOpen">
+            <li>
+              <a class="dropdown-item d-flex align-items-center" routerLink="createAdmin" 
+                 routerLinkActive="active" (click)="preventClose($event)">
+                <i class="bi bi-person me-2 text-caffe"></i>
+                <span>Create Admin</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" routerLink="addProduct" 
+                 routerLinkActive="active" (click)="preventClose($event)">
+                <i class="bi bi-box-seam me-2 text-caffe"></i>
+                <span>Add Product</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" routerLink="addCatgory" 
+                 routerLinkActive="active" (click)="preventClose($event)">
+                <i class="bi bi-collection me-2 text-caffe"></i>
+                <span>Add Category</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" routerLink="addSubscriptionPlan" 
+                 routerLinkActive="active" (click)="preventClose($event)">
+                <i class="bi bi-credit-card me-2 text-caffe"></i>
+                <span>Add Subscription</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" routerLink="approveProperty" 
+                 routerLinkActive="active" (click)="preventClose($event)">
+                <i class="bi bi-house-check me-2 text-caffe"></i>
+                <span>Approve Property</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" routerLink="approveAgent" 
+                 routerLinkActive="active" (click)="preventClose($event)">
+                <i class="bi bi-person-check me-2 text-caffe"></i>
+                <span>Approve Agent</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
   </div>
-  
+
+  <!-- Content Area -->
+  <main class="content-area flex-grow-1 bg-white shadow-sm px-4 rounded border d-flex flex-column"
+    style="min-height: 5vh; height: auto;">
+    <router-outlet></router-outlet>
+  </main>
+</div>

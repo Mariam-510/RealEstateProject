@@ -1,7 +1,11 @@
-﻿using System.Transactions;
+﻿using System.Security.Claims;
+using System.Transactions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using RealEstate.Hubs;
 using RealEstate.Mapping;
 using RealEstate.Models.Domains;
 using RealEstate.Models.DTOs.ConversationDto;
@@ -16,13 +20,16 @@ namespace RealEstate.Controllers
     {
         public IMessageRepository _messageRepository { get; }
         public IConversationRepository _conversationRepository { get; }
+
+        private readonly IHubContext<ChatHub> _hubContext;
         public UserManager<Account> _userManager { get; }
 
-        public MessagesController(IMessageRepository messageRepository, IConversationRepository conversationRepository, UserManager<Account> userManager)
+        public MessagesController(IMessageRepository messageRepository, IConversationRepository conversationRepository, IHubContext<ChatHub> hubContext, UserManager<Account> userManager)
         {
             _messageRepository = messageRepository;
             _conversationRepository = conversationRepository;
             _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         [HttpGet]
@@ -47,9 +54,12 @@ namespace RealEstate.Controllers
         }
 
         [HttpGet]
-        [Route("GetByConversationId/{conversationId}")]
-        public async Task<IActionResult> GetByConversationId(int conversationId, string currentUserAccountId = "415f3e96-5745-4341-b9c2-5d154eef02fe")
+        [Route("GetAllMessages/{conversationId}")]
+        public async Task<IActionResult> GetByConversationId(int conversationId)
         {
+            var currentUserAccountId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserAccountId == null) return Unauthorized();
+
             //var currentUserAccountId = User.FindFirst("UserAccountId")?.Value;
 
             var conversation = await _conversationRepository.GetByIdAsync(conversationId);
@@ -71,16 +81,26 @@ namespace RealEstate.Controllers
 
         [HttpPost]
         [Route("Create")]
-        public async Task<IActionResult> Create([FromBody]CreateMessageDto createMessageDto, string currentUserAccountId = "fb074e1e-a722-405b-878b-68db2038cd35")
+        [Authorize(Roles = "Buyer,Seller,Agent")]
+        public async Task<IActionResult> CreateMessage([FromBody]CreateMessageDto createMessageDto)
         {
             //var currentUserAccountId = User.FindFirst("UserAccountId")?.Value;
+
+            var currentUserAccountId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserAccountId == null) return Unauthorized();
+
+            //Get receiver account id through conversation
+            var conversation = await _conversationRepository.GetByIdAsync(createMessageDto.ConversationId);
+            if (conversation == null)
+                return NotFound("Conversation not found!");
+            string otherUserId = conversation.FirstAccountId == currentUserAccountId
+            ? conversation.SecondAccountId
+            : conversation.FirstAccountId;
+
 
             if (createMessageDto == null)
                 return BadRequest("Invalid message data!");
 
-            var conversation = await _conversationRepository.GetByIdAsync(createMessageDto.ConversationId);
-            if (conversation == null)
-                return NotFound("Conversation not found!");
 
             bool isParticipant = conversation.FirstAccountId == currentUserAccountId
                       || conversation.SecondAccountId == currentUserAccountId;
@@ -138,6 +158,9 @@ namespace RealEstate.Controllers
             await _conversationRepository.UpdateAsync(conversation);
 
             var response = addedMessage.MessageResponseDto();
+
+            //Update chat realtime 
+            await _hubContext.Clients.Group(otherUserId).SendAsync("ReceiveMessage", response);
 
             return Ok(response);
         }

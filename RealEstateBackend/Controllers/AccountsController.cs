@@ -23,6 +23,8 @@ using System.Transactions;
 
 using Account = RealEstate.Models.Domains.Account;
 using System.Text.Json;
+using RealEstate.Models.Dtos.BuyerDto;
+using RealEstate.Models.DTOs.AccountDto;
 
 namespace RealEstate.Controllers
 {
@@ -42,11 +44,12 @@ namespace RealEstate.Controllers
         public ISubscriptionRepository SubscriptionRepository { get; }
         public ISubscriptionPlanRepository SubscriptionPlanRepository { get; }
         public GoogleService GoogleService { get; }
+        public IPropertyRepository PropertyRepository { get; }
 
         public AccountsController(UserManager<Account> userManager, JWTService tokenService, IMapper Mapper, EmailService emailService,
             IBuyerRepository buyerRepository, ISellerRepository sellerRepository, IAgentRepository agentRepository, FileService fileService,
             ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, ISubscriptionPlanRepository subscriptionPlanRepository,
-            GoogleService googleService)
+            GoogleService googleService, IPropertyRepository propertyRepository)
         {
             UserManager = userManager;
             TokenService = tokenService;
@@ -60,6 +63,7 @@ namespace RealEstate.Controllers
             SubscriptionRepository = subscriptionRepository;
             SubscriptionPlanRepository = subscriptionPlanRepository;
             GoogleService = googleService;
+            PropertyRepository = propertyRepository;
         }
 
 
@@ -94,7 +98,7 @@ namespace RealEstate.Controllers
                     }
 
                     var account = Mapper.Map<Account>(registerSellerOrBuyerDto);
-                    account.CreatedAt = DateTime.Now;
+                    account.CreatedAt = DateTime.Now.AddHours(1);
                     account.UserName = registerSellerOrBuyerDto.Email;
                     account.EmailConfirmationCode = null;
                     account.CodeGeneratedAt = null;
@@ -182,7 +186,7 @@ namespace RealEstate.Controllers
 
                         // Store the code temporarily (in DB or cache)
                         account.EmailConfirmationCode = confirmationCode;
-                        account.CodeGeneratedAt = DateTime.Now;
+                        account.CodeGeneratedAt = DateTime.Now.AddHours(1);
                         await UserManager.UpdateAsync(account);
 
                         string emailBody = $@"
@@ -254,7 +258,7 @@ namespace RealEstate.Controllers
                     }
 
                     var account = Mapper.Map<Account>(registerAgentDto);
-                    account.CreatedAt = DateTime.Now;
+                    account.CreatedAt = DateTime.Now.AddHours(1);
                     account.UserName = registerAgentDto.Email;
                     account.EmailConfirmationCode = null;
                     account.CodeGeneratedAt = null;
@@ -303,7 +307,7 @@ namespace RealEstate.Controllers
 
                             // Store the code temporarily (in DB or cache)
                             account.EmailConfirmationCode = confirmationCode;
-                            account.CodeGeneratedAt = DateTime.Now;
+                            account.CodeGeneratedAt = DateTime.Now.AddHours(1);
                             await UserManager.UpdateAsync(account);
 
                             string emailBody = $@"
@@ -464,7 +468,7 @@ namespace RealEstate.Controllers
                 return Conflict(new { message = "Email is already confirmed." });
 
             // Optional: Expire the code after 2 minutes
-            if (user.CodeGeneratedAt.HasValue && (DateTime.Now - user.CodeGeneratedAt.Value).TotalMinutes > 2)
+            if (user.CodeGeneratedAt.HasValue && (DateTime.Now.AddHours(1) - user.CodeGeneratedAt.Value).TotalMinutes > 2)
                 return BadRequest(new { message = "The confirmation code has expired." });
 
             if (user.EmailConfirmationCode != code)
@@ -509,7 +513,7 @@ namespace RealEstate.Controllers
 
                     // Store the code temporarily (in DB or cache)
                     account.EmailConfirmationCode = confirmationCode;
-                    account.CodeGeneratedAt = DateTime.Now;
+                    account.CodeGeneratedAt = DateTime.Now.AddHours(1);
                     await UserManager.UpdateAsync(account);
 
                     string emailBody = $@"
@@ -705,7 +709,7 @@ namespace RealEstate.Controllers
                         {
                             Email = userInfo.Email,
                             UserName = userInfo.Email,
-                            CreatedAt = DateTime.Now,
+                            CreatedAt = DateTime.Now.AddHours(1),
                             ImageUrl = null,
                             EmailConfirmationCode = null,
                             CodeGeneratedAt = null,
@@ -822,7 +826,7 @@ namespace RealEstate.Controllers
                         {
                             Email = dto.Email,
                             UserName = dto.Email,
-                            CreatedAt = DateTime.Now,
+                            CreatedAt = DateTime.Now.AddHours(1),
                             ImageUrl = null,
                             EmailConfirmationCode = null,
                             CodeGeneratedAt = null,
@@ -915,5 +919,95 @@ namespace RealEstate.Controllers
         }
 
 
+        [HttpGet("GetRecipientAccountId/{propertyId}")]
+        [Authorize(Roles = "Buyer")]
+        //public async Task<ActionResult<UserDto>> GetByPropertyId(int propertyId)
+        public async Task<ActionResult> GetByPropertyId(int propertyId)
+        {
+            // Fetch the property details to get the OwnerId
+            var property = await PropertyRepository.GetByIdAsync(propertyId);
+
+            if (property == null)
+            {
+                return NotFound(new { message = "Property not found." });
+            }
+
+            // Fetch the owner of the property
+            var owner = await UserManager.FindByIdAsync(property.AgentId != null ? property.Agent.AccountId : property.Seller.AccountId); // Assuming Property entity has OwnerId
+
+            if (owner == null)
+            {
+                return NotFound(new { message = "Property owner not found." });
+            }
+
+            // Retrieve the user's roles
+            var roles = await UserManager.GetRolesAsync(owner);
+
+            // Map the user data to the DTO
+            //var userDto = new UserDto
+            //{
+            //    AccountId = owner.Id,  // From IdentityUser
+            //    UserId = null,
+            //    Email = owner.Email,
+            //    FirstName = owner.UserName,
+            //    LastName = null,
+            //    ImageUrl = owner.ImageUrl,
+            //    Roles = roles.ToList(),
+            //    TokenExpiration = null  // Example expiration logic
+            //};
+
+            return Ok(owner.Id);
+        }
+
+        [HttpGet("GetUserInfo/{accountId}")]
+        public async Task<IActionResult> GetUserByAccountId(string accountId)
+        {
+            var buyer = await BuyerRepository.GetByAccountIdAsync(accountId);
+            if (buyer != null)
+            {
+                var dto = new UserDto
+                {
+                    UserId = buyer.Id,
+                    FirstName = buyer.FirstName,
+                    LastName = buyer.LastName,
+                    AccountId = buyer.AccountId!,
+                    ImageUrl = buyer.Account.ImageUrl,
+                    Roles = ["Buyer"]
+                };
+                return Ok(dto);
+            }
+
+            var seller = await SellerRepository.GetByAccountIdAsync(accountId);
+            if (seller != null)
+            {
+                var dto = new UserDto
+                {
+                    UserId = seller.Id,
+                    FirstName = seller.FirstName,
+                    LastName = seller.LastName,
+                    AccountId = seller.AccountId!,
+                    ImageUrl = seller.Account.ImageUrl,
+                    Roles = ["Seller"]
+                };
+                return Ok(dto);
+            }
+
+            var agent = await AgentRepository.GetByAccountIdAsync(accountId);
+            if (agent != null)
+            {
+                var dto = new UserDto
+                {
+                    UserId = agent.Id,
+                    FirstName = agent.Name,
+                    LastName = null,
+                    AccountId = agent.AccountId!,
+                    ImageUrl = agent.Account.ImageUrl,
+                    Roles = ["Agent"]
+                };
+                return Ok(dto);
+            }
+
+            return NotFound($"No user found with AccountId: {accountId}");
+        }
     }
 }

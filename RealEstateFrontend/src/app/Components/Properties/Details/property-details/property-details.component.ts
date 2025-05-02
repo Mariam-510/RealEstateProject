@@ -12,6 +12,9 @@ import { WishListService } from '../../../../Services/ApiServices/wish-list.serv
 import { ToastrService } from '../../../../Services/toastr.service';
 import { lastValueFrom } from 'rxjs';
 import { API_CONFIG } from '../../../../app.config';
+import { AccountService } from '../../../../Services/ApiServices/account.service';
+import { ConversationService } from '../../../../Services/ApiServices/conversation.service';
+import { AuctionDTOShow, AuctionService } from '../../../../Services/ApiServices/auction.service';
 
 declare var bootstrap: any; // Required for Bootstrap modal handling
 
@@ -24,7 +27,7 @@ declare var bootstrap: any; // Required for Bootstrap modal handling
   templateUrl: './property-details.component.html',
   styleUrl: './property-details.component.css'
 })
-export class PropertyDetailsComponent implements AfterViewInit {
+export class PropertyDetailsComponent implements OnInit ,AfterViewInit {
   Math = Math;
   icons: any;
 
@@ -40,13 +43,16 @@ export class PropertyDetailsComponent implements AfterViewInit {
   isNavigationSticky: boolean = false;
   currentActiveSection: string = 'overview';
   isFavorited: boolean = false;
+  recipientId: string | undefined;
 
   private lastScrollTop: number = 0;
   private navBarHeight: number = 0;
+  auction: AuctionDTOShow | null = null;
 
   constructor(private renderer: Renderer2, private elRef: ElementRef, private cdr: ChangeDetectorRef,
     private propertyService: PropertyService, private wishListService: WishListService,
-    private auth: AuthService, private route: ActivatedRoute, private toastr: ToastrService
+    private auth: AuthService, private route: ActivatedRoute, private toastr: ToastrService, private account: AccountService,
+    private conversationService: ConversationService, private auctionService: AuctionService,
   ) { }
 
   openPhotosModal() {
@@ -62,6 +68,10 @@ export class PropertyDetailsComponent implements AfterViewInit {
     try {
       const propertyId = Number(this.route.snapshot.paramMap.get('id'));
       await this.loadProperty(propertyId);
+
+      if (this.property?.status === 'Auctioned') {
+        await this.loadAuctionByProperty(this.property?.id);
+      }
 
       // Initialize icons after property is loaded
       this.icons = this.createIcons();
@@ -86,6 +96,27 @@ export class PropertyDetailsComponent implements AfterViewInit {
       this.property = null;
       console.error('Error loading property:', err);
       // Consider redirecting to error page or showing message
+    }
+  }
+
+  async loadAuctionByProperty(propertyId: number): Promise<void> {
+    try {
+      const auction$ = this.auctionService.getAuctionByPropertyId(propertyId);
+      const auction = await lastValueFrom(auction$);
+
+      // Convert dates
+      this.auction = {
+        ...auction,
+        startTime: new Date(auction.startTime),
+        endTime: new Date(auction.endTime)
+      };
+      console.log(this.auction);
+
+
+    } catch (error) {
+      console.error('Failed to load auction:', error);
+    } finally {
+      this.isLoading = false;
     }
   }
 
@@ -365,5 +396,86 @@ export class PropertyDetailsComponent implements AfterViewInit {
       window.location.href = `/book/${property?.id}?type=${selectedOption}`;
     }
   }
+
+  @ViewChild('chatWindow') chatWindow!: ChatmodalComponent;
+//   openChat() {
+//   if (!this.property) return;
+
+//   this.account.getRecipientAccountId(this.property.id).subscribe({
+//     next: (accountId) => {
+//       this.recipientId = accountId;
+      
+//       // console.log(this.recipientId);
+
+//       // Create conversation after getting recipient ID
+//       this.conversationService.createConversation(this.recipientId).subscribe({
+//         next: () => {
+//           // Only open chat window if conversation creation succeeds
+//           // console.log('Before');
+//           // console.log('After');
+//         },
+//         error: (convError) => {
+//           console.error('Conversation creation failed:', convError);
+//           // Handle conversation error (e.g., show error message)
+//         }
+//       });
+//       this.chatWindow.toggle();
+//     },
+//     error: (err) => {
+//       console.error('Error fetching user:', err);
+//       // Handle account ID error
+//     }
+//   });
+// }
+
+// Update the openChat method in parent component
+openChat() {
+  if (!this.property) return;
+
+  const currentUserId = this.auth.getCurrentUser()?.accountId;
+  if (!currentUserId) return;
+
+  this.account.getRecipientAccountId(this.property.id).subscribe({
+    next: (accountId) => {
+      this.recipientId = accountId;
+
+      console.log(currentUserId);
+      console.log(this.recipientId);
+
+      // First check if conversation exists
+      this.conversationService.existingConversation(this.recipientId).subscribe({
+        next: (conversationExists) => {
+          if (conversationExists) {
+            // If exists, find the conversation ID
+            this.conversationService.getConversationBetweenUsers(accountId).subscribe({
+              next: (conversation) => {
+                this.chatWindow.initializeChat(conversation.id);
+                this.chatWindow.toggle();
+              },
+              error: (err) => {
+                console.error('Error fetching conversation:', err);
+                this.chatWindow.toggle();
+              }
+            });
+          } else {
+            // Create new conversation
+            this.conversationService.createConversation(accountId).subscribe({
+              next: (newConversation) => {
+                this.chatWindow.initializeChat(newConversation.id);
+                this.chatWindow.toggle();
+              },
+              error: (convError) => {
+                console.error('Conversation creation failed:', convError);
+                this.toastr.error('Failed to start conversation');
+              }
+            });
+          }
+        },
+        error: (err) => console.error('Error checking conversation:', err)
+      });
+    },
+    error: (err) => console.error('Error fetching recipient:', err)
+  });
+}
   
 }

@@ -6,7 +6,7 @@
         <h1 class="main-title ps-5" style="font-size: 5rem;">Achieve <span class="highlight">more</span></h1>
         <h2 class="subtitle ps-5 fs-3">with our fortnightly property auctions</h2>
 
-        <p class="fs-4 fw-bold mt-4 ps-5 description">The U.K's property auction website.</p>
+        <p class="fs-4 fw-bold mt-4 ps-5 description">The Egypt's property auction website.</p>
         <p class="fs-5 ps-5">Buying or selling, investing or flipping, we've got you covered.</p>
 
         <div class="d-flex w-75 ps-5 gap-2 align-items-center">
@@ -53,7 +53,9 @@
               <li>Review the legal pack(s)</li>
             </ol>
 
-            <button class="view-lots-btn w-50  d-block mx-auto p-1 rounded-2 fs-5 fw-bold">View lots</button>
+            <a [routerLink]="['/auctions', nearestAuction?.id]"
+              class="btn view-lots-btn w-50  d-block mx-auto p-1 rounded-2 fs-5 fw-bold bg-caffe text-white">View lots
+            </a>
           </div>
         </div>
       </div>

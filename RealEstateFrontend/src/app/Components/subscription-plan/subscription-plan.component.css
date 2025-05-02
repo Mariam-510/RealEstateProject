@@ -1,0 +1,20 @@
+.pricing-card {
+    transition: transform 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,.125);
+}
+.pricing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.1);
+}
+.highlight-card {
+    border: 2px solid #c38e79;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+}
+.centered-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+ 
+  }

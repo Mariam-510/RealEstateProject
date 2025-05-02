@@ -21,15 +21,11 @@
           <!-- <img [src]="buyer?.imageUrl" alt="User Avatar" class="rounded-circle img-fluid" style="max-width: 200px;"> -->
 
           <ng-container *ngIf="userImage; else defaultIcon">
-            <img [src]="userImage" alt="User" class="rounded-circle img-fluid" style="max-width: 200px;">
+            <img [src]="userImage" alt="User" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover;">
           </ng-container>
 
-          <ng-template #defaultIcon>
-            <!-- 4a2c2a -->
-            <div
-              style="width: 200px; height: 200px; border-radius: 50%; border: 5px solid #4a2c2ad1; display: flex; align-items: center; justify-content: center;">
-              <i class="fas fa-user" style="color: #4a2c2ad1; font-size: 9rem;"></i>
-            </div>
+          <ng-template #defaultIcon>  <!-- 4a2c2a -->
+            <img src="images/user.png" alt="Default Icon"  style="width: 200px; height:200px ;">
           </ng-template>
 
           <!-- <div class="camera-icon position-absolute" (click)="uploadImage()">
@@ -66,7 +62,7 @@
       <div class="col-lg-8 ps-5">
         <div class="row mt-4">
           <!-- First Name -->
-          <div class="col-12 mb-4 mt-3">
+          <div class="col-12 mb-3 mt-3">
             <label class="form-label fw-semibold mb-0" style="font-size: 17px;">First Name</label>
             <div class="input-group">
               <span class="input-group-text bg-light border-0">
@@ -90,7 +86,7 @@
           </div>
 
           <!-- Last Name -->
-          <div class="col-12 mb-4">
+          <div class="col-12 mb-3">
             <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Last Name</label>
             <div class="input-group">
               <span class="input-group-text bg-light border-0">
@@ -109,52 +105,66 @@
             </div>
           </div>
 
-          <div class="col-12 mb-4">
+          <div class="col-12 mb-3">
             <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Current Password</label>
             <div class="input-group">
               <span class="input-group-text bg-light border-0"><i class="bi bi-key text-muted brown-icon"></i></span>
-              <input type="password" class="form-control border-0 shadow-sm" placeholder="current password"
-                formControlName="currentPassword">
+              <input [type]="showCurrentPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm"
+                placeholder="currentPassword" formControlName="currentPassword">
+              <span class="input-group-text bg-light border-0" style="cursor: pointer;"
+                (click)="toggleCurrentPasswordVisibility()">
+                <i class="bi fs-5" [class.bi-eye-fill]="showCurrentPassword" [class.bi-eye-slash-fill]="!showCurrentPassword"></i>
+              </span>
             </div>
           </div>
 
           <!-- Password -->
-          <div class="col-12 mb-4">
+          <div class="col-12 mb-3">
             <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Password</label>
             <div class="input-group">
               <span class="input-group-text bg-light border-0"><i class="bi bi-key text-muted brown-icon"></i></span>
-              <input type="password" class="form-control border-0 shadow-sm" placeholder="password"
-                formControlName="newPassword">
+              <input [type]="showPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm"
+                placeholder="password" formControlName="password">
+              <span class="input-group-text bg-light border-0" style="cursor: pointer;"
+                (click)="togglePasswordVisibility()">
+                <i class="bi fs-5" [class.bi-eye-fill]="showPassword" [class.bi-eye-slash-fill]="!showPassword"></i>
+              </span>
             </div>
-            <div *ngIf="MyForm.get('newPassword')?.hasError('minlength') && MyForm.get('newPassword')?.touched"
+            <div *ngIf="MyForm.get('password')?.hasError('minlength') && MyForm.get('password')?.touched"
               class="text-danger small ps-2">
               Password must be at least 6 characters.
             </div>
-            <div *ngIf="MyForm.get('newPassword')?.hasError('maxlength') && MyForm.get('newPassword')?.touched"
+            <div *ngIf="MyForm.get('password')?.hasError('maxlength') && MyForm.get('password')?.touched"
               class="text-danger small ps-2">
               Password cannot exceed 10 characters.
             </div>
-            <div *ngIf="MyForm.get('newPassword')?.hasError('pattern') && MyForm.get('newPassword')?.touched"
+            <div *ngIf="MyForm.get('password')?.hasError('pattern') && MyForm.get('password')?.touched"
               class="text-danger small ps-2">
               Password include uppercase, lowercase, number, and special character.
             </div>
           </div>
 
           <!-- Confirm Password -->
-          <div class="col-12 mb-4">
+          <div class="col-12 mb-3">
             <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Confirm Password</label>
             <div class="input-group">
               <span class="input-group-text bg-light border-0"><i
                   class="bi bi-key-fill text-muted brown-icon fs-5"></i></span>
-              <input type="password" class="form-control border-0 shadow-sm" placeholder="Confirm password"
-                formControlName="confirmNewPassword">
+              <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm"
+                placeholder="Confirm password" formControlName="confirmPassword">
+              <span class="input-group-text bg-light border-0" style="cursor: pointer;"
+                (click)="toggleConfirmPasswordVisibility()">
+                <i class="bi fs-5" [class.bi-eye-fill]="showConfirmPassword"
+                  [class.bi-eye-slash-fill]="!showConfirmPassword"></i>
+              </span>
             </div>
             <div
-              *ngIf="MyForm.get('newPassword')?.touched && MyForm.get('confirmNewPassword')?.touched && MyForm.get('newPassword')?.value !== MyForm.get('confirmNewPassword')?.value"
+              *ngIf="MyForm.get('password')?.touched && MyForm.get('confirmPassword')?.touched && MyForm.get('password')?.value !== MyForm.get('confirmPassword')?.value"
               class="text-danger small ps-2">
               Confirm Passwords do not match.
             </div>
           </div>
+
 
           <div class="error text-danger ms-3">
             {{errorMes}}

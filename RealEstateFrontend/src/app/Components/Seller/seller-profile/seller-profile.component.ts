@@ -10,7 +10,7 @@ import { RouterModule, Router } from '@angular/router'
   styleUrl: './seller-profile.component.css'
 })
 export class SellerProfileComponent {
-  userImage: string = 'images/Home/user.jpeg';
+  userImage: string | null = null;
   currentUser: any;
   MyForm!: FormGroup;
 
@@ -33,41 +33,33 @@ export class SellerProfileComponent {
         Validators.minLength(3),
         Validators.pattern(/^[A-Za-z]+$/)
       ]),
+      currentPassword: new FormControl(''),
       
       password: new FormControl("", [
-        Validators.required,
         Validators.minLength(6),
         Validators.maxLength(10),
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*?&])[A-Za-z\d@#$!%*?&]{6,10}$/)
 
       ]),
-      confirmPassword: new FormControl("", [
-        Validators.required
-      ])
+      confirmPassword: new FormControl('')
+
     },
   );
 }
-  
+showPassword: boolean = false;
+showConfirmPassword: boolean = false;
+showCurrentPassword: boolean = false;
+toggleCurrentPasswordVisibility(): void {
+  this.showCurrentPassword = !this.showCurrentPassword;
+}     
+togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+}
 
-  // uploadImage() {
-  //   const input = document.createElement('input');
-  //   input.type = 'file';
-  //   input.accept = 'Images/*';
-
-  //   input.onchange = (event: Event) => {
-  //     const file = (event.target as HTMLInputElement).files?.[0];
-  //     if (file) {
-  //       const reader = new FileReader();
-  //       reader.onload = (e) => {
-  //         this.currentUser.avatar = e.target?.result;
-  //       };
-  //       reader.readAsDataURL(file);
-  //     }
-  //   };
-
-  //   input.click();
-  // }
-  uploadImage() {
+toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+}
+uploadImage() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -103,7 +95,10 @@ export class SellerProfileComponent {
   
     input.click();
   }
+  removeImage() {
+    this.userImage = null;
   
+  }
 
   register() {
     if (this.MyForm.invalid) {

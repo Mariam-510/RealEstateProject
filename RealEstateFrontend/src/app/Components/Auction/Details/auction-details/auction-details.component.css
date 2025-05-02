@@ -1,46 +1,51 @@
 .hover-effect .img-wrapper {
-    position: relative;
-    overflow: hidden;
-    }
-    
-    .hover-effect img {
-    transition: transform 1.2s ease, filter 1.2s ease;
-    width: 100%;
-    height: 100%;
-    display: block;
-    }
-    
-    .hover-effect .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.3); /* light overlay */
-    opacity: 0;
-    transition: opacity 1.2s ease;
-    }
-    
-    .hover-effect .img-wrapper:hover img {
-    transform: scale(1.05);
-    }
-    
-    .hover-effect .img-wrapper:hover .overlay {
-    opacity: 1;
-    }
-    .bp-homeActionButton {
-      color: #c38e79;
-      background-color: #fefefe;
-    }
-    .bp-SvgIcon {
-      fill: #c38e79 !important;
-    }
-    .fav-btn:hover,
-.share:hover {
-transform: scale(1.05);
-transition: all 0.3s ease-in-out !important;
-background-color:#dad6d6;
+  position: relative;
+  overflow: hidden;
 }
+
+.hover-effect img {
+  transition: transform 1.2s ease, filter 1.2s ease;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hover-effect .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.3);
+  /* light overlay */
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.hover-effect .img-wrapper:hover img {
+  transform: scale(1.05);
+}
+
+.hover-effect .img-wrapper:hover .overlay {
+  opacity: 1;
+}
+
+.bp-homeActionButton {
+  color: #c38e79;
+  background-color: #fefefe;
+}
+
+.bp-SvgIcon {
+  fill: #c38e79 !important;
+}
+
+.fav-btn:hover,
+.share:hover {
+  transform: scale(1.05);
+  transition: all 0.3s ease-in-out !important;
+  background-color: #dad6d6;
+}
+
 .custom-btn {
   background-color: #f5f5f5;
   border: 1px solid #dcdcdc;
@@ -51,229 +56,235 @@ background-color:#dad6d6;
   box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
+
 /* --------------------------------------------------------------------------------------------------------- */
 /* From Angular */
 /* Updated CSS */
 .smooth-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
-    top: none !important;
-    z-index: 1001;
-  }
-  
-  .fixed-event-card {
-    position: fixed !important;
-    top: calc(20px + var(--sticky-header-height)) !important;
-    z-index: 1001;
-  }
-  
-  .sticky-header {
-    position: relative;
-    overflow: hidden;
-    height: 100px;
-    /* Initial height (Title Height) */
-    transition: height 0.5s ease-in-out;
-  }
-  
-  .event-title {
-    background: black;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: height 0.3s ease, opacity 0.3s ease;
-  }
-  
-  .event-image {
-    width: 100%;
-    height: 0;
-    /* Initially Hidden */
-    overflow: hidden;
-    transition: height 0.3s ease;
-  }
-  
-  .fixed-event-card .sticky-header {
-    height: 100px;
-    /* Keep the title height consistent */
-  }
-  
-  .fixed-event-card .event-title {
-    height: 100px;
-    /* Keep the title visible */
-    opacity: 1;
-    visibility: visible;
-  }
-  
-  .fixed-event-card .event-image {
-    height: 0;
-    /* Hide Image */
-    opacity: 0;
-    visibility: hidden;
-  }
-  
-  
-  :root {
-    --sticky-header-height: 0px;
-    /* Default value */
-  }
-  
-  @media (max-width: 768px) {
-    .smooth-card {
-      width: 280px !important;
-      right: 10px !important;
-    }
-  
-    .fixed-event-card {
-      transform: translateY(10px) !important;
-    }
-  }
-  
-  .tab-links {
-    width: 100% !important;
-    display: flex;
-    /* gap: 0px; */
-    /* padding: 15px; */
-    border-bottom: 2px solid #ddd;
-    background-color: white;
-    position: relative;
-    transition: all 0.3s ease-in-out;
-    /* z-index: -1; */
-  }
-  
-  .tab-links a {
-    text-decoration: none;
-    /* font-weight: bold; */
-    /* text-transform: uppercase; */
-    color: #4a2c2a;
-    font-weight: 2rem;
-    position: relative;
-    transition: color 0.3s ease-in-out;
-  }
-  
-  .tab-links a.active::after,
-  .tab-links a:hover::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -5px;
-    width: 100%;
-    height: 3px;
-    background-color: #c38e79;
-  
-  }
-  
-  .sticky {
-    position: fixed !important;
-    top: 0;
-    /* left: 30px; */
-    /* width: 100%; */
-    background: white;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-  }
-  
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+  top: none !important;
+  z-index: 1004;
+}
 
-  @media (max-width: 992px) {
-    section {
-      width: 100%;
-    }
+.fixed-event-card {
+  position: fixed !important;
+  top: calc(20px + var(--sticky-header-height)) !important;
+  z-index: 1004;
+}
+
+.sticky-header {
+  position: relative;
+  overflow: hidden;
+  height: 100px;
+  /* Initial height (Title Height) */
+  transition: height 0.5s ease-in-out;
+}
+
+.event-title {
+  background: black;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: height 0.3s ease, opacity 0.3s ease;
+}
+
+.event-image {
+  width: 100%;
+  height: 0;
+  /* Initially Hidden */
+  overflow: hidden;
+  transition: height 0.3s ease;
+}
+
+.fixed-event-card .sticky-header {
+  height: 100px;
+  /* Keep the title height consistent */
+}
+
+.fixed-event-card .event-title {
+  height: 100px;
+  /* Keep the title visible */
+  opacity: 1;
+  visibility: visible;
+}
+
+.fixed-event-card .event-image {
+  height: 0;
+  /* Hide Image */
+  opacity: 0;
+  visibility: hidden;
+}
+
+
+:root {
+  --sticky-header-height: 0px;
+  /* Default value */
+}
+
+@media (max-width: 768px) {
+  .smooth-card {
+    width: 280px !important;
+    right: 10px !important;
   }
-  
+
+  .fixed-event-card {
+    transform: translateY(10px) !important;
+  }
+}
+
+.tab-links {
+  width: 100% !important;
+  display: flex;
+  /* gap: 0px; */
+  /* padding: 15px; */
+  border-bottom: 2px solid #ddd;
+  background-color: white;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  /* z-index: -1; */
+}
+
+.tab-links a {
+  text-decoration: none;
+  /* font-weight: bold; */
+  /* text-transform: uppercase; */
+  color: #4a2c2a;
+  font-weight: 2rem;
+  position: relative;
+  transition: color 0.3s ease-in-out;
+}
+
+.tab-links a.active::after,
+.tab-links a:hover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 100%;
+  height: 3px;
+  background-color: #c38e79;
+
+}
+
+.sticky {
+  position: fixed !important;
+  top: 0;
+  /* left: 30px; */
+  /* width: 100%; */
+  background: white;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1006;
+  padding-top: 1.7rem !important;
+  padding-bottom: 1.7rem !important;
+}
+
+
+@media (max-width: 992px) {
+  section {
+    width: 100%;
+  }
+}
+
 /* ________________________________________________________________________________________ */
 .custom-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.custom-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(195, 142, 121, 0.2);
+}
+
+.rounded-bottom {
+  clip-path: ellipse(90% 100% at center top);
+}
+
+.cartTitle {
+  background: linear-gradient(135deg, #2d1a0e 0%, #4a2c1a 100%);
+  min-height: 115px;
+}
+
+.cartTitle div {
+  font-size: clamp(18px, 1.6vw, 26px);
+  word-break: break-word;
+  max-width: 90%;
+  hyphens: auto;
+}
+
+.terracotta-bg {
+  transition: all 0.2s ease;
+}
+
+.terracotta-bg:hover {
+  background-color: #b07f6b !important;
+}
+
+.color-swatch {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.color-swatch:hover {
+  transform: scale(1.05);
+}
+
+.color-swatch-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #4a2c2a;
+}
+
+.color-swatch-num:hover {
+  transform: scale(1.05);
+}
+
+.color-hover-container {
+  position: absolute;
+  top: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1002;
+  display: none;
+}
+
+.color-swatch-num:hover+.color-hover-container {
+  display: block;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
   }
-  
-  .custom-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 32px rgba(195, 142, 121, 0.2);
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .rounded-bottom {
-    clip-path: ellipse(90% 100% at center top);
-  }
-  
-  .cartTitle {
-    background: linear-gradient(135deg, #2d1a0e 0%, #4a2c1a 100%);
-    min-height: 115px;
-  }
-  
-  .cartTitle div {
-    font-size: clamp(18px, 1.6vw, 26px);
-    word-break: break-word;
-    max-width: 90%;
-    hyphens: auto;
-  }
-  .terracotta-bg {
-    transition: all 0.2s ease;
-  }
-  
-  .terracotta-bg:hover {
-    background-color: #b07f6b !important;
-  }
-  
-  .color-swatch {
-    width: 45px;
-    height: 45px;
-    border-radius: 8px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .color-swatch:hover {
-    transform: scale(1.05);
-  }
-  
-  .color-swatch-num {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    font-size: 0.85rem;
-    color: #4a2c2a;
-  }
-  
-  .color-swatch-num:hover {
-    transform: scale(1.05);
-  }
-  
-  .color-hover-container {
-    position: absolute;
-    top: 100%;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1002;
-    display: none;
-  }
-  
-  .color-swatch-num:hover+.color-hover-container {
-    display: block;
-    animation: fadeIn 0.2s ease-in-out;
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-8px);
-    }
-  
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  .bg-light-caffe{
-    background-color: #dbb9ad6e !important;
-  }
-  .custumBottomBorder {
-    border-bottom: 2.5px solid #c38e791a;
-  }
-  
-  /* Add seller avatar styling */
+}
+
+.bg-light-caffe {
+  background-color: #dbb9ad6e !important;
+}
+
+.custumBottomBorder {
+  border-bottom: 2.5px solid #c38e791a;
+}
+
+/* Add seller avatar styling */
 /* .seller-avatar {
     border: 2px solid #6f4e37;
     padding: 2px;
@@ -281,7 +292,8 @@ background-color:#dad6d6;
 
 .avatar-container {
   display: inline-block;
-  border: 2px solid #c38e79; /* Brown border */
+  border: 2px solid #c38e79;
+  /* Brown border */
   border-radius: 50%;
   padding: 2px;
 }
@@ -293,58 +305,59 @@ background-color:#dad6d6;
   display: block;
   border-radius: 50%;
 }
+
 /* Optional: Add hover effect */
 
 /* Enhanced Styling */
 .countdown-item {
-    text-align: center;
-    min-width: 50px;
+  text-align: center;
+  min-width: 50px;
 }
 
 .countdown-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #6f4e37;
-    line-height: 1;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #6f4e37;
+  line-height: 1;
 }
 
 .countdown-label {
-    color: #a38f84;
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  color: #a38f84;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .countdown-separator {
-    color: #d1c4b9;
-    font-weight: 700;
-    padding-top: 0.8rem;
+  color: #d1c4b9;
+  font-weight: 700;
+  padding-top: 0.8rem;
 }
 
 .bidder-avatar {
-    background-color: #f4f1ee;
-    color: #6f4e37;
-    font-weight: 500;
+  background-color: #f4f1ee;
+  color: #6f4e37;
+  font-weight: 500;
 }
 
 .btn-caffe {
+  background-color: #c38e79;
+  color: white;
+  transition: all 0.3s ease;
+
+  &:hover {
     background-color: #c38e79;
     color: white;
-    transition: all 0.3s ease;
-    
-    &:hover {
-        background-color: #c38e79;
-        color: white;
-        transform: translateY(-1px);
-    }
+    transform: translateY(-1px);
+  }
 }
 
 .bid-item {
-    transition: background-color 0.2s ease;
-    
-    &:hover {
-        background-color: #faf8f5;
-    }
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #faf8f5;
+  }
 }
 
 /* .seller-avatar {
@@ -353,13 +366,16 @@ background-color:#dad6d6;
 } */
 /* Change focus border color to match your theme */
 .form-control.border-brown:focus {
-  border-color: #f5eae5 !important; /* Coffee brown color */
+  border-color: #f5eae5 !important;
+  /* Coffee brown color */
   box-shadow: none !important;
   outline: 0 !important;
 }
-.bg-light-caffe{
+
+.bg-light-caffe {
   background-color: #f5eae5 !important;
 }
+
 /* Hide number input arrows */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
@@ -376,35 +392,44 @@ input[type="number"] {
 input[type="number"]:focus {
   outline: none;
 }
+
 .avatar-border {
   position: absolute;
-  width: calc(45px + 4px);  /* image width + border */
-  height: calc(45px + 4px); /* image height + border */
-  border: 2px solid #6f4e37; /* your brown color */
+  width: calc(45px + 4px);
+  /* image width + border */
+  height: calc(45px + 4px);
+  /* image height + border */
+  border: 2px solid #6f4e37;
+  /* your brown color */
   border-radius: 50%;
   top: -2px;
   left: -2px;
-  pointer-events: none; /* allows clicks through the border */
+  pointer-events: none;
+  /* allows clicks through the border */
 }
 
 .seller-avatar {
   position: relative;
   z-index: 1;
 }
+
 /* _______________________________overview_______________________________________ */
 .bid-list::-webkit-scrollbar {
   width: 8px;
 }
 
 .bid-list::-webkit-scrollbar-track {
-  background: #f5f5f5; /* Light track background */
+  background: #f5f5f5;
+  /* Light track background */
   border-radius: 10px;
 }
 
 .bid-list::-webkit-scrollbar-thumb {
-  background-color: #36201f; /* Brown thumb */
+  background-color: #36201f;
+  /* Brown thumb */
   border-radius: 10px;
-  border: 2px solid #f5f5f5; /* Optional border for contrast */
+  border: 2px solid #f5f5f5;
+  /* Optional border for contrast */
 }
 
 /* Firefox support */
@@ -412,6 +437,7 @@ input[type="number"]:focus {
   scrollbar-width: thin;
   scrollbar-color: #8B4513 #f5f5f5;
 }
+
 .custom-vr {
   background-color: #8B4513;
   width: 3px;

@@ -883,3 +883,75 @@ button:hover .icon-shake {
 .bg-caffe-light2 {
   background-color: rgba(195, 142, 121, 0.1) !important;
 }
+
+/* Base button styles */
+.buttonDes {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition-duration: 0.3s;
+  overflow: hidden;
+  position: relative;
+}
+
+.svgIcon {
+  width: 12px;
+  transition-duration: 0.3s;
+}
+
+.svgIcon path {
+  fill: white;
+}
+
+/* Expand Button (Down arrow) specific styles */
+.expand-button:hover {
+  width: 120px;
+  border-radius: 50px;
+}
+
+.expand-button:hover .arrowDown {
+  transform: translateY(200%);
+}
+
+.expand-button::before {
+  content: "Show More";
+}
+
+/* Collapse Button (Up arrow) specific styles */
+.collapse-button:hover {
+  width: 120px;
+  border-radius: 50px;
+}
+
+.collapse-button:hover .arrowUp {
+  transform: translateY(-200%);
+}
+
+.collapse-button::before {
+  content: "Show Less";
+}
+
+/* Shared hover styles */
+.buttonDes:hover::before {
+  position: absolute;
+  color: white;
+  font-size: 13px;
+  opacity: 1;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  transition-duration: 0.3s;
+}
+
+.buttonDes::before {
+  position: absolute;
+  font-size: 0px;
+  opacity: 0;
+  transition-duration: 0.3s;
+}

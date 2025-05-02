@@ -14,24 +14,26 @@
     <form [formGroup]="MyForm">
         <div class="row">
             <!-- Left Side: Image & User Info -->
-            <div class="custom-border col-lg-4 px-5 d-flex flex-column justify-content-center align-items-center text-center mb-lg-5 bg-white">
-                <div class="image-wrapper mb-5 mt-md-0 position-relative" style="display: inline-block;">
-                    <img [src]="currentUser?.avatar ? currentUser.avatar : userImage"
-                         alt="User Avatar"
-                         class="rounded-circle img-fluid profile-image">
-                    
-                    <!-- Camera Icon (Bottom Right) -->
-                    <div class="camera-icon position-absolute" (click)="uploadImage()">
-                        <i class="bi bi-camera-fill fs-5"></i>
-                    </div>
-                    
-                    <!-- Delete Icon (Top Right) -->
-                    <div class="delete-icon position-absolute" (click)="removeImage()">
-                        <i class="bi bi-trash fs-5"></i>
-                    </div>
-                </div>
-                
-                <h5 class="mb-0 fs-3 text-caffe" style="margin-top: -4vh;">{{ currentUser?.name || 'Shahd Abdalla' }}</h5>
+            <div class="custom-border col-lg-4 px-5 mt-1 d-flex flex-column justify-content-center align-items-center text-center mb-lg-5 bg-white">
+                     <ng-container *ngIf="userImage; else defaultIcon">
+                        <img [src]="userImage" alt="User" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover;">
+                      </ng-container>
+            
+                      <ng-template #defaultIcon>  <!-- 4a2c2a -->
+                        <img src="images/user.png" alt="Default Icon"  style="width: 200px; height:200px ;">
+                      </ng-template>
+                      <div class="d-flex justify-content-center mb-2">
+                        <button class="btn btn-custom rounded-pill px-4 d-flex align-items-center text-caffe" (click)="removeImage()">
+                          <i class="bi bi-trash me-2"></i>
+                          Delete
+                        </button>
+                        <button class="btn btn-custom rounded-pill px-4 d-flex align-items-center text-caffe" (click)="uploadImage()">
+                          <i class="bi bi-upload me-2"></i>
+                          Upload
+                        </button>
+                   </div>
+                 
+                <h5 class="mb-0 fs-3 ">{{ currentUser?.name || 'Shahd Abdalla' }}</h5>
                 <div class="text-muted fst-italic mb-3 mt-3"> <i class="bi bi-calendar-event text-caffe me-1"></i> Joined Date: 15 Dec, 2022</div>
                 <div class="text-muted mb-3"> <i class="bi bi-envelope text-caffe me-1"></i>  {{ currentUser?.email || 'Shahd@gmail.com' }}</div>
                
@@ -41,8 +43,8 @@
             <div class="col-lg-8 ps-5">
                 <div class="row mt-4">
                     <!-- First Name -->
-                    <div class=" col-12 mb-4 mt-5">
-                        <label class="form-label fw-semibold mb-0">Name</label>
+                    <div class=" col-12 mb-3 mt-2">
+                        <label class="form-label fw-semibold mt-2">Name</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-0">
                                 <i class="bi bi-person text-muted brown-icon"></i>
@@ -65,7 +67,7 @@
                     </div>
 
                     <!-- Last Name -->
-                    <div class="col-12 mb-4">
+                    <div class="col-12 mb-3">
                         <label class="form-label fw-semibold mb-0">Email</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-0"><i
@@ -74,19 +76,32 @@
                         </div>
     
                     </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Current Password</label>
+                        <div class="input-group">
+                          <span class="input-group-text bg-light border-0"><i class="bi bi-key text-muted brown-icon"></i></span>
+                          <input [type]="showCurrentPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm"
+                            placeholder="currentPassword" formControlName="currentPassword">
+                          <span class="input-group-text bg-light border-0" style="cursor: pointer;"
+                            (click)="toggleCurrentPasswordVisibility()">
+                            <i class="bi fs-5" [class.bi-eye-fill]="showCurrentPassword" [class.bi-eye-slash-fill]="!showCurrentPassword"></i>
+                          </span>
+                        </div>
+                      </div>
 
                     <!-- Password -->
-                    <div class="col-12 mb-4">
+                    <div class="col-12 mb-3">
                         <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Password</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-0"><i
                                     class="bi bi-key text-muted brown-icon"></i></span>
-                            <input type="password" class="form-control border-0 shadow-sm" placeholder="password"
-                                formControlName="password">
-                        </div>
-                        <div *ngIf="MyForm.get('password')?.hasError('required') && MyForm.get('password')?.touched"
-                            class="text-danger small ps-2">
-                            Password is required.
+                            <input [type]="showPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm"
+                                placeholder="password" formControlName="password">
+                            <span class="input-group-text bg-light border-0" style="cursor: pointer;"
+                                (click)="togglePasswordVisibility()">
+                                <i class="bi fs-5" [class.bi-eye-fill]="showPassword"
+                                    [class.bi-eye-slash-fill]="!showPassword"></i>
+                            </span>
                         </div>
                         <div *ngIf="MyForm.get('password')?.hasError('minlength') && MyForm.get('password')?.touched"
                             class="text-danger small ps-2">
@@ -103,17 +118,19 @@
                     </div>
 
                     <!-- Confirm Password -->
-                    <div class="col-12 mb-4">
+                    <div class="col-12 mb-3">
                         <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Confirm Password</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-0"><i
                                     class="bi bi-key-fill text-muted brown-icon fs-5"></i></span>
-                            <input type="password" class="form-control border-0 shadow-sm"
-                                placeholder="Confirm password" formControlName="confirmPassword">
-                        </div>
-                        <div *ngIf="MyForm.get('confirmPassword')?.hasError('required') && MyForm.get('confirmPassword')?.touched"
-                            class="text-danger small ps-2">
-                            Confirm Password is required.
+                            <input [type]="showConfirmPassword ? 'text' : 'password'"
+                                class="form-control border-0 shadow-sm" placeholder="Confirm password"
+                                formControlName="confirmPassword">
+                            <span class="input-group-text bg-light border-0" style="cursor: pointer;"
+                                (click)="toggleConfirmPasswordVisibility()">
+                                <i class="bi fs-5" [class.bi-eye-fill]="showConfirmPassword"
+                                [class.bi-eye-slash-fill]="!showConfirmPassword"></i>
+                            </span>
                         </div>
                         <div *ngIf="MyForm.get('password')?.touched && MyForm.get('confirmPassword')?.touched && MyForm.get('password')?.value !== MyForm.get('confirmPassword')?.value"
                             class="text-danger small ps-2">
@@ -122,8 +139,9 @@
                     </div>
 
 
+
                     <!-- Save Button -->
-                    <div class="text-center mt-3 mb-2">
+                    <div class="text-center mt-3 mb-5">
                         <button type="submit" class="btn bg-caffe text-light" style="width: 100px;">Save</button>
                     </div>
                 </div>

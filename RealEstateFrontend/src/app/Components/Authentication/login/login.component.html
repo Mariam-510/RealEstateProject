@@ -1,6 +1,6 @@
 <div class="d-flex w-100 min-vh-100 shadow overflow-hidden">
-  <div class="left-section bg-white d-flex flex-column justify-content-center">
-    <h2 class="text-caffe mt-3 text-center "><i class="bi bi-box-arrow-in-right me-2 mt-5 fs-2"></i> Log In</h2>
+  <div class="left-section bg-white d-flex flex-column ">
+    <h2 class="text-caffe mt-4 text-center "><i class="bi bi-box-arrow-in-right me-2 fs-2"></i> Log In</h2>
 
     <form [formGroup]="Loginform" (ngSubmit)="login()">
       <div class="mb-3 mt-4 ">
@@ -29,11 +29,12 @@
           <span class="input-group-text bg-light border-0">
             <i class="bi bi-key-fill text-caffe fs-5"></i>
           </span>
-          <input type="password" class="form-control border-0 shadow-sm" placeholder="Enter password"
-            formControlName="pass">
+          <input [type]="showPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm" placeholder="Enter password" formControlName="pass"   autocomplete="new-password">
+          <span class="input-group-text bg-light border-0" style="cursor: pointer;" (click)="togglePasswordVisibility()">
+            <i class="bi fs-5" [class.bi-eye-fill]="showPassword" [class.bi-eye-slash-fill]="!showPassword"></i>
+          </span>
         </div>
-        <div *ngIf="Loginform.get('pass')?.hasError('required') && Loginform.get('pass')?.touched"
-          class="text-danger small ps-2">
+        <div *ngIf="Loginform.get('pass')?.hasError('required') && Loginform.get('pass')?.touched" class="text-danger small ps-2">
           Password is required.
         </div>
       </div>
@@ -73,9 +74,9 @@
       </button>
     </div>
 
-    <p class="text-center mt-4 mb-0">
+    <p class="text-center mt-3 mb-0">
       Don't have account?
-      <button class="btn btn-link text-decoration-none fw-bold text-caffe p-0" (click)="openSigUPDialog()">
+      <button class="btn btn-link text-decoration-none fw-bold text-caffe p-0 mb-1" (click)="openSigUPDialog()">
         Sign Up
       </button>
     </p>
