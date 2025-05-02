@@ -1,167 +1,168 @@
 <div class="mt-5 ms-5">
-    <h2 class="fw-bold"><span style="font-size: 0.9em;">👨‍💼</span> Seller Info</h2>
-    <nav aria-label="breadcrumb mb-0">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item mb-0">
-                <p class="text-muted mb-0">Seller</p>
-            </li>
-            <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">Info</li>
-        </ol>
-    </nav>
+  <h2 class="fw-bold"><span style="font-size: 0.9em;">👨‍💼</span> Seller Info</h2>
+  <nav aria-label="breadcrumb mb-0">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item mb-0">
+        <p class="text-muted mb-0">Seller</p>
+      </li>
+      <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">Info</li>
+    </ol>
+  </nav>
 </div>
 
 <div class="px-5 mt-3">
-    <form [formGroup]="MyForm">
-        <div class="row">
-            <!-- Left Side: Image & User Info -->
-            <div
-                class="custom-border col-lg-4 px-5 d-flex flex-column justify-content-center align-items-center text-center mb-lg-5 bg-white">
-                <ng-container *ngIf="userImage; else defaultIcon">
-                    <img [src]="userImage" alt="User"
-                        style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover;">
-                </ng-container>
+  <form [formGroup]="MyForm">
+    <div class="row">
+      <!-- Left Side: Image & User Info -->
+      <div
+        class="custom-border col-lg-4 px-5 d-flex flex-column justify-content-center align-items-center text-center mb-lg-5 bg-white">
+        <ng-container *ngIf="userImage; else defaultIcon">
+          <img [src]="userImage" alt="User" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover;">
+        </ng-container>
 
-                <ng-template #defaultIcon> <!-- 4a2c2a -->
-                    <img src="images/user.png" alt="Default Icon" style="width: 200px; height:200px ;">
-                </ng-template>
-                <div class="d-flex justify-content-center mb-2">
-                    <button class="btn btn-custom rounded-pill px-4 d-flex align-items-center text-caffe"
-                        (click)="removeImage()">
-                        <i class="bi bi-trash me-2"></i>
-                        Delete
-                    </button>
-                    <button class="btn btn-custom rounded-pill px-4 d-flex align-items-center text-caffe"
-                        (click)="uploadImage()">
-                        <i class="bi bi-upload me-2"></i>
-                        Upload
-                    </button>
-                </div>
-                <h5 class="mb-0 fs-3">{{ currentUser?.name || 'Shahd Abdalla' }}
-                </h5>
-                <div class="text-muted fst-italic mb-3 mt-3"> <i class="bi bi-calendar-event text-caffe  me-1"></i>
-                    Joined Date: 15 Dec, 2022</div>
-                <div class="text-muted mb-3"> <i class="bi bi-envelope text-caffe me-1"></i> {{ currentUser?.email ||
-                    'Shahd@gmail.com' }}</div>
-                <div class="d-flex justify-content-center align-items-center  ">
-                    <i class="bi bi-award text-caffe me-1 "></i> Free Plan
-                </div>
-
-            </div>
-
-            <!-- Right Side: Form Fields -->
-            <div class="col-lg-8 ps-5">
-                <div class="row mt-4">
-                    <!-- First Name -->
-                    <div class="col-12 mb-3 mt-3">
-                        <label class="form-label fw-semibold mb-0" style="font-size: 17px;">First Name</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-0">
-                                <i class="bi bi-person text-muted brown-icon"></i>
-                            </span>
-                            <input type="text" class="form-control border-0 shadow-sm" placeholder="First Name"
-                                formControlName="firstName">
-                        </div>
-                        <div *ngIf="MyForm.get('firstName')?.hasError('required') && MyForm.get('firstName')?.touched"
-                            class="text-danger small ps-2">
-                            First Name is required.
-                        </div>
-                        <div *ngIf="MyForm.get('firstName')?.hasError('minlength') && MyForm.get('firstName')?.touched"
-                            class="text-danger small ps-2">
-                            First Name at least 3 characters.
-                        </div>
-                        <div *ngIf="MyForm.get('firstName')?.hasError('pattern') && MyForm.get('firstName')?.touched"
-                            class="text-danger small ps-2">
-                            firstName Must be Character only.
-                        </div>
-                    </div>
-
-                    <!-- Last Name -->
-                    <div class="col-12 mb-3">
-                        <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Last Name</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-0">
-                                <i class="bi bi-person-fill text-muted brown-icon"></i>
-                            </span>
-                            <input type="text" class="form-control border-0 shadow-sm" placeholder="Last Name"
-                                formControlName="lastName">
-                        </div>
-                        <div *ngIf="MyForm.get('lastName')?.hasError('minlength') && MyForm.get('lastName')?.touched"
-                            class="text-danger small ps-2">
-                            LastName at least 3 characters.
-                        </div>
-                        <div *ngIf="MyForm.get('lastName')?.hasError('pattern') && MyForm.get('lastName')?.touched"
-                            class="text-danger small ps-2">
-                            first Name Must be Character only.
-                        </div>
-                    </div>
-                    <div class="col-12 mb-3">
-                        <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Current Password</label>
-                        <div class="input-group">
-                          <span class="input-group-text bg-light border-0"><i class="bi bi-key text-muted brown-icon"></i></span>
-                          <input [type]="showCurrentPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm"
-                            placeholder="currentPassword" formControlName="currentPassword">
-                          <span class="input-group-text bg-light border-0" style="cursor: pointer;"
-                            (click)="toggleCurrentPasswordVisibility()">
-                            <i class="bi fs-5" [class.bi-eye-fill]="showCurrentPassword" [class.bi-eye-slash-fill]="!showCurrentPassword"></i>
-                          </span>
-                        </div>
-                      </div>  
-                    <!-- Password -->
-                    <div class="col-12 mb-3">
-                        <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-0"><i
-                                    class="bi bi-key text-muted brown-icon"></i></span>
-                            <input [type]="showPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm"
-                                placeholder="password" formControlName="password">
-                            <span class="input-group-text bg-light border-0" style="cursor: pointer;"
-                                (click)="togglePasswordVisibility()">
-                                <i class="bi fs-5" [class.bi-eye-fill]="showPassword"
-                                    [class.bi-eye-slash-fill]="!showPassword"></i>
-                            </span>
-                        </div>
-                        <div *ngIf="MyForm.get('password')?.hasError('minlength') && MyForm.get('password')?.touched"
-                            class="text-danger small ps-2">
-                            Password must be at least 6 characters.
-                        </div>
-                        <div *ngIf="MyForm.get('password')?.hasError('maxlength') && MyForm.get('password')?.touched"
-                            class="text-danger small ps-2">
-                            Password cannot exceed 10 characters.
-                        </div>
-                        <div *ngIf="MyForm.get('password')?.hasError('pattern') && MyForm.get('password')?.touched"
-                            class="text-danger small ps-2">
-                            Password include uppercase, lowercase, number, and special character.
-                        </div>
-                    </div>
-
-                    <!-- Confirm Password -->
-                    <div class="col-12 mb-3">
-                        <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Confirm Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-0"><i
-                                    class="bi bi-key-fill text-muted brown-icon fs-5"></i></span>
-                            <input [type]="showConfirmPassword ? 'text' : 'password'"
-                                class="form-control border-0 shadow-sm" placeholder="Confirm password"
-                                formControlName="confirmPassword">
-                            <span class="input-group-text bg-light border-0" style="cursor: pointer;"
-                                (click)="toggleConfirmPasswordVisibility()">
-                                <i class="bi fs-5" [class.bi-eye-fill]="showConfirmPassword"
-                                    [class.bi-eye-slash-fill]="!showConfirmPassword"></i>
-                            </span>
-                        </div>
-                        <div *ngIf="MyForm.get('password')?.touched && MyForm.get('confirmPassword')?.touched && MyForm.get('password')?.value !== MyForm.get('confirmPassword')?.value"
-                            class="text-danger small ps-2">
-                            Confirm Passwords do not match.
-                        </div>
-                    </div>
-
-
-                    <!-- Save Button -->
-                    <div class="text-center mt-3 mb-3">
-                        <button type="submit" class="btn bg-caffe text-light" style="width: 100px;">Save</button>
-                    </div>
-                </div>
-            </div>
+        <ng-template #defaultIcon> <!-- 4a2c2a -->
+          <img src="images/user.png" alt="Default Icon" style="width: 200px; height:200px ;">
+        </ng-template>
+        <div class="d-flex justify-content-center mb-2">
+          <button class="btn btn-custom rounded-pill px-4 d-flex align-items-center text-caffe" (click)="removeImage()">
+            <i class="bi bi-trash me-2"></i>
+            Delete
+          </button>
+          <button class="btn btn-custom rounded-pill px-4 d-flex align-items-center text-caffe" (click)="uploadImage()">
+            <i class="bi bi-upload me-2"></i>
+            Upload
+          </button>
         </div>
-    </form>
+        <h5 class="mb-0 fs-3">{{ seller?.firstName + " " + (seller?.lastName ?? '')}}
+        </h5>
+        <div class="text-muted fst-italic mb-3 mt-3"> <i class="bi bi-calendar-event text-caffe  me-1"></i> Joined Date:
+          {{seller?.createdAt}}</div>
+        <div class="text-muted mb-3"> <i class="bi bi-envelope text-caffe me-1"></i> {{ seller?.email}}</div>
+
+        <div class="d-flex justify-content-center align-items-center  ">
+          <i class="bi bi-award text-caffe me-1 "></i> Free Plannnnn
+        </div>
+
+      </div>
+
+      <!-- Right Side: Form Fields -->
+      <div class="col-lg-8 ps-5">
+        <div class="row mt-4">
+          <!-- First Name -->
+          <div class="col-12 mb-3 mt-3">
+            <label class="form-label fw-semibold mb-0" style="font-size: 17px;">First Name</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-0">
+                <i class="bi bi-person text-muted brown-icon"></i>
+              </span>
+              <input type="text" class="form-control border-0 shadow-sm" placeholder="First Name"
+                formControlName="firstName">
+            </div>
+            <div *ngIf="MyForm.get('firstName')?.hasError('required') && MyForm.get('firstName')?.touched"
+              class="text-danger small ps-2">
+              First Name is required.
+            </div>
+            <div *ngIf="MyForm.get('firstName')?.hasError('minlength') && MyForm.get('firstName')?.touched"
+              class="text-danger small ps-2">
+              First Name at least 3 characters.
+            </div>
+            <div *ngIf="MyForm.get('firstName')?.hasError('pattern') && MyForm.get('firstName')?.touched"
+              class="text-danger small ps-2">
+              firstName Must be Character only.
+            </div>
+          </div>
+
+          <!-- Last Name -->
+          <div class="col-12 mb-3">
+            <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Last Name</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-0">
+                <i class="bi bi-person-fill text-muted brown-icon"></i>
+              </span>
+              <input type="text" class="form-control border-0 shadow-sm" placeholder="Last Name"
+                formControlName="lastName">
+            </div>
+            <div *ngIf="MyForm.get('lastName')?.hasError('minlength') && MyForm.get('lastName')?.touched"
+              class="text-danger small ps-2">
+              LastName at least 3 characters.
+            </div>
+            <div *ngIf="MyForm.get('lastName')?.hasError('pattern') && MyForm.get('lastName')?.touched"
+              class="text-danger small ps-2">
+              first Name Must be Character only.
+            </div>
+          </div>
+          <div class="col-12 mb-3">
+            <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Current Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-0"><i class="bi bi-key text-muted brown-icon"></i></span>
+              <input [type]="showCurrentPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm"
+                placeholder="currentPassword" formControlName="currentPassword">
+              <span class="input-group-text bg-light border-0" style="cursor: pointer;"
+                (click)="toggleCurrentPasswordVisibility()">
+                <i class="bi fs-5" [class.bi-eye-fill]="showCurrentPassword"
+                  [class.bi-eye-slash-fill]="!showCurrentPassword"></i>
+              </span>
+            </div>
+          </div>
+          <!-- Password -->
+          <div class="col-12 mb-3">
+            <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-0"><i class="bi bi-key text-muted brown-icon"></i></span>
+              <input [type]="showPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm"
+                placeholder="password" formControlName="password">
+              <span class="input-group-text bg-light border-0" style="cursor: pointer;"
+                (click)="togglePasswordVisibility()">
+                <i class="bi fs-5" [class.bi-eye-fill]="showPassword" [class.bi-eye-slash-fill]="!showPassword"></i>
+              </span>
+            </div>
+            <div *ngIf="MyForm.get('password')?.hasError('minlength') && MyForm.get('password')?.touched"
+              class="text-danger small ps-2">
+              Password must be at least 6 characters.
+            </div>
+            <div *ngIf="MyForm.get('password')?.hasError('maxlength') && MyForm.get('password')?.touched"
+              class="text-danger small ps-2">
+              Password cannot exceed 10 characters.
+            </div>
+            <div *ngIf="MyForm.get('password')?.hasError('pattern') && MyForm.get('password')?.touched"
+              class="text-danger small ps-2">
+              Password include uppercase, lowercase, number, and special character.
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="col-12 mb-3">
+            <label class="form-label fw-semibold mb-0" style="font-size: 17px;">Confirm Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-0"><i
+                  class="bi bi-key-fill text-muted brown-icon fs-5"></i></span>
+              <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm"
+                placeholder="Confirm password" formControlName="confirmPassword">
+              <span class="input-group-text bg-light border-0" style="cursor: pointer;"
+                (click)="toggleConfirmPasswordVisibility()">
+                <i class="bi fs-5" [class.bi-eye-fill]="showConfirmPassword"
+                  [class.bi-eye-slash-fill]="!showConfirmPassword"></i>
+              </span>
+            </div>
+            <div
+              *ngIf="MyForm.get('password')?.touched && MyForm.get('confirmPassword')?.touched && MyForm.get('password')?.value !== MyForm.get('confirmPassword')?.value"
+              class="text-danger small ps-2">
+              Confirm Passwords do not match.
+            </div>
+          </div>
+
+
+          <div class="error text-danger ms-3">
+            {{errorMes}}
+          </div>
+
+          <!-- Save Button -->
+          <div class="text-center mt-3 mb-4">
+            <button type="submit" class="btn bg-caffe text-light" style="width: 100px;" (click)="update()">Save</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </form>
 </div>

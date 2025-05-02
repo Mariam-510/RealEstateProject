@@ -4,16 +4,16 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 // DTO Interfaces
-export interface agentDto{
+export interface AgentDto {
   id: number;
   name: string;
   commercialRegister: string;
+  isDeleted: boolean;
+  accountId?: string;
   email?: string;
-  phone?: string;
   createdAt: string;
-  approvalStatus: string;
-  processedDate?: string;
   imageUrl?: string;
+  approvalStatus: string;
 }
 
 
@@ -29,16 +29,16 @@ export interface agentDto{
 export class AgentService {
   private apiUrl = `${API_CONFIG.apiUrl}api/agents`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getAgents(approvalStatus?: string): Observable<agentDto[]> {
+  getAgents(approvalStatus?: string): Observable<AgentDto[]> {
     let params = new HttpParams();
-    
+
     if (approvalStatus) {
       params = params.set('approvalStatus', approvalStatus);
     }
 
-    return this.http.get<agentDto[]>(`${this.apiUrl}/admin/approveAgent`, { params });
+    return this.http.get<AgentDto[]>(`${this.apiUrl}/admin/approveAgent`, { params });
   }
 
   updateApprovalStatus(id: number, isApproved: boolean): Observable<any> {
@@ -46,5 +46,14 @@ export class AgentService {
     formData.append('IsApproved', isApproved.toString());
     return this.http.put(`${this.apiUrl}/Approve/${id}`, formData);
   }
-  
+
+
+  getAgent(): Observable<AgentDto> {
+    return this.http.get<AgentDto>(`${this.apiUrl}/Id`);
+  }
+
+  updateAgent(formData: FormData): Observable<{ message: string, tokenDto: any, agentDto: AgentDto }> {
+    return this.http.put<{ message: string, tokenDto: any, agentDto: AgentDto }>(this.apiUrl, formData);
+  }
+
 }

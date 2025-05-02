@@ -32,11 +32,6 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    // await this.loadBuyer();
-
-    // this._initializeForm();
-
-
     this._initializeForm(); // Initialize FIRST
     await this.loadBuyer(); // Load data AFTER
     this._patchFormValues(); // Update form
@@ -52,20 +47,21 @@ export class ProfileComponent implements OnInit {
       console.error('Failed to fetch buyer:', err);
     }
   }
+
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
   showCurrentPassword: boolean = false;
-  
+
   togglePasswordVisibility(): void {
-      this.showPassword = !this.showPassword;
+    this.showPassword = !this.showPassword;
   }
-  
+
   toggleConfirmPasswordVisibility(): void {
-      this.showConfirmPassword = !this.showConfirmPassword;
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
   toggleCurrentPasswordVisibility(): void {
     this.showCurrentPassword = !this.showCurrentPassword;
-}
+  }
   private _initializeForm() {
     this.MyForm = new FormGroup({
       firstName: new FormControl('', [
@@ -87,12 +83,6 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-
-  private passwordMatchValidator(form: FormGroup) {
-    return form.get('newPassword')?.value === form.get('confirmNewPassword')?.value
-      ? null
-      : { mismatch: true };
-  }
 
   private _patchFormValues() {
     if (!this.buyer) return;
@@ -118,8 +108,8 @@ export class ProfileComponent implements OnInit {
     formData.append('FirstName', this.MyForm.value.firstName);
     formData.append('LastName', this.MyForm.value.lastName || '');
     formData.append('CurrentPassword', this.MyForm.value.currentPassword || '');
-    formData.append('NewPassword', this.MyForm.value.newPassword || '');
-    formData.append('ConfirmNewPassword', this.MyForm.value.confirmNewPassword || '');
+    formData.append('NewPassword', this.MyForm.value.password || '');
+    formData.append('ConfirmNewPassword', this.MyForm.value.confirmPassword || '');
     formData.append('RemoveImage', this.removeImageFlag.toString());
 
     // Add image if exists
@@ -143,8 +133,8 @@ export class ProfileComponent implements OnInit {
       // Correct way to reset specific controls
       this.MyForm.patchValue({
         currentPassword: '',
-        newPassword: '',
-        confirmNewPassword: ''
+        password: '',
+        confirmPassword: ''
       });
       this.errorMes = ''
 
