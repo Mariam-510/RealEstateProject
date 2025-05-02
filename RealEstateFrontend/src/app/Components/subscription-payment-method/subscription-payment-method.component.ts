@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ToastrService } from '../../Services/toastr.service';
 import { CommonModule } from '@angular/common';
@@ -6,13 +6,17 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PaypalService } from '../../Services/PaymentServices/paypal.service';
 import { PaymentDto, PaymentService } from '../../Services/ApiServices/payment.service';
 import { AuthService } from '../../Services/ApiServices/auth.service';
+import { CreateSubscriptionDto, SubscriptionDto, SubscriptionService } from '../../Services/ApiServices/subscription.service';
+import { catchError, Observable, of, startWith, switchMap } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
+
 @Component({
   selector: 'app-subscription-payment-method',
   imports: [CommonModule, RouterModule],
   templateUrl: './subscription-payment-method.component.html',
   styleUrl: './subscription-payment-method.component.css'
 })
-export class SubscriptionPaymentMethodComponent {
+export class SubscriptionPaymentMethodComponent implements OnInit {
   constructor(@Inject(MAT_DIALOG_DATA) public data: { selectedPlan: any }, private cd: ChangeDetectorRef,
     private toastr: ToastrService,
     private dialogRef: MatDialogRef<SubscriptionPaymentMethodComponent>,
@@ -21,6 +25,7 @@ export class SubscriptionPaymentMethodComponent {
     private payPalService: PaypalService,
     private paymentService: PaymentService,
     private auth: AuthService,
+    private subscriptionService: SubscriptionService
   ) { }
   paypalButtonRendered = false;
 
@@ -38,6 +43,42 @@ export class SubscriptionPaymentMethodComponent {
       description: 'Pay with Visa, Mastercard, etc.',
     },
   ];
+
+  subscription$!: Observable<SubscriptionDto | null>;
+
+  isLoading: boolean = false; // Add loading state
+
+  async ngOnInit(): Promise<void> {
+    if (!this.hasRole('Seller') && !this.hasRole('Agent')) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      await Promise.all([
+        this.subscriptionCall()
+      ]);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  subscriptionCall() {
+    this.subscription$ = this.subscriptionService.subscriptionUpdated$.pipe(
+      startWith(null),
+      switchMap(() => {
+        return this.subscriptionService.getCurrentUserSubscription().pipe(
+          catchError((error) => {
+            console.error('Error loading subscription:', error);
+            return of(null);
+          })
+        );
+      })
+    );
+  }
 
   selectedMethod: string = '';
   selectPaymentMethod(value: string) {
@@ -89,7 +130,7 @@ export class SubscriptionPaymentMethodComponent {
               },
               onApprove: async (data: any, actions: any) => {
                 const order = await actions.order.capture();
-                this.toastr.success('Payment successful!');
+                // this.toastr.success('Payment successful!');
                 this.paymentWithPayPal();
                 // setTimeout(() => {
                 //   window.location.href = `/gopl`;
@@ -119,8 +160,7 @@ export class SubscriptionPaymentMethodComponent {
     this.paymentService.createPayPalOrder(amount).subscribe({
       next: (paymentResponse: PaymentDto) => {
         console.log('Payment successful:', paymentResponse);
-        // Handle successful payment (e.g., show confirmation, redirect)
-        // this.handlePlaceOrder(paymentResponse.id);
+        this.updateSubscriptionPlan(this.data.selectedPlan.id, paymentResponse.id);
       },
       error: (err) => {
         console.error('Payment failed:', err);
@@ -131,6 +171,26 @@ export class SubscriptionPaymentMethodComponent {
       },
     });
   }
+
+  // In your component
+  async updateSubscriptionPlan(planId: number, paymentId?: number) {
+    const dto: CreateSubscriptionDto = {
+      SubscriptionPlanId: planId,
+      PaymentId: paymentId
+    };
+
+    try {
+      await lastValueFrom(this.subscriptionService.updateSubscription(dto));
+      this.toastr.success('Subscription updated!');
+      this.dialogRef.close();
+      console.log('Subscription updated successfully');
+    } catch (err) {
+      this.toastr.error('Failed to update subscription');
+      console.error('Failed to update subscription:', err);
+      // Handle error (show message to user)
+    }
+  }
+
 
 
   // async handlePlaceOrder(paymentId: number | null) {

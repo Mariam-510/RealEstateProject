@@ -31,39 +31,44 @@
             <span class="d-md-inline d-none" *ngIf="!isCollapsed">More Actions</span>
           </a>
           <ul class="dropdown-menu" [class.show]="dropdownOpen">
+
             <li>
-              <a class="dropdown-item d-flex align-items-center" routerLink="addAuction" 
-                 routerLinkActive="active" (click)="preventClose($event)">
-                <i class="bi bi-hammer me-2 text-caffe"></i>
-                <span>Add Auction</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item d-flex align-items-center" routerLink="addProperty" 
-                 routerLinkActive="active" (click)="preventClose($event)">
-                <i class="bi  bi-building me-2 text-caffe"></i>
-                <span>Add Property</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item d-flex align-items-center" routerLink="Properties" 
-                 routerLinkActive="active" (click)="preventClose($event)">
+              <a class="dropdown-item d-flex align-items-center" routerLink="Properties" routerLinkActive="active"
+                (click)="preventClose($event)">
                 <i class="bi bi-eye me-2 text-caffe"></i>
                 <span>All Properties</span>
               </a>
             </li>
+
             <li>
-              <a class="dropdown-item d-flex align-items-center" routerLink="ViewAllAppointment" 
-                 routerLinkActive="active" (click)="preventClose($event)">
+              <a class="dropdown-item d-flex align-items-center" routerLink="ViewAllAppointment"
+                routerLinkActive="active" (click)="preventClose($event)">
                 <i class="bi bi-calendar3 me-2 text-caffe"></i>
                 <span>All Appointment</span>
               </a>
             </li>
+
             <li>
-              <a class="dropdown-item d-flex align-items-center" routerLink="ViewAllAuctions" 
-                 routerLinkActive="active" (click)="preventClose($event)">
+              <a class="dropdown-item d-flex align-items-center" routerLink="ViewAllAuctions" routerLinkActive="active"
+                (click)="preventClose($event)">
                 <i class="bi  bi-hammer me-2 text-caffe"></i>
                 <span>All Auctions</span>
+              </a>
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" routerLink="addAuction" routerLinkActive="active"
+                (click)="preventClose($event)">
+                <i class="bi bi-hammer me-2 text-caffe"></i>
+                <span>Add Auction</span>
+              </a>
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" routerLink="addProperty" routerLinkActive="active"
+                (click)="preventClose($event)">
+                <i class="bi  bi-building me-2 text-caffe"></i>
+                <span>Add Property</span>
               </a>
             </li>
           </ul>
