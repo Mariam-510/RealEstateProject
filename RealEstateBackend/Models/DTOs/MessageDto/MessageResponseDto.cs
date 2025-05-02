@@ -9,7 +9,6 @@ namespace RealEstate.Models.DTOs.MessageDto
         public int Id { get; set; }
         public string Content { get; set; }
         public DateTime SentAt { get; set; }
-        public MessageStatus Status { get; set; }
         public string? SenderId { get; set; }
         public int? ConversationId { get; set; }
     }

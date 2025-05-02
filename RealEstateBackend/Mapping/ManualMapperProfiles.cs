@@ -41,7 +41,6 @@ namespace RealEstate.Mapping
                 Content = message.Content,
                 SenderId = message.SenderId,
                 ConversationId = message.ConversationId,
-                Status = message.Status,
                 SentAt = message.SentAt
             };
         }
