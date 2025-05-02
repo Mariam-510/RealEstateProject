@@ -91,7 +91,7 @@ export class CreateadminComponent implements OnInit {
         this.isLoading = false;
         this.toastr.success('Admin created successfully!', 'Success');
         this.createAdminForm.reset();
-        this.router.navigate(['/admins']); // Redirect to admin list
+   
       },
       error: (error) => {
         this.isLoading = false;
@@ -106,6 +106,16 @@ export class CreateadminComponent implements OnInit {
     });
   }
 
+  showPassword: boolean = false;
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+  showConfirmPassword: boolean = false;
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
   hasRole(requiredRole: string) {
     return this.auth.hasRole(requiredRole);
   }

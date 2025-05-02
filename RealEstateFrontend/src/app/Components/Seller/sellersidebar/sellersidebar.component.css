@@ -43,9 +43,8 @@
   }
   
   .nav-link:hover {
-    background: rgba(220, 53, 69, 0.1);
+    background-color: #c38e7926;
     color: #c38e79;
-    box-shadow: 0px 2px 5px rgba(220, 53, 69, 0.2);
     width: 100%;
   }
   
@@ -53,7 +52,7 @@
     /* background: #dc3545 !important;
     color: white !important; */
     /* transform: scale(1.03); */
-    background-color: #ffe6e6;
+    background-color: #c38e7926;
     border-left: 5px solid #c38e79;
   }
   
