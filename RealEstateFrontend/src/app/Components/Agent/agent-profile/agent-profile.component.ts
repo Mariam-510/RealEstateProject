@@ -5,7 +5,8 @@ import { Router, RouterModule } from '@angular/router';
 import { API_CONFIG } from '../../../app.config';
 import { AgentDto, AgentService } from '../../../Services/ApiServices/agent.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
-import { lastValueFrom } from 'rxjs';  // Important import
+import { catchError, lastValueFrom, Observable, of, startWith, switchMap } from 'rxjs';  // Important import
+import { SubscriptionDto, SubscriptionService } from '../../../Services/ApiServices/subscription.service';
 
 @Component({
   selector: 'app-agent-profile',
@@ -24,7 +25,11 @@ export class AgentProfileComponent {
   selectedImage: File | null = null;
   removeImageFlag = false;
 
-  constructor(private router: Router, private auth: AuthService, private agentService: AgentService) { }
+  subscription$!: Observable<SubscriptionDto | null>;
+
+
+  constructor(private router: Router, private auth: AuthService,
+    private agentService: AgentService, private subscriptionService: SubscriptionService) { }
 
   async ngOnInit() {
     if (!this.hasRole('Agent')) {
@@ -35,8 +40,25 @@ export class AgentProfileComponent {
     await this.loadAgent(); // Load data AFTER
     this._patchFormValues(); // Update form
 
+    this.subscriptionCall();
+
     this.userImage = this.agent?.imageUrl ? (this.apiConfig.apiUrl + this.agent?.imageUrl) : null;
   }
+
+  subscriptionCall() {
+    this.subscription$ = this.subscriptionService.subscriptionUpdated$.pipe(
+      startWith(null),
+      switchMap(() => {
+        return this.subscriptionService.getCurrentUserSubscription().pipe(
+          catchError((error) => {
+            console.error('Error loading subscription:', error);
+            return of(null);
+          })
+        );
+      })
+    );
+  }
+
 
   async loadAgent(): Promise<void> {
     try {
