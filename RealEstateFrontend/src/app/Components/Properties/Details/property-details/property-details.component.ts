@@ -21,7 +21,7 @@ declare var bootstrap: any; // Required for Bootstrap modal handling
 @Component({
   selector: 'app-property-details',
   imports: [
-    CommonModule, RouterModule, PropertyPhotoModalComponent, RecommendedComponent, CardmapComponent,
+    CommonModule, RouterModule, PropertyPhotoModalComponent, RecommendedComponent,
     PropertyDetialsLeafletMapComponent, ChatmodalComponent,
   ],
   templateUrl: './property-details.component.html',

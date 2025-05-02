@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.VisualBasic;
+using RealEstate.Hubs;
 using RealEstate.Mapping;
 using RealEstate.Models.Domains;
 using RealEstate.Models.DTOs.ConversationDto;
@@ -15,13 +17,15 @@ namespace RealEstate.Controllers
     [ApiController]
     public class ConversationsController : ControllerBase
     {
+        private readonly IHubContext<ChatHub> _hubContext;
         public IConversationRepository _conversationRepository { get; }
         public UserManager<Account> _userManager { get; }
 
-        public ConversationsController(IConversationRepository conversationRepository, UserManager<Account> userManager)
+        public ConversationsController(IConversationRepository conversationRepository, UserManager<Account> userManager, IHubContext<ChatHub> hubContext)
         {
             _conversationRepository = conversationRepository;
             _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         [HttpGet]
@@ -112,6 +116,10 @@ namespace RealEstate.Controllers
             await _conversationRepository.UpdateAsync(conversation);
 
             var response = conversation.ConversationResponseDto();
+
+            await _hubContext.Clients
+                .Groups(conversation.FirstAccountId, conversation.SecondAccountId)
+                .SendAsync("ConversationStatusUpdated", response);
 
             return Ok(response);
         }
