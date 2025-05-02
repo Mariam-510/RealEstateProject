@@ -11,6 +11,7 @@ import { lastValueFrom } from 'rxjs';
 import { AddressDto, AddressService } from '../../../Services/ApiServices/address.service';
 import { OrderItemDto, OrderItemService } from '../../../Services/ApiServices/order-item.service';
 import { API_CONFIG } from '../../../app.config';
+import { BuyerDto, BuyerService } from '../../../Services/ApiServices/buyer.service';
 
 @Component({
   selector: 'app-order-details',
@@ -23,16 +24,19 @@ export class OrderDetailsComponent implements OnInit {
   order: OrderResponseDto | null = null;
   address?: AddressDto | null;
   orderItems: OrderItemDto[] | null = null;
+  buyer: BuyerDto | null = null;
 
   constructor(private dialog: MatDialog, private route: ActivatedRoute,
     private router: Router, private auth: AuthService, private addressService: AddressService,
-    private orderService: OrderService, private orderItemService: OrderItemService) { }
+    private orderService: OrderService, private orderItemService: OrderItemService,
+    private buyerService: BuyerService
+) { }
 
   isLoading = true;
   loggedInUser!: User | undefined;
 
   async ngOnInit() {
-    if (!this.hasRole('Buyer')) {
+    if (!this.hasRole('Buyer')&&!this.hasRole('Admin')) {
       this.router.navigate(['/login']);
       return;
     }
@@ -40,6 +44,7 @@ export class OrderDetailsComponent implements OnInit {
     try {
       const orderId = Number(this.route.snapshot.paramMap.get('id'));
       await this.loadOrder(orderId);
+      await this.loadBuyer(this.order?.buyerId ?? 0);
       await this.loadAddress(this.order?.addressId ?? 0);
       await this.loadOrderItems(orderId);
 
@@ -72,7 +77,23 @@ export class OrderDetailsComponent implements OnInit {
       // Handle error (show message, redirect, etc.)
     }
   }
-
+  private async loadBuyer(buyerId: number) {
+    try {
+      if (!buyerId) return;
+      
+      const buyer$ = this.buyerService.getBuyerById(buyerId);
+      const result = await lastValueFrom(buyer$);
+  
+      if (!result) {
+        throw new Error('Buyer not found');
+      }
+  
+      this.buyer = result;
+     } catch (err) {
+      this.buyer = null;
+      console.error('Failed to load buyer:', err);
+    }
+  }
   private async loadAddress(id: number) {
     try {
       const address$ = this.addressService.getById(id);

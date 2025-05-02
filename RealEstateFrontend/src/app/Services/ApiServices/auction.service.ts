@@ -100,6 +100,25 @@ export class AuctionService {
     return this.http.get<AuctionDTOShow>(`${this.apiUrl}/Property/${propertyId}`);
   }
 
+
+
+  // Add to AuctionService
+getAuctionsByUserId(): Observable<AuctionDTOShow[] > {
+  return this.http.get <AuctionDTOShow[] >(
+    `${this.apiUrl}/GetAuctionByUserID`
+  );
+}
+
+getAuctionsByBuyerId(): Observable<AuctionDTOShow[] > {
+  return this.http.get <AuctionDTOShow[] >(
+    `${this.apiUrl}/GetByBuyerID`
+  );
+}
+// auction.service.ts
+deleteAuction(id: number): Observable<any> {
+  return this.http.delete(`${this.apiUrl}/DeleteAuction/${id}`);
+}
+
   //-----------------------------------------------------------------------------------------------
   // Add to AuctionService
   // checkAuctionStatus(): Observable<AuctionDTOShow[]> {

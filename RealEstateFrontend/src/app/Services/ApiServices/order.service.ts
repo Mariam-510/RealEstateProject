@@ -9,8 +9,13 @@ export interface CreateOrderDto {
   deliveryFees: number;
   addressId: number;
 }
-
-
+export enum OrderStatus {
+  Pending = 0,
+  Confirmed = 1,
+  OutForDelivery = 2,
+  Delivered = 3,
+  Cancelled = 4
+}
 export interface OrderResponseDto {
   id: number;
   orderDate: string;         // ISO 8601 format (e.g., "2023-10-05T12:34:56Z")
@@ -24,7 +29,10 @@ export interface OrderResponseDto {
   paymentId: number | null;
   paymentMethod: string | null;
 }
-
+export interface UpdateOrderDto {
+  id: number;
+  status: OrderStatus;  
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -51,5 +59,8 @@ export class OrderService {
   }
   getAll(): Observable<OrderResponseDto[]> {
     return this.http.get<OrderResponseDto[]>(`${this.apiUrl}/all`);
+  }
+  updateOrder(updateData: UpdateOrderDto): Observable<OrderResponseDto> {
+    return this.http.put<OrderResponseDto>(`${this.apiUrl}`, updateData);
   }
 }

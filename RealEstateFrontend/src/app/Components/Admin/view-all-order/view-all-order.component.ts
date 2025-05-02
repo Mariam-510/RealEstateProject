@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { OrderResponseDto, OrderService } from '../../../Services/ApiServices/order.service';
+import { OrderResponseDto, OrderService, UpdateOrderDto } from '../../../Services/ApiServices/order.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 
 @Component({
@@ -48,7 +48,6 @@ export class ViewAllOrderComponent implements OnInit {
       
       next: (orders) => {
         this.orders = orders;
-        // console.log('Orders loaded:', orders);  
         this.filteredOrders = [...orders];
         this.isLoading = false;
       },
@@ -65,7 +64,23 @@ export class ViewAllOrderComponent implements OnInit {
     this.activeLink = link;
     this.filterOrders();
   }
-
+  shouldDisableStatus(currentStatus: number, optionStatus: number): boolean {
+    if (currentStatus >= 4) {
+      return optionStatus < currentStatus;
+    }
+    if (currentStatus === 3) {
+      return optionStatus === 1 || optionStatus === 2 || optionStatus === 0;
+    }
+    
+    if (currentStatus === 2) {
+      return optionStatus === 1 || optionStatus === 0;
+    }
+    if (currentStatus === 1) {
+      return optionStatus === 0;
+    }
+    
+    return false;
+  }
   filterOrders() {
     let filtered = [...this.orders];
 
@@ -107,6 +122,7 @@ export class ViewAllOrderComponent implements OnInit {
       default: return '#000000';
     }
   }
+  
   hasRole(requiredRole: string): boolean {
     return this.auth.hasRole(requiredRole);
   }
@@ -117,5 +133,38 @@ export class ViewAllOrderComponent implements OnInit {
 
   hasUser(): boolean {
     return this.auth.isAuthenticated();
+  }
+  updateOrderStatus(order: OrderResponseDto): void {
+    if (order.statusNum === undefined || order.statusNum === null) {
+      console.error('Invalid status number');
+      return;
+    }
+  
+    const updateData: UpdateOrderDto = {
+      id: order.id,
+      status: order.statusNum   
+    };
+  
+    console.log('Sending update:', updateData); // Debug log
+  
+    this.orderService.updateOrder(updateData).subscribe({
+      next: (updatedOrder) => {
+        const index = this.orders.findIndex(o => o.id === updatedOrder.id);
+        if (index !== -1) {
+          this.orders[index] = updatedOrder;
+          this.filterOrders();
+        }
+        alert('Order updated successfully');
+      },
+      error: (err) => {
+        console.error('Error updating order:', err);
+        this.error = 'Failed to update order status. Please try again.';
+        alert(this.error);
+        const originalOrder = this.orders.find(o => o.id === order.id);
+        if (originalOrder) {
+          order.statusNum = originalOrder.statusNum;
+        }
+      }
+    });
   }
 }
