@@ -189,20 +189,18 @@ namespace RealEstate.Repositories
             if (auction == null) return null;
 
             var now = DateTime.Now.AddHours(1);
-            var originalStatus = auction.Status;
 
-            if (auction.Status == Status.Scheduled && now >= auction.StartTime)
-            {
-                auction.Status = Status.Active;
-            }
-            else if (auction.Status == Status.Active && now >= auction.EndTime)
+            if (now.AddMinutes(1) >= auction.EndTime)
             {
                 auction.Status = Status.Finished;
             }
-
-            if (auction.Status != originalStatus)
+            else if (now.AddMinutes(1) >= auction.StartTime)
             {
-                await dbcontext.SaveChangesAsync();
+                auction.Status = Status.Active;
+            }
+            else
+            {
+                auction.Status = Status.Scheduled;
             }
 
             return auction;
@@ -238,19 +236,13 @@ namespace RealEstate.Repositories
         //    return auctions;
         //}
 
-        public async Task<List<Auction>> CheckAndUpdateAllAuctionsStatus(bool flag)
+        public async Task<List<Auction>> CheckAndUpdateAllAuctionsStatus()
         {
             var now = DateTime.Now.AddHours(1);
-            //if (flag)
-            //{
-            //    now = DateTime.Now.AddMinutes(2);
-            //}
 
             var auctions = await dbcontext.Auctions
                 .Where(a => !a.IsDeleted)
                 .ToListAsync();
-
-
 
             foreach (var auction in auctions)
             {
@@ -269,11 +261,6 @@ namespace RealEstate.Repositories
                 {
                     auction.Status = Status.Scheduled;
                 }
-                //if(auction.Id==17)
-                //{
-                //    auction.Status = Status.Finished;
-                //    auction.EndTime = now;
-                //}
             }
             await dbcontext.SaveChangesAsync();
 

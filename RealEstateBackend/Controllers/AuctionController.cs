@@ -267,7 +267,7 @@ namespace RealEstate.Controllers
         public async Task<IActionResult> CheckAuctionStatus()
         {
             //Status Update Start
-            var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus(true);
+            var auctions = await _AuctionRepository.CheckAndUpdateAllAuctionsStatus();
             //Status Update End
 
             var auctionDtos = auctions.ToAuctionDTOShowList();

@@ -54,7 +54,6 @@ import { WishlistComponent } from './Components/Buyer/Favorite/wishlist/wishlist
 import { BuyerViewAllPointmentComponent } from './Components/Buyer/buyer-view-all-pointment/buyer-view-all-pointment.component';
 import { ViewAllPointmentComponent } from './Components/PagesSellerAndAgent/view-all-pointment/view-all-pointment.component';
 import { CreateadminComponent } from './Components/Admin/createadmin/createadmin.component';
-import { ChatComponent } from './Components/TestChat/chat/chat.component';
 import { ApproveAgentComponent } from './Components/Admin/approve-agent/approve-agent.component';
 import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
 import { SubscriptionPlanComponent } from './Components/subscription-plan/subscription-plan.component';
@@ -69,9 +68,6 @@ export const routes: Routes = [
 
   { path: "about", component: AboutComponent, title: "About" },
   { path: 'subscriptionPlan', component: SubscriptionPlanComponent, title: "subscription Plan" },
-  { path: "chatTest", component: ChatComponent, title: "chat" },
-
-
 
   //---------------------------------------------------------------------------------------
   {

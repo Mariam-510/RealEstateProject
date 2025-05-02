@@ -67,6 +67,7 @@ namespace RealEstate.Controllers
 
             return Ok(buyerDto);
         }
+       
         [HttpGet("{buyerId}")]
         [Authorize(Roles = "Buyer,Admin")]
         public async Task<IActionResult> GetBuyerById(int buyerId)
