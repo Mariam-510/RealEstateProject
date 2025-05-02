@@ -36,7 +36,7 @@ namespace RealEstate.Controllers
 
         //Authorize admin
         [HttpGet("user")]
-        [Authorize]
+        [Authorize(Roles = "Agent,Seller")]
 
         public async Task<IActionResult> GetByUserId()
         {

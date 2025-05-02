@@ -45,11 +45,12 @@ namespace RealEstate.Controllers
         public ISubscriptionPlanRepository SubscriptionPlanRepository { get; }
         public GoogleService GoogleService { get; }
         public IPropertyRepository PropertyRepository { get; }
+        public IAdminRepository AdminRepository { get; }
 
         public AccountsController(UserManager<Account> userManager, JWTService tokenService, IMapper Mapper, EmailService emailService,
             IBuyerRepository buyerRepository, ISellerRepository sellerRepository, IAgentRepository agentRepository, FileService fileService,
             ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, ISubscriptionPlanRepository subscriptionPlanRepository,
-            GoogleService googleService, IPropertyRepository propertyRepository)
+            GoogleService googleService, IPropertyRepository propertyRepository, IAdminRepository adminRepository)
         {
             UserManager = userManager;
             TokenService = tokenService;
@@ -64,6 +65,7 @@ namespace RealEstate.Controllers
             SubscriptionPlanRepository = subscriptionPlanRepository;
             GoogleService = googleService;
             PropertyRepository = propertyRepository;
+            AdminRepository = adminRepository;
         }
 
 
@@ -424,6 +426,15 @@ namespace RealEstate.Controllers
                             userId = buyer.Id;
                             fName = buyer.FirstName;
                             lName = buyer.LastName;
+                        }
+                    }
+                    else if (roles.Contains("Admin"))
+                    {
+                        var admin = await AdminRepository.GetByAccountIdAsync(account.Id);
+                        if (admin != null)
+                        {
+                            userId = admin.Id;
+                            fName = admin.Name;
                         }
                     }
 

@@ -3,7 +3,6 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, 
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
-import { Agent, SharedService } from '../../../../Service/shared.service';
 import { ListMapPropertiesComponent } from '../list-map-properties/list-map-properties.component';
 import { GirdPropertiesComponent } from '../gird-properties/gird-properties.component';
 import { ListPropertiesComponent } from '../list-properties/list-properties.component';
@@ -103,11 +102,10 @@ export class PropertiesPageComponent implements OnInit, AfterViewInit, OnDestroy
     translate: (value: number) => `${value}m²`
   };
 
-  constructor(private sharedService: SharedService, private elRef: ElementRef, private filterService: PropertyFilterService,
+  constructor(private elRef: ElementRef, private filterService: PropertyFilterService,
     private propertyService: PropertyService, private cdr: ChangeDetectorRef) {
   }
 
-  featuredAgents: Agent[] = [];
 
   private filterSub!: Subscription;
 
@@ -119,8 +117,6 @@ export class PropertiesPageComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.initializeComponent();
     this.setupFilterSubscription();
-
-    this.featuredAgents = this.sharedService.featuredAgents;
 
     this.cdr.detectChanges(); // If using ChangeDetectorRef
   }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -40,6 +41,8 @@ namespace RealEstate.Controllers
 
 
         [HttpGet]
+        [Route("admin/approveAgent")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll([FromQuery] ApprovalStatus? approvalStatus)
         {
             var agents = await AgentRepository.GetAllAsync(approvalStatus);
@@ -50,10 +53,18 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        [HttpGet("Id")]
+        [Authorize(Roles = "Agent")]
+        public async Task<IActionResult> GetById()
         {
-            var agent = await AgentRepository.GetByIdAsync(id);
+            string agentIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(agentIdStr, out int agentId))
+            {
+                return Unauthorized("Agent not found.");
+            }
+
+            var agent = await AgentRepository.GetByIdAsync(agentId);
 
             if (agent == null)
             {
@@ -83,8 +94,9 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromForm] AgentFormDto agentFormDto)
+        [HttpPut]
+        [Authorize(Roles = "Agent")]
+        public async Task<IActionResult> Update([FromForm] AgentFormDto agentFormDto)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -95,9 +107,16 @@ namespace RealEstate.Controllers
                         return BadRequest(ModelState);
                     }
 
+                    string agentIdStr = User.FindFirst("userId")?.Value;
+
+                    if (!int.TryParse(agentIdStr, out int agentId))
+                    {
+                        return Unauthorized("Agent not found.");
+                    }
+
                     var agent = Mapper.Map<Agent>(agentFormDto);
 
-                    var updatedAgent = await AgentRepository.UpdateAsync(id, agent);
+                    var updatedAgent = await AgentRepository.UpdateAsync(agentId, agent);
 
                     if (updatedAgent == null)
                     {
@@ -128,7 +147,7 @@ namespace RealEstate.Controllers
                         if (!isCurrentPasswordValid)
                         {
                             transactionScope.Dispose();
-                            return Unauthorized(new { message = "Current password is incorrect." });
+                            return StatusCode(403, new { message = "Current password is incorrect." });
                         }
 
                         var token = await UserManager.GeneratePasswordResetTokenAsync(existingAccount);
@@ -198,6 +217,8 @@ namespace RealEstate.Controllers
 
         [HttpPut]
         [Route("Approve/{id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> UpdateApprovalStatus(int id, [FromForm] ApproveAgentDto approveAgentDto)
         {
             if (!ModelState.IsValid)

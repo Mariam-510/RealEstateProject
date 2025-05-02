@@ -280,8 +280,62 @@
   }
 
   .section-underline {
-    width: 10rem;
+    width: 17rem;
     height: 3px;
     background-color: #c38e79;
     margin-top: -1rem;
   }
+  /* ________________________________Responsive added________________________________________ */
+  /* Responsive additions */
+.min-height-500 {
+    min-height: 45px;
+}
+
+@media (max-width: 768px) {
+    .min-height-500 {
+        min-height: auto;
+        height: auto;
+    }
+    
+    .slider-container {
+        height: 200px !important;
+        min-height: 200px !important;
+    }
+    
+    .bid-now-button {
+        font-size: 0.9rem !important;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .slider-container {
+        height: 180px !important;
+        min-height: 180px !important;
+    }
+    
+    .status-text {
+        font-size: 0.8rem !important;
+    }
+    
+    .pagination .page-link {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Existing styles remain with these additions */
+.auction-card {
+    transition: transform 0.2s;
+    border-radius: 8px;
+}
+
+.slider-container {
+    height: 30vh;
+    min-height: 250px;
+}
+
+.bid-now-button {
+    transition: all 0.2s;
+    font-size: 1rem;
+}

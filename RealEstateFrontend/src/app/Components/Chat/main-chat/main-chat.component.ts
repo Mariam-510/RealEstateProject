@@ -1,13 +1,34 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, HostListener, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  HostListener,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AfterViewChecked, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
-import { ConversationResponseDto, ConversationService } from '../../../Services/ApiServices/conversation.service';
+import {
+  AfterViewChecked,
+  ElementRef,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
+import {
+  ConversationResponseDto,
+  ConversationService,
+} from '../../../Services/ApiServices/conversation.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { AccountService } from '../../../Services/ApiServices/account.service';
 import { API_CONFIG } from '../../../app.config';
-import { CreateMessageDto, MessageResponseDto, MessageService } from '../../../Services/ApiServices/message.service';
-import { ChatService, IncomingChatMessage } from '../../../Services/ApiServices/chat.service';
+import {
+  CreateMessageDto,
+  MessageResponseDto,
+  MessageService,
+} from '../../../Services/ApiServices/message.service';
+import {
+  ChatService,
+  IncomingChatMessage,
+} from '../../../Services/ApiServices/chat.service';
 
 enum MessageStatus {
   Pending = 'Pending',
@@ -45,7 +66,9 @@ interface Chat {
   templateUrl: './main-chat.component.html',
   styleUrl: './main-chat.component.css',
 })
-export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewInit, OnDestroy {
+export class MainChatComponent
+  implements OnInit, AfterViewChecked, AfterViewInit, OnDestroy
+{
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
 
   today = new Date();
@@ -69,7 +92,11 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
   ) {}
 
   ngOnInit() {
-    if (!this.auth.hasRole('Buyer') && !this.auth.hasRole('Seller') && !this.auth.hasRole('Agent')) {
+    if (
+      !this.auth.hasRole('Buyer') &&
+      !this.auth.hasRole('Seller') &&
+      !this.auth.hasRole('Agent')
+    ) {
       this.auth.logout();
       return;
     }
@@ -120,7 +147,9 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
             chat.unread = storedCounts[chat.id.toString()] || 0;
 
             try {
-              const messages = await this.messageService.getAllMessages(chat.id).toPromise();
+              const messages = await this.messageService
+                .getAllMessages(chat.id)
+                .toPromise();
               if (messages?.length) {
                 chat.messages = messages
                   .map((msg) => this.mapMessageDto(msg))
@@ -154,9 +183,11 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
   }
 
   private mapDtoToChat(dto: ConversationResponseDto): Chat {
-    const otherAccountId = dto.firstAccountId === this.currentUserId
-      ? dto.secondAccountId
-      : dto.firstAccountId;
+
+    const otherAccountId =
+      dto.firstAccountId === this.currentUserId
+        ? dto.secondAccountId
+        : dto.firstAccountId;
 
     const chat: Chat = {
       id: dto.id,
@@ -186,8 +217,9 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
         console.error('Failed to load user info:', err);
         chat.otherUser.firstName = 'Unknown User';
         chat.otherUser.lastName = '';
-        this.cdr.markForCheck();
-      }
+
+        this.cdr.markForCheck(); // Trigger update even on error
+      },
     });
 
     return chat;
@@ -204,7 +236,8 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
   private checkScrollPosition() {
     const element = this.messagesContainer?.nativeElement;
     if (element) {
-      const isAtBottom = element.scrollHeight - element.clientHeight <= element.scrollTop + 50;
+      const isAtBottom =
+        element.scrollHeight - element.clientHeight <= element.scrollTop + 50;
       this.shouldScroll = isAtBottom;
     }
   }
@@ -241,7 +274,7 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
           .sort((a, b) => a.time.getTime() - b.time.getTime());
         setTimeout(() => this.scrollToBottom(true), 100);
       },
-      error: (err) => console.error('Error fetching messages:', err)
+      error: (err) => console.error('Error fetching messages:', err),
     });
   }
 
@@ -284,16 +317,18 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
 
     this.messageService.createMessage(dto).subscribe({
       next: (response) => {
-        currentChat.messages = currentChat.messages.map(m => 
+        currentChat.messages = currentChat.messages.map((m) =>
           m === optimisticMessage ? this.mapResponseToMessage(response) : m
         );
         
-        if (currentChat.status === 'Pending' && this.isBuyer()) {
-          currentChat.status = 'Pending';
-        }
+//         if (currentChat.status === 'Pending' && this.isBuyer()) {
+//           currentChat.status = 'Pending';
+//         }
 
         if (response.senderId !== this.currentUserId) {
-          const conversation = this.conversations.find(c => c.id === currentChat.id);
+          const conversation = this.conversations.find(
+            (c) => c.id === currentChat.id
+          );
           if (conversation && conversation !== this.selectedChat) {
             conversation.unread++;
             this.updateUnreadCount(conversation.id, conversation.unread);
@@ -302,9 +337,11 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
         }
       },
       error: (error) => {
-        currentChat.messages = currentChat.messages.filter(m => m !== optimisticMessage);
+        currentChat.messages = currentChat.messages.filter(
+          (m) => m !== optimisticMessage
+        );
         this.scrollToBottom();
-      }
+      },
     });
   }
 
@@ -322,12 +359,15 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
 
     this.chatService.messages$.subscribe((messages: IncomingChatMessage[]) => {
       messages.forEach((message) => {
-        const conversation = this.conversations.find(c => c.id === message.conversationId);
+        const conversation = this.conversations.find(
+          (c) => c.id === message.conversationId
+        );
         if (!conversation) return;
 
-        const messageExists = conversation.messages.some(m => 
-          m.time.getTime() === new Date(message.sentAt).getTime() &&
-          m.text === message.content
+        const messageExists = conversation.messages.some(
+          (m) =>
+            m.time.getTime() === new Date(message.sentAt).getTime() &&
+            m.text === message.content
         );
 
         if (!messageExists) {
@@ -337,7 +377,7 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
             senderId: message.senderId,
             sentAt: message.sentAt,
             status: MessageStatus.Delivered,
-            conversationId: message.conversationId
+            conversationId: message.conversationId,
           });
 
           conversation.messages.push(newMessage);
@@ -347,6 +387,7 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
             conversation.unread++;
             this.updateUnreadCount(conversation.id, conversation.unread);
             this.sortConversations();
+            console.log(this.conversations);
           }
         }
       });
@@ -354,9 +395,19 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
   }
 
   private sortConversations() {
-    this.conversations.sort((a, b) => 
-      (b.lastMessageTime?.getTime() || 0) - (a.lastMessageTime?.getTime() || 0)
-    );
+    console.log(this.conversations);
+
+    this.conversations.sort((a, b) => {
+      const timeA = a.lastMessageTime
+        ? new Date(a.lastMessageTime).getTime()
+        : 0;
+      const timeB = b.lastMessageTime
+        ? new Date(b.lastMessageTime).getTime()
+        : 0;
+      return timeB - timeA;
+    });
+
+    console.log(this.conversations);
   }
 
   @HostListener('window:beforeunload')
@@ -365,7 +416,7 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
       acc[chat.id.toString()] = chat.unread;
       return acc;
     }, {} as { [key: string]: number });
-    
+
     localStorage.setItem('unreadCounts', JSON.stringify(unreadCounts));
   }
 
@@ -375,10 +426,14 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
 
   getStatusClass(status: MessageStatus): string {
     switch (status) {
-      case MessageStatus.Read: return 'status-read';
-      case MessageStatus.Delivered: return 'status-delivered';
-      case MessageStatus.Pending: return 'status-pending';
-      default: return '';
+      case MessageStatus.Read:
+        return 'status-read';
+      case MessageStatus.Delivered:
+        return 'status-delivered';
+      case MessageStatus.Pending:
+        return 'status-pending';
+      default:
+        return '';
     }
   }
 
@@ -391,6 +446,7 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
       senderId: response.senderId,
     };
   }
+
 
   private isAgentOrSeller(): boolean {
     return this.auth.hasRole('Agent') || this.auth.hasRole('Seller');
@@ -436,3 +492,9 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
     });
   }
 }
+
+  trackByConversationId(index: number, chat: Chat): number {
+    return chat.id; // Helps Angular recognize reordered items
+  }
+}
+

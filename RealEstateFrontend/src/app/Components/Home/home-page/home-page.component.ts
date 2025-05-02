@@ -1,10 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { Product, PropertyDto, SharedService } from '../../../Services/shared.service';
 import { RecommendedComponent } from '../../Properties/Details/recommended/recommended.component';
-import { HomePropertiesComponent } from "../home-properties/home-properties.component";
-import { HomeAuctionsComponent } from "../home-auctions/home-auctions.component";
 import { CardmapComponent } from '../../Properties/Details/cardmap/cardmap.component';
 import { LeafletMapComponent } from '../../Map/leaflet-map/leaflet-map.component';
 import { AuthService } from '../../../Services/ApiServices/auth.service';

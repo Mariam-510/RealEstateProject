@@ -20,7 +20,7 @@ namespace RealEstate.Models.Dtos.AgentDto
 
         public string? ImageUrl { get; set; }
 
-        public ApprovalStatus ApprovalStatus { get; set; }
+        public string ApprovalStatus { get; set; }
 
     }
 }

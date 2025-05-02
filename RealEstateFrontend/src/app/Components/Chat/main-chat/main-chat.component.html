@@ -9,7 +9,8 @@
           <div class="card-body overflow-auto p-0">
             <ul class="list-unstyled mb-0">
               <!-- Chat List Items -->
-              <li *ngFor="let chat of conversations" class="p-2 border-bottom cursor-pointer chat-list-item"
+              <!-- Updated Chat List Item -->
+              <li *ngFor="let chat of conversations; trackBy: trackByConversationId" class="p-2 border-bottom cursor-pointer chat-list-item"
                 [class.active-chat]="selectedChat?.id === chat.id" (click)="selectChat(chat)">
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="d-flex flex-row flex-grow-1" style="min-width: 0;">

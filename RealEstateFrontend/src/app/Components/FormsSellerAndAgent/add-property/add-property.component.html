@@ -36,29 +36,29 @@
               <div class="row g-3">
                 <div class="col-md-12">
                   <label for="title" class="form-label">Title</label>
-                  <input type="text" class="form-control" id="title" formControlName="title" maxlength="15" />
-                  <small class="text-muted">{{ propertyForm.get("title")?.value?.length || 0 }}/15
+                  <input type="text" class="form-control" id="title" formControlName="title" maxlength="50" />
+                  <small class="text-muted">{{ propertyForm.get("title")?.value?.length || 0 }}/50
                     characters</small>
                   <div *ngIf="
                       propertyForm.get('title')?.invalid &&
                       propertyForm.get('title')?.touched
                     " class="text-danger">
-                    Title is required (max 15 characters)
+                    Title is required (max 50 characters)
                   </div>
                 </div>
 
                 <div class="col-md-12">
                   <label for="description" class="form-label">Description</label>
                   <textarea class="form-control" id="description" formControlName="description" rows="3"
-                    maxlength="40"></textarea>
+                    maxlength="200"></textarea>
                   <small class="text-muted">{{
                     propertyForm.get("description")?.value?.length || 0
-                    }}/40 characters</small>
+                    }}/200 characters</small>
                   <div *ngIf="
                       propertyForm.get('description')?.invalid &&
                       propertyForm.get('description')?.touched
                     " class="text-danger">
-                    Description is required (max 40 characters)
+                    Description is required (max 200 characters)
                   </div>
                 </div>
 

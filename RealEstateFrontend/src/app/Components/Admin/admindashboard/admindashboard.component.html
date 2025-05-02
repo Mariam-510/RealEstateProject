@@ -21,27 +21,44 @@
                         <i class="bi bi-people-fill me-1 text-caffe fs-5"></i> Total Users
                       </h6>
                   
+                      @if (totals) {
                         <div class="mb-2 text-center">
                             <div class="fs-4 fw-bold mt-1 mb-1">{{ BuyerNumber + SellerNumber + AgentNumber | number }}</div>
                             <div class="d-flex justify-content-center small text-muted">
                                 <span class="text-muted">Currently User</span>
                             </div>
                         </div>
-                    </div>
+                    } @else {
+                        <div class="d-flex align-items-center justify-content-center" style="height: 100px">
+                            <div class="spinner-border text-caffe" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    }
                 </div>
+            </div>
 
                 <!-- Active Auctions -->
                 <div class="col-sm-6 col-md-3">
                     <div class="card bg-caffe-light h-100" style="border: 1px solid rgba(195, 142, 121, 0.2)">
                         <div class="mb-0 pt-3 ps-3 d-flex align-items-center text-muted">
                             <h6 class="mb-0 d-flex align-items-center text-muted">
-                                <i class="bi bi-hammer me-1text-caffe fs-5"></i>Active Auctions
+                                <i class="bi bi-hammer me-1 text-caffe fs-5"></i>Active Auctions
                             </h6>
                         </div>
+                        @if (totals) {
+
                         <div class="mb-2 text-center">
                             <div class="fs-4 fw-bold mt-1 mb-1">{{ ActiveAuctionProperties | number }}</div>
                             <small class="text-muted ms-1">Currently Active</small>
                         </div>
+                    }@else {
+                        <div class="d-flex align-items-center justify-content-center" style="height: 100px">
+                            <div class="spinner-border text-caffe" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    }
                     </div>
                 </div>
 
@@ -53,10 +70,18 @@
                                 <i class="bi bi-house-door me-1 text-caffe fs-5"></i>Available Property
                             </h6>
                         </div>
-                        <div class="mb-2 text-center">
-                            <div class="fs-4 fw-bold mt-1 mb-1">{{ availableProperties }}</div>
-                            <small class="text-muted ms-1">Properties</small>
-                        </div>
+                        @if (totals) {
+                            <div class="mb-2 text-center">
+                                <div class="fs-4 fw-bold mt-1 mb-1">{{ availableProperties }}</div>
+                                <small class="text-muted ms-1">Properties</small>
+                            </div>
+                        } @else {
+                            <div class="d-flex align-items-center justify-content-center" style="height: 100px">
+                                <div class="spinner-border text-caffe" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
 
@@ -68,13 +93,21 @@
                                 <i class="bi bi-box-seam me-1 text-caffe fs-5"></i>Products
                             </h6>
                         </div>
-                        <div class="mb-2 text-center">
-                            <div class="fs-4 fw-bold mt-1 mb-1">{{ totalProducts }}</div>
-                            <div class="d-flex justify-content-center small text-muted">
-                                <span class="text-muted">{{ totalUsedProducts }} Used</span>
-                                <span class="ms-1">{{ newProductsCount }} New</span>
+                        @if (totals) {
+                            <div class="mb-2 text-center">
+                                <div class="fs-4 fw-bold mt-1 mb-1">{{ totalProducts }}</div>
+                                <div class="d-flex justify-content-center small text-muted">
+                                    <span class="text-muted">{{ totalUsedProducts }} Used</span>
+                                    <span class="ms-1">{{ newProductsCount }} New</span>
+                                </div>
                             </div>
-                        </div>
+                        } @else {
+                            <div class="d-flex align-items-center justify-content-center" style="height: 100px">
+                                <div class="spinner-border text-caffe" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -85,37 +118,53 @@
                 <div class="col-md-6">
                     <div class="card shadow-sm h-100">
                         <div class="card-header bg-white py-2 px-3">
-                            <h6 class="mb-0 d-flex align-items-center">
-                                <i class="bi bi-pie-chart me-2 fs-5"></i>Product Categories
-                            </h6>
+                          <h6 class="mb-0 d-flex align-items-center">
+                            <i class="bi bi-pie-chart me-2 fs-5"></i>Product Categories
+                          </h6>
                         </div>
                         <div class="card-body pt-4" style="padding-left: 4vw;">
-                            <div style="height:37vh; width:100%">
+                            @if (hasCategoryData()) {
+                              <div style="height:37vh; width:100%">
                                 <canvas baseChart [data]="categoryDistributionChart" 
-                                    [options]="categoryDistributionOptions" [type]="'pie'"></canvas>
-                            </div>
-                        </div>
+                                        [options]="categoryDistributionOptions" [type]="'pie'"></canvas>
+                              </div>
+                            } @else {
+                              <div class="d-flex align-items-center justify-content-center " style="height: 37vh">
+                                <div class="spinner-border text-caffe mx-auto" role="status" style="width: 3rem; height: 3rem;">
+                                  <span class="visually-hidden">Loading...</span>
+                                </div>
+                              </div>
+                            }
+                          </div>
+                      </div>
+                </div>
+<!-- Line Chart - Subscriptions -->
+<div class="col-md-6">
+    <div class="card shadow-sm h-100">
+        <div class="card-header bg-white">
+            <h6 class="mb-0 d-flex align-items-center">
+                <i class="bi bi-credit-card me-2 fs-5"></i>Number of Subscriptions
+            </h6>
+        </div>
+        <div class="card-body pt-5 px-1">
+            @if (totals?.subscriptionPlans?.length) {
+                <div style="height:34vh; width:100%">
+                    <canvas baseChart [data]="subscriptionPlanChart" 
+                            [options]="subscriptionPlanOptions" [type]="'bar'"></canvas>
+                </div>
+            } @else {
+                <div class="d-flex align-items-center justify-content-center" style="height: 34vh">
+                    <div class="spinner-border text-caffe" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
-
-                <!-- Line Chart -->
-                <div class="col-md-6">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-white">
-                            <h6 class="mb-0 d-flex align-items-center">
-                                <i class="bi bi-credit-card me-2 fs-5"></i>Number of Subscriptions
-                            </h6>
-                        </div>
-                        <div class="card-body pt-5 px-1">
-                            <div style="height:34vh; width:100%">
-                                <canvas baseChart [data]="subscriptionPlanChart" 
-                                        [options]="subscriptionPlanOptions" [type]="'bar'"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            }
+        </div>
+    </div>
+</div>
             </div>
-
+            
+              
             <!-- Line Chart Below -->
             <div class="row" style="margin-top: 30px;">
                 <div class="col-12">
@@ -125,11 +174,19 @@
                                 <i class="bi bi-star-fill me-2 fs-5"></i>Top Selling Products
                             </h6>
                         </div>
-                        <div class="card-body p-">
-                            <div style="height:33vh; width:100%">
-                                <canvas baseChart [data]="topProductsChart" 
-                                    [options]="topProductsOptions" [type]="'bar'"></canvas>
-                            </div>
+                        <div class="card-body">
+                            @if (totals?.topProducts?.length) {
+                                <div style="height:33vh; width:100%">
+                                    <canvas baseChart [data]="topProductsChart" 
+                                        [options]="topProductsOptions" [type]="'bar'"></canvas>
+                                </div>
+                            } @else {
+                                <div class="d-flex align-items-center justify-content-center" style="height:33vh">
+                                    <div class="spinner-border text-caffe" role="status" style="width: 3rem; height: 3rem;">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -153,6 +210,8 @@
                             </div>
                             <div class="p-0">
                                 <ul class="list-group list-group-flush">
+                                    @if (BuyerNumber && SellerNumber && AgentNumber) {
+
                                     <li class="list-group-item d-flex justify-content-between align-items-center border-0 py-1 px-2">
                                         <span class="d-flex align-items-center small">
                                             <i class="bi bi-person-fill me-2 text-caffe" style="font-size:18px;"></i>
@@ -162,7 +221,7 @@
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center border-0 py-1 px-2">
                                         <span class="d-flex align-items-center small">
-                                            <i class="bi bi-key me-2text-caffe" style="font-size:18px;"></i>
+                                            <i class="bi bi-key me-2 text-caffe" style="font-size:18px;"></i>
                                             <span class="fw-medium">Seller</span>
                                         </span>
                                         <span class="ms-auto badge  bg-caffe text-white rounded-pill px-2">{{ SellerNumber }}</span>
@@ -174,6 +233,13 @@
                                         </span>
                                         <span class="ms-auto badge  bg-caffe  text-white rounded-pill px-2">{{ AgentNumber }}</span>
                                     </li>
+                                } @else {
+                                    <div class="d-flex align-items-center justify-content-center" style="height: 150px">
+                                        <div class="spinner-border text-caffe" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                }
                                 </ul>
                             </div>
                         </li>
@@ -187,6 +253,8 @@
                             </div>
                             <div class="card-body p-0">
                                 <ul class="list-group list-group-flush">
+                                    @if (propertiesForSaleCount && propertiesForRentCount && availableProperties && soldAndRentedCount) {
+
                                     <li class="list-group-item d-flex justify-content-between align-items-center border-0 py-1 px-2">
                                         <span class="d-flex align-items-center small mt-1">
                                             <i class="bi bi-house-door-fill me-2 text-caffe" style="font-size:18px;"></i>
@@ -215,16 +283,25 @@
                                         </span>
                                         <span class="ms-auto badge bg-caffe  text-white rounded-pill px-2">{{ soldAndRentedCount }}</span>
                                     </li>
+                                } @else {
+                                    <div class="d-flex align-items-center justify-content-center" style="height: 150px">
+                                        <div class="spinner-border text-caffe" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                }
                                 </ul>
                             </div>
                         </li>
                         <div class="custom-hr"></div>
-            
+
                         <!-- Auction Progress Section -->
                         <li class="list-group-item pt-2 mb-2 border-0">
                             <div class="fw-semibold mb-1 d-flex align-items-center">
                                 <i class="bi bi-hammer me-2 text-caffe fs-4"></i> <h6 class="mb-1">Auction Summary</h6>
                             </div>
+                            @if (totals.highestSellBid && totals.highestRentBid && totals.upcomingAuctions && totals.endingAuctions) {
+
                             <div class="auction-progress">
                                 <div class="d-flex justify-content-between ms-3 mb-1">
                                     <span class="small text-muted">Active Auctions Precentage</span>
@@ -240,13 +317,13 @@
                                     <div class="col-6">
                                         <div class="card bg-light p-2 text-center h-100">
                                             <div class="text-muted small">Highest Sell Bid</div>
-                                            <div class="fw-bold">£45,000</div>
+                                            <div class="fw-bold">{{totals.highestSellBid}}</div>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="card bg-light p-2 text-center h-100">
                                             <div class="text-muted small">Highest Rent Bid</div>
-                                            <div class="fw-bold">£15,000</div>
+                                            <div class="fw-bold">{{totals.highestRentBid}}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -254,18 +331,27 @@
                                     <div class="col-6">
                                         <div class="card bg-light p-2 text-center h-100">
                                             <div class="text-muted small">upcoming</div>
-                                            <div class="fw-bold">3</div>
+                                            <div class="fw-bold">{{totals.upcomingAuctions}}</div>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="card bg-light p-2 text-center h-100">
                                             <div class="text-muted small">Ending Auction</div>
-                                            <div class="fw-bold">{{EndedAuctionProperties}}</div>
+                                            <div class="fw-bold">{{totals.endingAuctions}}</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        }
+                        @else {
+                            <div class="d-flex align-items-center justify-content-center" style="height: 150px">
+                                <div class="spinner-border text-caffe" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        }
                         </li>
+                  
                         <div class="custom-hr"></div>
             
                         <!-- Product Summary Section -->
@@ -273,6 +359,8 @@
                             <div class="fw-semibold d-flex align-items-center">
                                 <i class="bi bi-box-seam me-2 text-caffe fs-4"></i> <h6>Product Summary</h6>
                             </div>
+                            @if (totalProducts&& totalSold && totals.totalOrders) {
+
                             <div class="card-body p-0">
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item d-flex justify-content-between align-items-center border-0 py-1 px-2">
@@ -284,27 +372,28 @@
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center border-0 py-1 px-2">
                                         <span class="d-flex align-items-center small">
-                                            <i class="bi  bi-cart-check me-2 text-caffe" style="font-size:18px;"></i>
-                                            <span class="fw-medium">Total Sold</span>
+                                            <i class="bi  bi-cart-x me-2 text-caffe" style="font-size:18px;"></i>
+                                            <span class="fw-medium">Sold Out</span>
                                         </span>
                                         <span class="ms-auto badge bg-caffe  text-white rounded-pill px-2">{{ totalSold }}</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center border-0 py-1 px-2">
                                         <span class="d-flex align-items-center small">
-                                            <i class="bi bi-recycle me-2 text-caffe" style="font-size:18px;"></i>
-                                            <span class="fw-medium">Used</span>
+                                            <i class="bi bi-cart-check-fill me-2 text-caffe" style="font-size:18px;"></i>
+                                            <span class="fw-medium">Total Orders</span>
                                         </span>
-                                        <span class="ms-auto badge  bg-caffe  text-white rounded-pill px-2">{{ totalUsedProducts }}</span>
+                                        <span class="ms-auto badge  bg-caffe  text-white rounded-pill px-2">{{ totals.totalOrders }}</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 py-1 px-2 ">
-                                        <span class="d-flex align-items-center small">
-                                            <i class="bi bi-patch-plus me-2 text-caffe" style="font-size:18px;"></i>
-                                            <span class="fw-medium">New</span>
-                                        </span>
-                                        <span class="ms-auto badge  bg-caffe text-white rounded-pill px-2">{{ totalNewProducts }}</span>
-                                    </li>
+                             
                                 </ul>
                             </div>
+                        } @else {
+                            <div class="d-flex align-items-center justify-content-center" style="height: 150px">
+                                <div class="spinner-border text-caffe" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        }
                         </li>
                     </ul>
                 </div>

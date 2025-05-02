@@ -68,12 +68,15 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Set up SignalR listeners
     this.signalrService.listenToAuctionDetails(this.handleAuctionUpdate.bind(this));
-    this.signalrService.listenToDeletedAuctions(this.handleAuctionDeletion.bind(this));
     this.signalrService.listenToAuctionListUpdates(this.handleListUpdate.bind(this));
+    this.signalrService.listenToDeletedAuctions(this.handleAuctionDeletion.bind(this));
+    this.signalrService.listenToCheckStatusUpdates(this.checkStatus.bind(this));
 
     this.icons = this.createIcons();
 
     this.startCountdown();
+
+    this.startStatusTimer();
   }
 
 
@@ -107,7 +110,7 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-
+  //-------------------------------------------------------------------------------
   private handleAuctionUpdate(updatedAuction: AuctionDTOShow) {
     if (updatedAuction.id === this.auction?.id) {
       this.auction = this.processAuctionDates(updatedAuction);
@@ -136,7 +139,22 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     this.cdr.detectChanges(); // Add change detection
   }
 
+  private checkStatus(auctions: AuctionDTOShow[]) {
 
+    var auction = auctions.find(a => a.id === this.auction?.id) || null;
+    if (auction != null) {
+      this.auction = this.processAuctionDates(auction);
+    }
+
+    console.log('checkstatus');
+
+    console.log('signal r auction', this.auction);
+
+    this.startCountdown();
+    this.cdr.detectChanges();
+  }
+
+  //-------------------------------------------------------------------------------
   private processAuctionDates(auction: AuctionDTOShow): AuctionDTOShow {
     return {
       ...auction,
@@ -148,7 +166,6 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       }))
     };
   }
-
 
   private processAuctionDatesCreateBid(auction: AuctionDTOShow): AuctionDTOShow {
     return {
@@ -166,8 +183,141 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     };
   }
 
+  private startCountdown() {
+    this.timer = setInterval(() => {
+      const now = new Date().getTime();
+      // Determine target date based on auction status
+      const targetDate = this.auction?.status === 'Scheduled'
+        ? this.auction.startTime.getTime()
+        : this.auction?.endTime.getTime();
+
+      const distance = targetDate! - now;
+
+      if (distance < 0) {
+        clearInterval(this.timer);
+        this.days = this.hours = this.minutes = this.seconds = '00';
+        return;
+      }
+
+      this.days = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+      this.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+      this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+      this.seconds = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
 
 
+    }, 1000);
+  }
+
+  transform(value: Date): string {
+    const diff = +new Date() - +new Date(value);
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    return `just now`;
+  }
+
+  // Cleanup
+  ngOnDestroy() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+    this.signalrService.hubConnection.stop();
+    this.signalrService.hubConnection.off('ReceiveAuctionDetails');
+    this.signalrService.hubConnection.off('AuctionDeleted');
+    this.signalrService.hubConnection.off('AuctionListUpdate');
+    this.signalrService.hubConnection.off('CheckStatusAllAuctions');
+
+    this.clearTimer();
+
+  }
+
+  //--------------------------------------------------------------------------
+  private timeout: any;
+  private nextCheckTime: Date | null = null;
+
+  startStatusTimer() {
+    this.clearTimer();
+    this.checkAuctionStatusEndpoint();
+  }
+
+  private clearTimer() {
+    clearTimeout(this.timeout);
+  }
+
+  private calculateNextCheck(auctions: AuctionDTOShow[]) {
+    const now = new Date().getTime();
+    console.log(new Date().toLocaleString());
+    let nearestTime = Infinity;
+
+    auctions.forEach(auction => {
+      const start = auction.startTime.getTime();
+      const end = auction.endTime.getTime();
+
+      if (now < start) {
+        nearestTime = Math.min(nearestTime, start);
+      }
+      else if (now < end) {
+        nearestTime = Math.min(nearestTime, end);
+      }
+
+    });
+
+    return nearestTime !== Infinity ? new Date(nearestTime) : null;
+  }
+
+  checkAuctionStatusEndpoint() {
+    console.log('check status endpoint');
+
+    this.auctionService.checkAuctionStatus().subscribe({
+      next: (auctions) => {
+        auctions = auctions.map(auction => ({
+          ...auction,
+          startTime: new Date(auction.startTime),  // Convert string to Date
+          endTime: new Date(auction.endTime)      // Convert string to Date
+        }));
+
+        console.log('Status changes detected:', auctions);
+
+        // Always set up next check even if no changes
+        this.nextCheckTime = this.calculateNextCheck(auctions);
+        this.setNextTimeout();
+
+        // Update SignalR listeners or other real-time features here
+      },
+      error: (err) => console.error('Error checking status:', err)
+    });
+  }
+
+  private setNextTimeout() {
+    this.clearTimer();
+
+    if (!this.nextCheckTime) {
+      console.log('No upcoming status changes');
+      return;
+    }
+
+    const now = new Date().getTime();
+    const timeDiff = this.nextCheckTime.getTime() - now;
+
+    if (timeDiff > 0) {
+      console.log('Next check scheduled at', this.nextCheckTime);
+      this.timeout = setTimeout(() => {
+        this.checkAuctionStatusEndpoint();
+      }, timeDiff);
+    }
+    else {
+      // If time already passed, check immediately
+      this.checkAuctionStatusEndpoint();
+    }
+  }
+
+
+  //----------------------------------------------------------------------------
   private createIcons() {
     return [
       {
@@ -197,57 +347,8 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     ];
   }
 
-  private startCountdown() {
-    this.timer = setInterval(() => {
-      const now = new Date().getTime();
-      // Determine target date based on auction status
-      const targetDate = this.auction?.status === 'Scheduled'
-        ? this.auction.startTime.getTime()
-        : this.auction?.endTime.getTime();
+  //---------------------------------------------------------------------------------------------
 
-      const distance = targetDate! - now;
-
-      if (distance < 0) {
-        clearInterval(this.timer);
-        this.days = this.hours = this.minutes = this.seconds = '00';
-        return;
-      }
-
-      this.days = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
-      this.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
-      this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-      this.seconds = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
-
-
-    }, 1000);
-  }
-
-  // Cleanup
-  ngOnDestroy() {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-    this.signalrService.hubConnection.stop();
-    this.signalrService.hubConnection.off('ReceiveAuctionDetails');
-    this.signalrService.hubConnection.off('AuctionDeleted');
-    this.signalrService.hubConnection.off('AuctionListUpdate');
-  }
-
-
-  transform(value: Date): string {
-    const diff = +new Date() - +new Date(value);
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
-    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-    return `just now`;
-  }
-
-  //----------------------------------------------------------------------------
   // Add these properties to the component class
   bidAmount: number | null = null;
   showBidSuccess = false;

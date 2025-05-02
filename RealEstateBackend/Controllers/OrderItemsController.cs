@@ -56,7 +56,7 @@ namespace RealEstate.Controllers
 
         [HttpGet]
         [Route("Order/{orderId}")]
-        [Authorize(Roles = "Buyer")]
+        [Authorize(Roles = "Buyer,Admin")]
         public async Task<IActionResult> GetAllByOrder(int orderId)
         {
             var orderItems = await OrderItemRepository.GetAllByOrderAsync(orderId);

@@ -51,7 +51,6 @@ namespace RealEstate.Repositories
                 return null;
 
             existingMessage.Content = message.Content;
-            existingMessage.Status = message.Status;
 
             _context.Messages.Update(existingMessage);
             await _context.SaveChangesAsync();

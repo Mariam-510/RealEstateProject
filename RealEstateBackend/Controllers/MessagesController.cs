@@ -128,7 +128,6 @@ namespace RealEstate.Controllers
                 Content = createMessageDto.Content,
                 SenderId = currentUserAccountId,
                 ConversationId = conversation.Id,
-                Status = conversation.Status == ConversationStatus.Pending ? MessageStatus.Sent : MessageStatus.Sent,
                 SentAt = DateTime.Now
             };
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
@@ -17,28 +17,14 @@ import { lastValueFrom } from 'rxjs';
 })
 export class MoreAuctionsComponent implements OnInit, OnDestroy {
 
-  days: string = '12';
-  hours: string = '23';
-  minutes: string = '23';
-  seconds: string = '35';
   Math = Math;
-  searchQuery: string = '';
-  private countDownDate: number;
-  private countdownSubscription: Subscription | undefined;
 
   auctions: AuctionDTOShow[] = [];
   apiConfig = API_CONFIG;
 
-  constructor(private auctionService: AuctionService, private signalrService: SignalRService) {
-    // Set the count down date (12 days, 23 hours, 23 minutes, 35 seconds from now)
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 12);
-    futureDate.setHours(futureDate.getHours() + 23);
-    futureDate.setMinutes(futureDate.getMinutes() + 23);
-    futureDate.setSeconds(futureDate.getSeconds() + 35);
-
-    this.countDownDate = futureDate.getTime();
-  }
+  constructor(private auctionService: AuctionService, private signalrService: SignalRService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   isLoading = true;
   errorMessage = '';
@@ -54,12 +40,10 @@ export class MoreAuctionsComponent implements OnInit, OnDestroy {
     this.signalrService.listenToAllAuctions(this.updateAuctions.bind(this));
     this.signalrService.listenToNewAuctions(this.addNewAuction.bind(this));
     this.signalrService.listenToDeletedAuctions(this.removeAuction.bind(this));
+    this.signalrService.listenToCheckStatusUpdates(this.checkStatus.bind(this));
 
-    // Update the countdown every 1 second using RxJS interval
-    this.countdownSubscription = interval(1000).subscribe(() => {
-      this.updateCountdown();
-      this.updateAuctionsStatus(); // This now handles progress updates
-    });
+
+    this.updateAuctionsStatus();
   }
 
   // Add this inside your component class
@@ -108,7 +92,6 @@ export class MoreAuctionsComponent implements OnInit, OnDestroy {
       this.isLoading = false;
     }
   }
-
 
   private updateAuctions(auctions: AuctionDTOShow[]) {
     this.auctions = auctions;
@@ -172,23 +155,38 @@ export class MoreAuctionsComponent implements OnInit, OnDestroy {
     this.similarAuctions = this.getSimilarAuctions();
   }
 
+  private checkStatus(auctions: AuctionDTOShow[]) {
+
+    console.log('checkstatus');
+
+    this.auctions = auctions;
+    this.auctions = this.auctions.map(auction => ({
+      ...auction,
+      startTime: new Date(auction.startTime),  // Convert string to Date
+      endTime: new Date(auction.endTime)      // Convert string to Date
+    }));
+
+    console.log('signal r more auctions', this.auctions);
+    this.similarAuctions = this.getSimilarAuctions();
+
+    this.updateAuctionsStatus();
+    this.cdr.detectChanges();
+  }
+
 
   ngOnDestroy() {
-    this.countdownSubscription?.unsubscribe();
     this.signalrService.hubConnection.stop();
     // Clean up listeners
     this.signalrService.hubConnection.off('ReceiveAllAuctions');
     this.signalrService.hubConnection.off('NewAuctionCreated');
     this.signalrService.hubConnection.off('AuctionDeleted');
     this.signalrService.hubConnection.off('AuctionListUpdate');
+    this.signalrService.hubConnection.off('CheckStatusAllAuctions');
 
-    // Unsubscribe to prevent memory leaks
-    if (this.countdownSubscription) {
-      this.countdownSubscription.unsubscribe();
-    }
   }
 
 
+  //---------------------------------------------------------------------------------------------
   getProgress(auction: AuctionDTOShow): number {
     const now = new Date().getTime();
     const start = auction.startTime.getTime();
@@ -222,46 +220,18 @@ export class MoreAuctionsComponent implements OnInit, OnDestroy {
     const now = new Date();
     this.auctions.forEach(auction => {
       // Update status
-      if (now < auction.startTime) {
-        auction.status = 'Scheduled';
-      } else if (now > auction.endTime) {
-        auction.status = 'Finished';
-      } else {
-        auction.status = 'Active';
-      }
-
+      // if (now < auction.startTime) {
+      //   auction.status = 'Scheduled';
+      // } else if (now > auction.endTime) {
+      //   auction.status = 'Finished';
+      // } else {
+      //   auction.status = 'Active';
+      // }
       // Calculate progress here
       auction.timeProgress = this.getTimeProgress(auction);
     });
   }
 
-  private updateCountdown(): void {
-    // Get today's date and time
-    const now = new Date().getTime();
-
-    // Find the distance between now and the count down date
-    const distance = this.countDownDate - now;
-
-    if (distance > 0) {
-      // Time calculations for days, hours, minutes and seconds
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      // Format values with leading zeros if needed
-      this.days = days < 10 ? '0' + days : days.toString();
-      this.hours = hours < 10 ? '0' + hours : hours.toString();
-      this.minutes = minutes < 10 ? '0' + minutes : minutes.toString();
-      this.seconds = seconds < 10 ? '0' + seconds : seconds.toString();
-    } else {
-      // If the countdown is finished
-      this.days = '00';
-      this.hours = '00';
-      this.minutes = '00';
-      this.seconds = '00';
-    }
-  }
 
   // Starting bid filter
   startingBidMin: number | null = null;
