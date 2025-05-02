@@ -118,12 +118,10 @@
                   <span class="input-group-text bg-light border-0">
                     <i class="bi bi-key text-caffe fs-5"></i>
                   </span>
-                  <input
-                    type="password"
-                    class="form-control border-0 shadow-sm"
-                    placeholder="Enter password"
-                    formControlName="pass"
-                  />
+                  <input [type]="showPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm" placeholder="Enter password" formControlName="pass">
+                  <span class="input-group-text bg-light border-0" style="cursor: pointer;" (click)="togglePasswordVisibility()">
+                    <i class="bi fs-5" [class.bi-eye-fill]="showPassword" [class.bi-eye-slash-fill]="!showPassword"></i>
+                  </span>
                 </div>
                 <div
                   *ngIf="
@@ -164,6 +162,7 @@
                 </div>
               </div>
 
+                                
               <!-- Confirm Password -->
               <div class="mb-4 mt-4">
                 <label class="form-label fw-semibold mb-0"
@@ -173,12 +172,10 @@
                   <span class="input-group-text bg-light border-0">
                     <i class="bi bi-key-fill text-caffe fs-5"></i>
                   </span>
-                  <input
-                    type="password"
-                    class="form-control border-0 shadow-sm"
-                    placeholder="Enter Confirm password"
-                    formControlName="confirmPassword"
-                  />
+                  <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control border-0 shadow-sm" placeholder="Enter Confirm Password" formControlName="confirmPassword">
+                  <span class="input-group-text bg-light border-0" style="cursor: pointer;" (click)="toggleConfirmPasswordVisibility()">
+                    <i class="bi fs-5" [class.bi-eye-fill]="showConfirmPassword" [class.bi-eye-slash-fill]="!showConfirmPassword"></i>
+                  </span>
                 </div>
                 <div
                   *ngIf="
