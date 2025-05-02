@@ -63,11 +63,11 @@
   display: inline-block;
 }
 
-#map {
+/* #map {
   height: 100%;
   width: 100%;
   min-height: 400px;
-}
+} */
 
 .leaflet-marker-icon.custom-div-icon {
   background: transparent;
