@@ -20,7 +20,7 @@ export class ApproveAgentComponent implements OnInit {
 
   StatusLinks = ['Pending', 'Approved', 'Rejected'];
 
-  agents: agentDto[] = [];  
+  agents: AgentDto[] = [];
   activeLink: string = 'Pending';
   filteredAgents: AgentDto[] = [];
   isLoading = false;
