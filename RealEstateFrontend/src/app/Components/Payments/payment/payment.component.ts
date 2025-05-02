@@ -90,7 +90,7 @@ export class PaymentComponent implements OnInit {
     private shippingService: ShippingService,
     private orderService: OrderService,
     private paymentService: PaymentService
-  ) {}
+  ) { }
 
   clientId: string = '';
   selectedAddressId: number = 0;
@@ -100,36 +100,36 @@ export class PaymentComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-  
+
     try {
       // Initialize Stripe
       this.stripe = await loadStripe(
         'pk_test_51RBWG7Fl7t0xHh1EjC1dSHHO827Jv7v7ledh4KiO1GljKiLgSdRWp9dduV9O7sb3vzpZXI1dB5ZztMWkR6Og80id003IGXcZ2g'
       );
-  
+
       // Get query parameters
       const params = await firstValueFrom(this.route.queryParams);
-      
+
       // Check for Stripe session ID first (if returning from Stripe payment)
       const sessionId = params['session_id'];
       if (sessionId) {
         await this.verifyStripePayment(sessionId);
         return; // Exit after handling Stripe return
       }
-  
+
       // Normal flow - get address ID
       const addressId = params['id'];
       if (!addressId || isNaN(+addressId)) {
         this.router.navigate(['/checkout/address']);
         return;
       }
-      
+
       this.selectedAddressId = +addressId;
 
       // Load address and cart data
       await this.loadAddressDetails(addressId);
       await this.loadInitialCart();
-  
+
       if (this.address?.city) {
         await this.loadShipping(this.address.city);
       }
@@ -379,16 +379,16 @@ export class PaymentComponent implements OnInit {
       const paymentResponse = await firstValueFrom(
         this.paymentService.verifyStripeSession(sessionId)
       );
-      
+
       // Then create the payment record
       const amount = (this.localCart?.totalPrice ?? 0) + (this.shippingDto?.deliveryFees ?? 0);
       const createdPayment = await firstValueFrom(
         this.paymentService.createStripePayment(amount)
       );
-  
+
       // Then place the order with the payment ID
       await this.handlePlaceOrder(createdPayment.id);
-      
+
       // Clear any query params to prevent duplicate processing
       this.router.navigate(['/checkout/confirmation'], {
         queryParams: { orderId: createdPayment.id },

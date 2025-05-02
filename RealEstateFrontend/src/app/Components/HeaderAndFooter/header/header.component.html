@@ -172,11 +172,29 @@
         </ng-container>
 
         <ng-template #authenticatedUser>
-          <div class="user-info">
-            <!-- <p class="user-name">{{ currentUser.firstName }}</p> -->
+          <!-- <div class="user-info">
             <p class="user-name">{{loggedInUser?.firstName ? loggedInUser?.firstName : 'User'}}</p>
-            <!-- <p class="user-email">{{ currentUser.email }}</p> -->
             <p class="user-email">{{loggedInUser?.email ? loggedInUser?.email : 'user@gmail.com'}}</p>
+            <p *ngIf="subscription$ | async as sub" class="user-email">{{sub?.subscriptionPlan?.name}} Plan</p>
+          </div> -->
+
+          <div class="user-info">
+            <!-- Name and Plan in same row using Bootstrap -->
+            <div class="d-flex justify-content-between mb-0 pb-0">
+              <div class="user-name mb-0">
+                {{ loggedInUser?.firstName || 'User' }}
+              </div>
+
+              <div *ngIf="subscription$ | async as sub" style="font-size: 0.7rem;"
+                class="text-brown fw-medium mb-0 text-uppercase">
+                {{ sub?.subscriptionPlan?.name }} Plan
+              </div>
+            </div>
+
+            <!-- Email remains on separate line -->
+            <div class="user-email mb-0">
+              {{ loggedInUser?.email || 'user@gmail.com' }}
+            </div>
           </div>
 
           <div *ngIf="hasRole('Buyer')">
@@ -223,7 +241,7 @@
             </a>
             <a class="dropdown-item" routerLink="/seller/addAuction">
               <i class="bi bi-three-dots-vertical" style="color: #6e5447;"></i> More
-            </a> 
+            </a>
             <a class="dropdown-item" routerLink="/subscriptionPlan">
               <i class="bi bi-upload" style="color: #6e5447;"></i> Upgrade
             </a>
@@ -238,7 +256,7 @@
             </a>
             <a class="dropdown-item" routerLink="/agent/addAuction">
               <i class="bi bi-three-dots-vertical" style="color: #6e5447;"></i> More
-            </a> 
+            </a>
             <a class="dropdown-item" routerLink="/subscriptionPlan">
               <i class="bi bi-upload" style="color: #6e5447;"></i> upgrade
             </a>

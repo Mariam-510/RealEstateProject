@@ -6,7 +6,7 @@ import { SubscriptionPlanDto, SubscriptionPlanService } from '../../Services/Api
 import { AuthService } from '../../Services/ApiServices/auth.service';
 import { Router } from '@angular/router';
 import { SubscriptionDto, SubscriptionService } from '../../Services/ApiServices/subscription.service';
-import { lastValueFrom } from 'rxjs'; // Import lastValueFrom for converting Observables to Promises
+import { catchError, lastValueFrom, Observable, of, startWith, switchMap } from 'rxjs'; // Import lastValueFrom for converting Observables to Promises
 @Component({
   selector: 'app-subscription-plan',
   imports: [CommonModule],
@@ -27,6 +27,8 @@ export class SubscriptionPlanComponent {
   error: string | undefined;
   isLoading: boolean = false; // Add loading state
 
+  subscription$!: Observable<SubscriptionDto | null>;
+
   async ngOnInit(): Promise<void> {
     if (!this.hasRole('Seller') && !this.hasRole('Agent')) {
       this.router.navigate(['/login']);
@@ -37,13 +39,28 @@ export class SubscriptionPlanComponent {
     try {
       await Promise.all([
         this.loadPlans(),
-        this.loadSubscription()
+        // this.loadSubscription()
+        this.subscriptionCall()
       ]);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
       this.isLoading = false;
     }
+  }
+
+  subscriptionCall() {
+    this.subscription$ = this.subscriptionService.subscriptionUpdated$.pipe(
+      startWith(null),
+      switchMap(() => {
+        return this.subscriptionService.getCurrentUserSubscription().pipe(
+          catchError((error) => {
+            console.error('Error loading subscription:', error);
+            return of(null);
+          })
+        );
+      })
+    );
   }
 
   openMethodDialog(plan: any): void {

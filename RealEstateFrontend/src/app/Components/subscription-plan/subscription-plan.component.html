@@ -1,44 +1,50 @@
 <div class="container py-4">
-    <div class="text-center">
-        <h1 class="w-50 mx-auto">Explore for Free and unlock our additional Features Later on</h1>
-    </div>
-    <div class="row g-4">
-        <div *ngFor="let plan of plans" class="col-md-6 col-lg-3">
-            <div class="card pricing-card mt-5 mb-4" [class.highlight-card]="subscription?.subscriptionPlanId === plan.id" [style.height]="plan.name === 'Free' ? '58vh' : 'auto'">
-                <div class="card-header text-center p-3 bg-caffe">
-                    <h4 class="my-0 fw-normal text-white ">{{plan.name}}</h4>
-                </div>
-                <div class="card-body text-center" [class.d-flex]="plan.name === 'Free'" [class.flex-column]="plan.name === 'Free'">
-                    <div>
-                        <h2 class="mt-3 fs-1 text-caffe">${{plan.price}}</h2>
-                        <div class="text-muted">per month</div>
-                        <div class="text-caffe mb-2 mt-2" style="font-size: 1.1rem;">Up to {{plan.maxAllowedProperties}} properties</div>
-                        <p class="text-muted mt-2" [class.mb-5]="plan.name === 'Free'">{{plan.description}}</p>
-                    </div>
-                    
-                    <div [class.mt-auto]="plan.name === 'Free'">
-                        <button *ngIf="plan.name === 'Free'" class="btn border-caffe text-caffe w-100 mb-3 mt-2">Get Started</button>
-                        <div *ngIf="plan.name === 'Free'" class="text-center">
-                           <p class="small text-muted mb-1">
-                                <i class="fas fa-check-circle me-1 mb-2"></i> Full access to basic features
-                            </p>
-                            <p class="small text-muted mb-5">
-                                <i class="fas fa-user-plus me-1 mb-5"></i> Perfect for individual users
-                            </p>
-                        </div>
-                        <div *ngIf="plan.name !== 'Free'">
-                            <button class="btn border-caffe text-caffe w-100 mb-3 mt-3" (click)="openMethodDialog(plan)">Upgrade Now</button>
-                            <div class="text-center">
-                                <p class="small text-muted mb-1">
-                                    <i class="fas fa-lock me-1"></i> All payments are secure
-                                </p>
-                                <i class="fab fa-paypal me-3 mt-2 text-caffe"style="font-size: 1.7rem;"></i>
-                                <i class="fab fa-stripe-s text-caffe" style="font-size: 1.4rem;"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="text-center">
+    <h1 class="w-50 mx-auto">Explore for Free and unlock our additional Features Later on</h1>
+  </div>
+  <div class="row g-4">
+    <div *ngFor="let plan of plans" class="col-md-6 col-lg-3">
+      <div class="card pricing-card mt-5 mb-4"
+        [class.highlight-card]="(subscription$ | async)?.subscriptionPlanId === plan.id"
+        [style.height]="plan.name === 'Free' ? '58vh' : 'auto'">
+        <div class="card-header text-center p-3 bg-caffe">
+          <h4 class="my-0 fw-normal text-white ">{{plan.name}}</h4>
         </div>
+        <div class="card-body text-center" [class.d-flex]="plan.name === 'Free'"
+          [class.flex-column]="plan.name === 'Free'">
+          <div>
+            <h2 class="mt-3 fs-1 text-caffe">{{plan.price | currency:'EGP '}}</h2>
+            <div class="text-muted">per month</div>
+            <div class="text-caffe mb-2 mt-2" style="font-size: 1.1rem;">Up to {{plan.maxAllowedProperties}} properties
+            </div>
+            <p class="text-muted mt-2" [class.mb-5]="plan.name === 'Free'">{{plan.description}}</p>
+          </div>
+
+          <div [class.mt-auto]="plan.name === 'Free'">
+            <button *ngIf="plan.name === 'Free'" class="btn border-caffe text-caffe w-100 mb-3 mt-2">Get
+              Started</button>
+            <div *ngIf="plan.name === 'Free'" class="text-center">
+              <p class="small text-muted mb-1">
+                <i class="fas fa-check-circle me-1 mb-2"></i> Full access to basic features
+              </p>
+              <p class="small text-muted mb-5">
+                <i class="fas fa-user-plus me-1 mb-5"></i> Perfect for individual users
+              </p>
+            </div>
+            <div *ngIf="plan.name !== 'Free'">
+              <button class="btn border-caffe text-caffe w-100 mb-3 mt-3" (click)="openMethodDialog(plan)">Upgrade
+                Now</button>
+              <div class="text-center">
+                <p class="small text-muted mb-1">
+                  <i class="fas fa-lock me-1"></i> All payments are secure
+                </p>
+                <i class="fab fa-paypal me-3 mt-2 text-caffe" style="font-size: 1.7rem;"></i>
+                <i class="fab fa-stripe-s text-caffe" style="font-size: 1.4rem;"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
