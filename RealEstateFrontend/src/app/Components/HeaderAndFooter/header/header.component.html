@@ -179,23 +179,39 @@
           </div> -->
 
           <div class="user-info">
-            <!-- Name and Plan in same row using Bootstrap -->
-            <div class="d-flex justify-content-between mb-0 pb-0">
-              <div class="user-name mb-0">
-                {{ loggedInUser?.firstName || 'User' }}
-              </div>
-
-              <div *ngIf="subscription$ | async as sub" style="font-size: 0.7rem;"
-                class="text-brown fw-medium mb-0 text-uppercase">
-                {{ sub?.subscriptionPlan?.name }} Plan
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div>
+                <h2 class="user-name mb-1 fs-5 fw-semibold">
+                  {{ loggedInUser?.firstName + ' ' + (loggedInUser?.lastName || '') || 'Guest User' }}
+                </h2>
+                <div class="user-email text-muted small">
+                  {{ loggedInUser?.email || 'user@example.com' }}
+                </div>
               </div>
             </div>
 
-            <!-- Email remains on separate line -->
-            <div class="user-email mb-0">
-              {{ loggedInUser?.email || 'user@gmail.com' }}
+            <div class="subscription-details bg-caffe-light rounded p-1">
+              <div *ngIf="subscription$ | async as sub" class="d-flex flex-column gap-2">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-check text-muted" style="font-size: 0.7rem;"></i>
+                    <span class="text-uppercase fw-medium small" style="font-size: 0.7rem;">{{
+                      sub?.subscriptionPlan?.name }}</span>
+                  </div>
+                  <span class="badge bg-opacity-25 text-success" style="font-size: 0.7rem;">
+                    Latest
+                  </span>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 text-muted" style="font-size: 0.7rem;">
+                  <i class="bi bi-building" style="font-size: 0.7rem;"></i>
+                  <span>{{ sub?.availableProperties }} properties remaining</span>
+                </div>
+              </div>
             </div>
           </div>
+
+
 
           <div *ngIf="hasRole('Buyer')">
             <a class="dropdown-item" routerLink="/user/profile">
@@ -239,7 +255,7 @@
             <a class="dropdown-item" routerLink="/seller/dashboard">
               <i class="bi bi-receipt" style="color: #6e5447;"></i> Dashboard
             </a>
-            <a class="dropdown-item" routerLink="/seller/addAuction">
+            <a class="dropdown-item" routerLink="/seller/Properties">
               <i class="bi bi-three-dots-vertical" style="color: #6e5447;"></i> More
             </a>
             <a class="dropdown-item" routerLink="/subscriptionPlan">
@@ -254,7 +270,7 @@
             <a class="dropdown-item" routerLink="/agent/dashboard">
               <i class="bi bi-receipt" style="color: #6e5447;"></i> Dashboard
             </a>
-            <a class="dropdown-item" routerLink="/agent/addAuction">
+            <a class="dropdown-item" routerLink="/agent/Properties">
               <i class="bi bi-three-dots-vertical" style="color: #6e5447;"></i> More
             </a>
             <a class="dropdown-item" routerLink="/subscriptionPlan">

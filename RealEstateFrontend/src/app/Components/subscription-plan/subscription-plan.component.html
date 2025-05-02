@@ -5,11 +5,11 @@
   <div class="row g-4">
     <div *ngFor="let plan of plans" class="col-md-6 col-lg-3">
       <div class="card pricing-card mt-5 mb-4"
-        [class.highlight-card]="(subscription$ | async)?.subscriptionPlanId === plan.id"
-        [style.height]="plan.name === 'Free' ? '58vh' : 'auto'">
+        [class.highlight-card]="(subscription$ | async)?.subscriptionPlanId === plan.id" style="height:58vh">
         <div class="card-header text-center p-3 bg-caffe">
           <h4 class="my-0 fw-normal text-white ">{{plan.name}}</h4>
         </div>
+
         <div class="card-body text-center" [class.d-flex]="plan.name === 'Free'"
           [class.flex-column]="plan.name === 'Free'">
           <div>
@@ -21,8 +21,14 @@
           </div>
 
           <div [class.mt-auto]="plan.name === 'Free'">
-            <button *ngIf="plan.name === 'Free'" class="btn border-caffe text-caffe w-100 mb-3 mt-2">Get
-              Started</button>
+            <!-- <button *ngIf="plan.name === 'Free'" class="btn border-caffe text-caffe w-100 mb-3 mt-2" >Get
+              Started</button> -->
+
+            <button *ngIf="plan.name === 'Free'" class="btn border-caffe text-caffe w-100 mb-3 mt-2" disabled
+              style="opacity: 0.6; cursor: not-allowed; pointer-events: none;">
+              Get Started
+            </button>
+
             <div *ngIf="plan.name === 'Free'" class="text-center">
               <p class="small text-muted mb-1">
                 <i class="fas fa-check-circle me-1 mb-2"></i> Full access to basic features
@@ -32,7 +38,7 @@
               </p>
             </div>
             <div *ngIf="plan.name !== 'Free'">
-              <button class="btn border-caffe text-caffe w-100 mb-3 mt-3" (click)="openMethodDialog(plan)">Upgrade
+              <button class="btn border-caffe text-caffe w-100 mb-3 mt-3" (click)="openMethodDialog(plan)">Buy
                 Now</button>
               <div class="text-center">
                 <p class="small text-muted mb-1">
@@ -43,6 +49,7 @@
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
