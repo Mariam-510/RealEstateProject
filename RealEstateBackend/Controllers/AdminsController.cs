@@ -286,14 +286,22 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete()
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 try
                 {
-                    var deletedAdmin = await AdminRepository.GetByIdAsync(id);
+                    string adminIdStr = User.FindFirst("userId")?.Value;
+
+                    if (!int.TryParse(adminIdStr, out int adminId))
+                    {
+                        return Unauthorized("Admin not found.");
+                    }
+
+                    var deletedAdmin = await AdminRepository.GetByIdAsync(adminId);
                     if (deletedAdmin == null)
                     {
                         transactionScope.Dispose();
@@ -320,7 +328,7 @@ namespace RealEstate.Controllers
                         }
                         else
                         {
-                            deletedAdmin = await AdminRepository.DeleteAsync(id);
+                            deletedAdmin = await AdminRepository.DeleteAsync(adminId);
                             if (deletedAdmin == null)
                             {
                                 transactionScope.Dispose();
