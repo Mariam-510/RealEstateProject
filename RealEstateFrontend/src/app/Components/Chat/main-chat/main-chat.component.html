@@ -79,7 +79,7 @@
                       </div>
                     </div>
                     <!-- Accept/Reject Banner -->
-            <div *ngIf="showAcceptReject && selectedChat?.status === 'Pending'" class="alert alert-info m-2">
+            <div *ngIf="showAcceptReject && selectedChat?.conversationStatus === 'Pending'" class="alert alert-info m-2">
               <div class="d-flex justify-content-between align-items-center">
                 <span>New conversation request - please accept or reject</span>
                 <div>
@@ -98,25 +98,25 @@
             </div>
             
             <!-- Closed Conversation Warning -->
-            <div *ngIf="selectedChat?.status === 'Closed'" class="alert alert-warning m-2">
+            <div *ngIf="selectedChat?.conversationStatus === 'Closed'" class="alert alert-warning m-2">
               This conversation has been closed. No new messages can be sent.
             </div>
 
             <!-- Message Input -->
-            <div class="card-footer" [class.pe-none]="selectedChat?.status === 'Closed'" 
-                  [class.opacity-50]="selectedChat.status === 'Closed'">
+            <div class="card-footer" *ngIf="!disabled" [class.pe-none]="selectedChat.conversationStatus === 'Closed'" 
+                  [class.opacity-50]="selectedChat.conversationStatus === 'Closed'">
               <div class="input-group">
                 <textarea class="form-control" 
-                          [(ngModel)]="newMessage" 
-                          (keyup.enter)="sendMessage()"
-                          placeholder="Type your message..." 
-                          rows="2"
-                          [disabled]="shouldDisableInput()"></textarea>
-                <button class="btn btn-brown" 
-                        (click)="sendMessage()"
-                        [disabled]="selectedChat.status === 'Closed'">
-                  <i class="bi bi-send-fill"></i>
-                </button>
+                    [(ngModel)]="newMessage" 
+                    (keydown.enter)="sendMessage($event)"
+                    placeholder="Type your message..." 
+                    rows="2"
+                    [disabled]="disabled"></textarea>
+                    <button class="btn btn-brown" 
+                    (click)="sendMessage($event)"
+                    [disabled]="disabled">
+                      <i class="bi bi-send-fill"></i>
+                    </button>
               </div>
             </div>
           </div>

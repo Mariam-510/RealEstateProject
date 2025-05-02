@@ -1,42 +1,13 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  HostListener,
-  ChangeDetectorRef,
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  AfterViewChecked,
-  ElementRef,
-  ViewChild,
-  AfterViewInit,
-} from '@angular/core';
-import {
-  ConversationResponseDto,
-  ConversationService,
-} from '../../../Services/ApiServices/conversation.service';
+import { AfterViewChecked, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { ConversationResponseDto, ConversationService } from '../../../Services/ApiServices/conversation.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { AccountService } from '../../../Services/ApiServices/account.service';
 import { API_CONFIG } from '../../../app.config';
-import {
-  CreateMessageDto,
-  MessageResponseDto,
-  MessageService,
-} from '../../../Services/ApiServices/message.service';
-import {
-  ChatService,
-  IncomingChatMessage,
-} from '../../../Services/ApiServices/chat.service';
-
-enum MessageStatus {
-  Pending = 'Pending',
-  Sent = 'Sent',
-  Rejected = 'Rejected',
-  Delivered = 'Delivered',
-  Read = 'Read',
-}
+import { CreateMessageDto, MessageResponseDto, MessageService } from '../../../Services/ApiServices/message.service';
+import { ChatService, IncomingChatMessage } from '../../../Services/ApiServices/chat.service';
 
 interface Message {
   text: string;
@@ -47,7 +18,7 @@ interface Message {
 
 interface Chat {
   id: number;
-  status: string;
+  conversationStatus: string;
   otherUser: {
     userId: string;
     firstName: string;
@@ -65,9 +36,7 @@ interface Chat {
   templateUrl: './main-chat.component.html',
   styleUrl: './main-chat.component.css',
 })
-export class MainChatComponent
-  implements OnInit, AfterViewChecked, AfterViewInit, OnDestroy
-{
+export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewInit, OnDestroy {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
 
   today = new Date();
@@ -80,6 +49,7 @@ export class MainChatComponent
   private shouldScroll = true;
   pendingMessage: Message | null = null;
   showAcceptReject = false;
+  disabled = false;
 
   constructor(
     private conversationService: ConversationService,
@@ -88,7 +58,7 @@ export class MainChatComponent
     private messageService: MessageService,
     private chatService: ChatService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit() {
     if (
@@ -100,7 +70,7 @@ export class MainChatComponent
       return;
     }
 
-    console.log(this.selectedChat?.status)
+    console.log(this.selectedChat?.conversationStatus);
 
     this.currentUserId = this.auth.getCurrentUser()?.accountId;
     this.initializeUnreadCounts();
@@ -134,7 +104,8 @@ export class MainChatComponent
         let validConversations = conversations;
         if (!this.isAgentOrSeller()) {
           validConversations = conversations.filter(
-            (dto) => dto.lastMessageAt !== null && dto.lastMessageAt !== undefined
+            (dto) =>
+              dto.lastMessageAt !== null && dto.lastMessageAt !== undefined
           );
         }
 
@@ -181,7 +152,6 @@ export class MainChatComponent
   }
 
   private mapDtoToChat(dto: ConversationResponseDto): Chat {
-
     const otherAccountId =
       dto.firstAccountId === this.currentUserId
         ? dto.secondAccountId
@@ -189,7 +159,7 @@ export class MainChatComponent
 
     const chat: Chat = {
       id: dto.id,
-      status: dto.status,
+      conversationStatus: dto.status,
       otherUser: {
         userId: otherAccountId,
         firstName: 'Loading...',
@@ -262,7 +232,9 @@ export class MainChatComponent
     this.updateUnreadCount(chat.id, 0);
     this.selectedChat = chat;
     this.newMessage = '';
-    this.showAcceptReject = chat.status === 'Pending' && this.isAgentOrSeller();
+    this.showAcceptReject =
+      chat.conversationStatus === 'Pending' && this.isAgentOrSeller();
+    this.shouldDisableInput();
 
     this.messageService.getAllMessages(chat.id).subscribe({
       next: (messages: MessageResponseDto[]) => {
@@ -279,12 +251,20 @@ export class MainChatComponent
     return this.auth.hasRole('Buyer');
   }
 
-  sendMessage() {
+  sendMessage(event: Event) {
+    event.preventDefault();
     const currentChat = this.selectedChat;
     if (!currentChat || !this.newMessage.trim()) return;
 
-    if (currentChat.status === 'Pending' && this.isBuyer() && currentChat.messages.length > 0) {
-      alert('Please wait for agent/seller response before sending more messages');
+    if (
+      currentChat.conversationStatus === 'Pending' &&
+      this.isBuyer() &&
+      currentChat.messages.length > 0
+    ) {
+      this.disabled = true;
+      alert(
+        'Please wait for agent/seller response before sending more messages'
+      );
       return;
     }
 
@@ -292,12 +272,6 @@ export class MainChatComponent
       conversationId: currentChat.id,
       content: this.newMessage.trim(),
     };
-
-    const messageStatus = this.isAgentOrSeller() 
-      ? MessageStatus.Sent
-      : currentChat.status === 'Pending' 
-        ? MessageStatus.Pending 
-        : MessageStatus.Sent;
 
     const optimisticMessage: Message = {
       text: dto.content,
@@ -309,17 +283,25 @@ export class MainChatComponent
     currentChat.messages = [...currentChat.messages, optimisticMessage];
     currentChat.lastMessageTime = new Date();
     this.newMessage = '';
+    this.cdr.detectChanges();
     this.scrollToBottom(true);
+
+    const oldDisabledVal = this.disabled;
+    if (currentChat.conversationStatus === 'Pending') {
+        this.disabled = true;
+    }
+
+    this.cdr.detectChanges();
 
     this.messageService.createMessage(dto).subscribe({
       next: (response) => {
         currentChat.messages = currentChat.messages.map((m) =>
           m === optimisticMessage ? this.mapResponseToMessage(response) : m
         );
-        
-//         if (currentChat.status === 'Pending' && this.isBuyer()) {
-//           currentChat.status = 'Pending';
-//         }
+
+        if (currentChat.conversationStatus === 'Pending' && this.isBuyer()) {
+          currentChat.conversationStatus = 'Pending';
+        }
 
         if (response.senderId !== this.currentUserId) {
           const conversation = this.conversations.find(
@@ -336,18 +318,34 @@ export class MainChatComponent
         currentChat.messages = currentChat.messages.filter(
           (m) => m !== optimisticMessage
         );
+        this.disabled = oldDisabledVal;
+        this.cdr.detectChanges();
         this.scrollToBottom();
       },
     });
   }
 
-  shouldDisableInput(): boolean {
-    if (!this.selectedChat) return true;
-    if (this.selectedChat.status === 'Closed') return true;
-    if (this.isBuyer() && this.selectedChat.status === 'Pending' && this.selectedChat.messages.length > 0) {
-      return true;
+  shouldDisableInput(): void {
+    if (!this.selectedChat)
+    {
+      this.disabled = true;
+      return;
     }
-    return false;
+    if (this.selectedChat.conversationStatus === 'Closed')
+    {
+      this.disabled = true;
+      return;
+    }
+    if (
+      this.isBuyer() &&
+      this.selectedChat.conversationStatus === 'Pending' &&
+      this.selectedChat.messages.length > 0
+    ) {
+      this.disabled = true;
+      return;
+    }
+    this.disabled = false;
+    return;
   }
 
   private setupSignalR() {
@@ -378,15 +376,34 @@ export class MainChatComponent
           conversation.messages.push(newMessage);
           conversation.lastMessageTime = new Date(message.sentAt);
 
+          if (this.selectedChat?.id === conversation.id) {
+            this.cdr.detectChanges(); // Force UI update
+            this.scrollToBottom(true);
+          }
+
           if (this.selectedChat?.id !== conversation.id && !newMessage.sent) {
             conversation.unread++;
             this.updateUnreadCount(conversation.id, conversation.unread);
             this.sortConversations();
-            console.log(this.conversations);
           }
         }
       });
     });
+
+    this.chatService.conversationStatusUpdates$.subscribe(updatedConv => {
+      if (!updatedConv) return; // Null check
+      
+      const index = this.conversations.findIndex(c => c.id === updatedConv.id);
+      if (index !== -1) {
+          this.conversations[index].conversationStatus = updatedConv.status;
+          this.sortConversations();
+      }
+      if (this.selectedChat?.id === updatedConv.id) {
+          this.selectedChat.conversationStatus = updatedConv.status;
+          this.shouldDisableInput();
+          this.cdr.detectChanges();
+      }
+  });
   }
 
   private sortConversations() {
@@ -419,19 +436,6 @@ export class MainChatComponent
     this.isChatVisible = !this.isChatVisible;
   }
 
-  getStatusClass(status: MessageStatus): string {
-    switch (status) {
-      case MessageStatus.Read:
-        return 'status-read';
-      case MessageStatus.Delivered:
-        return 'status-delivered';
-      case MessageStatus.Pending:
-        return 'status-pending';
-      default:
-        return '';
-    }
-  }
-
   private mapResponseToMessage(response: MessageResponseDto): Message {
     return {
       text: response.content,
@@ -441,7 +445,6 @@ export class MainChatComponent
     };
   }
 
-
   private isAgentOrSeller(): boolean {
     return this.auth.hasRole('Agent') || this.auth.hasRole('Seller');
   }
@@ -449,47 +452,54 @@ export class MainChatComponent
   acceptConversation() {
     if (!this.selectedChat) return;
 
-    this.conversationService.updateConversationStatus(this.selectedChat.id, 'Active').subscribe({
-      next: (updatedConversation) => {
-        this.selectedChat!.status = 'Active';
-        this.showAcceptReject = false;
-        
-        const index = this.conversations.findIndex(c => c.id === this.selectedChat!.id);
-        if (index > -1) {
-          this.conversations[index].status = 'Active';
-          this.conversations[index].lastMessageTime = new Date();
-        }
-        
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Accept failed:', err)
-    });
+    this.conversationService
+      .updateConversationStatus(this.selectedChat.id, 'Active')
+      .subscribe({
+        next: (updatedConversation) => {
+          this.selectedChat!.conversationStatus = 'Active';
+          this.showAcceptReject = false;
+          this.shouldDisableInput();
+
+          const index = this.conversations.findIndex(
+            (c) => c.id === this.selectedChat!.id
+          );
+          if (index > -1) {
+            this.conversations[index].conversationStatus = 'Active';
+            // this.conversations[index].lastMessageTime = new Date();
+          }
+
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Accept failed:', err),
+      });
   }
-    
+
   rejectConversation() {
     if (!this.selectedChat) return;
 
-    this.conversationService.updateConversationStatus(this.selectedChat.id, 'Closed').subscribe({
-      next: (updatedConversation) => {
-        this.selectedChat!.status = 'Closed';
-        this.showAcceptReject = false;
+    this.conversationService
+      .updateConversationStatus(this.selectedChat.id, 'Closed')
+      .subscribe({
+        next: (updatedConversation) => {
+          this.selectedChat!.conversationStatus = 'Closed';
+          this.showAcceptReject = false;
+          this.shouldDisableInput();
 
-        const index = this.conversations.findIndex(c => c.id === this.selectedChat!.id);
-        if (index > -1) {
-          this.conversations[index].status = 'Closed';
-          this.conversations[index].lastMessageTime = new Date();
-        }
+          const index = this.conversations.findIndex(
+            (c) => c.id === this.selectedChat!.id
+          );
+          if (index > -1) {
+            this.conversations[index].conversationStatus = 'Closed';
+            // this.conversations[index].lastMessageTime = new Date();
+          }
 
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Reject failed:', err)
-    });
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Reject failed:', err),
+      });
   }
-
 
   trackByConversationId(index: number, chat: Chat): number {
     return chat.id; // Helps Angular recognize reordered items
   }
 }
-
-

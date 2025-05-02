@@ -94,6 +94,16 @@ export class ChatmodalComponent implements OnInit, AfterViewChecked, AfterViewIn
         }
       }
     });
+
+    this.chatService.conversationStatusUpdates$.subscribe(updatedConv => {
+      if (!updatedConv || !this.conversationId) return; // Null checks
+      
+      if (this.conversationId === updatedConv.id) {
+          this.conversation = updatedConv;
+          this.shouldDisableInput();
+          this.cd.detectChanges();
+      }
+  });
   }
 
   async initializeChat(conversationId: number | null) {
