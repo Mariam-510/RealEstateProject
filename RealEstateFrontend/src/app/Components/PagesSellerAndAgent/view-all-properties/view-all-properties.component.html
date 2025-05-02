@@ -128,14 +128,19 @@
                         <div class="text-muted small" *ngIf="property.type === 'Sell' && property.space">
                             ({{ (property.price / property.space) | number:'1.0-0' }} EGP/m²)
                         </div> -->
-                        <button class="action-btn pe-2 btn border-0 d-flex align-items-center justify-content-center btn-sm p-2">
+                        <!-- <button class="action-btn pe-2 btn border-0 d-flex align-items-center justify-content-center btn-sm p-2">
                           <i class="bi bi-pencil-square fs-5 text-caffe"></i>
-                        </button>
+                        </button> -->
                         
-                        <button class="action-btn pe-2 btn border-0 d-flex align-items-center justify-content-center p-2">
+                        <!-- <button class="action-btn pe-2 btn border-0 d-flex align-items-center justify-content-center p-2">
                           <i class="bi bi-trash fs-5 text-caffe"></i>
-                        </button>
-                        
+                        </button> -->
+                        <button 
+  (click)="deleteProperty(property.id)" 
+  class="action-btn pe-2 btn border-0 d-flex align-items-center justify-content-center p-2"
+>
+  <i class="bi bi-trash fs-5 text-caffe"></i>
+</button>
                     </div>
                 </div>
       

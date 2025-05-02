@@ -24,7 +24,8 @@ export class ViewAllPropertiesComponent implements OnInit {
 
   constructor(private propertyService: PropertyService,
      private auth: AuthService, 
-     private router: Router ) { }// Pagination
+     private router: Router,  private toastr: ToastrService // Add this line
+    ) { }// Pagination
 
   currentPage = 1;
   pageSize = 6;
@@ -116,7 +117,25 @@ export class ViewAllPropertiesComponent implements OnInit {
   toggleMap(property: PropertyDTO) {
     property.activeMap = !property.activeMap;
   }
-
+  async deleteProperty(propertyId: number) {
+    // const confirmDelete = confirm('Are you sure you want to delete this property?');
+    // if (!confirmDelete) return;
+  
+    try {
+      await lastValueFrom(this.propertyService.delete(propertyId));
+      this.toastr.success('Property deleted successfully.');
+      
+      // Refresh the properties list
+      if (this.hasRole('Seller')) {
+        await this.loadAllSellerProperties();
+      } else if (this.hasRole('Agent')) {
+        await this.loadAllAgentProperties();
+      }
+    } catch (error) {
+      this.toastr.error('Failed to delete property. It  have an active auction.');
+      console.error('Delete error:', error);
+    }
+  }
 // Pagination methods
 updatePagination(): void {
   // Calculate total pages

@@ -214,10 +214,10 @@ namespace RealEstate.Controllers
                 filteredProperties = await _propertyRepo.GetAllBySellerIdAsync(sellerId);
             }
             // Check if no properties match the filter
-            if (!filteredProperties.Any())
-            {
-                return NotFound("No properties found matching the specified criteria.");
-            }
+            //if (!filteredProperties.Any())
+            //{
+            //    return NotFound("No properties found matching the specified criteria.");
+            //}
             var propertyDtos = _mapper.Map<List<PropertyDto>>(filteredProperties);
             foreach (var dto in propertyDtos)
             {
@@ -572,7 +572,7 @@ namespace RealEstate.Controllers
                 // Check if an active auction is associated with this property
                 var auction = await _auctionRepo.GetByProprtyIdAsync(id);
                 if (auction != null && auction.Status == Status.Active && !auction.IsDeleted)
-                    return BadRequest("Cannot delete the property because it has an active auction.");
+return StatusCode(405, "Cannot delete the property because it has an active auction.");
 
                 using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {

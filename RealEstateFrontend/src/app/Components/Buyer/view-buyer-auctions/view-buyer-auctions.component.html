@@ -167,7 +167,8 @@ class="finished-overlay d-flex justify-content-center align-items-center">
                             {{ getDaysLeft(auction.endTime, auction.status) }}
                         </span>
                     </div>
-                    <button class="btn bid-now-button fw-bold pe-2 fs-5">
+                    <!-- *ngIf="hasRoleOrNoUser('Buyer') && auction.status==='Active'" [routerLink]="['/auctions',auction.id]" -->
+                    <button *ngIf="auction.status==='Active'" [routerLink]="['/auctions',auction.id]" class="btn bid-now-button fw-bold pe-2 fs-5">
                         Bid Now <i class="bi bi-caret-right-fill ms-2 pt-1"></i>
                     </button>
                 </div>
