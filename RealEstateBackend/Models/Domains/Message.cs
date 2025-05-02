@@ -16,9 +16,6 @@ namespace RealEstate.Models.Domains
         [DataType(DataType.DateTime)]
         public DateTime SentAt { get; set; } = DateTime.Now;
 
-        [EnumDataType(typeof(MessageStatus))]
-        public MessageStatus Status { get; set; } = MessageStatus.Pending;
-
         public bool IsDeleted { get; set; } = false;
         
         [ForeignKey("Sender")]
@@ -28,14 +25,5 @@ namespace RealEstate.Models.Domains
         [ForeignKey("Conversation")]
         public int? ConversationId { get; set; }
         public virtual Conversation? Conversation { get; set; }
-    }
-
-    public enum MessageStatus
-    {
-        Pending,
-        Sent,
-        Rejected,
-        Delivered,
-        Read,
     }
 }

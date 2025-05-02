@@ -26,6 +26,5 @@ namespace RealEstate.Models.Domains
 
         public virtual ICollection<Conversation>? SecondParticipantConversations { get; set; }
 
-        public virtual ICollection<Notification>? Notifications { get; set; }
     }
 }
