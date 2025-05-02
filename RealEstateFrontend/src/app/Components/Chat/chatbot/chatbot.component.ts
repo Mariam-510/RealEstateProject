@@ -90,6 +90,10 @@ export class ChatbotComponent implements AfterViewChecked {
       console.error('Scroll error:', err);
     }
   }
+
+  
+
+
 }
 
 interface ChatMessage {

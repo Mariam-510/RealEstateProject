@@ -13,6 +13,7 @@ using RealEstate.Models;
 using RealEstate.Data;
 using RealEstate.Hubs;
 using System.Security.Claims;
+using OpenAI;
 
 
 namespace RealEstate
@@ -168,7 +169,8 @@ namespace RealEstate
             builder.Services.AddScoped<CartService>();
             builder.Services.AddScoped<ShippingFeesService>();
             builder.Services.AddScoped<GoogleService>();
-            
+    
+
 
             // builder.Services.AddSingleton<PayPalService>();// Maybe review if it's better to use singleton or scoped here later
             builder.Services.AddScoped<PayPalService>();
@@ -179,6 +181,7 @@ namespace RealEstate
             builder.Services.AddSingleton<StripeService>();
 
             builder.Services.AddHttpClient<PayPalService>();
+            builder.Services.AddHttpClient();
 
             // string configurations
             Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
