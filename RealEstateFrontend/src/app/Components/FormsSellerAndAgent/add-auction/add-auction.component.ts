@@ -182,9 +182,9 @@ export class AddAuctionComponent implements OnInit {
           console.error('Error creating auction:', err);
           // Handle specific errors if needed
           if (err.error?.message) {
-            alert(`Error: ${err.error.message}`);
+            this.toastr.error(`Error: ${err.error.message}`);
           } else {
-            alert('An unexpected error occurred');
+            this.toastr.error('An unexpected error occurred');
           }
         }
       });

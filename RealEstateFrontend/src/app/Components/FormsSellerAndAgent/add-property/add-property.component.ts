@@ -290,7 +290,7 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       ];
       if (!validTypes.includes(file.type)) {
-        alert('Please upload a PDF or Word document');
+        this.toastr.error('Please upload a PDF or Word document');
         return;
       }
 
@@ -378,7 +378,7 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
         error: (err) => {
           // this.isSubmitting = false;
           this.toastr.error('Error creating property!', err);
-          alert(`Error creating property: ${err.error?.message || err.message}`);
+          this.toastr.error(`Error creating property: ${err.error?.message || err.message}`);
         }
       });
     } else {
