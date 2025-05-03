@@ -443,7 +443,7 @@ export class ProductDetailsComponent implements OnInit {
 
   addToCart() {
     if (!this.selectedColorStock) {
-      alert('Please select a color');
+      this.toastr.error('Please select a color');
       return;
     }
 
@@ -453,13 +453,13 @@ export class ProductDetailsComponent implements OnInit {
       Color: this.selectedColorStock.color
     }).subscribe({
       next: (response) => {
-        alert('Added to cart successfully!');
+        this.toastr.success('Added to cart successfully!');
         this.cartService.notifyCartUpdated(); // <-- Add this line
         // Reset or update state as needed
       },
       error: (err) => {
         console.error('Error adding to cart:', err);
-        alert(err.error?.message || 'Failed to add to cart');
+        this.toastr.error(err.error?.message || 'Failed to add to cart');
       }
     });
   }

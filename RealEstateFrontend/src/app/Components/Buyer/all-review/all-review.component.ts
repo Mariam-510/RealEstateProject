@@ -5,6 +5,7 @@ import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { ReviewResponseDto, ReviewService } from '../../../Services/ApiServices/review.service';
 import { API_CONFIG } from '../../../app.config';
+import { ToastrService } from '../../../Services/toastr.service';
 @Component({
   selector: 'app-all-review',
   standalone: true,
@@ -14,7 +15,7 @@ import { API_CONFIG } from '../../../app.config';
 })
 export class AllReviewComponent implements OnInit {
   apiConfig = API_CONFIG;
-  constructor(private router: Router, private auth: AuthService, private reviewService: ReviewService) { }
+  constructor(private router: Router, private auth: AuthService, private reviewService: ReviewService,private toaster:ToastrService) { }
 
   reviews: ReviewResponseDto[] = []
 
@@ -68,11 +69,11 @@ export class AllReviewComponent implements OnInit {
           // this.loadReviews();
 
           // Show success message
-          alert('Review deleted successfully');
+          this.toaster.success('Review deleted successfully');
         },
         error: (err) => {
           console.error('Failed to delete review:', err);
-          alert('Failed to delete review. Please try again.');
+          this.toaster.error('Failed to delete review. Please try again.');
         }
       });
     }

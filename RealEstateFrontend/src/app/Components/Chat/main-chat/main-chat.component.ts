@@ -8,6 +8,7 @@ import { AccountService } from '../../../Services/ApiServices/account.service';
 import { API_CONFIG } from '../../../app.config';
 import { CreateMessageDto, MessageResponseDto, MessageService } from '../../../Services/ApiServices/message.service';
 import { ChatService, IncomingChatMessage } from '../../../Services/ApiServices/chat.service';
+import { ToastrService } from '../../../Services/toastr.service';
 
 interface Message {
   id?: number;
@@ -58,7 +59,8 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
     private account: AccountService,
     private messageService: MessageService,
     private chatService: ChatService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastr: ToastrService,
   ) { }
 
   ngOnInit() {
@@ -273,7 +275,7 @@ export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewIni
       currentChat.messages.length > 0
     ) {
       this.disabled = true;
-      alert(
+      this.toastr.error(
         'Please wait for agent/seller response before sending more messages'
       );
       return;
