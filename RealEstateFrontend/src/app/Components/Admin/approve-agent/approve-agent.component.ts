@@ -116,5 +116,40 @@ export class ApproveAgentComponent implements OnInit {
   hasUser() {
     return this.auth.isAuthenticated();
   }
+  itemsPerPage: number = 6;
+currentPage: number = 1;
+totalPages: number = 1;
 
+// Add these methods to your component
+get paginatedAgents(): any[] {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  return this.filteredAgents.slice(startIndex, startIndex + this.itemsPerPage);
+}
+
+getPages(): number[] {
+  this.totalPages = Math.ceil(this.filteredAgents.length / this.itemsPerPage);
+  const pages = [];
+  for (let i = 1; i <= this.totalPages; i++) {
+    pages.push(i);
+  }
+  return pages;
+}
+
+goToPage(page: number): void {
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+  }
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+  }
+}
 }
