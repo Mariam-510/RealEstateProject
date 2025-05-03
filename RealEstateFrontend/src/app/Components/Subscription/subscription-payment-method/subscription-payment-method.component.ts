@@ -1,14 +1,14 @@
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ToastrService } from '../../Services/toastr.service';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { PaypalService } from '../../Services/PaymentServices/paypal.service';
-import { PaymentDto, PaymentService } from '../../Services/ApiServices/payment.service';
-import { AuthService } from '../../Services/ApiServices/auth.service';
-import { CreateSubscriptionDto, SubscriptionDto, SubscriptionService } from '../../Services/ApiServices/subscription.service';
 import { catchError, Observable, of, startWith, switchMap } from 'rxjs';
 import { lastValueFrom } from 'rxjs';
+import { ToastrService } from '../../../Services/toastr.service';
+import { PaypalService } from '../../../Services/PaymentServices/paypal.service';
+import { PaymentDto, PaymentService } from '../../../Services/ApiServices/payment.service';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { CreateSubscriptionDto, SubscriptionDto, SubscriptionService } from '../../../Services/ApiServices/subscription.service';
 
 @Component({
   selector: 'app-subscription-payment-method',
@@ -191,32 +191,6 @@ export class SubscriptionPaymentMethodComponent implements OnInit {
     }
   }
 
-
-
-  // async handlePlaceOrder(paymentId: number | null) {
-  //   const orderData: CreateOrderDto = {
-  //     paymentId: paymentId,
-  //     deliveryFees: this.shippingDto?.deliveryFees ?? 0,
-  //     addressId: this.address?.id ?? 0,
-  //   };
-
-  //   try {
-  //     const response = await firstValueFrom(
-  //       this.orderService.placeOrder(orderData)
-  //     );
-  //     console.log('Order placed successfully:', response);
-
-  //     this.cartService.notifyCartUpdated();
-  //     // this.router.navigate(['/checkout/confirmation']);
-  //     // Navigate with order ID in state
-  //     this.router.navigate(['/checkout/confirmation'], {
-  //       queryParams: { orderId: response.id },
-  //     });
-  //   } catch (error) {
-  //     console.error('Error placing order:', error);
-  //     // Handle error (show error message)
-  //   }
-  // }
 
   hasRole(requiredRole: string) {
     return this.auth.hasRole(requiredRole);

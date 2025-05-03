@@ -13,6 +13,9 @@ import { CreatePropertyBidDto, PropertyBidDto, PropertyBidService } from '../../
 import { lastValueFrom } from 'rxjs';
 import { API_CONFIG } from '../../../../app.config';
 import { SignalRService } from '../../../../Services/SignalRServices/signal-r.service';
+import { AuctionBuyerDto, AuctionBuyerService, CreateAuctionBuyerDto } from '../../../../Services/ApiServices/auction-buyer.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AuctionBuyerPaymentComponent } from '../auction-buyer-payment/auction-buyer-payment.component';
 
 // export enum Status {
 //   Scheduled = 'Scheduled',
@@ -36,11 +39,13 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   // propertyBids: PropertyBidDto[] = [];
   // lastBid: PropertyBidDto | null = null;
   apiConfig = API_CONFIG;
+  auctionBuyerDto: AuctionBuyerDto | null = null;
 
   constructor(private elRef: ElementRef, private renderer: Renderer2, private auth: AuthService,
     private route: ActivatedRoute, private toastr: ToastrService, private cdr: ChangeDetectorRef,
     private auctionService: AuctionService, private propertyBidService: PropertyBidService,
-    private signalrService: SignalRService, private router: Router) {
+    private signalrService: SignalRService, private router: Router,
+    private auctionBuyerService: AuctionBuyerService, private dialog: MatDialog) {
   }
 
 
@@ -52,6 +57,7 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   seconds: string = '00';
   private timer: any;
   icons: any;
+  auctionFees: number = 0;
 
   // Add to ngOnInit()
   async ngOnInit() {
@@ -65,6 +71,10 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
     await this.signalrService.startConnection();
     await this.loadAuction(id);
+    if (this.hasRole('Buyer')) {
+      await this.getAuctionBuyer(id);
+      this.auctionFees = Number(((this.auction?.startPrice ?? 0) * 0.01).toFixed(2));
+    }
 
     // Set up SignalR listeners
     this.signalrService.listenToAuctionDetails(this.handleAuctionUpdate.bind(this));
@@ -152,6 +162,41 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.startCountdown();
     this.cdr.detectChanges();
+  }
+
+  //--------------------------------------------------------------------------
+
+  // Get auction buyer with async/await
+  async getAuctionBuyer(auctionId: number) {
+    try {
+      const response = await lastValueFrom(
+        this.auctionBuyerService.getByAuctionAndBuyerId(auctionId)
+      );
+      console.log('Auction Buyer:', response);
+      if (response) {
+        this.auctionBuyerDto = response;
+      }
+      return response;
+    } catch (err) {
+      console.error('Error fetching auction buyer:', err);
+      // Handle error appropriately
+      throw err; // Re-throw if you want calling code to handle the error
+    }
+  }
+
+
+  openMethodDialog() {
+    const dialogRef = this.dialog.open(AuctionBuyerPaymentComponent, {
+      width: '480px',
+      minHeight: '440px',
+      panelClass: ['centered-dialog', 'mt-5', 'pt-5'],
+      data: { auctionData: this.auction }
+    });
+
+    // Add this subscription
+    dialogRef.afterClosed().subscribe(() => {
+      this.getAuctionBuyer(this.auction?.id ?? 0);
+    });
   }
 
   //-------------------------------------------------------------------------------

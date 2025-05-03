@@ -56,9 +56,9 @@ import { ViewAllPointmentComponent } from './Components/PagesSellerAndAgent/view
 import { CreateadminComponent } from './Components/Admin/createadmin/createadmin.component';
 import { ApproveAgentComponent } from './Components/Admin/approve-agent/approve-agent.component';
 import { FavoriteProductsComponent } from './Components/Buyer/Favorite/favorite-products/favorite-products.component';
-import { SubscriptionPlanComponent } from './Components/subscription-plan/subscription-plan.component';
 import { ViewAllAuctionsComponent } from './Components/PagesSellerAndAgent/view-all-auctions/view-all-auctions.component';
 import { ViewBuyerAuctionsComponent } from './Components/Buyer/view-buyer-auctions/view-buyer-auctions.component';
+import { SubscriptionPlanComponent } from './Components/Subscription/subscription-plan/subscription-plan.component';
 
 
 

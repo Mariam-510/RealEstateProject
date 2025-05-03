@@ -190,11 +190,11 @@ namespace RealEstate.Repositories
 
             var now = DateTime.Now.AddHours(1);
 
-            if (now.AddMinutes(1) >= auction.EndTime)
+            if (now.AddSeconds(30) >= auction.EndTime)
             {
                 auction.Status = Status.Finished;
             }
-            else if (now.AddMinutes(1) >= auction.StartTime)
+            else if (now.AddSeconds(30) >= auction.StartTime)
             {
                 auction.Status = Status.Active;
             }
@@ -205,36 +205,6 @@ namespace RealEstate.Repositories
 
             return auction;
         }
-
-        //public async Task<List<Auction>> CheckAndUpdateAllAuctionsStatus()
-        //{
-        //    var now = DateTime.Now.AddHours(1);
-        //    var auctions = await dbcontext.Auctions.Where(A => A.IsDeleted == false).ToListAsync();
-        //    bool anyChanges = false;
-
-        //    foreach (var auction in auctions)
-        //    {
-        //        var originalStatus = auction.Status;
-
-        //        if (auction.Status == Status.Scheduled && now >= auction.StartTime)
-        //        {
-        //            auction.Status = Status.Active;
-        //            anyChanges = true;
-        //        }
-        //        else if (auction.Status == Status.Active && now >= auction.EndTime)
-        //        {
-        //            auction.Status = Status.Finished;
-        //            anyChanges = true;
-        //        }
-        //    }
-
-        //    if (anyChanges)
-        //    {
-        //        await dbcontext.SaveChangesAsync();
-        //    }
-
-        //    return auctions;
-        //}
 
         public async Task<List<Auction>> CheckAndUpdateAllAuctionsStatus()
         {
@@ -249,11 +219,11 @@ namespace RealEstate.Repositories
                 //var originalStatus = auction.Status;
 
                 // Pure time-based status determination
-                if (now.AddMinutes(1) >= auction.EndTime)
+                if (now.AddSeconds(30) >= auction.EndTime)
                 {
                     auction.Status = Status.Finished;
                 }
-                else if (now.AddMinutes(1) >= auction.StartTime)
+                else if (now.AddSeconds(30) >= auction.StartTime)
                 {
                     auction.Status = Status.Active;
                 }

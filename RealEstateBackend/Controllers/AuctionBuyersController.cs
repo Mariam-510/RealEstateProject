@@ -133,9 +133,9 @@ namespace RealEstate.Controllers
 
             var auctions = await AuctionRepository.CheckAndUpdateAllAuctionsStatus();
 
-            if (auction.Status == Status.Finished)
+            if (auction.Status != Status.Active)
             {
-                return BadRequest("Auction Ended");
+                return BadRequest("Auction is not Active");
             }
 
             var existingAuctionBuyer = await AuctionBuyerRepository.GetByAuctionAndBuyerIdAsync(buyerId, auction.Id);
@@ -148,13 +148,13 @@ namespace RealEstate.Controllers
 
             if (payment == null)
             {
-                return NotFound("Auction not found");
+                return NotFound("Payment not found");
             }
-            decimal minimumPayment = Math.Round(auction.StartPrice * 0.10m, 2);
+            decimal minimumPayment = Math.Round(auction.StartPrice * 0.01m, 2);
 
             if (payment.Amount < minimumPayment)
             {
-                return BadRequest($"You should pay at least {minimumPayment}.");
+                return BadRequest($"You should pay at least {minimumPayment} - You Paid {payment.Amount}.");
             }
 
             var auctionBuyer = Mapper.Map<AuctionBuyer>(createAuctionBuyerDto);

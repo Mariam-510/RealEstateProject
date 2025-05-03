@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { SubscriptionPaymentMethodComponent } from '../subscription-payment-method/subscription-payment-method.component';
-import { SubscriptionPlanDto, SubscriptionPlanService } from '../../Services/ApiServices/subscription-plan.service';
-import { AuthService } from '../../Services/ApiServices/auth.service';
 import { Router } from '@angular/router';
-import { SubscriptionDto, SubscriptionService } from '../../Services/ApiServices/subscription.service';
 import { catchError, lastValueFrom, Observable, of, startWith, switchMap } from 'rxjs'; // Import lastValueFrom for converting Observables to Promises
+import { SubscriptionPlanDto, SubscriptionPlanService } from '../../../Services/ApiServices/subscription-plan.service';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { SubscriptionDto, SubscriptionService } from '../../../Services/ApiServices/subscription.service';
+
 @Component({
   selector: 'app-subscription-plan',
   imports: [CommonModule],
