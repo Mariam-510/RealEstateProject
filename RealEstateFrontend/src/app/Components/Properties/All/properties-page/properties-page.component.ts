@@ -26,7 +26,9 @@ export class PropertiesPageComponent implements OnInit, AfterViewInit, OnDestroy
   properties: PropertyDTO[] = [];
   filteredProperties: PropertyDTO[] = [];
   apiConfig = API_CONFIG;
-
+  @ViewChild('sliderContainer') sliderContainer!: ElementRef<HTMLDivElement>;
+  autoScrollInterval: any;
+  scrollSpeed = 2; // Adjust scrolling speed
   // Pagination
   currentPage = 1;
   itemsPerPage = 6;
@@ -119,8 +121,25 @@ export class PropertiesPageComponent implements OnInit, AfterViewInit, OnDestroy
     this.setupFilterSubscription();
 
     this.cdr.detectChanges(); // If using ChangeDetectorRef
+    // this.startAutoScroll();
+
+
+  }
+  startAutoScroll() {
+    this.autoScrollInterval = setInterval(() => {
+      const container = this.sliderContainer.nativeElement;
+      container.scrollLeft += this.scrollSpeed;
+      
+      // Reset to start when reaching halfway (original content end)
+      if (container.scrollLeft >= container.scrollWidth / 2) {
+        container.scrollLeft = 0;
+      }
+    }, 20);
   }
 
+  stopAutoScroll() {
+    clearInterval(this.autoScrollInterval);
+  }
   //------------------------------------------------------------------------------------------------------
   // In your component
   async loadProperties(
@@ -251,6 +270,11 @@ export class PropertiesPageComponent implements OnInit, AfterViewInit, OnDestroy
     if (this.filterSub) {
       this.filterSub.unsubscribe();
     }
+    // this.stopAutoScroll();
+    // const container = this.sliderContainer.nativeElement;
+    // container.removeEventListener('mouseenter', () => this.pauseAutoScroll());
+    // container.removeEventListener('mouseleave', () => this.resumeAutoScroll());
+
   }
 
 
@@ -360,6 +384,8 @@ export class PropertiesPageComponent implements OnInit, AfterViewInit, OnDestroy
     // this.startAutoScroll();
 
     this.stopSection = this.elRef.nativeElement.querySelector('#stop-scroll')!;
+    // this.setupAutoScroll();
+
 
   }
   isSticky: boolean = false;
@@ -438,7 +464,24 @@ export class PropertiesPageComponent implements OnInit, AfterViewInit, OnDestroy
     { name: 'Top Notch Collections', logo: 'https://images.liveauctioneers.com/static/mail/images/auctioneers/featured_auctioneers_hill_368x208.jpg?quality=90&width=184' },
     { name: 'New Orleans Auction Galleries', logo: "https://images.liveauctioneers.com/static/mail/images/auctioneers/featured_auctioneer_bonhams_368x208.jpg?quality=90&width=184" }
   ];
+  duplicatedAuctioneers = [...this.auctioneers, ...this.auctioneers];
+  // ngAfterViewInit() {
+  //   this.setupAutoScroll();
+  // }
 
+  private setupAutoScroll() {
+    const container = this.sliderContainer.nativeElement;
+    container.addEventListener('mouseenter', () => this.pauseAutoScroll());
+    container.addEventListener('mouseleave', () => this.resumeAutoScroll());
+  }
+
+  private pauseAutoScroll() {
+    this.sliderContainer.nativeElement.style.animationPlayState = 'paused';
+  }
+
+  private resumeAutoScroll() {
+    this.sliderContainer.nativeElement.style.animationPlayState = 'running';
+  }
   // @ViewChild('scrollContainer') scrollContainer!: ElementRef;
 
   // isLeftDisabled = true;
