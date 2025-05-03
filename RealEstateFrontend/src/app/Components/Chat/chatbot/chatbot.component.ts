@@ -4,6 +4,7 @@ import {
   ViewChild,
   AfterViewChecked,
   OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -19,7 +20,7 @@ import { AuthService } from '../../../Services/ApiServices/auth.service';
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.css'],
 })
-export class ChatbotComponent implements AfterViewChecked, OnDestroy {
+export class ChatbotComponent implements AfterViewChecked, OnDestroy, OnInit {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
 
   messages: ChatMessage[] = [];
@@ -37,6 +38,26 @@ export class ChatbotComponent implements AfterViewChecked, OnDestroy {
     this.checkForNewMessages();
   }
 
+  ngOnInit() {
+    const user = this.authService.getCurrentUser();
+    const role = Array.isArray(user?.roles) ? user.roles[0] : user?.roles;
+
+    let welcome = 'Hi! I’m your AI assistant. How can I help you today?';
+
+    if (role === 'Buyer') {
+      welcome =
+        'Welcome! Looking to buy a property or join an auction? I can help!';
+    } else if (role === 'Seller') {
+      welcome =
+        'Hi there! Need help listing or managing your property? Ask me anything.';
+    } else if (role === 'Agent') {
+      welcome =
+        'Hello! I can assist with managing listings and client queries.';
+    }
+
+    this.addMessage(welcome, 'bot');
+  }
+
   ngOnDestroy() {
     if (this.scrollObserver) {
       this.scrollObserver.disconnect();
@@ -46,14 +67,14 @@ export class ChatbotComponent implements AfterViewChecked, OnDestroy {
   private getSystemPrompt(): string {
     const user = this.authService.getCurrentUser();
     let roleDescription = 'user';
-  
+
     if (user?.roles) {
       const roles = Array.isArray(user.roles) ? user.roles : [user.roles];
       if (roles.includes('Buyer')) roleDescription = 'a property buyer';
       else if (roles.includes('Seller')) roleDescription = 'a property seller';
       else if (roles.includes('Agent')) roleDescription = 'a real estate agent';
     }
-  
+
     return `You are a helpful AI assistant for a real estate website. Respond to the user as if they are ${roleDescription}, and provide relevant, clear, and concise answers about buying properties, auctions, managing listings, or exploring furniture and products. Do not reference internal data; respond generically.`;
   }
 
@@ -62,8 +83,6 @@ export class ChatbotComponent implements AfterViewChecked, OnDestroy {
     const role = Array.isArray(user?.roles) ? user.roles[0] : user?.roles;
     return role ? `${role.toLowerCase()}-message` : '';
   }
-  
-  
 
   private stripHtml(html: string): string {
     return html.replace(/<[^>]*>/g, '');
