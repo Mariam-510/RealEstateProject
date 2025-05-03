@@ -278,7 +278,7 @@ export class PropertyDetailsComponent implements OnInit ,AfterViewInit {
         Number.MAX_SAFE_INTEGER;
 
       // Apply fixed position when scrolled past initial position but before stop point
-      if (scrollY >= cardInitialOffset + 250 && scrollY < stopPoint) {
+      if (scrollY >= cardInitialOffset + 400 && scrollY < stopPoint) {
         this.renderer.addClass(card, 'fixed-event-card');
         // console.log('fixed-event-card added');
         this.renderer.setStyle(card, 'top', `${this.navBarHeight + 20}px`);
@@ -293,7 +293,7 @@ export class PropertyDetailsComponent implements OnInit ,AfterViewInit {
         // this.renderer.setStyle(card, 'top', `${stopPoint}px`);
       }
       // Return to initial position only if we're above the cardInitialOffset
-      else if (scrollY < cardInitialOffset + 250) {
+      else if (scrollY < cardInitialOffset + 400) {
         this.renderer.removeClass(card, 'fixed-event-card');
         // console.log('fixed-event-card removed');
         this.renderer.removeStyle(card, 'position');
