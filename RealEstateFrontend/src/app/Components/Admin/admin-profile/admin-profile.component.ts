@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
@@ -25,7 +25,8 @@ export class AdminProfileComponent {
   selectedImage: File | null = null;
   removeImageFlag = false;
 
-  constructor(private router: Router, private auth: AuthService, private adminService: AdminService,private toaster:ToastrService) { }
+  constructor(private router: Router, private auth: AuthService, private adminService: AdminService,
+    private toaster: ToastrService, private cdr: ChangeDetectorRef) { }
 
   async ngOnInit() {
     if (!this.hasRole('Admin')) {
@@ -62,10 +63,19 @@ export class AdminProfileComponent {
     );
   }
 
+  isLoading = false;
+
   async loadAdmin(): Promise<void> {
     try {
+      this.isLoading = true;
+      this.cdr.detectChanges();
+
       this.admin = await lastValueFrom(this.adminService.getAdmin());
       // Date conversion logic here
+
+      this.isLoading = false;
+      this.cdr.detectChanges();
+
     } catch (err) {
       console.error('Failed to fetch admin:', err);
     }

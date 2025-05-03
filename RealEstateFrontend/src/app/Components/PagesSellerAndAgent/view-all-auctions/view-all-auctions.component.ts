@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
@@ -43,7 +43,8 @@ export class ViewAllAuctionsComponent implements OnInit {
   auctions: AuctionDTOShow[] = [];
   filteredAuctions: AuctionDTOShow[] = [];
 
-  constructor(private auctionService: AuctionService, private auth: AuthService, private router: Router, private toastr: ToastrService,
+  constructor(private auctionService: AuctionService, private auth: AuthService, private router: Router,
+    private toastr: ToastrService, private cdr: ChangeDetectorRef
   ) {
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 12);
@@ -72,7 +73,11 @@ export class ViewAllAuctionsComponent implements OnInit {
     });
   }
 
+  isLoading = false;
+
   loadUserAuctions(): void {
+    this.isLoading = true;
+    this.cdr.detectChanges();
 
     this.auctionService.getAuctionsByUserId().subscribe({
       next: (auctions) => {
@@ -88,6 +93,9 @@ export class ViewAllAuctionsComponent implements OnInit {
         this.currentPage = 1;
         this.updatePagination();
         console.log('Auctions loaded:', this.auctions);
+
+        this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Failed to load auctions.', error);
