@@ -4,12 +4,12 @@ import { API_CONFIG } from '../../app.config';
 import { Observable } from 'rxjs';
 
 // Add your DTO interfaces
-interface CreateAuctionBuyerDto {
+export interface CreateAuctionBuyerDto {
   auctionId: number;
   paymentId: number;
 }
 
-interface AuctionBuyerDto {
+export interface AuctionBuyerDto {
   id: number;
   date: Date;
   isDeleted: boolean;
