@@ -28,7 +28,6 @@ export class CartComponent implements OnInit {
 
   ngOnInit() {
     if (!this.hasRole('Buyer')) {
-      // Redirect to login if not Buyer
       this.router.navigate(['/login']);
     } else {
       this.loadInitialCart();

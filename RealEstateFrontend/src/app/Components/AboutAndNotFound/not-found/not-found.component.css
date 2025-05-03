@@ -1,0 +1,9 @@
+.not-found-container {
+    height: 55vh;
+    display: flex;
+    flex-direction: column;
+    margin-top: 9vw;
+    align-items: center;
+    text-align: center;
+  }
+  
