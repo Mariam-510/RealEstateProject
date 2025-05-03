@@ -62,6 +62,7 @@
                   </div>
                 </div>
               </a>
+
               <div
                 class="image-counter position-absolute bottom-0 start-0 m-2 bg-dark bg-opacity-50 text-white rounded px-2 py-1 small fs-6">
                 <i class="bi bi-images me-1"></i>
@@ -342,14 +343,15 @@
               </a>
 
 
-              <button *ngIf="hasRoleOrNoUser('Buyer') && property.status === 'Auctioned'"
+              <a [routerLink]="['/auctions', property?.auctionId]"
+                *ngIf="hasRoleOrNoUser('Buyer') && property.status === 'Auctioned'"
                 class="btn btn-sm text-white position-relative fs-6 fw-semibold" [class.px-4]="viewMode === 'grid4'"
                 style="background: rgb(255, 200, 0);">
                 <span
                   class="position-absolute top-0 start-100 translate-middle p-1 bg-dark bg-opacity-50 border border-light rounded-circle"></span>
                 <i class="bi bi-lightning-charge" [class.me-2]="viewMode !== 'grid4'"></i>
                 <span *ngIf="viewMode !== 'grid4'">View Auction</span>
-              </button>
+              </a>
             </div>
 
           </div>

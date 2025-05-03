@@ -76,6 +76,8 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
   async loadAuctions(): Promise<void> {
     try {
       this.isLoading = true;
+      this.cdr.detectChanges(); // Update view immediately
+
       this.errorMessage = '';
 
       // Get auctions from service
@@ -103,6 +105,7 @@ export class AuctionHomeComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Failed to load auctions. Please try again later.';
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges(); // Update view immediately
     }
   }
 

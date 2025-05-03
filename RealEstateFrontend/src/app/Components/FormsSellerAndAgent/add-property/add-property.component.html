@@ -335,9 +335,18 @@
             </div>
 
             <div class="d-grid mt-4">
-              <button type="submit" class="btn btn-primary" [disabled]="propertyForm.invalid || images.length < 2">
+              <button type="submit" class="btn btn-primary"
+                [disabled]="propertyForm.invalid || images.length < 2 || ((subscription$ | async)?.availableProperties??0)<1">
                 Add Property
+                <span *ngIf="((subscription$ | async)?.availableProperties??0)<1">(Limit Reached - Upgrade Plan)</span>
               </button>
+
+              <div *ngIf="((subscription$ | async)?.availableProperties??0)<1" class="text-muted mt-1">
+                <i class="bi bi-info-circle me-1"></i>
+                <a routerLink="/subscriptionPlan" class="text-decoration-none text-caffe">View Plans</a>
+              </div>
+
+
             </div>
           </form>
         </div>

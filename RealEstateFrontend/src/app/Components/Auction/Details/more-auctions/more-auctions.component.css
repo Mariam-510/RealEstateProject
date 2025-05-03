@@ -1,287 +1,300 @@
 .auction-card {
-    transition: transform 0.2s;
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative;
-  }
+  transition: transform 0.2s;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
 
-  .auction-card .live-badge {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    background: #dc3545;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: bold;
-  }
-  
-  .auction-card .card-img-top {
-    height: 250px;
-    overflow: hidden;
-  }
-  
-  .auction-card .card-img-top img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .auction-card .auction-price {
-    color: #0d6efd;
-  }
-  
-  .auction-card .card-footer {
-    border-top: none;
-    background: rgba(0, 0, 0, 0.03);
-  }
+.auction-card .live-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: #dc3545;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.auction-card .card-img-top {
+  height: 250px;
+  overflow: hidden;
+}
+
+.auction-card .card-img-top img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auction-card .auction-price {
+  color: #0d6efd;
+}
+
+.auction-card .card-footer {
+  border-top: none;
+  background: rgba(0, 0, 0, 0.03);
+}
 
 .slider-container {
-    position: relative;
-    height: 250px;
-    overflow: hidden;
-  }
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+}
 
-  .slider-container .slider-track {
-    display: flex;
-    height: 100%;
-    transition: transform 0.5s ease-in-out;
-  }
-  
-  .slider-container .slide {
-    flex: 0 0 100%;
-    min-width: 100%;
-    height: 100%;
-  }
-  
-  .slider-container .slide img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .slider-container .slide .control {
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
+.slider-container .slider-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s ease-in-out;
+}
 
-  .slider-container:hover .slider-controls {
-    opacity: 1;
-  }
+.slider-container .slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  height: 100%;
+}
 
-  .slider-dots {
-    position: absolute;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 8px;
-    z-index: 2;
-  }
-  
-  .slider-dots .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .slider-dots .dot.active {
-    background-color: #fff;
-    transform: scale(1.2);
-  }
-  
-  .slider-dots .dot:hover:not(.active) {
-    background-color: rgba(255, 255, 255, 0.8);
-  }
+.slider-container .slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-  .auction-progress {
-      position: relative;
-    margin: 0;
-    padding: 0;
-  }
+.slider-container .slide .control {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 
-  .progress {
-    background-color: transparent !important;
-    border-radius: 0;
-  }
+.slider-container:hover .slider-controls {
+  opacity: 1;
+}
 
-  .time-tooltip {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    min-width: 160px;
-    pointer-events: none;
-  }
+.slider-dots {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
 
-  .time-tooltip {
-    min-width: 180px;
-  }
+.slider-dots .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
 
-  .tooltip-content {
-    background: rgba(0, 0, 0, 0.9);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    position: relative;
-    margin-bottom: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .tooltip-content::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
-  }
+.slider-dots .dot.active {
+  background-color: #fff;
+  transform: scale(1.2);
+}
 
-  .tooltip-content {
-    padding: 12px;
-  }
+.slider-dots .dot:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.8);
+}
 
-  .status-message {
-    font-size: 0.8rem;
-    color: #c38e79;
-    border-top: 1px solid rgba(255,255,255,0.2);
-    padding-top: 8px;
-  }
+.auction-progress {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
 
-  .ended-message {
-    padding: 8px;
-    text-align: center;
-    font-weight: 500;
-    color: #c38e79;
-  }
+.progress {
+  background-color: transparent !important;
+  border-radius: 0;
+}
 
-  .custumBottomBorder {
-    border-bottom: 2.5px solid rgba(195, 142, 121, 0.1);
-  }
+.time-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  min-width: 160px;
+  pointer-events: none;
+}
 
-  .pagination .page-item.active .page-link {
-    /* border: 2px solid #4a2c2a;  */
-    border-color:#c38e79;
-  }
+.time-tooltip {
+  min-width: 180px;
+}
 
-  .status-badge {
-    /* color: #4a7d5e; */
-    font-size: 0.85rem;
-  }
+.tooltip-content {
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  position: relative;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
 
-  .auction-card .live-badge {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    background: #dc3545;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: bold;
-  }
-  
-  .sell-badge {
-    color: #4a7d5e;
-    font-size: 0.85rem;
-  }
-  .status-badge {
-    /* color: #4a7d5e; */
-    font-size: 0.85rem;
-  }
-  .bg-rent-badge {
-    background: #2a5f8b;
-    color: white;
-  }
-  
-  .bg-sell-badge {
-    background-color: #4a2c2a;
-    color: white;
-  }
-  .rent-badge {
-    color: #2a5f8b;
-    font-size: 0.85rem;
-  }
-  
-  .finished-overlay .badge {
-    font-size: 1.5rem !important;
-    text-transform: uppercase;
-  }
+.tooltip-content::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+}
 
-  .finished-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    background: rgba(0, 0, 0, 0.5); /* semi-transparent dark overlay */
-    pointer-events: none;
+.tooltip-content {
+  padding: 12px;
+}
+
+.status-message {
+  font-size: 0.8rem;
+  color: #c38e79;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 8px;
+}
+
+.ended-message {
+  padding: 8px;
+  text-align: center;
+  font-weight: 500;
+  color: #c38e79;
+}
+
+.custumBottomBorder {
+  border-bottom: 2.5px solid rgba(195, 142, 121, 0.1);
+}
+
+.pagination .page-item.active .page-link {
+  /* border: 2px solid #4a2c2a;  */
+  border-color: #c38e79;
+}
+
+.status-badge {
+  /* color: #4a7d5e; */
+  font-size: 0.85rem;
+}
+
+.auction-card .live-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: #dc3545;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.sell-badge {
+  color: #4a7d5e;
+  font-size: 0.85rem;
+}
+
+.status-badge {
+  /* color: #4a7d5e; */
+  font-size: 0.85rem;
+}
+
+.bg-rent-badge {
+  background: #2a5f8b;
+  color: white;
+}
+
+.bg-sell-badge {
+  background-color: #4a2c2a;
+  color: white;
+}
+
+.rent-badge {
+  color: #2a5f8b;
+  font-size: 0.85rem;
+}
+
+.finished-overlay .badge {
+  font-size: 1.5rem !important;
+  text-transform: uppercase;
+}
+
+.finished-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.5);
+  /* semi-transparent dark overlay */
+  pointer-events: none;
+}
+
+.bid-now-button {
+  background-color: transparent;
+  border: none;
+  color: #c38e79;
+  /* Red shade */
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.3s;
+}
+
+.bid-now-button i {
+  font-size: 1rem;
+}
+
+.bid-now-button:hover {
+  color: #c38e79;
+  /* Slightly darker red on hover */
+  text-decoration: underline;
+}
+
+.auction-card:has(.disabled-auction) {
+
+  .card-title,
+  .location,
+  .text-caffe-dark,
+  .status-text,
+  .bid-now-button {
+    opacity: 0.6;
   }
 
   .bid-now-button {
-    background-color: transparent;
-    border: none;
-    color: #c38e79; /* Red shade */
-    font-weight: bold;
-    font-size: 1.1rem;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    transition: color 0.3s;
+    cursor: not-allowed;
+    color: #58595bdd !important;
   }
-  
-  .bid-now-button i {
-    font-size: 1rem;
-  }
-  
-  .bid-now-button:hover {
-    color: #c38e79; /* Slightly darker red on hover */
-    text-decoration: underline;
-  }
-  
-  .auction-card:has(.disabled-auction) {
-    .card-title,
-    .location,
-    .text-caffe-dark,
-    .status-text,
-    .bid-now-button {
-      opacity: 0.6;
-    }
-    
-    .bid-now-button {
-      cursor: not-allowed;
-      color: #58595bdd !important;
-    }
-  }
+}
 
-  .text-caffe-dark {
-    color: #4a2c2a;
-  }
-  .bg-caffe-dark{
-    background-color: #4a2c2a;
-  
-  }
+.text-caffe-dark {
+  color: #4a2c2a;
+}
 
-  .section-underline {
-    width: 17rem;
-    height: 3px;
-    background-color: #c38e79;
-    margin-top: -1rem;
-  }
+.bg-caffe-dark {
+  background-color: #4a2c2a;
+
+}
+
+.section-underline {
+  width: 17rem;
+  height: 3px;
+  background-color: #c38e79;
+  margin-top: -1rem;
+}
+
+.custom-dark-gray {
+  background-color: #616669 !important;
+  /* A rich dark gray */
+}

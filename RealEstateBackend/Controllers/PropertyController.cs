@@ -65,6 +65,14 @@ namespace RealEstate.Controllers
                 {
                     dto.ContractImgUrl = contract.ImageUrl;
                 }
+                if (dto.Status == "Auctioned")
+                {
+                    var auction = await _auctionRepo.GetByPropertyIdAsync(dto.Id);
+                    if (auction != null)
+                    {
+                        dto.AuctionId = auction.Id;
+                    }
+                }
             }
 
             string buyerIdStr = User.FindFirst("userId")?.Value;
@@ -129,6 +137,14 @@ namespace RealEstate.Controllers
                 {
                     dto.ContractImgUrl = contract.ImageUrl;
                 }
+                if (dto.Status == "Auctioned")
+                {
+                    var auction = await _auctionRepo.GetByPropertyIdAsync(dto.Id);
+                    if (auction != null)
+                    {
+                        dto.AuctionId = auction.Id;
+                    }
+                }
             }
 
             string buyerIdStr = User.FindFirst("userId")?.Value;
@@ -150,6 +166,7 @@ namespace RealEstate.Controllers
 
             return Ok(propertyDtos);
         }
+
 
         [HttpGet("Pending")]
         public async Task<IActionResult> GetPendingProperties()
@@ -570,7 +587,7 @@ namespace RealEstate.Controllers
                     return Unauthorized("You are not authorized for this property.");
 
                 // Check if an active auction is associated with this property
-                var auction = await _auctionRepo.GetByProprtyIdAsync(id);
+                var auction = await _auctionRepo.GetByPropertyIdAsync(id);
                 if (auction != null && auction.Status == Status.Active && !auction.IsDeleted)
 return StatusCode(405, "Cannot delete the property because it has an active auction.");
 

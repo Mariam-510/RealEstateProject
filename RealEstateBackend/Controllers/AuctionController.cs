@@ -294,7 +294,7 @@ namespace RealEstate.Controllers
         public async Task<IActionResult> GetAuctionByPropertyId(int propertyId)
         {
 
-            var ActionData = await _AuctionRepository.GetByProprtyIdAsync(propertyId);
+            var ActionData = await _AuctionRepository.GetByPropertyIdAsync(propertyId);
             if (ActionData == null)
             {
                 return NotFound("Auction ID Not found!");
