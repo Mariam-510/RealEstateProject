@@ -3,8 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
-import { OrderResponseDto, OrderService } from '../../../Services/ApiServices/order.service';
+import { OrderResponseDto, OrderService, UpdateOrderDto } from '../../../Services/ApiServices/order.service';
 import { catchError, lastValueFrom, of } from 'rxjs';
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-order-summary',
@@ -18,12 +19,12 @@ export class OrderSummaryComponent implements OnInit {
   activeLink = 'All Order';
   startDate: string = '';
   endDate: string = '';
-
+  error: string | null = null;
   orders: OrderResponseDto[] = [];
   filteredOrders: OrderResponseDto[] = [];
 
   constructor(private route: ActivatedRoute, private router: Router, private auth: AuthService,
-    private orderService: OrderService) { }
+    private orderService: OrderService,private toaster:ToastrService) { }
 
   async ngOnInit() {
     if (!this.hasRole('Buyer')) {
@@ -116,6 +117,74 @@ export class OrderSummaryComponent implements OnInit {
 
   hasUser() {
     return this.auth.isAuthenticated();
+  }
+  itemsPerPage: number = 5;
+  currentPage: number = 1;
+  totalPages: number = 1;
+
+  // Add these methods to your component
+  get paginatedOrders(): any[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredOrders.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  getPages(): number[] {
+    this.totalPages = Math.ceil(this.filteredOrders.length / this.itemsPerPage);
+    const pages = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+  Deleteorder(order: OrderResponseDto): void {
+    
+    const confirmed = confirm('Are you sure you want to cancel this order?');
+    
+    if (!confirmed) {
+      return;  
+    }
+  
+    const updateData: UpdateOrderDto = {
+      id: order.id,
+      status: 4  
+    };
+    
+    this.orderService.updateOrder(updateData).subscribe({
+      next: (updatedOrder) => {
+        const index = this.orders.findIndex(o => o.id === updatedOrder.id);
+        if (index !== -1) {
+          this.orders[index] = updatedOrder;
+          this.filterOrders();
+        }
+        this.toaster.success('Order canceled successfully');
+      },
+      error: (err) => {
+        console.error('Error While Delete order:', err);
+        this.toaster.error('Failed to Delete order . Please try again.');
+        const originalOrder = this.orders.find(o => o.id === order.id);
+        if (originalOrder) {
+          order.statusNum = originalOrder.statusNum;
+        }
+      }
+    });
   }
 }
 
