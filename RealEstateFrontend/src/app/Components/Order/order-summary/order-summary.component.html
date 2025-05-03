@@ -19,7 +19,6 @@
         [ngClass]="{'active-order': link === activeLink, 'text-muted': link !== activeLink}"
         class="me-4 text-decoration-none" style="font-size: 1.1rem;"> {{ link }}
       </a>
-
     </div>
     <div class="d-flex align-items-center">
       <input type="date" [(ngModel)]="startDate" (change)="onDateChange()" class="form-control me-3"
@@ -35,7 +34,6 @@
     </div>
   </div>
 
-
   <div *ngIf="!isLoading" class="mt-2">
     <div class="shadow-sm p-3 mb-2 mt-4 rounded bg-light row fw-semibold align-items-center text-center g-0">
       <div class="col-2">Order Id</div>
@@ -46,7 +44,9 @@
       <div class="col-2">Action</div>
     </div>
     <div *ngFor="let order of paginatedOrders"
-      class="order-card shadow-sm p-4 mb-3 rounded bg-white row align-items-center text-center g-0">
+      class="order-card shadow-sm mb-3 rounded bg-white row align-items-center text-center g-0"
+      [class.py-2]="order.statusNum === 0" 
+      [class.py-4]="order.statusNum !== 0">
       <div class="col-2 text-muted">#{{ order.id }}</div>
       <div class="col-2">{{ order.orderDate }}</div>
 
@@ -63,13 +63,14 @@
       </div>
 
       <div class="col-2">{{ order.subTotal + order.deliveryFees | currency:'EGP ' }}</div>
-      <div class="col-2 d-flex justify-content-center align-items-center">
-        <a [routerLink]="['/user/orders',order.id]" class="text-decoration-none text-caffe ms-5"
-          style="font-size: 17px;"> View Details <i class="bi bi-file-earmark-text"></i></a>
-        <a *ngIf="order.statusNum === 0" (click)="Deleteorder(order)" class="text-decoration-none text-danger ms-3"
-          style="cursor: pointer;" title="Delete Order">
-          <i class="bi bi-trash text-caffe" style="font-size: 18px;"></i>
+      <div class="col-2 d-flex flex-column justify-content-center align-items-center mt-1">
+        <a [routerLink]="['/user/orders',order.id]" class="text-decoration-none text-caffe" style="font-size: 16px;">
+          Details <i class="bi bi-file-earmark-text"></i>
         </a>
+        <button *ngIf="order.statusNum === 0" (click)="Deleteorder(order)"
+          class="btn text-danger btn-sm p-0 border-0 bg-transparent" style="font-size: 16px;">
+          Cancel <i class="bi bi-x-circle"></i>
+        </button>
       </div>
     </div>
   </div>
@@ -93,3 +94,4 @@
       </ul>
     </nav>
   </div>
+</div>
