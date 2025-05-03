@@ -14,8 +14,8 @@
 
 .chat-window {
   position: fixed;
-  bottom: 80px;
-  right: 20px;
+  bottom: 20px; /* Align with button bottom */
+  right: 80px; /* Position to the left of the button (button width + margin) */
   width: 420px;
   max-height: 80vh;
   z-index: 1050;
