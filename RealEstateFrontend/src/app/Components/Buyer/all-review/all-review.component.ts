@@ -31,6 +31,7 @@ export class AllReviewComponent implements OnInit {
     this.reviewService.getCurrentBuyerReviews().subscribe({
       next: (reviews) => {
         this.reviews = reviews;
+        this.currentPage = 1;
       },
       error: (err) => {
         console.error('Failed to load reviews:', err);
@@ -109,4 +110,40 @@ export class AllReviewComponent implements OnInit {
   hasUser() {
     return this.auth.isAuthenticated();
   }
+  itemsPerPage: number = 4;
+currentPage: number = 1;
+totalPages: number = 0;
+
+// Add these methods to your component
+get paginatedreviews(): any[] {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  return this.sortedReviews.slice(startIndex, startIndex + this.itemsPerPage);
+}
+
+getPages(): number[] {
+  this.totalPages = Math.ceil(this.sortedReviews.length / this.itemsPerPage);
+  const pages = [];
+  for (let i = 1; i <= this.totalPages; i++) {
+    pages.push(i);
+  }
+  return pages;
+}
+
+goToPage(page: number): void {
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+  }
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+  }
+}
 }

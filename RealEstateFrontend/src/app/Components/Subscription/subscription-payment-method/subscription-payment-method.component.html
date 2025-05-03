@@ -1,18 +1,14 @@
-<div class="bg-caffe text-white p-3 position-relative">  
-  <div class="d-flex justify-content-between align-items-center"> 
-    <div class="d-flex align-items-center">  
+<div class="bg-caffe text-white p-3 position-relative">
+  <div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
       <i class="bi bi-stars fs-4 me-2"></i>
       <div>
         <h4 class="mt-2 mb-0">Upgrade to {{ data.selectedPlan.name }}</h4>
         <p class="mb-0 small">Unlock exclusive features on our website</p>
       </div>
     </div>
-     <button 
-      (click)="closeModal()" 
-      class="btn btn-link text-white p-0 fs-3 mb-2" 
-      aria-label="Close"
-    >
-      <i class="bi bi-x"></i>  
+    <button (click)="closeModal()" class="btn btn-link text-white p-0 fs-3 mb-2" aria-label="Close">
+      <i class="bi bi-x"></i>
     </button>
   </div>
 </div>
@@ -25,7 +21,7 @@
         <small class="text-muted">Up to {{ data.selectedPlan.maxAllowedProperties }} properties</small>
       </div>
       <div class="text-end">
-        <div class="fw-bold text-caffe">{{ data.selectedPlan.price }}</div>
+        <div class="fw-bold text-caffe">{{ data.selectedPlan.price | currency: 'EGP '}}</div>
       </div>
     </div>
   </div>
@@ -56,7 +52,7 @@
     <div *ngIf="selectedMethod === 'stripe'" class="ps-3 pt-2 pb-3 pe-3 border rounded">
       <div class="d-flex align-items-center">
         <i class="bi bi-stripe fs-1 me-2 mb-3 text-caffe"></i>
-        <div >
+        <div>
           <h6 style="margin-bottom: .1rem;">Secure Card Payment</h6>
           <p class="text-muted small">
             Confirm payment for <i class="text-caffe">{{data.selectedPlan.Name}}</i> plan
@@ -64,7 +60,7 @@
         </div>
       </div>
 
-      <button class="btn btn-primary w-100 mb-2" >
+      <button class="btn btn-primary w-100 mb-2">
         <i class="bi bi-primary me-2"></i>
         Pay {{ data.selectedPlan.Price }} with Stripe
       </button>
@@ -73,7 +69,7 @@
     <!-- PayPal section (only visible when PayPal selected) -->
     <div *ngIf="selectedMethod === 'paypal'" class="ps-3 pt-2 pb-2 pe-3 border rounded">
       <div class="d-flex mb-3">
-      <i class="bi bi-paypal fs-3 me-2 text-caffe mt-1"></i>
+        <i class="bi bi-paypal fs-3 me-2 text-caffe mt-1"></i>
         <div class="mt-2">
           <h6 class="mb-1">PayPal Payment</h6>
           <p class="text-muted small mb-2">
@@ -81,16 +77,12 @@
           </p>
         </div>
       </div>
-      <button class="btn btn-primary w-100 mb-1" >
-        <i class="bi bi-paypal me-2"></i>
-        Pay {{ data.selectedPlan.Price }} with paypal
-      </button>
-      <button class="btn btn-primary w-100 mt-2 " >
-        <i class="bi bi-paypal me-2"></i>
-        Pay {{ data.selectedPlan.Price }} with paypal
-      </button>
-       
-    
+
+      <div class="form-group">
+        <div id="paypal-button-container"></div>
+      </div>
+
+
     </div>
   </div>
 </div>

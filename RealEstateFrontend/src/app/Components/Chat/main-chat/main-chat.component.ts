@@ -1,54 +1,24 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  HostListener,
-  ChangeDetectorRef,
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  AfterViewChecked,
-  ElementRef,
-  ViewChild,
-  AfterViewInit,
-} from '@angular/core';
-import {
-  ConversationResponseDto,
-  ConversationService,
-} from '../../../Services/ApiServices/conversation.service';
+import { AfterViewChecked, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { ConversationResponseDto, ConversationService } from '../../../Services/ApiServices/conversation.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { AccountService } from '../../../Services/ApiServices/account.service';
 import { API_CONFIG } from '../../../app.config';
-import {
-  CreateMessageDto,
-  MessageResponseDto,
-  MessageService,
-} from '../../../Services/ApiServices/message.service';
-import {
-  ChatService,
-  IncomingChatMessage,
-} from '../../../Services/ApiServices/chat.service';
-
-enum MessageStatus {
-  Pending = 'Pending',
-  Sent = 'Sent',
-  Rejected = 'Rejected',
-  Delivered = 'Delivered',
-  Read = 'Read',
-}
+import { CreateMessageDto, MessageResponseDto, MessageService } from '../../../Services/ApiServices/message.service';
+import { ChatService, IncomingChatMessage } from '../../../Services/ApiServices/chat.service';
 
 interface Message {
   text: string;
   sent: boolean;
   time: Date;
-  status: MessageStatus;
   senderId: string | undefined;
 }
 
 interface Chat {
   id: number;
-  status: string;
+  conversationStatus: string;
   otherUser: {
     userId: string;
     firstName: string;
@@ -66,9 +36,7 @@ interface Chat {
   templateUrl: './main-chat.component.html',
   styleUrl: './main-chat.component.css',
 })
-export class MainChatComponent
-  implements OnInit, AfterViewChecked, AfterViewInit, OnDestroy
-{
+export class MainChatComponent implements OnInit, AfterViewChecked, AfterViewInit, OnDestroy {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
 
   today = new Date();
@@ -79,6 +47,9 @@ export class MainChatComponent
   newMessage = '';
   isChatVisible = false;
   private shouldScroll = true;
+  pendingMessage: Message | null = null;
+  showAcceptReject = false;
+  disabled = false;
 
   constructor(
     private conversationService: ConversationService,
@@ -87,7 +58,7 @@ export class MainChatComponent
     private messageService: MessageService,
     private chatService: ChatService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit() {
     if (
@@ -98,6 +69,8 @@ export class MainChatComponent
       this.auth.logout();
       return;
     }
+
+    console.log(this.selectedChat?.conversationStatus);
 
     this.currentUserId = this.auth.getCurrentUser()?.accountId;
     this.initializeUnreadCounts();
@@ -128,9 +101,13 @@ export class MainChatComponent
   loadConversations() {
     this.conversationService.getAllConversations().subscribe({
       next: async (conversations: ConversationResponseDto[]) => {
-        const validConversations = conversations.filter(
-          (dto) => dto.lastMessageAt !== null && dto.lastMessageAt !== undefined
-        );
+        let validConversations = conversations;
+        if (!this.isAgentOrSeller()) {
+          validConversations = conversations.filter(
+            (dto) =>
+              dto.lastMessageAt !== null && dto.lastMessageAt !== undefined
+          );
+        }
 
         const storedCounts = this.getUnreadCounts();
 
@@ -170,7 +147,6 @@ export class MainChatComponent
       text: dto.content,
       sent: dto.senderId === this.currentUserId,
       time: new Date(dto.sentAt),
-      status: dto.status as MessageStatus,
       senderId: dto.senderId,
     };
   }
@@ -183,7 +159,7 @@ export class MainChatComponent
 
     const chat: Chat = {
       id: dto.id,
-      status: dto.status,
+      conversationStatus: dto.status,
       otherUser: {
         userId: otherAccountId,
         firstName: 'Loading...',
@@ -203,12 +179,13 @@ export class MainChatComponent
           lastName: user.lastName || '',
           image: user.imageUrl || 'PropertyImages/10-1.jpg',
         };
-        this.cdr.markForCheck(); // Trigger update
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load user info:', err);
         chat.otherUser.firstName = 'Unknown User';
         chat.otherUser.lastName = '';
+
         this.cdr.markForCheck(); // Trigger update even on error
       },
     });
@@ -255,6 +232,9 @@ export class MainChatComponent
     this.updateUnreadCount(chat.id, 0);
     this.selectedChat = chat;
     this.newMessage = '';
+    this.showAcceptReject =
+      chat.conversationStatus === 'Pending' && this.isAgentOrSeller();
+    this.shouldDisableInput();
 
     this.messageService.getAllMessages(chat.id).subscribe({
       next: (messages: MessageResponseDto[]) => {
@@ -267,9 +247,26 @@ export class MainChatComponent
     });
   }
 
-  sendMessage() {
+  private isBuyer(): boolean {
+    return this.auth.hasRole('Buyer');
+  }
+
+  sendMessage(event: Event) {
+    event.preventDefault();
     const currentChat = this.selectedChat;
     if (!currentChat || !this.newMessage.trim()) return;
+
+    if (
+      currentChat.conversationStatus === 'Pending' &&
+      this.isBuyer() &&
+      currentChat.messages.length > 0
+    ) {
+      this.disabled = true;
+      alert(
+        'Please wait for agent/seller response before sending more messages'
+      );
+      return;
+    }
 
     const dto: CreateMessageDto = {
       conversationId: currentChat.id,
@@ -280,14 +277,21 @@ export class MainChatComponent
       text: dto.content,
       sent: true,
       time: new Date(),
-      status: MessageStatus.Sent,
       senderId: this.currentUserId!,
     };
 
     currentChat.messages = [...currentChat.messages, optimisticMessage];
     currentChat.lastMessageTime = new Date();
     this.newMessage = '';
+    this.cdr.detectChanges();
     this.scrollToBottom(true);
+
+    const oldDisabledVal = this.disabled;
+    if (currentChat.conversationStatus === 'Pending') {
+        this.disabled = true;
+    }
+
+    this.cdr.detectChanges();
 
     this.messageService.createMessage(dto).subscribe({
       next: (response) => {
@@ -295,7 +299,10 @@ export class MainChatComponent
           m === optimisticMessage ? this.mapResponseToMessage(response) : m
         );
 
-        // Update receiver's unread count if they're not viewing the chat
+        if (currentChat.conversationStatus === 'Pending' && this.isBuyer()) {
+          currentChat.conversationStatus = 'Pending';
+        }
+
         if (response.senderId !== this.currentUserId) {
           const conversation = this.conversations.find(
             (c) => c.id === currentChat.id
@@ -311,9 +318,34 @@ export class MainChatComponent
         currentChat.messages = currentChat.messages.filter(
           (m) => m !== optimisticMessage
         );
+        this.disabled = oldDisabledVal;
+        this.cdr.detectChanges();
         this.scrollToBottom();
       },
     });
+  }
+
+  shouldDisableInput(): void {
+    if (!this.selectedChat)
+    {
+      this.disabled = true;
+      return;
+    }
+    if (this.selectedChat.conversationStatus === 'Closed')
+    {
+      this.disabled = true;
+      return;
+    }
+    if (
+      this.isBuyer() &&
+      this.selectedChat.conversationStatus === 'Pending' &&
+      this.selectedChat.messages.length > 0
+    ) {
+      this.disabled = true;
+      return;
+    }
+    this.disabled = false;
+    return;
   }
 
   private setupSignalR() {
@@ -321,40 +353,88 @@ export class MainChatComponent
 
     this.chatService.messages$.subscribe((messages: IncomingChatMessage[]) => {
       messages.forEach((message) => {
-        const conversation = this.conversations.find(
-          (c) => c.id === message.conversationId
-        );
-        if (!conversation) return;
+          // Add type guard for conversationId
+          if (typeof message.conversationId !== 'number') return;
+  
+          let conversation = this.conversations.find(c => c.id === message.conversationId);
+          
+          if (!conversation) {
+              this.conversationService.getByConversationId(message.conversationId).subscribe({
+                  next: (convDto) => {
+                      if (!convDto) return; // Handle undefined response
+                      const newChat = this.mapDtoToChat(convDto);
+                      this.conversations.push(newChat);
+                      this.sortConversations();
+                      this.processMessage(message, newChat);
+                  },
+                  error: (err) => console.error('Error fetching conversation:', err)
+              });
+          } else {
+              this.processMessage(message, conversation);
+          }
+      });
+  });
+  
 
-        const messageExists = conversation.messages.some(
-          (m) =>
-            m.time.getTime() === new Date(message.sentAt).getTime() &&
-            m.text === message.content
-        );
+    this.chatService.conversationStatusUpdates$.subscribe(updatedConv => {
+      if (!updatedConv) return; // Null check
+      
+      const index = this.conversations.findIndex(c => c.id === updatedConv.id);
+      if (index !== -1) {
+          this.conversations[index].conversationStatus = updatedConv.status;
+          this.sortConversations();
+      }
+      if (this.selectedChat?.id === updatedConv.id) {
+          this.selectedChat.conversationStatus = updatedConv.status;
+          this.shouldDisableInput();
+          this.cdr.detectChanges();
+      }
+  });
 
-        if (!messageExists) {
-          const newMessage = this.mapMessageDto({
+  this.chatService.newConversation$.subscribe(newConv => {
+    if (!newConv) return;
+    
+    const exists = this.conversations.some(c => c.id === newConv.id);
+    if (!exists) {
+        const newChat = this.mapDtoToChat(newConv);
+        this.conversations.push(newChat);
+        this.sortConversations();
+        this.cdr.detectChanges();
+    }
+});
+  }
+
+  private processMessage(message: IncomingChatMessage, conversation?: Chat) {
+    if (!conversation) return;
+    
+    const exists = conversation.messages.some(m => 
+        m.time.getTime() === new Date(message.sentAt).getTime() && 
+        m.text === message.content
+    );
+    
+    if (!exists) {
+        const newMessage = this.mapMessageDto({
             id: message.id,
             content: message.content,
             senderId: message.senderId,
             sentAt: message.sentAt,
-            status: MessageStatus.Delivered,
-            conversationId: message.conversationId,
-          });
-
-          conversation.messages.push(newMessage);
-          conversation.lastMessageTime = new Date(message.sentAt);
-
-          if (this.selectedChat?.id !== conversation.id && !newMessage.sent) {
+            conversationId: message.conversationId
+        });
+        
+        conversation.messages.push(newMessage);
+        conversation.lastMessageTime = new Date(message.sentAt);
+        
+        if (this.selectedChat?.id === conversation.id) {
+            this.scrollToBottom(true);
+        } else if (!newMessage.sent) {
             conversation.unread++;
             this.updateUnreadCount(conversation.id, conversation.unread);
-            this.sortConversations();
-            console.log(this.conversations);
-          }
         }
-      });
-    });
-  }
+        
+        this.sortConversations();
+        this.cdr.detectChanges();
+    }
+}
 
   private sortConversations() {
     console.log(this.conversations);
@@ -374,7 +454,6 @@ export class MainChatComponent
 
   @HostListener('window:beforeunload')
   saveState() {
-    // Save all current unread counts
     const unreadCounts = this.conversations.reduce((acc, chat) => {
       acc[chat.id.toString()] = chat.unread;
       return acc;
@@ -387,27 +466,67 @@ export class MainChatComponent
     this.isChatVisible = !this.isChatVisible;
   }
 
-  getStatusClass(status: MessageStatus): string {
-    switch (status) {
-      case MessageStatus.Read:
-        return 'status-read';
-      case MessageStatus.Delivered:
-        return 'status-delivered';
-      case MessageStatus.Pending:
-        return 'status-pending';
-      default:
-        return '';
-    }
-  }
-
   private mapResponseToMessage(response: MessageResponseDto): Message {
     return {
       text: response.content,
       sent: response.senderId === this.currentUserId,
       time: new Date(response.sentAt),
-      status: response.status,
       senderId: response.senderId,
     };
+  }
+
+  private isAgentOrSeller(): boolean {
+    return this.auth.hasRole('Agent') || this.auth.hasRole('Seller');
+  }
+
+  acceptConversation() {
+    if (!this.selectedChat) return;
+
+    this.conversationService
+      .updateConversationStatus(this.selectedChat.id, 'Active')
+      .subscribe({
+        next: (updatedConversation) => {
+          this.selectedChat!.conversationStatus = 'Active';
+          this.showAcceptReject = false;
+          this.shouldDisableInput();
+
+          const index = this.conversations.findIndex(
+            (c) => c.id === this.selectedChat!.id
+          );
+          if (index > -1) {
+            this.conversations[index].conversationStatus = 'Active';
+            // this.conversations[index].lastMessageTime = new Date();
+          }
+
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Accept failed:', err),
+      });
+  }
+
+  rejectConversation() {
+    if (!this.selectedChat) return;
+
+    this.conversationService
+      .updateConversationStatus(this.selectedChat.id, 'Closed')
+      .subscribe({
+        next: (updatedConversation) => {
+          this.selectedChat!.conversationStatus = 'Closed';
+          this.showAcceptReject = false;
+          this.shouldDisableInput();
+
+          const index = this.conversations.findIndex(
+            (c) => c.id === this.selectedChat!.id
+          );
+          if (index > -1) {
+            this.conversations[index].conversationStatus = 'Closed';
+            // this.conversations[index].lastMessageTime = new Date();
+          }
+
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Reject failed:', err),
+      });
   }
 
   trackByConversationId(index: number, chat: Chat): number {

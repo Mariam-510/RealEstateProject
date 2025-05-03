@@ -1,13 +1,37 @@
 .order-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: all 0.5s ease;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.5s ease;
 }
+
 a.active-order {
-    color: #c38e79 !important;
-    border-bottom: 2px solid #c38e79;
-  }
+  color: #c38e79 !important;
+  border-bottom: 2px solid #c38e79;
+}
+
 select option:disabled {
-    color: #bebaba !important;
-    background-color: #f8f9fab7;
-  }
+  color: #bebaba !important;
+  background-color: #f8f9fab7;
+}
+
+.details-link:hover .bi-eye,
+.details-link:hover .fa-info-circle {
+  color: #495057 !important;
+}
+.pagination .page-item.active .page-link {
+  background-color: #c38e79; 
+  border-color: #c38e79;
+  color: white;
+}
+.pagination .page-item .page-link:hover {
+  background-color: #c38e79b6;  
+  color: white;
+}
+ 
+.pagination .page-item .page-link:focus {
+  outline: none;
+  box-shadow: none;
+} 
+.pagination .page-item .page-link {
+  color: #6c757d; 
+}

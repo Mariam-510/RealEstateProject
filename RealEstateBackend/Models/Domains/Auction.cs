@@ -39,6 +39,7 @@ namespace RealEstate.Models.Domains
         public virtual Property? Property { get; set; }
 
         public virtual ICollection<PropertyBid>? PropertyBids { get; set; }  
+        public virtual ICollection<AuctionBuyer>? AuctionBuyers { get; set; }  
     }
 
     public enum Status

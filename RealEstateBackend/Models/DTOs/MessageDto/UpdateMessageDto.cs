@@ -11,7 +11,5 @@ namespace RealEstate.Models.DTOs.MessageDto
         [MinLength(1)]
         public string Content { get; set; }
 
-        [EnumDataType(typeof(MessageStatus))]
-        public MessageStatus Status { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace RealEstate.Models.DTOs.ConversationDto
         //public Account FirstAccount { get; set; }
         public string SecondAccountId { get; set; }
         //public Account SecondAccount { get; set; }
-        public ConversationStatus Status { get; set; }
+        public string Status { get; set; }
         public DateTime? LastMessageAt { get; set; }
         public DateTime CreatedAt { get; set; }
     }

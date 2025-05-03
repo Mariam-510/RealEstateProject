@@ -4,26 +4,16 @@ import { FormsModule, } from '@angular/forms';
 import { AfterViewChecked, ElementRef, ViewChild,AfterViewInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { AuthService, User } from '../../../Services/ApiServices/auth.service';
-import { ConversationService } from '../../../Services/ApiServices/conversation.service';
+import { ConversationResponseDto, ConversationService } from '../../../Services/ApiServices/conversation.service';
 import { MessageResponseDto, MessageService } from '../../../Services/ApiServices/message.service';
 import { API_CONFIG } from '../../../app.config';
-import { OnDestroy } from '@angular/core';
 import { ChatService, IncomingChatMessage } from '../../../Services/ApiServices/chat.service';
-
-
-enum MessageStatus {
-  Pending = 'Pending',
-  Sent = 'Sent',
-  Rejected = 'Rejected',
-  Delivered = 'Delivered',
-  Read = 'Read',
-}
+import { lastValueFrom } from 'rxjs';
 
 interface Message {
   text: string;
   sent: boolean;
   time: Date;
-  status: MessageStatus;
   senderId?: string;
   profileImg?: string;
 }
@@ -39,18 +29,32 @@ export class ChatmodalComponent implements OnInit, AfterViewChecked, AfterViewIn
   newMessage = '';
   today = new Date();
   private shouldScroll = true;
-  private justOpened = false; // Flag to track initial open
-  // currentUserId: string | undefined;
+  private justOpened = false;
   recipientId: string | undefined;
   conversationId: number | null = null;
   messages: Message[] = [];
   apiConfig = API_CONFIG;
   currentUser!: User | undefined;
-  // loggedInUser!: User | undefined;
+  conversation: ConversationResponseDto | null = null;
   private messageSubscription: any;
+  isNewConversation = false;
+  isSending = false;
+  disabled = false;
+
+  @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
+
+  constructor(private cd: ChangeDetectorRef, private auth: AuthService,
+    private conversationService: ConversationService, private messageService: MessageService, private chatService: ChatService) {}
+
+  ngOnInit(): void {
+    this.auth.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.setupSignalR();
+    });
+  }
 
   ngAfterViewInit() {
-    this.scrollToBottom(true); // Force initial scroll
+    this.scrollToBottom(true);
   }
 
   ngAfterViewChecked() {
@@ -60,177 +64,78 @@ export class ChatmodalComponent implements OnInit, AfterViewChecked, AfterViewIn
     }
     this.checkScrollPosition();
   }
-  @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
 
-  // messages = [
-  //   {
-  //     text: "Hello, this is Lora, a Licensed Advisor with Redfin...",
-  //     sent: false,
-  //     time: new Date(),
-  //     status: MessageStatus.Read,
-  //     profileImg: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
-  //   },
-  //   {
-  //     text: "Request showing",
-  //     sent: true,
-  //     time: new Date(),
-  //     status: MessageStatus.Delivered
-  //   },
-
-  //   {
-  //     text: "Request showing",
-  //     sent: true,
-  //     time: new Date(),
-  //     status: MessageStatus.Pending
-  //   },
-   
-  //   {
-  //     text: "Request showing",
-  //     sent: true,
-  //     time: new Date(),
-  //     status: MessageStatus.Rejected
-  //   }
-  //   ,  {
-  //     text: "Request showing",
-  //     sent: true,
-  //     time: new Date(),
-  //     status: MessageStatus.Sent
-  //   },
-  //   {
-  //     // Pending = 'Pending',
-  //     // Sent = 'Sent',
-  //     // Rejected = 'Rejected',
-  //     // Delivered = 'Delivered',
-  //     // Read = 'Read',
-  //     text: "Request showing",
-  //     sent: true,
-  //     time: new Date(),
-  //     status: MessageStatus.Read
-  //   },
-
-  // ];
-
-// Add to component constructor
-constructor(private cd: ChangeDetectorRef, private auth: AuthService,
-    private conversationService: ConversationService, private messageService: MessageService, private chatService: ChatService) {}
-
-ngOnInit(): void {
-  // this.currentUserId = this.auth.getCurrentUser()?.accountId;
-  this.auth.currentUser$.subscribe(user => {
-    this.currentUser = user;
-    this.setupSignalR();
-  });
-
-}
-
-
-private setupSignalR() {
-  this.chatService.startConnection();
-  
-  this.messageSubscription = this.chatService.messages$.subscribe((messages: IncomingChatMessage[]) => {
-    if (!messages.length || !this.conversationId) return;
-
-    const latestMessage = messages[messages.length - 1];
+  private setupSignalR() {
+    this.chatService.startConnection();
     
-    // Check if message belongs to current conversation
-    if (latestMessage.conversationId === this.conversationId) {
-      const exists = this.messages.some(m => 
-        m.time.getTime() === new Date(latestMessage.sentAt).getTime() && 
-        m.text === latestMessage.content
-      );
+    this.messageSubscription = this.chatService.messages$.subscribe((messages: IncomingChatMessage[]) => {
+      if (!messages.length || !this.conversationId) return;
+
+      const latestMessage = messages[messages.length - 1];
       
-      if (!exists) {
-        const newMessage: Message = {
-          text: latestMessage.content,
-          sent: latestMessage.senderId === this.currentUser?.accountId,
-          time: new Date(latestMessage.sentAt),
-          status: MessageStatus.Delivered,          
-          senderId: latestMessage.senderId
-        };
+      // Check if message belongs to current conversation
+      if (latestMessage.conversationId === this.conversationId) {
+        const exists = this.messages.some(m => 
+          m.time.getTime() === new Date(latestMessage.sentAt).getTime() && 
+          m.text === latestMessage.content
+        );
         
-        this.messages = [...this.messages, newMessage];
-        this.scrollToBottom(true);
-        this.cd.detectChanges();
+        if (!exists) {
+          const newMessage: Message = {
+            text: latestMessage.content,
+            sent: latestMessage.senderId === this.currentUser?.accountId,
+            time: new Date(latestMessage.sentAt),     
+            senderId: latestMessage.senderId
+          };
+          
+          this.messages = [...this.messages, newMessage];
+          this.scrollToBottom(true);
+          this.cd.detectChanges();
+        }
       }
-    }
+    });
+
+    this.chatService.conversationStatusUpdates$.subscribe(updatedConv => {
+      if (!updatedConv || !this.conversationId) return; // Null checks
+      
+      if (this.conversationId === updatedConv.id) {
+          this.conversation = updatedConv;
+          this.shouldDisableInput();
+          this.cd.detectChanges();
+      }
   });
-}
-
-
-
-
-initializeWithRecipient(recipientId: string) {
-  this.recipientId = recipientId;
-  if (this.currentUser?.accountId) {
-    this.conversationService.getConversationBetweenUsers(recipientId)
-      .subscribe(conv => this.initializeChat(conv.id));
   }
-}
 
-initializeChat(conversationId: number) {
-  this.conversationId = conversationId;
-  this.loadMessages();
-}
-
-private loadMessages() {
-  if (!this.conversationId) return;
-
-  this.messageService.getAllMessages(this.conversationId).subscribe({
-    next: (messages: MessageResponseDto[]) => {
-      // Sort messages ascending (oldest first)
-      this.messages = messages
-        .map(msg => this.mapMessage(msg))
-        .sort((a, b) => a.time.getTime() - b.time.getTime());
-
-      // Scroll after DOM updates
-      setTimeout(() => this.scrollToBottom(true), 50);
-    },
-    error: (err) => console.error('Error loading messages:', err)
-  });
-}
-
-private mapMessage(msg: MessageResponseDto): Message {
-  return {
-    text: msg.content,
-    sent: msg.senderId === this.currentUser?.accountId,
-    time: new Date(msg.sentAt),
-    status: msg.status as MessageStatus,
-    senderId: msg.senderId
-  };
-}
-
-toggle() {
-  this.isChatVisible = !this.isChatVisible;
-  if (this.isChatVisible) {
-    this.justOpened = true;
+  async initializeChat(conversationId: number | null) {
+    this.conversationId = conversationId;
+    this.messages = [];
+    // this.lastMessageAt = null;
+    await this.loadConversationState();
+    console.log('aaa', this.conversation);
+    this.shouldDisableInput();
     this.cd.detectChanges();
-    
-    // Double scroll triggers to ensure positioning
-    setTimeout(() => {
-      this.scrollToBottom(true);
-      setTimeout(() => this.scrollToBottom(true), 100);
-    }, 0);
-  }
-}
-
-  showEmojiPicker = false;
-  emojis = ['😀', '😍', '👍', '👎', '💰', '🏡', '📅', '🕒', '❓'];
-
-  toggleEmojiPicker() {
-    this.showEmojiPicker = !this.showEmojiPicker;
   }
 
-  addEmoji(emoji: string) {
-    this.newMessage += emoji;
-    this.showEmojiPicker = false;
+  private mapMessage(msg: MessageResponseDto): Message {
+    return {
+      text: msg.content,
+      sent: msg.senderId === this.currentUser?.accountId,
+      time: new Date(msg.sentAt),
+      senderId: msg.senderId
+    };
   }
 
-  getStatusClass(status: MessageStatus): string {
-    switch(status) {
-      case MessageStatus.Read: return 'status-read';
-      case MessageStatus.Delivered: return 'status-delivered';
-      case MessageStatus.Pending: return 'status-pending';
-      default: return '';
+  toggle() {
+    this.isChatVisible = !this.isChatVisible;
+    if (this.isChatVisible) {
+      this.justOpened = true;
+      this.cd.detectChanges();
+      
+      // Double scroll triggers to ensure positioning
+      setTimeout(() => {
+        this.scrollToBottom(true);
+        setTimeout(() => this.scrollToBottom(true), 100);
+      }, 0);
     }
   }
 
@@ -241,13 +146,12 @@ toggle() {
   
       if (force || this.shouldScroll) {
         setTimeout(() => {
-          // Use both methods for maximum compatibility
           element.scrollTop = element.scrollHeight;
           element.scroll({
             top: element.scrollHeight,
-            behavior: force ? 'auto' : 'smooth'
+            behavior: 'smooth' // Instant scroll
           });
-        }, 0);
+        }, 0); // Slight delay to allow DOM updates
       }
     } catch (err) {
       console.error('Scroll error:', err);
@@ -261,42 +165,120 @@ toggle() {
       this.shouldScroll = isAtBottom;
     }
   }
+
   trackByMessage(index: number, message: any): number {
     return index; // Add unique IDs in real app
   }
 
-  sendMessage() {
+  async sendMessage(event: Event) {
+    event.preventDefault();
     if (!this.newMessage.trim() || !this.conversationId) return;
-  
-    const optimisticMessage: Message = {
-      text: this.newMessage.trim(),
-      sent: true,
-      time: new Date(),
-      status: MessageStatus.Sent,
-      senderId: this.currentUser?.accountId
+
+    const previousLastMessageAt = this.conversation?.lastMessageAt;
+    const previousMessages = [...this.messages];
+    
+    this.isSending = true;
+    const optimisticMsg: Message = {
+        text: this.newMessage.trim(),
+        sent: true,
+        time: new Date(),
+        senderId: this.currentUser?.accountId
     };
-  
-    // Add to bottom of the list
-    this.messages = [...this.messages, optimisticMessage];
+
+    this.messages = [...this.messages, optimisticMsg];
     this.newMessage = '';
+    this.cd.detectChanges();
+    
     this.scrollToBottom(true);
-  
+
+    const oldDisabledVal = this.disabled;
+    if (this.conversation?.status === 'Pending') {
+        this.disabled = true;
+    }
+    this.cd.detectChanges();
+
     this.messageService.createMessage({
-      conversationId: this.conversationId,
-      content: optimisticMessage.text
+        conversationId: this.conversationId,
+        content: optimisticMsg.text
     }).subscribe({
-      next: (response) => {
-        // Replace optimistic message with actual response
-        this.messages = this.messages.map(m => 
-          m === optimisticMessage ? this.mapMessage(response) : m
-        );
-      },
-      error: (error) => {
-        // Remove optimistic message on error
-        this.messages = this.messages.filter(m => m !== optimisticMessage);
-        this.scrollToBottom();
-      }
+        next: async (response) => { // Mark callback as async
+            try {
+                const validResponse = response as MessageResponseDto;
+                this.messages = this.messages.map(msg => 
+                    msg === optimisticMsg ? this.mapMessage(validResponse) : msg
+                );
+                
+                // Now we can use await since the callback is async
+                await this.loadConversationState();
+                this.shouldDisableInput();
+                this.scrollToBottom(true);
+                this.cd.detectChanges();
+            } catch (error) {
+                console.error('Error in message handling:', error);
+            }
+        },
+        error: (error) => {
+            this.disabled = oldDisabledVal;
+            this.messages = previousMessages;
+            this.cd.detectChanges();
+        },
+        complete: () => {
+            this.isSending = false;
+        }
     });
+}
+  
+  async loadConversationState() {
+    if (!this.conversationId) return;
+
+    try {
+      // First API call - Get conversation
+      const conv = await lastValueFrom(
+        this.conversationService.getByConversationId(this.conversationId)
+      );
+      
+      if (!conv) throw new Error('Conversation not found');
+      this.conversation = conv;
+
+      console.log('bbb', this.conversation);
+      
+      // Second API call - Get messages
+      const messages = await lastValueFrom(
+        this.messageService.getAllMessages(this.conversationId)
+      );
+
+      // Process messages
+      this.messages = (messages || [])
+      .map(msg => this.mapMessage(msg))
+      .sort((a, b) => a.time.getTime() - b.time.getTime());
+      
+      this.scrollToBottom(true);
+    } catch (error) {
+      console.error('Error loading conversation:', error);
+    } finally {
+      this.cd.detectChanges();
+    }
   }
 
+  shouldDisableInput(): void {
+    // console.log(this.conversationStatus, this.lastMessageAt);
+    // Immediately disable if conversation is closed
+    console.log('statussssss', this.conversation?.status);
+    if (this.conversation?.status === 'Closed')
+    {
+      this.disabled = true;
+      return;
+    }
+
+    // Handle pending conversations
+    if (this.conversation?.status === 'Pending') {
+      // Disable if there's already a message (lastMessageAt exists)
+      this.conversation.lastMessageAt === null ? this.disabled = false : this.disabled = true;
+      return;
+    }
+
+    // Always enable for active conversations
+    this.disabled = false;
+    return;
+  }
 }

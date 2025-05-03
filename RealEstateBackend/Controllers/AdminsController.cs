@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -46,10 +47,19 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        [HttpGet("Id")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetById()
         {
-            var admin = await AdminRepository.GetByIdAsync(id);
+
+            string adminIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(adminIdStr, out int adminId))
+            {
+                return Unauthorized("Admin not found.");
+            }
+
+            var admin = await AdminRepository.GetByIdAsync(adminId);
 
             if (admin == null)
             {
@@ -80,6 +90,7 @@ namespace RealEstate.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromForm] CreateAdminDto createAdminDto)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -154,8 +165,9 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromForm] AdminFormDto adminFormDto)
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update([FromForm] AdminFormDto adminFormDto)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -166,9 +178,16 @@ namespace RealEstate.Controllers
                         return BadRequest(ModelState);
                     }
 
+                    string adminIdStr = User.FindFirst("userId")?.Value;
+
+                    if (!int.TryParse(adminIdStr, out int adminId))
+                    {
+                        return Unauthorized("Admin not found.");
+                    }
+
                     var admin = Mapper.Map<Admin>(adminFormDto);
 
-                    var updatedAdmin = await AdminRepository.UpdateAsync(id, admin);
+                    var updatedAdmin = await AdminRepository.UpdateAsync(adminId, admin);
 
                     if (updatedAdmin == null)
                     {
@@ -199,7 +218,7 @@ namespace RealEstate.Controllers
                         if (!isCurrentPasswordValid)
                         {
                             transactionScope.Dispose();
-                            return Unauthorized(new { message = "Current password is incorrect." });
+                            return StatusCode(403, new { message = "Current password is incorrect." });
                         }
 
                         var token = await UserManager.GeneratePasswordResetTokenAsync(existingAccount);
@@ -267,14 +286,22 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete()
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 try
                 {
-                    var deletedAdmin = await AdminRepository.GetByIdAsync(id);
+                    string adminIdStr = User.FindFirst("userId")?.Value;
+
+                    if (!int.TryParse(adminIdStr, out int adminId))
+                    {
+                        return Unauthorized("Admin not found.");
+                    }
+
+                    var deletedAdmin = await AdminRepository.GetByIdAsync(adminId);
                     if (deletedAdmin == null)
                     {
                         transactionScope.Dispose();
@@ -301,7 +328,7 @@ namespace RealEstate.Controllers
                         }
                         else
                         {
-                            deletedAdmin = await AdminRepository.DeleteAsync(id);
+                            deletedAdmin = await AdminRepository.DeleteAsync(adminId);
                             if (deletedAdmin == null)
                             {
                                 transactionScope.Dispose();

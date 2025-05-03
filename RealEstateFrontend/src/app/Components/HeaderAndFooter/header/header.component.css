@@ -417,9 +417,9 @@
 .user-info {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  /* align-items: flex-start; */
   padding: 1rem;
-  gap: 0.5rem;
+  /* gap: 0.5rem; */
   border-bottom: 1px solid #eee;
 }
 

@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { API_CONFIG } from '../../app.config';
 
 import { BehaviorSubject, Observable } from 'rxjs';
+import { ConversationResponseDto } from './conversation.service';
 
 export interface IncomingChatMessage {
   id: number;
@@ -27,6 +28,12 @@ export class ChatService {
 
   private messagesSubject = new BehaviorSubject<IncomingChatMessage[]>([]);
   public messages$ = this.messagesSubject.asObservable();
+
+  private conversationStatusSubject = new BehaviorSubject<ConversationResponseDto | null>(null);
+  public conversationStatusUpdates$ = this.conversationStatusSubject.asObservable();
+
+  private newConversationSubject = new BehaviorSubject<ConversationResponseDto | null>(null);
+  public newConversation$ = this.newConversationSubject.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -66,6 +73,14 @@ export class ChatService {
       };
       this.messagesSubject.next([...this.messagesSubject.value, newMessage]);
     });
+
+    this.hubConnection.on('ConversationStatusUpdated', (updatedConversation: ConversationResponseDto) => {
+      this.conversationStatusSubject.next(updatedConversation);
+  });
+
+  this.hubConnection.on('NewConversation', (newConv: ConversationResponseDto) => {
+    this.newConversationSubject.next(newConv);
+});
   }
 
   public stopConnection(): void {
@@ -79,6 +94,13 @@ export class ChatService {
     return this.http.post(`${this.apiUrl}/send`, { receiverId, content });
 }
 
+public notifyConversationUpdate(conv: ConversationResponseDto) {
+  this.conversationStatusSubject.next(conv);
+}
+
+public resetConversationState() {
+  this.conversationStatusSubject.next(null);
+}
 
   // public getChatHistory(otherUserId: string): Observable<ChatMessage[]> {
   //   return this.http.get<ChatMessage[]>(`${this.apiUrl}/history/${otherUserId}`);

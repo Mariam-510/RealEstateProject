@@ -12,11 +12,13 @@ import { CartService } from '../../../../Services/ApiServices/cart.service';
 import { ReviewResponseDto, ReviewService } from '../../../../Services/ApiServices/review.service';
 import { WishListService } from '../../../../Services/ApiServices/wish-list.service';
 import { SimilarProductsComponent } from "../similar-products/similar-products.component";
+import { ChatbotComponent } from "../../../Chat/chatbot/chatbot.component";
+import { productDetailsChatbotComponent } from "../../../Chat/product-details-chatbot/product-details-chatbot.component";
 
 
 @Component({
   selector: 'app-product-details',
-  imports: [CommonModule, RouterModule, NgxImageZoomModule, ZoomDirective, SimilarProductsComponent],
+  imports: [CommonModule, RouterModule, NgxImageZoomModule, ZoomDirective, SimilarProductsComponent, ChatbotComponent, productDetailsChatbotComponent],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css'
 })

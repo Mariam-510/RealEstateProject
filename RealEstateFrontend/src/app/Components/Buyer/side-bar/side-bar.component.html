@@ -17,6 +17,20 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="wishlist"
+          routerLinkActive="active">
+          <i class="bi-heart me-2 text-caffe"></i>
+          <span class="d-md-inline d-none" *ngIf="!isCollapsed"> Favourites</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
+          routerLink="ViewAllAppointment" routerLinkActive="active">
+          <i class="bi bi-calendar3 me-2 text-caffe"></i>
+          <span class="d-md-inline d-none" *ngIf="!isCollapsed">Appointments</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="orders"
           routerLinkActive="active">
           <i class="bi bi-receipt me-2 text-caffe"></i>
@@ -30,27 +44,12 @@
           <span class="d-md-inline d-none" *ngIf="!isCollapsed">Reviews</span>
         </a>
       </li>
-
-      <li class="nav-item">
-        <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3" routerLink="wishlist"
-          routerLinkActive="active">
-          <i class="bi-heart me-2 text-caffe"></i>
-          <span class="d-md-inline d-none" *ngIf="!isCollapsed"> Favourites</span>
-        </a>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
-          routerLink="BuyerViewAllAppointment" routerLinkActive="active">
-          <i class="bi bi-calendar3 me-2 text-caffe"></i>
-          <span class="d-md-inline d-none" *ngIf="!isCollapsed">Appointments</span>
-        </a>
-      </li>
+   
       <li class="nav-item">
         <a class="nav-link d-flex align-items-center text-dark fw-semibold rounded p-2 fs-5 mb-3"
           routerLink="ViewAllAuctions" routerLinkActive="active">
           <i class="bi bi-hammer me-2 text-caffe"></i>
-          <span class="d-md-inline d-none" *ngIf="!isCollapsed">Auctions</span>
+          <span class="d-md-inline d-none" *ngIf="!isCollapsed">Joined Auctions</span>
         </a>
       </li>
       <li class="nav-item">

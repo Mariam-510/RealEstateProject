@@ -102,7 +102,7 @@
     gap: 1rem;
   }
 
-  .footer > div:last-child {
+  .footer>div:last-child {
     width: 100%;
     justify-content: flex-end;
   }
@@ -231,4 +231,8 @@
 .page-item:first-child .page-link,
 .page-item:last-child .page-link {
   border-radius: 4px;
+}
+
+.pagination {
+  cursor: pointer;
 }

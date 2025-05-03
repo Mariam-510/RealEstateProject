@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -45,10 +46,18 @@ namespace RealEstate.Controllers
             return Ok(sellersDto);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        [HttpGet("Id")]
+        [Authorize(Roles = "Seller")]
+        public async Task<IActionResult> GetById()
         {
-            var seller = await SellerRepository.GetByIdAsync(id);
+            string sellerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(sellerIdStr, out int sellerId))
+            {
+                return Unauthorized("Seller not found.");
+            }
+
+            var seller = await SellerRepository.GetByIdAsync(sellerId);
 
             if (seller == null)
             {
@@ -77,8 +86,9 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromForm] SellerFormDto sellerFormDto)
+        [HttpPut]
+        [Authorize(Roles = "Seller")]
+        public async Task<IActionResult> Update([FromForm] SellerFormDto sellerFormDto)
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -89,9 +99,16 @@ namespace RealEstate.Controllers
                         return BadRequest(ModelState);
                     }
 
+                    string sellerIdStr = User.FindFirst("userId")?.Value;
+
+                    if (!int.TryParse(sellerIdStr, out int sellerId))
+                    {
+                        return Unauthorized("Seller not found.");
+                    }
+
                     var seller = Mapper.Map<Seller>(sellerFormDto);
 
-                    var updatedSeller = await SellerRepository.UpdateAsync(id, seller);
+                    var updatedSeller = await SellerRepository.UpdateAsync(sellerId, seller);
                     if (updatedSeller == null)
                     {
                         transactionScope.Dispose();
@@ -121,7 +138,7 @@ namespace RealEstate.Controllers
                         if (!isCurrentPasswordValid)
                         {
                             transactionScope.Dispose();
-                            return Unauthorized(new { message = "Current password is incorrect." });
+                            return StatusCode(403, new { message = "Current password is incorrect." });
                         }
 
                         var token = await UserManager.GeneratePasswordResetTokenAsync(existingAccount);
@@ -190,14 +207,22 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete]
+        [Authorize(Roles = "Seller")]
+        public async Task<IActionResult> Delete()
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 try
                 {
-                    var deletedSeller = await SellerRepository.GetByIdAsync(id);
+                    string sellerIdStr = User.FindFirst("userId")?.Value;
+
+                    if (!int.TryParse(sellerIdStr, out int sellerId))
+                    {
+                        return Unauthorized("Seller not found.");
+                    }
+
+                    var deletedSeller = await SellerRepository.GetByIdAsync(sellerId);
                     if (deletedSeller == null)
                     {
                         transactionScope.Dispose();
@@ -225,7 +250,7 @@ namespace RealEstate.Controllers
                         }
                         else
                         {
-                            deletedSeller = await SellerRepository.DeleteAsync(id);
+                            deletedSeller = await SellerRepository.DeleteAsync(sellerId);
                             if (deletedSeller == null)
                             {
                                 transactionScope.Dispose();

@@ -67,6 +67,7 @@ namespace RealEstate.Controllers
 
             return Ok(buyerDto);
         }
+       
         [HttpGet("{buyerId}")]
         [Authorize(Roles = "Buyer,Admin")]
         public async Task<IActionResult> GetBuyerById(int buyerId)
@@ -221,14 +222,21 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete]
+        public async Task<IActionResult> Delete()
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 try
                 {
-                    var deletedBuyer = await BuyerRepository.GetByIdAsync(id);
+                    string buyerIdStr = User.FindFirst("userId")?.Value;
+
+                    if (!int.TryParse(buyerIdStr, out int buyerId))
+                    {
+                        return Unauthorized("Buyer not found.");
+                    }
+
+                    var deletedBuyer = await BuyerRepository.GetByIdAsync(buyerId);
                     if (deletedBuyer == null)
                     {
                         transactionScope.Dispose();
@@ -256,7 +264,7 @@ namespace RealEstate.Controllers
                         }
                         else
                         {
-                            deletedBuyer = await BuyerRepository.DeleteAsync(id);
+                            deletedBuyer = await BuyerRepository.DeleteAsync(buyerId);
                             if (deletedBuyer == null)
                             {
                                 transactionScope.Dispose();

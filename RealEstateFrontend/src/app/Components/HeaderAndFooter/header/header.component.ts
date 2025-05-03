@@ -8,6 +8,7 @@ import { AuthService, User } from '../../../Services/ApiServices/auth.service';
 import { API_CONFIG } from '../../../app.config';
 import { CartDto, CartService } from '../../../Services/ApiServices/cart.service';
 import { catchError, Observable, of, startWith, switchMap } from 'rxjs';
+import { SubscriptionDto, SubscriptionService } from '../../../Services/ApiServices/subscription.service';
 
 @Component({
   selector: 'app-header',
@@ -21,9 +22,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   //   private router: Router, private dialog: MatDialog, private cartService: CartService) { }
 
   cart$: Observable<CartDto | null>;
+  subscription$!: Observable<SubscriptionDto | null>;
 
   constructor(private elRef: ElementRef, private auth: AuthService,
-    private router: Router, private dialog: MatDialog, private cartService: CartService) {
+    private router: Router, private dialog: MatDialog, private cartService: CartService,
+    private subscriptionService: SubscriptionService) {
     // Initialize cart$ after dependencies are injected
     this.cart$ = this.cartService.cartUpdated$.pipe(
       startWith(null),
@@ -72,6 +75,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
 
+
+  subscriptionCall() {
+    this.subscription$ = this.subscriptionService.subscriptionUpdated$.pipe(
+      startWith(null),
+      switchMap(() => {
+        if (this.hasRole("Seller") || this.hasRole("Agent")) {
+          return this.subscriptionService.getCurrentUserSubscription().pipe(
+            catchError((error) => {
+              console.error('Error loading subscription:', error);
+              return of(null);
+            })
+          );
+        }
+        return of(null);
+      })
+    );
+  }
+
   apiConfig = API_CONFIG;
   cart: CartDto | null = null;
   showMobileNav = false;
@@ -102,6 +123,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       // Trigger initial load
       this.cartService.notifyCartUpdated();
     });
+    this.subscriptionCall();
   }
 
 

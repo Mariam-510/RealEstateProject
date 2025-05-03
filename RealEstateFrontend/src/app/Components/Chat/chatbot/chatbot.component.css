@@ -1,0 +1,85 @@
+/* Add these styles to your existing CSS */
+.chat-window {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 420px;
+  max-height: 80vh;
+  z-index: 1050;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.user-message {
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.bot-message {
+  justify-content: flex-start;
+  margin-right: auto;
+}
+
+.message-bubble-with-meta {
+  max-width: 85%;
+  padding: 12px 16px;
+  margin: 8px 0;
+  border-radius: 15px;
+  background: #f8f5f2;
+  border: 1px solid #e0d7d1;
+}
+
+.user-message .message-bubble-with-meta {
+  background-color: #4a2c2a;
+  color: white;
+  border-color: #38221f;
+}
+
+.loading {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.alert-danger {
+  background: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.messages-container {
+  max-height: 400px; /* or 50vh, based on preference */
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.chat-window .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+.card-footer {
+  flex-shrink: 0;
+}
+
+.bot-message .message-bubble-with-meta i.bi-arrow-repeat {
+    margin-right: 5px;
+  }
+  
