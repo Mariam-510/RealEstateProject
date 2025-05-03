@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { environment } from '../../../app.config';
 import { marked } from 'marked';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
 
 @Component({
   selector: 'app-chatbot',
@@ -30,7 +31,7 @@ export class ChatbotComponent implements AfterViewChecked, OnDestroy {
   private userScrolledUp = false;
   private scrollObserver: MutationObserver | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   ngAfterViewChecked() {
     this.checkForNewMessages();
@@ -43,8 +44,26 @@ export class ChatbotComponent implements AfterViewChecked, OnDestroy {
   }
 
   private getSystemPrompt(): string {
-    return `You are a helpful AI assistant. Answer questions as clearly and concisely as possible.`;
+    const user = this.authService.getCurrentUser();
+    let roleDescription = 'user';
+  
+    if (user?.roles) {
+      const roles = Array.isArray(user.roles) ? user.roles : [user.roles];
+      if (roles.includes('Buyer')) roleDescription = 'a property buyer';
+      else if (roles.includes('Seller')) roleDescription = 'a property seller';
+      else if (roles.includes('Agent')) roleDescription = 'a real estate agent';
+    }
+  
+    return `You are a helpful AI assistant for a real estate website. Respond to the user as if they are ${roleDescription}, and provide relevant, clear, and concise answers about buying properties, auctions, managing listings, or exploring furniture and products. Do not reference internal data; respond generically.`;
   }
+
+  getUserMessageClass(): string {
+    const user = this.authService.getCurrentUser();
+    const role = Array.isArray(user?.roles) ? user.roles[0] : user?.roles;
+    return role ? `${role.toLowerCase()}-message` : '';
+  }
+  
+  
 
   private stripHtml(html: string): string {
     return html.replace(/<[^>]*>/g, '');

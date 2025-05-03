@@ -36,7 +36,11 @@
       <div
         *ngFor="let msg of messages"
         class="message-wrapper"
-        [ngClass]="msg.role === 'user' ? 'user-message' : 'bot-message'"
+        [ngClass]="
+          msg.role === 'user'
+            ? 'user-message ' + getUserMessageClass()
+            : 'bot-message'
+        "
       >
         <div class="message-bubble-with-meta">
           <div [innerHTML]="msg.content"></div>

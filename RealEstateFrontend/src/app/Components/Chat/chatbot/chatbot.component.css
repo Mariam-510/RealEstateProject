@@ -92,20 +92,6 @@
 }
 
 /* Add these to your existing CSS */
-.buyer-message .message-bubble-with-meta {
-  background-color: #e8f4fc;
-  border-color: #c2e0ff;
-}
-
-.seller-message .message-bubble-with-meta {
-  background-color: #f0f7eb;
-  border-color: #d4edc9;
-}
-
-.agent-message .message-bubble-with-meta {
-  background-color: #f5f0fa;
-  border-color: #e0d4ed;
-}
 
 .property-highlight {
   color: #4a2c2a;
