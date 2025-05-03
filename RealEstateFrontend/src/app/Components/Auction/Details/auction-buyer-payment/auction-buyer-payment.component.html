@@ -10,27 +10,34 @@
         </p>
       </div>
     </div>
-    <button (click)="closeModal()" class="btn btn-link text-white p-0 fs-3 mb-2" aria-label="Close">
+    <button
+      (click)="closeModal()"
+      class="btn btn-link text-white p-0 fs-3 mb-2"
+      aria-label="Close"
+    >
       <i class="bi bi-x"></i>
     </button>
   </div>
 </div>
 
-
-<div class="modal-body p-3" style="max-height: 75vh; overflow-y: auto;">
+<div class="modal-body p-3" style="max-height: 75vh; overflow-y: auto">
   <div class="mb-3 pt-2 pb-2 ps-3 pe-3 rounded shadow-sm">
     <div class="d-flex justify-content-between align-items-center">
       <div>
-        <h4 class="mb-0 text-caffe">{{ data.auctionData.propertyDto?.title }}</h4>
-        <small class="text-muted">This 1% fee ensures serious bidders only.</small>
+        <h4 class="mb-0 text-caffe">
+          {{ data.auctionData.propertyDto?.title }}
+        </h4>
+        <small class="text-muted"
+          >This 1% fee ensures serious bidders only.</small
+        >
       </div>
       <div class="text-end">
-        <div class="fw-bold text-caffe">{{auctionFees | currency: 'EGP '}}</div>
+        <div class="fw-bold text-caffe">
+          {{ auctionFees | currency : "EGP " }}
+        </div>
       </div>
     </div>
   </div>
-
-
 
   <hr style="border-color: #e0e0e0" />
   <div class="d-flex justify-content-between align-items-center mb-3">
@@ -41,45 +48,72 @@
 
   <div>
     <div class="list-group mb-2">
-      <button *ngFor="let method of paymentMethods" type="button"
+      <button
+        *ngFor="let method of paymentMethods"
+        type="button"
         class="list-group-item list-group-item-action d-flex flex-column align-items-start p-3 mb-2"
-        [class.active]="selectedMethod === method.id" (click)="selectPaymentMethod(method.id)">
+        [class.active]="selectedMethod === method.id"
+        (click)="selectPaymentMethod(method.id)"
+      >
         <div class="d-flex w-100 align-items-center">
           <i class="bi {{ method.icon }} text-caffe me-3 fs-4"></i>
           <div>
             <h6 class="mb-0">{{ method.name }}</h6>
             <small class="text-muted">{{ method.description }}</small>
           </div>
-          <i class="bi bi-check-circle-fill ms-auto" *ngIf="selectedMethod === method.id"></i>
+          <i
+            class="bi bi-check-circle-fill ms-auto"
+            *ngIf="selectedMethod === method.id"
+          ></i>
         </div>
       </button>
     </div>
 
-    <div *ngIf="selectedMethod === 'stripe'" class="ps-3 pt-2 pb-3 pe-3 border rounded">
+    <div
+      *ngIf="selectedMethod === 'stripe'"
+      class="ps-3 pt-2 pb-3 pe-3 border rounded"
+    >
       <div class="d-flex align-items-center">
         <i class="bi bi-stripe fs-1 me-2 mb-3 text-caffe"></i>
         <div>
-          <h6 style="margin-bottom: .1rem;">Secure Card Payment</h6>
+          <h6 style="margin-bottom: 0.1rem">Secure Card Payment</h6>
           <p class="text-muted small">
-            Confirm payment for <i class="text-caffe">{{data.auctionData.propertyDto?.title}}</i>
+            Confirm payment for
+            <i class="text-caffe">{{ data.auctionData.propertyDto?.title }}</i>
           </p>
         </div>
       </div>
 
-      <button class="btn btn-primary w-100 mb-2">
-        <i class="bi bi-primary me-2"></i>
-        Pay {{ auctionFees }} with Stripe
+      <button
+        class="btn btn-primary w-100 mb-2"
+        [disabled]="isProcessing"
+        (click)="handleStripePayment()"
+      >
+        <span *ngIf="!isProcessing">
+          <i class="bi bi-credit-card me-2"></i> Pay
+          {{ auctionFees | currency : "EGP " }} with Stripe
+        </span>
+        <span *ngIf="isProcessing">
+          Processing...
+          <div class="spinner-border spinner-border-sm ms-2" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </span>
       </button>
     </div>
 
     <!-- PayPal section (only visible when PayPal selected) -->
-    <div *ngIf="selectedMethod === 'paypal'" class="ps-3 pt-2 pb-2 pe-3 border rounded">
+    <div
+      *ngIf="selectedMethod === 'paypal'"
+      class="ps-3 pt-2 pb-2 pe-3 border rounded"
+    >
       <div class="d-flex mb-3">
         <i class="bi bi-paypal fs-3 me-2 text-caffe mt-1"></i>
         <div class="mt-2">
           <h6 class="mb-1">PayPal Payment</h6>
           <p class="text-muted small mb-2">
-            Confirm payment for <i class="text-caffe">{{data.auctionData.propertyDto?.title}}</i>
+            Confirm payment for
+            <i class="text-caffe">{{ data.auctionData.propertyDto?.title }}</i>
           </p>
         </div>
       </div>
@@ -87,8 +121,6 @@
       <div class="form-group">
         <div id="paypal-button-container"></div>
       </div>
-
-
     </div>
   </div>
 </div>

@@ -1,19 +1,40 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PropertyPhotoModalComponent } from '../../../Properties/Details/property-photo-modal/property-photo-modal.component';
 import { PropertyDetialsLeafletMapComponent } from '../../../Properties/Details/property-detials-leaflet-map/property-detials-leaflet-map.component';
 import { LeafletMapComponent } from '../../../Map/leaflet-map/leaflet-map.component';
 import { MoreAuctionsComponent } from '../more-auctions/more-auctions.component';
-import { AuctionDTOShow, AuctionService } from '../../../../Services/ApiServices/auction.service';
+import {
+  AuctionDTOShow,
+  AuctionService,
+} from '../../../../Services/ApiServices/auction.service';
 import { AuthService } from '../../../../Services/ApiServices/auth.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ToastrService } from '../../../../Services/toastr.service';
-import { CreatePropertyBidDto, PropertyBidDto, PropertyBidService } from '../../../../Services/ApiServices/property-bid.service';
+import {
+  CreatePropertyBidDto,
+  PropertyBidDto,
+  PropertyBidService,
+} from '../../../../Services/ApiServices/property-bid.service';
 import { lastValueFrom } from 'rxjs';
 import { API_CONFIG } from '../../../../app.config';
 import { SignalRService } from '../../../../Services/SignalRServices/signal-r.service';
-import { AuctionBuyerDto, AuctionBuyerService, CreateAuctionBuyerDto } from '../../../../Services/ApiServices/auction-buyer.service';
+import {
+  AuctionBuyerDto,
+  AuctionBuyerService,
+  CreateAuctionBuyerDto,
+} from '../../../../Services/ApiServices/auction-buyer.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AuctionBuyerPaymentComponent } from '../auction-buyer-payment/auction-buyer-payment.component';
 
@@ -27,12 +48,20 @@ declare var bootstrap: any; // Required for Bootstrap modal handling
 
 @Component({
   selector: 'app-auction-details',
-  imports: [CommonModule, FormsModule, RouterModule,
-    PropertyPhotoModalComponent, LeafletMapComponent, MoreAuctionsComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    PropertyPhotoModalComponent,
+    LeafletMapComponent,
+    MoreAuctionsComponent,
+  ],
   templateUrl: './auction-details.component.html',
-  styleUrl: './auction-details.component.css'
+  styleUrl: './auction-details.component.css',
 })
-export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class AuctionDetailsComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   showAllBids = false;
   showMore: boolean = false;
   auction: AuctionDTOShow | null = null;
@@ -41,13 +70,20 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   apiConfig = API_CONFIG;
   auctionBuyerDto: AuctionBuyerDto | null = null;
 
-  constructor(private elRef: ElementRef, private renderer: Renderer2, private auth: AuthService,
-    private route: ActivatedRoute, private toastr: ToastrService, private cdr: ChangeDetectorRef,
-    private auctionService: AuctionService, private propertyBidService: PropertyBidService,
-    private signalrService: SignalRService, private router: Router,
-    private auctionBuyerService: AuctionBuyerService, private dialog: MatDialog) {
-  }
-
+  constructor(
+    private elRef: ElementRef,
+    private renderer: Renderer2,
+    private auth: AuthService,
+    private route: ActivatedRoute,
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef,
+    private auctionService: AuctionService,
+    private propertyBidService: PropertyBidService,
+    private signalrService: SignalRService,
+    private router: Router,
+    private auctionBuyerService: AuctionBuyerService,
+    private dialog: MatDialog
+  ) {}
 
   // Component properties
   // targetDate: Date = new Date(); // Set your auction end date
@@ -61,6 +97,17 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   // Add to ngOnInit()
   async ngOnInit() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('paymentSuccess') === 'true') {
+      const auctionBuyerId = params.get('auctionBuyerId');
+      if (auctionBuyerId) {
+        this.toastr.success(
+          'Payment successful! You can now participate in the auction.'
+        );
+        // You might want to reload auction data or update UI here
+      }
+    }
+
     // Extract ID from route
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
@@ -73,13 +120,21 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     await this.loadAuction(id);
     if (this.hasRole('Buyer')) {
       await this.getAuctionBuyer(id);
-      this.auctionFees = Number(((this.auction?.startPrice ?? 0) * 0.01).toFixed(2));
+      this.auctionFees = Number(
+        ((this.auction?.startPrice ?? 0) * 0.01).toFixed(2)
+      );
     }
 
     // Set up SignalR listeners
-    this.signalrService.listenToAuctionDetails(this.handleAuctionUpdate.bind(this));
-    this.signalrService.listenToAuctionListUpdates(this.handleListUpdate.bind(this));
-    this.signalrService.listenToDeletedAuctions(this.handleAuctionDeletion.bind(this));
+    this.signalrService.listenToAuctionDetails(
+      this.handleAuctionUpdate.bind(this)
+    );
+    this.signalrService.listenToAuctionListUpdates(
+      this.handleListUpdate.bind(this)
+    );
+    this.signalrService.listenToDeletedAuctions(
+      this.handleAuctionDeletion.bind(this)
+    );
     this.signalrService.listenToCheckStatusUpdates(this.checkStatus.bind(this));
 
     this.icons = this.createIcons();
@@ -88,7 +143,6 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.startStatusTimer();
   }
-
 
   isLoading = true;
   errorMessage = '';
@@ -111,7 +165,6 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       this.auction = auction; // Add a 'auction' property to your component
 
       console.log(this.auction);
-
     } catch (error) {
       console.error('Error loading auction:', error);
       this.errorMessage = 'Failed to load auction. Please try again later.';
@@ -133,7 +186,7 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     if (updatedAuction.id === this.auction?.id) {
       this.auction = this.processAuctionDatesCreateBid({
         ...this.auction,
-        ...updatedAuction
+        ...updatedAuction,
       });
     }
     console.log('l', this.auction);
@@ -143,15 +196,14 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   private handleAuctionDeletion(deletedId: number) {
     if (deletedId === this.auction?.id) {
       this.router.navigate(['/auctions'], {
-        state: { message: 'This auction has been deleted' }
+        state: { message: 'This auction has been deleted' },
       });
     }
     this.cdr.detectChanges(); // Add change detection
   }
 
   private checkStatus(auctions: AuctionDTOShow[]) {
-
-    var auction = auctions.find(a => a.id === this.auction?.id) || null;
+    var auction = auctions.find((a) => a.id === this.auction?.id) || null;
     if (auction != null) {
       this.auction = this.processAuctionDates(auction);
     }
@@ -184,13 +236,12 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-
   openMethodDialog() {
     const dialogRef = this.dialog.open(AuctionBuyerPaymentComponent, {
       width: '480px',
       minHeight: '440px',
       panelClass: ['centered-dialog', 'mt-5', 'pt-5'],
-      data: { auctionData: this.auction }
+      data: { auctionData: this.auction },
     });
 
     // Add this subscription
@@ -205,14 +256,16 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       ...auction,
       startTime: new Date(auction.startTime),
       endTime: new Date(auction.endTime),
-      bids: auction.bids?.map(bid => ({
+      bids: auction.bids?.map((bid) => ({
         ...bid,
-        timestamp: new Date(bid.timestamp)
-      }))
+        timestamp: new Date(bid.timestamp),
+      })),
     };
   }
 
-  private processAuctionDatesCreateBid(auction: AuctionDTOShow): AuctionDTOShow {
+  private processAuctionDatesCreateBid(
+    auction: AuctionDTOShow
+  ): AuctionDTOShow {
     return {
       ...auction,
       startTime: new Date(auction.startTime),
@@ -223,8 +276,8 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
           new Date(bid.timestamp).setHours(
             new Date(bid.timestamp).getHours() - (index === 0 ? 1 : 0)
           )
-        )
-      }))
+        ),
+      })),
     };
   }
 
@@ -232,9 +285,10 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     this.timer = setInterval(() => {
       const now = new Date().getTime();
       // Determine target date based on auction status
-      const targetDate = this.auction?.status === 'Scheduled'
-        ? this.auction.startTime.getTime()
-        : this.auction?.endTime.getTime();
+      const targetDate =
+        this.auction?.status === 'Scheduled'
+          ? this.auction.startTime.getTime()
+          : this.auction?.endTime.getTime();
 
       const distance = targetDate! - now;
 
@@ -244,12 +298,20 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         return;
       }
 
-      this.days = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
-      this.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
-      this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-      this.seconds = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
-
-
+      this.days = Math.floor(distance / (1000 * 60 * 60 * 24))
+        .toString()
+        .padStart(2, '0');
+      this.hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      )
+        .toString()
+        .padStart(2, '0');
+      this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+        .toString()
+        .padStart(2, '0');
+      this.seconds = Math.floor((distance % (1000 * 60)) / 1000)
+        .toString()
+        .padStart(2, '0');
     }, 1000);
   }
 
@@ -278,7 +340,6 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     this.signalrService.hubConnection.off('CheckStatusAllAuctions');
 
     this.clearTimer();
-
   }
 
   //--------------------------------------------------------------------------
@@ -299,17 +360,15 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     console.log(new Date().toLocaleString());
     let nearestTime = Infinity;
 
-    auctions.forEach(auction => {
+    auctions.forEach((auction) => {
       const start = auction.startTime.getTime();
       const end = auction.endTime.getTime();
 
       if (now < start) {
         nearestTime = Math.min(nearestTime, start);
-      }
-      else if (now < end) {
+      } else if (now < end) {
         nearestTime = Math.min(nearestTime, end);
       }
-
     });
 
     return nearestTime !== Infinity ? new Date(nearestTime) : null;
@@ -320,10 +379,10 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.auctionService.checkAuctionStatus().subscribe({
       next: (auctions) => {
-        auctions = auctions.map(auction => ({
+        auctions = auctions.map((auction) => ({
           ...auction,
-          startTime: new Date(auction.startTime),  // Convert string to Date
-          endTime: new Date(auction.endTime)      // Convert string to Date
+          startTime: new Date(auction.startTime), // Convert string to Date
+          endTime: new Date(auction.endTime), // Convert string to Date
         }));
 
         console.log('Status changes detected:', auctions);
@@ -334,7 +393,7 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
         // Update SignalR listeners or other real-time features here
       },
-      error: (err) => console.error('Error checking status:', err)
+      error: (err) => console.error('Error checking status:', err),
     });
   }
 
@@ -354,13 +413,11 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       this.timeout = setTimeout(() => {
         this.checkAuctionStatusEndpoint();
       }, timeDiff);
-    }
-    else {
+    } else {
       // If time already passed, check immediately
       this.checkAuctionStatusEndpoint();
     }
   }
-
 
   //----------------------------------------------------------------------------
   private createIcons() {
@@ -369,26 +426,26 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         src: 'icons/Bed.svg',
         alt: 'Bedroom Icon',
         value: this.auction?.propertyDto?.bedRooms ?? 0,
-        label: 'Bedrooms'
+        label: 'Bedrooms',
       },
       {
         src: 'icons/Bath.svg',
         alt: 'Bathroom Icon',
-        value: this.auction?.propertyDto?.bathRooms ?? 0,  // Fix typo: bathRooms
-        label: 'Bathrooms'
+        value: this.auction?.propertyDto?.bathRooms ?? 0, // Fix typo: bathRooms
+        label: 'Bathrooms',
       },
       {
         src: 'icons/Area.svg',
         alt: 'Indoor Area Icon',
         value: this.auction?.propertyDto?.space ?? 0,
-        label: 'Indoor Area'
+        label: 'Indoor Area',
       },
       {
         src: 'icons/Complete.svg',
         alt: 'Completed Icon',
-        value: this.auction?.propertyDto?.addedDate,  // Keep as undefined if missing
-        label: 'Completed'
-      }
+        value: this.auction?.propertyDto?.addedDate, // Keep as undefined if missing
+        label: 'Completed',
+      },
     ];
   }
 
@@ -401,7 +458,6 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   bidErrorMessage = '';
 
   get highestBid(): number {
-
     if (!this.auction?.lastPropertyBidDto || this.auction?.bids.length === 0) {
       return this.auction?.startPrice ?? 0;
     }
@@ -437,7 +493,7 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
       const createDto: CreatePropertyBidDto = {
         bidAmount: this.bidAmount,
-        auctionId: this.auction?.id ?? 0
+        auctionId: this.auction?.id ?? 0,
       };
 
       const newBid = await lastValueFrom(
@@ -455,7 +511,6 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
       // Reset form
       this.bidAmount = null;
-
     } catch (error) {
       console.error('Bid creation failed:', error);
       this.bidErrorMessage = this.getBidErrorMessage(error);
@@ -470,8 +525,6 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     }
     return 'Failed to place bid. Please try again.';
   }
-
-
 
   //-----------------------------------------------------------------------------
   @ViewChild('heroSection') heroSection!: ElementRef;
@@ -490,21 +543,22 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       this.calculateInitialPosition();
 
       this.sections = this.elRef.nativeElement.querySelectorAll('section');
-      this.stopSection = this.elRef.nativeElement.querySelector('#stop-scroll')!;
+      this.stopSection =
+        this.elRef.nativeElement.querySelector('#stop-scroll')!;
 
       if (!this.tabLinks) {
-        console.warn("tabLinks is not available in ngAfterViewInit");
+        console.warn('tabLinks is not available in ngAfterViewInit');
         return;
       }
       // Initial check for scroll position (if page is refreshed while scrolled)
       this.onWindowScroll();
     }, 0);
-
   }
   private calculateInitialPosition() {
     const hero = this.heroSection.nativeElement;
     const card = this.auctionCard.nativeElement;
-    this.stickyThreshold = hero.offsetTop + hero.offsetHeight - card.offsetHeight;
+    this.stickyThreshold =
+      hero.offsetTop + hero.offsetHeight - card.offsetHeight;
   }
 
   private lastScrollTop: number = 0;
@@ -524,7 +578,7 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     let flag = true;
 
     // Detect Scroll Direction
-    const scrollingDown = (scrollY) > this.lastScrollTop;
+    const scrollingDown = scrollY > this.lastScrollTop;
     // console.log(card.offsetHeight);
 
     // Stop scrolling effect at "YOU MIGHT ALSO LIKE"
@@ -536,10 +590,13 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         if (scrollPosition >= stopPoint - 300) {
           this.renderer.removeClass(card, 'fixed-event-card');
           // this.renderer.setStyle(card, 'position', 'absolute');
-          this.renderer.setStyle(card, 'top', `${stopPoint - card.offsetHeight + 100}px`);
+          this.renderer.setStyle(
+            card,
+            'top',
+            `${stopPoint - card.offsetHeight + 100}px`
+          );
           // console.log('card-----------------------------------------');
-        }
-        else {
+        } else {
           this.renderer.addClass(card, 'fixed-event-card');
           // console.log('card************************************************');
         }
@@ -564,7 +621,6 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         tabBar.classList.add('sticky'); // Re-add when scrolling up above stop section
         // this.renderer.addClass(card, 'mt-5');
         // console.log('**************************************');
-
       }
     }
 
@@ -574,21 +630,19 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       tabBar.classList.add('sticky');
       // this.renderer.addClass(card, 'mt-5');
       // console.log('///////////////////////////////////////////////////');
-
-    }
-    else if (!scrollingDown && scrollY <= tabBarOffset + 500) {
+    } else if (!scrollingDown && scrollY <= tabBarOffset + 500) {
       flag = true;
       tabBar.classList.remove('sticky'); // Return to original position when scrolling up
       // this.renderer.removeClass(card, 'mt-5');
       // console.log('####################################################');
-
     }
 
     // Change active tab based on scroll
     this.sections.forEach((section) => {
       if (
         scrollPosition >= section.offsetTop - 50 &&
-        scrollPosition < section.offsetTop + section.offsetHeight && scrollingDown
+        scrollPosition < section.offsetTop + section.offsetHeight &&
+        scrollingDown
       ) {
         this.setActiveTab(section.id);
         // console.log("*************************************");
@@ -596,7 +650,8 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
       if (
         scrollPosition >= section.offsetTop - 250 &&
-        scrollPosition < section.offsetTop + section.offsetHeight && !scrollingDown
+        scrollPosition < section.offsetTop + section.offsetHeight &&
+        !scrollingDown
       ) {
         this.setActiveTab(section.id);
         // console.log("---------------------------------------------");
@@ -608,7 +663,9 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   scrollToSection(event: Event, sectionId: string) {
     event.preventDefault();
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document
+      .getElementById(sectionId)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   private setActiveTab(activeId: string) {
@@ -628,7 +685,9 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   locationUrl: string = 'cairo, Egypt';
 
   openShareModal() {
-    this.locationUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.auction?.propertyDto?.location ?? '')}`;
+    this.locationUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      this.auction?.propertyDto?.location ?? ''
+    )}`;
 
     // Open Bootstrap Modal
     const modalElement = document.getElementById('shareLocationModal');
@@ -653,5 +712,4 @@ export class AuctionDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   hasUser() {
     return this.auth.isAuthenticated();
   }
-
 }

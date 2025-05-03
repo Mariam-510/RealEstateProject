@@ -10,6 +10,8 @@ import { CommonModule } from '@angular/common';
 import { CreateSubscriptionDto } from '../../../../Services/ApiServices/subscription.service';
 import { AuctionBuyerService, CreateAuctionBuyerDto } from '../../../../Services/ApiServices/auction-buyer.service';
 import { lastValueFrom } from 'rxjs';
+import { loadStripe } from '@stripe/stripe-js';
+import { Stripe } from '@stripe/stripe-js';
 
 @Component({
   selector: 'app-auction-buyer-payment',
@@ -29,6 +31,8 @@ export class AuctionBuyerPaymentComponent {
     private auth: AuthService,
     private auctionBuyerService: AuctionBuyerService
   ) { }
+  stripe: Stripe | null = null;
+  isProcessing = false;
   paypalButtonRendered = false;
 
   paymentMethods = [
@@ -56,6 +60,10 @@ export class AuctionBuyerPaymentComponent {
     }
 
     this.auctionFees = Number(((this.data.auctionData?.startPrice ?? 0) * 0.01).toFixed(2));
+
+    this.stripe = await loadStripe(
+      'pk_test_51RBWG7Fl7t0xHh1EjC1dSHHO827Jv7v7ledh4KiO1GljKiLgSdRWp9dduV9O7sb3vzpZXI1dB5ZztMWkR6Og80id003IGXcZ2g'
+    );
 
   }
 
@@ -149,6 +157,44 @@ export class AuctionBuyerPaymentComponent {
         // Optional: Handle completion
       },
     });
+  }
+
+  async processStripePayment(): Promise<void> {
+    if (!this.stripe) {
+      this.toastr.error('Payment initialization failed');
+      return;
+    }
+  
+    this.isProcessing = true;
+  
+    try {
+      // Create a Stripe session for the auction fees
+      const sessionResponse = await lastValueFrom(
+        this.paymentService.createStripeAuctionSession(
+          this.auctionFees, 
+          this.data.auctionData.id
+        )
+      );
+  
+      // Redirect to Stripe Checkout
+      const stripeResult = await this.stripe.redirectToCheckout({
+        sessionId: sessionResponse.sessionId,
+      });
+  
+      if (stripeResult.error) {
+        this.toastr.error(stripeResult.error.message || 'Payment failed');
+        this.isProcessing = false;
+      }
+    } catch (error) {
+      console.error('Stripe payment error:', error);
+      this.toastr.error('Payment failed. Please try again.');
+      this.isProcessing = false;
+    }
+  }
+
+  async handleStripePayment(): Promise<void> {
+    if (this.isProcessing) return;
+    await this.processStripePayment();
   }
 
 
