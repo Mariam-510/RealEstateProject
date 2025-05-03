@@ -46,4 +46,11 @@ export class PaymentService {
       sessionId,
     });
   }
+
+  createStripeAuctionSession(amount: number, auctionId: number): Observable<{ sessionId: string }> {
+    return this.http.post<{ sessionId: string }>(
+      `${this.apiUrl}/Stripe/CreateAuctionSession`, 
+      { amount, auctionId }
+    );
+  }
 }
