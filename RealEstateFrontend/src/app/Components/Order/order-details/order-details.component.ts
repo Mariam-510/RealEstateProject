@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { jsPDF } from 'jspdf';
@@ -29,7 +29,7 @@ export class OrderDetailsComponent implements OnInit {
   constructor(private dialog: MatDialog, private route: ActivatedRoute,
     private router: Router, private auth: AuthService, private addressService: AddressService,
     private orderService: OrderService, private orderItemService: OrderItemService,
-    private buyerService: BuyerService
+    private buyerService: BuyerService, private cdr: ChangeDetectorRef
   ) { }
 
   isLoading = true;
@@ -57,6 +57,7 @@ export class OrderDetailsComponent implements OnInit {
       // Handle error
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 

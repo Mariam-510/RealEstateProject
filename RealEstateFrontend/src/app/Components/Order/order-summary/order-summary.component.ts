@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
@@ -24,7 +24,9 @@ export class OrderSummaryComponent implements OnInit {
   filteredOrders: OrderResponseDto[] = [];
 
   constructor(private route: ActivatedRoute, private router: Router, private auth: AuthService,
-    private orderService: OrderService,private toaster:ToastrService) { }
+    private orderService: OrderService, private toaster: ToastrService, private cdr: ChangeDetectorRef) { }
+
+
 
   async ngOnInit() {
     if (!this.hasRole('Buyer')) {
@@ -35,12 +37,19 @@ export class OrderSummaryComponent implements OnInit {
     await this.loadOrders();
   }
 
+  isLoading = false;
+
   private async loadOrders(): Promise<void> {
     try {
+      this.isLoading = true;
+      this.cdr.detectChanges();
+
       const orders = await lastValueFrom(this.orderService.getAllByBuyer());
       console.log('Orders:', orders);
       this.orders = orders;
       this.filteredOrders = this.orders;
+      this.isLoading = false;
+      this.cdr.detectChanges();
     } catch (err) {
       console.error('Error fetching orders:', err);
     }
@@ -155,18 +164,18 @@ export class OrderSummaryComponent implements OnInit {
     }
   }
   Deleteorder(order: OrderResponseDto): void {
-    
+
     const confirmed = confirm('Are you sure you want to cancel this order?');
-    
+
     if (!confirmed) {
-      return;  
+      return;
     }
-  
+
     const updateData: UpdateOrderDto = {
       id: order.id,
-      status: 4  
+      status: 4
     };
-    
+
     this.orderService.updateOrder(updateData).subscribe({
       next: (updatedOrder) => {
         const index = this.orders.findIndex(o => o.id === updatedOrder.id);

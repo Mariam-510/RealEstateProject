@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { API_CONFIG } from '../../../app.config';
@@ -31,7 +31,9 @@ export class AgentProfileComponent {
 
   constructor(private router: Router, private auth: AuthService,
     private agentService: AgentService, private subscriptionService: SubscriptionService,
-    private toaster:ToastrService) { }
+    private toaster: ToastrService, private cdr: ChangeDetectorRef) { }
+
+  isLoading = false;
 
   async ngOnInit() {
     if (!this.hasRole('Agent')) {
@@ -64,8 +66,14 @@ export class AgentProfileComponent {
 
   async loadAgent(): Promise<void> {
     try {
+      this.isLoading = true;
+      this.cdr.detectChanges();
+
       this.agent = await lastValueFrom(this.agentService.getAgent());
       // Date conversion logic here
+
+      this.isLoading = false;
+      this.cdr.detectChanges();
     } catch (err) {
       console.error('Failed to fetch agent:', err);
     }

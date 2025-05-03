@@ -23,8 +23,10 @@ export class CartComponent implements OnInit {
     private auth: AuthService,
     private orderItemService: OrderItemService,
     private router: Router,
-    private toaster:ToastrService // Inject Router
+    private toaster: ToastrService // Inject Router
   ) { }
+
+  isLoading = true;
 
   ngOnInit() {
     if (!this.hasRole('Buyer')) {
@@ -39,6 +41,7 @@ export class CartComponent implements OnInit {
       this.cartService.getCart().subscribe(cart => {
         this.localCart = cart; // Store initial copy locally
       });
+      this.isLoading = false;
     }
   }
 

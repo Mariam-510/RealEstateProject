@@ -17,82 +17,90 @@
   </button>
 </div>
 
-<!-- Review Cards -->
-<div *ngFor="let review of paginatedreviews" class="card mb-4 border-0 shadow-sm hover-shadow transition-all">
-  <div class="card-body p-2">
-    <div class="d-flex flex-column flex-md-row justify-content-between">
-      <!-- Product Info -->
-      <div class="d-flex">
-        <div class="position-relative">
-          <a [routerLink]="['/products', review.productId]">
-            <img [src]="apiConfig.apiUrl+ review.productImage" class="img-fluid rounded-3"
-              style="width:9vw; height: 18vh; object-fit: cover;">
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-caffe">
-              {{ review.rating | number:'1.1-1' }} <i class="bi bi-star-fill"></i>
-            </span>
-          </a>
-        </div>
-        <div style="margin-left: 2vw;">
-          <h5 class="mb-2 fw-bold mt-1">{{ review.productName }}</h5>
+<div *ngIf="isLoading" class="d-flex align-items-center justify-content-center" style="height: 100px">
+  <div class="spinner-border text-caffe" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
 
-          <!-- Enhanced Star Rating -->
-          <div class="d-flex align-items-center mb-2">
-            <div class="star-rating me-2">
-              <ng-container *ngFor="let star of [].constructor(getStars(review.rating).full)">
-                <i class="bi bi-star-fill text-warning"></i>
-              </ng-container>
-              <ng-container *ngIf="getStars(review.rating).half">
-                <i class="bi bi-star-half text-warning"></i>
-              </ng-container>
-              <ng-container *ngFor="let star of [].constructor(getStars(review.rating).empty)">
-                <i class="bi bi-star text-warning"></i>
-              </ng-container>
-            </div>
-            <span class="badge bg-success bg-opacity-10 text-success small">Verified
-              Purchase</span>
+<div *ngIf="!isLoading">
+  <!-- Review Cards -->
+  <div *ngFor="let review of paginatedreviews" class="card mb-4 border-0 shadow-sm hover-shadow transition-all">
+    <div class="card-body p-2">
+      <div class="d-flex flex-column flex-md-row justify-content-between">
+        <!-- Product Info -->
+        <div class="d-flex">
+          <div class="position-relative">
+            <a [routerLink]="['/products', review.productId]">
+              <img [src]="apiConfig.apiUrl+ review.productImage" class="img-fluid rounded-3"
+                style="width:9vw; height: 18vh; object-fit: cover;">
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-caffe">
+                {{ review.rating | number:'1.1-1' }} <i class="bi bi-star-fill"></i>
+              </span>
+            </a>
           </div>
+          <div style="margin-left: 2vw;">
+            <h5 class="mb-2 fw-bold mt-1">{{ review.productName }}</h5>
 
-          <!-- Review Text -->
-          <div class="mb-3">
-            <p class="mb-2">"{{ review.comment }}"</p>
-            <div class="d-flex align-items-center text-muted small">
-              <i class="fas fa-store me-1"></i>
-              <span class="me-3">Product Category: {{ review.categoryName }}</span>
+            <!-- Enhanced Star Rating -->
+            <div class="d-flex align-items-center mb-2">
+              <div class="star-rating me-2">
+                <ng-container *ngFor="let star of [].constructor(getStars(review.rating).full)">
+                  <i class="bi bi-star-fill text-warning"></i>
+                </ng-container>
+                <ng-container *ngIf="getStars(review.rating).half">
+                  <i class="bi bi-star-half text-warning"></i>
+                </ng-container>
+                <ng-container *ngFor="let star of [].constructor(getStars(review.rating).empty)">
+                  <i class="bi bi-star text-warning"></i>
+                </ng-container>
+              </div>
+              <span class="badge bg-success bg-opacity-10 text-success small">Verified
+                Purchase</span>
+            </div>
+
+            <!-- Review Text -->
+            <div class="mb-3">
+              <p class="mb-2">"{{ review.comment }}"</p>
+              <div class="d-flex align-items-center text-muted small">
+                <i class="fas fa-store me-1"></i>
+                <span class="me-3">Product Category: {{ review.categoryName }}</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Actions -->
-      <div class="mt-3 mt-md-0 d-flex flex-column justify-content-between align-items-md-end">
-        <div class="mt-3">
-          <small class="text-muted me-3"><i class="far fa-calendar-alt me-1"></i> Reviewed on {{
-            review.date }}</small>
+        <!-- Actions -->
+        <div class="mt-3 mt-md-0 d-flex flex-column justify-content-between align-items-md-end">
+          <div class="mt-3">
+            <small class="text-muted me-3"><i class="far fa-calendar-alt me-1"></i> Reviewed on {{
+              review.date }}</small>
+          </div>
+          <button class="btn d-flex fs-4 mb-3 me-3" (click)="deleteReview(review.id)">
+            <i class="bi bi-trash me-1 text-brown"></i>
+          </button>
         </div>
-        <button class="btn d-flex fs-4 mb-3 me-3" (click)="deleteReview(review.id)">
-          <i class="bi bi-trash me-1 text-brown"></i>
-        </button>
       </div>
     </div>
   </div>
-</div>
-<div class="d-flex justify-content-center mt-4" *ngIf="sortedReviews.length > 0">
-  <nav aria-label="Page navigation">
-    <ul class="pagination">
-      <li class="page-item" [class.disabled]="currentPage === 1">
-        <a class="page-link" href="#" aria-label="Previous" (click)="previousPage(); $event.preventDefault()">
-          <span class="text-caffe " aria-hidden="true">Previous</span>
-        </a>
-      </li>
-      <li class="page-item" *ngFor="let page of getPages()" [class.active]="page === currentPage">
-        <a class="page-link" href="#" (click)="goToPage(page); $event.preventDefault()">{{ page }}</a>
-      </li>
-      <li class="page-item" [class.disabled]="currentPage === totalPages">
-        <a class="page-link" href="#" aria-label="Next" (click)="nextPage(); $event.preventDefault()">
-          <span class="text-caffe "aria-hidden="true">Next</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
-</div>
 
+  <div class="d-flex justify-content-center mt-4" *ngIf="sortedReviews.length > 0">
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" href="#" aria-label="Previous" (click)="previousPage(); $event.preventDefault()">
+            <span class="text-caffe " aria-hidden="true">Previous</span>
+          </a>
+        </li>
+        <li class="page-item" *ngFor="let page of getPages()" [class.active]="page === currentPage">
+          <a class="page-link" href="#" (click)="goToPage(page); $event.preventDefault()">{{ page }}</a>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <a class="page-link" href="#" aria-label="Next" (click)="nextPage(); $event.preventDefault()">
+            <span class="text-caffe " aria-hidden="true">Next</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

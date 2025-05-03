@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router'
 import { AuthService } from '../../../Services/ApiServices/auth.service';
@@ -30,7 +30,7 @@ export class SellerProfileComponent {
 
   constructor(private router: Router, private auth: AuthService,
     private sellerService: SellerService, private subscriptionService: SubscriptionService,
-    private toaster:ToastrService) { }
+    private toaster: ToastrService, private cdr: ChangeDetectorRef) { }
 
   async ngOnInit() {
 
@@ -81,11 +81,17 @@ export class SellerProfileComponent {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
+  isLoading = false;
 
   async loadSeller(): Promise<void> {
     try {
+      this.isLoading = true;
+      this.cdr.detectChanges();
+
       this.seller = await lastValueFrom(this.sellerService.getSeller());
       // console.log(this.seller);
+      this.isLoading = false;
+      this.cdr.detectChanges();
 
     } catch (err) {
       console.error('Failed to fetch seller:', err);
