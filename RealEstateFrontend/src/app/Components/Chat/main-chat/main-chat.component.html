@@ -9,17 +9,23 @@
           <div class="card-body overflow-auto p-0">
             <ul class="list-unstyled mb-0">
               <!-- Chat List Items -->
-              <!-- Updated Chat List Item -->
-              <li *ngFor="let chat of conversations; trackBy: trackByConversationId" class="p-2 border-bottom cursor-pointer chat-list-item"
+              <li *ngFor="let chat of conversations; trackBy: trackByConversationId"
+                class="p-2 border-bottom cursor-pointer chat-list-item"
                 [class.active-chat]="selectedChat?.id === chat.id" (click)="selectChat(chat)">
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="d-flex flex-row flex-grow-1" style="min-width: 0;">
-                    <img [src]="apiConfig.apiUrl + chat.otherUser.image" alt="avatar"
-                      class="rounded-circle me-3 shadow-1-strong" width="55">
+                    <ng-container *ngIf="chat.otherUser.imageUrl; else defaultIcon">
+                      <img [src]="apiConfig.apiUrl + chat.otherUser.imageUrl" alt="avatar"
+                        class="rounded-circle me-3 shadow-1-strong" width="50">
+                    </ng-container>
+
+                    <ng-template #defaultIcon>
+                      <img src="images/user3.png" alt="avatar" class="rounded-circle me-3 shadow-1-strong" width="50">
+                    </ng-template>
                     <div class="pt-1 flex-grow-1" style="min-width: 0;">
                       <div class="d-flex justify-content-between align-items-center">
                         <p class="fw-bold mb-0 text-truncate">
-                          {{chat.otherUser.firstName }}  {{ chat.otherUser.lastName ? chat.otherUser.lastName : "" }}
+                          {{chat.otherUser.firstName }} {{ chat.otherUser.lastName ? chat.otherUser.lastName : "" }}
                         </p>
                         <span class="small text-muted text-nowrap ms-2">
                           {{ chat.lastMessageTime ? (chat.lastMessageTime | date:'shortTime') : 'No messages' }}
@@ -27,7 +33,8 @@
                       </div>
                       <div class="d-flex justify-content-between align-items-center">
                         <p class="small text-muted mb-0 text-truncate">
-                          {{ chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text : 'Start a conversation' }}
+                          {{ chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text : 'Start a
+                          conversation' }}
                         </p>
                       </div>
                     </div>
@@ -46,13 +53,27 @@
       <div class="col-md-6 col-lg-7 col-xl-8 d-flex flex-column">
         <ng-container *ngIf="selectedChat; else noChatSelected">
           <div class="card flex-grow-1 d-flex flex-column justify-content-between">
-            <!-- Chat Header -->
-            <div class="chat-header d-flex align-items-center px-3 py-2 shadow-sm">
-              <img [src]="apiConfig.apiUrl + selectedChat.otherUser.image" class="rounded-circle me-2 profile-img"
-                width="40" height="40" alt="User profile">
-              <div>
-                <h6 class="mb-0 fw-bold">{{selectedChat.otherUser.firstName }}  {{ selectedChat.otherUser.lastName ? selectedChat.otherUser.lastName : "" }}</h6>
+            <!-- Updated Chat Header with Close Button -->
+            <div class="chat-header d-flex align-items-center justify-content-between px-3 py-2 shadow-sm">
+              <div class="d-flex align-items-center">
+                <ng-container *ngIf="selectedChat.otherUser.imageUrl; else defaultIcon">
+                  <img [src]="apiConfig.apiUrl + selectedChat.otherUser.imageUrl"
+                    class="rounded-circle me-2 profile-img" width="40" height="40" alt="User profile">
+                </ng-container>
+
+                <ng-template #defaultIcon>
+                  <i class="bi bi-person-circle text-brown me-2" style="font-size: 2.5rem;"></i>
+                </ng-template>
+                <div>
+                  <h6 class="mb-0 fw-bold">
+                    {{selectedChat.otherUser.firstName }} {{ selectedChat.otherUser.lastName ?
+                    selectedChat.otherUser.lastName : "" }}
+                  </h6>
+                </div>
               </div>
+              <button class="btn btn-link text-brown p-0" (click)="deselectChat()" aria-label="Close conversation">
+                <i class="bi bi-x-lg"></i>
+              </button>
             </div>
 
             <!-- Messages Container -->
@@ -78,45 +99,61 @@
                         </div>
                       </div>
                     </div>
-                    <!-- Accept/Reject Banner -->
-            <div *ngIf="showAcceptReject && selectedChat?.conversationStatus === 'Pending'" class="alert alert-info m-2">
-              <div class="d-flex justify-content-between align-items-center">
-                <span>New conversation request - please accept or reject</span>
-                <div>
-                  <button class="btn btn-success btn-sm me-2" (click)="acceptConversation()">
-                    <i class="bi bi-check-circle"></i> Accept
-                  </button>
-                  <button class="btn btn-danger btn-sm" (click)="rejectConversation()">
-                    <i class="bi bi-x-circle"></i> Reject
-                  </button>
-                </div>
-              </div>
-            </div>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <!-- Closed Conversation Warning -->
-            <div *ngIf="selectedChat?.conversationStatus === 'Closed'" class="alert alert-warning m-2">
-              This conversation has been closed. No new messages can be sent.
+            <div *ngIf="selectedChat?.conversationStatus === 'Closed'"
+              class="alert m-3 rounded-3 shadow-sm border-0 bg-gradient-request">
+              <div class="d-flex justify-content-between align-items-center gap-3">
+                <div class="d-flex align-items-center gap-3 text-white">
+                  <i class="material-icons fs-2 text-brown">lock</i>
+                  <div>
+                    <p class="mb-0 fw-semibold text-brown">Conversation Closed</p>
+                    <small class="text-caffe">No new messages can be sent</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Accept/Reject Banner -->
+            <div *ngIf="showAcceptReject && selectedChat?.conversationStatus === 'Pending'"
+              class="alert m-3 rounded-3 shadow-sm border-0 bg-gradient-request">
+              <div class="d-flex justify-content-between align-items-center gap-3">
+                <div class="d-flex align-items-center gap-3 text-white">
+                  <i class="bi bi-exclamation-diamond fs-5 text-brown"></i>
+                  <div>
+                    <p class="mb-0 fw-semibold text-brown">Action Required: Conversation Request</p>
+                    <small class="text-caffe">Response needed to continue messaging</small>
+                  </div>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn bg-caffe btn-sm px-3 py-2 d-flex align-items-center gap-2 action-btn"
+                    (click)="acceptConversation()" aria-label="Accept conversation request">
+                    <i class="bi bi-check2-circle text-white"></i>
+                    <span class="text-white">Accept</span>
+                  </button>
+                  <button
+                    class="btn text-caffe border-caffe btn-sm px-3 py-2 d-flex align-items-center gap-2 action-btn"
+                    (click)="rejectConversation()" aria-label="Reject conversation request">
+                    <i class="bi bi-x-circle text-caffe"></i>
+                    <span class="text-caffe">Decline</span>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- Message Input -->
-            <div class="card-footer" *ngIf="!disabled" [class.pe-none]="selectedChat.conversationStatus === 'Closed'" 
-                  [class.opacity-50]="selectedChat.conversationStatus === 'Closed'">
+            <div class="card-footer" *ngIf="!disabled" [class.pe-none]="selectedChat.conversationStatus === 'Closed'"
+              [class.opacity-50]="selectedChat.conversationStatus === 'Closed'">
               <div class="input-group">
-                <textarea class="form-control" 
-                    [(ngModel)]="newMessage" 
-                    (keydown.enter)="sendMessage($event)"
-                    placeholder="Type your message..." 
-                    rows="2"
-                    [disabled]="disabled"></textarea>
-                    <button class="btn btn-brown" 
-                    (click)="sendMessage($event)"
-                    [disabled]="disabled">
-                      <i class="bi bi-send-fill"></i>
-                    </button>
+                <textarea class="form-control" [(ngModel)]="newMessage" (keydown.enter)="sendMessage($event)"
+                  placeholder="Type your message..." rows="2" [disabled]="disabled"></textarea>
+                <button class="btn btn-brown" (click)="sendMessage($event)" [disabled]="disabled">
+                  <i class="bi bi-send-fill"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -145,3 +182,5 @@
     </div>
   </div>
 </section>
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">

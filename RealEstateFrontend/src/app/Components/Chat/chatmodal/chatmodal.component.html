@@ -1,26 +1,17 @@
+<!-- chatmodal.component.html -->
 <div class="chat-window" *ngIf="isChatVisible">
   <div class="card">
     <!-- Header Section -->
-    <div
-      class="card-header d-flex justify-content-between align-items-center p-3"
+    <div class="card-header d-flex justify-content-between align-items-center p-3"
       style="border-top: 4px solid #4a2c2a">
       <div class="d-flex flex-column w-100 position-relative">
         <div class="d-flex justify-content-between align-items-center">
           <h4 class="mb-0 fw-bold text-brown text-center w-100">
             Ask UrbanNest
           </h4>
-          <button
-            class="btn-close position-absolute end-0 text-caffe-dark"
-            (click)="toggle()"
-            aria-label="Close chat"
-          ></button>
+          <button class="btn-close position-absolute end-0 text-caffe-dark" (click)="toggle()"
+            aria-label="Close chat"></button>
         </div>
-        <!-- Property Info -->
-        <!-- <div class="property-info mt-1">
-                    <div class="d-flex flex-column align-items-center text-center">
-                        <div class="mb-0 ">1464 W Sunrise Ln</div>
-                    </div>
-                </div> -->
       </div>
     </div>
 
@@ -33,99 +24,98 @@
         </span>
       </div>
 
-      <div
-        *ngFor="let msg of messages; trackBy: trackByMessage"
-        class="message-wrapper"
-      >
-        <div
-          class="d-flex mb-3"
-          [ngClass]="msg.sent ? 'justify-content-end' : 'justify-content-start'"
-        >
-          <!-- Receiver Image -->
-          <img
-            *ngIf="!msg.sent"
-            [src]="
-              msg.profileImg ||
-              'https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg'
-            "
-            class="rounded-circle me-2 profile-img align-self-start"
-            width="40"
-            height="40"
-            alt="User profile"
-          />
+      <!-- Messages Loop -->
+      <div *ngFor="let msg of messages; trackBy: trackByMessage" class="message-wrapper">
+        <div class="d-flex mb-3" [ngClass]="msg.sent ? 'justify-content-end' : 'justify-content-start'">
 
-          <div
-            class="d-flex flex-column"
-            [ngClass]="msg.sent ? 'align-items-end' : 'align-items-start'"
-          >
-            <div
-              class="d-flex align-items-start"
-              [ngClass]="{ 'flex-row-reverse': msg.sent }"
-            >
+          <!-- Received Message (Left Side) -->
+          <ng-container *ngIf="!msg.sent">
+            <div class="d-flex align-items-center">
+              <!-- Recipient Image -->
+              <ng-container *ngIf="recipientData?.image; else defaultReceiver">
+                <img [src]="apiConfig.apiUrl + recipientData.image" class="rounded-circle me-2 profile-img" width="40"
+                  height="40" alt="Recipient profile">
+              </ng-container>
+
               <!-- Message Bubble -->
-              <div
-                class="message-bubble-with-meta"
-                [ngClass]="{
-                  'sent-message': msg.sent,
-                  'received-message': !msg.sent
-                }"
-              >
+              <div class="message-bubble received-message">
                 <p class="mb-1">{{ msg.text }}</p>
-                <div
-                  class="bubble-meta text-muted small d-flex justify-content-end align-items-center gap-1"
-                >
+                <div class="bubble-meta text-muted small">
                   <span>{{ msg.time | date : "shortTime" }}</span>
                 </div>
-                
-
               </div>
-
-              <!-- Sender Image -->
-              <img
-                *ngIf="msg.sent"
-                src="https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1"
-                class="rounded-circle ms-2 profile-img align-self-start"
-                width="40"
-                height="40"
-                alt="Sender profile"
-              />
             </div>
-          </div>
+          </ng-container>
+
+          <!-- Sent Message (Right Side) -->
+          <ng-container *ngIf="msg.sent">
+            <div class="d-flex align-items-center flex-row-reverse">
+              <!-- Sender Image -->
+              <ng-container *ngIf="currentUser?.imageUrl; else defaultSender">
+                <img [src]="apiConfig.apiUrl + currentUser?.imageUrl" class="rounded-circle ms-2 profile-img" width="40"
+                  height="40" alt="Your profile">
+              </ng-container>
+
+              <!-- Message Bubble -->
+              <div class="message-bubble sent-message">
+                <p class="mb-1">{{ msg.text }}</p>
+                <div class="bubble-meta text-muted small">
+                  <span>{{ msg.time | date : "shortTime" }}</span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
         </div>
       </div>
     </div>
 
     <!-- Footer Section -->
-    <!-- [class.disabled]="disabled" -->
-    <div class="card-footer" >
+    <div class="card-footer">
       <div class="input-group" *ngIf="!disabled">
-        <textarea
-          class="form-control"
-          [(ngModel)]="newMessage"
-          (keydown.enter)="!disabled && sendMessage($event)"
-          placeholder="Type your message..."
-          rows="1"
-          [readonly]="disabled"
-          [attr.disabled]="disabled ? 'disabled' : null"
-        ></textarea>
-        <button 
-          class="btn btn-brown" 
-          (click)="sendMessage($event)" 
-          [disabled]="disabled || !newMessage.trim()"
-          [attr.disabled]="(disabled || !newMessage.trim()) ? 'disabled' : null"
-        >
+        <textarea class="form-control" [(ngModel)]="newMessage" (keydown.enter)="!disabled && sendMessage($event)"
+          placeholder="Type your message..." rows="1" [readonly]="disabled"
+          [attr.disabled]="disabled ? 'disabled' : null"></textarea>
+        <button class="btn btn-brown" (click)="sendMessage($event)" [disabled]="disabled || !newMessage.trim()"
+          [attr.disabled]="(disabled || !newMessage.trim()) ? 'disabled' : null">
           <i class="bi bi-send-fill"></i>
         </button>
       </div>
-      
-      <div *ngIf="disabled" class="status-message d-flex justify-content-center">
-          <span *ngIf="this.conversation?.status === 'Closed'" class="text-caffe">
-            <i class="bi bi-lock"></i> Message not approved. This conversation is now closed.
-          </span>
-          <span *ngIf="this.conversation?.status === 'Pending'" class="text-caffe">
-            <i class="bi bi-hourglass"></i> Message received! It's waiting for approval.
-          </span>
+
+      <!-- Conversation Status Messages -->
+      <div *ngIf="disabled">
+        <div class="d-flex justify-content-between align-items-center gap-3">
+          <!-- Closed Status -->
+          <div *ngIf="conversation?.status === 'Closed'" class="d-flex align-items-center gap-3 text-white">
+            <i class="material-icons fs-2 text-brown">lock</i>
+            <div>
+              <p class="mb-0 fw-semibold text-brown">Conversation Closed</p>
+              <small class="text-caffe">Message not approved. No new messages can be sent</small>
+            </div>
+          </div>
+
+          <!-- Pending Status -->
+          <div *ngIf="conversation?.status === 'Pending'" class="d-flex align-items-center gap-3 text-white">
+            <i class="fa fa-hourglass-2 fs-5 text-brown"></i>
+            <div>
+              <p class="mb-0 fw-semibold text-brown">Pending Approval</p>
+              <small class="text-caffe">Message received! It's waiting for approval</small>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Default Templates -->
+<ng-template #defaultReceiver>
+  <i class="bi bi-person-circle text-brown me-2" style="font-size: 2.5rem;"></i>
+</ng-template>
+
+<ng-template #defaultSender>
+  <i class="bi bi-person-circle text-brown ms-2" style="font-size: 2.5rem;"></i>
+</ng-template>
+
+<!-- External Dependencies -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">

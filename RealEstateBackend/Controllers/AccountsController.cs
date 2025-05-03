@@ -930,10 +930,9 @@ namespace RealEstate.Controllers
         }
 
 
-        [HttpGet("GetRecipientAccountId/{propertyId}")]
+        [HttpGet("GetRecipient/{propertyId}")]
         [Authorize(Roles = "Buyer")]
-        //public async Task<ActionResult<UserDto>> GetByPropertyId(int propertyId)
-        public async Task<ActionResult> GetByPropertyId(int propertyId)
+        public async Task<ActionResult<UserDto>> GetByPropertyId(int propertyId)
         {
             // Fetch the property details to get the OwnerId
             var property = await PropertyRepository.GetByIdAsync(propertyId);
@@ -954,20 +953,16 @@ namespace RealEstate.Controllers
             // Retrieve the user's roles
             var roles = await UserManager.GetRolesAsync(owner);
 
-            // Map the user data to the DTO
-            //var userDto = new UserDto
-            //{
-            //    AccountId = owner.Id,  // From IdentityUser
-            //    UserId = null,
-            //    Email = owner.Email,
-            //    FirstName = owner.UserName,
-            //    LastName = null,
-            //    ImageUrl = owner.ImageUrl,
-            //    Roles = roles.ToList(),
-            //    TokenExpiration = null  // Example expiration logic
-            //};
-
-            return Ok(owner.Id);
+            var dto = new UserDto
+            {
+                AccountId = owner.Id,
+                UserId = null,
+                FirstName = owner.UserName,
+                LastName = null,
+                ImageUrl = owner.ImageUrl,
+                Roles = roles.ToList()
+            };
+            return Ok(dto);
         }
 
         [HttpGet("GetUserInfo/{accountId}")]
