@@ -1,58 +1,82 @@
-<div class="chat-window">
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center p-3"
-           style="border-top: 4px solid #4a2c2a">
-        <div class="d-flex flex-column w-100 position-relative">
-          <div class="d-flex justify-content-between align-items-center">
-            <h4 class="mb-0 fw-bold text-brown text-center w-100">
-              AI Assistant
-            </h4>
-            <button class="btn-close position-absolute end-0 text-caffe-dark"
-                    aria-label="Close chat"
-                    (click)="disabled = !disabled">
-            </button>
-          </div>
+<!-- Chat Toggle Button -->
+<button
+  class="chat-toggle-btn btn btn-brown"
+  (click)="isChatOpen = !isChatOpen"
+>
+  <i class="bi" [ngClass]="isChatOpen ? 'bi-x-lg' : 'bi-chat-dots-fill'"></i>
+</button>
+
+<!-- Chat Window -->
+<div class="chat-window" *ngIf="isChatOpen">
+  <div class="card">
+    <div
+      class="card-header d-flex justify-content-between align-items-center p-3"
+      style="border-top: 4px solid #4a2c2a"
+    >
+      <div class="d-flex flex-column w-100 position-relative">
+        <div class="d-flex justify-content-between align-items-center">
+          <h4 class="mb-0 fw-bold text-brown text-center w-100">
+            AI Assistant
+          </h4>
+          <button
+            class="btn-close position-absolute end-0 text-caffe-dark"
+            aria-label="Close chat"
+            (click)="isChatOpen = false"
+          ></button>
         </div>
-      </div>
-  
-      <div class="card-body messages-container" #messagesContainer>
-        <div *ngFor="let msg of messages" 
-             class="message-wrapper"
-             [ngClass]="msg.role === 'user' ? 'user-message' : 'bot-message'">
-          <div class="message-bubble-with-meta">
-            <div [innerHTML]="msg.content"></div>
-            <div class="bubble-meta text-muted small">
-              {{ msg.timestamp | date:'shortTime' }}
-              <span *ngIf="msg.role === 'bot'" class="ms-2">
-                <i class="bi" 
-                   [ngClass]="{
-                     'bi-robot': !msg.loading,
-                     'bi-arrow-repeat loading': msg.loading
-                   }"></i>
-              </span>
-            </div>
-          </div>
-        </div>
-        
-        <div *ngIf="errorMessage" class="alert alert-danger mt-2">
-          {{ errorMessage }}
-        </div>
-      </div>
-  
-      <div class="card-footer">
-        <form (submit)="sendMessage($event)" class="input-group">
-          <textarea class="form-control"
-                    [(ngModel)]="newMessage"
-                    name="newMessage"
-                    placeholder="Ask me anything..."
-                    rows="1"
-                    [disabled]="disabled || isLoading"></textarea>
-          <button class="btn btn-brown" 
-                  type="submit"
-                  [disabled]="disabled || isLoading || !newMessage.trim()">
-            <i class="bi bi-send-fill"></i>
-          </button>
-        </form>
       </div>
     </div>
+
+    <div
+      class="card-body messages-container"
+      #messagesContainer
+      (scroll)="onMessagesScroll()"
+    >
+      <div
+        *ngFor="let msg of messages"
+        class="message-wrapper"
+        [ngClass]="msg.role === 'user' ? 'user-message' : 'bot-message'"
+      >
+        <div class="message-bubble-with-meta">
+          <div [innerHTML]="msg.content"></div>
+          <div class="bubble-meta text-muted small">
+            {{ msg.timestamp | date : "shortTime" }}
+            <span *ngIf="msg.role === 'bot'" class="ms-2">
+              <i
+                class="bi"
+                [ngClass]="{
+                  'bi-robot': !msg.loading,
+                  'bi-arrow-repeat loading': msg.loading
+                }"
+              ></i>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger mt-2">
+        {{ errorMessage }}
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <form (submit)="sendMessage($event)" class="input-group">
+        <textarea
+          class="form-control"
+          [(ngModel)]="newMessage"
+          name="newMessage"
+          placeholder="Ask me anything..."
+          rows="1"
+          [disabled]="isLoading"
+        ></textarea>
+        <button
+          class="btn btn-brown"
+          type="submit"
+          [disabled]="isLoading || !newMessage.trim()"
+        >
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </form>
+    </div>
   </div>
+</div>

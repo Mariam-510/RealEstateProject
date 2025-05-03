@@ -1,7 +1,20 @@
-/* Add these styles to your existing CSS */
-.chat-window {
+.chat-toggle-btn {
   position: fixed;
   bottom: 20px;
+  right: 20px;
+  z-index: 1100;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-window {
+  position: fixed;
+  bottom: 80px;
   right: 20px;
   width: 420px;
   max-height: 80vh;
@@ -9,6 +22,21 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   border-radius: 12px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.card-body {
+  overflow-y: auto;
+  max-height: 400px;
+  padding-right: 8px;
 }
 
 .user-message {
@@ -28,6 +56,7 @@
   border-radius: 15px;
   background: #f8f5f2;
   border: 1px solid #e0d7d1;
+  word-break: break-word;
 }
 
 .user-message .message-bubble-with-meta {
@@ -58,28 +87,7 @@
   font-size: 0.9rem;
 }
 
+
 .messages-container {
-  max-height: 400px; /* or 50vh, based on preference */
-  overflow-y: auto;
-  padding-right: 10px;
+  scroll-behavior: smooth;
 }
-
-.chat-window .card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.card-body {
-  flex: 1 1 auto;
-  overflow-y: auto;
-}
-
-.card-footer {
-  flex-shrink: 0;
-}
-
-.bot-message .message-bubble-with-meta i.bi-arrow-repeat {
-    margin-right: 5px;
-  }
-  
