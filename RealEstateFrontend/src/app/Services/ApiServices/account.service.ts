@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { API_CONFIG } from '../../app.config';
 
 export interface UserDto {
@@ -80,11 +80,8 @@ export class AccountService {
   //   return this.http.get(`${this.apiUrl}/TestAuth`);
   // }
 
-  getRecipientAccountId(propertyId: number): Observable<string> {
-    return this.http.get(
-      `${this.apiUrl}/GetRecipientAccountId/${propertyId}`,
-      { responseType: 'text' } // <-- Add this
-    );
+  getRecipient(propertyId: number): Observable<UserDto> {
+    return this.http.get<UserDto>(`${this.apiUrl}/GetRecipient/${propertyId}`);
   }
 
   getUserInfo(accountId: string): Observable<UserDto> {

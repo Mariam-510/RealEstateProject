@@ -12,7 +12,7 @@ import { WishListService } from '../../../../Services/ApiServices/wish-list.serv
 import { ToastrService } from '../../../../Services/toastr.service';
 import { lastValueFrom } from 'rxjs';
 import { API_CONFIG } from '../../../../app.config';
-import { AccountService } from '../../../../Services/ApiServices/account.service';
+import { AccountService, UserDto } from '../../../../Services/ApiServices/account.service';
 import { ConversationService } from '../../../../Services/ApiServices/conversation.service';
 import { AuctionDTOShow, AuctionService } from '../../../../Services/ApiServices/auction.service';
 
@@ -61,6 +61,7 @@ export class PropertyDetailsComponent implements OnInit ,AfterViewInit {
 
   apiConfig = API_CONFIG;
   property!: PropertyDTO | null;
+  recipient?: UserDto;
 
   isLoading = true;
 
@@ -436,16 +437,23 @@ openChat() {
 
   this.chatWindow.toggle();
 
-  this.account.getRecipientAccountId(this.property.id).subscribe({
-    next: (accountId) => {
-      this.recipientId = accountId;
+  this.account.getRecipient(this.property.id).subscribe({
+    next: (recipientData: UserDto) => {
+      this.recipient = recipientData;
+
+      const recipientAccountId = recipientData.accountId;
+
+      this.chatWindow.setRecipient({
+        id: recipientData.accountId,
+        image: recipientData.imageUrl ?? undefined
+      });
 
       // First check if conversation exists
-      this.conversationService.existingConversation(this.recipientId).subscribe({
+      this.conversationService.existingConversation(recipientAccountId).subscribe({
         next: (conversationExists) => {
           if (conversationExists) {
             // If exists, find the conversation ID
-            this.conversationService.getConversationBetweenUsers(accountId).subscribe({
+            this.conversationService.getConversationBetweenUsers(recipientAccountId).subscribe({
               next: (conversation) => {
                 this.chatWindow.initializeChat(conversation.id);
               },
@@ -456,11 +464,7 @@ openChat() {
               }
             });
           } else {
-            // Optimistically create a temporary conversation state
-            // this.chatWindow.initializeWithRecipient(accountId);
-            
-            // Then create real conversation in backend
-            this.conversationService.createConversation(accountId).subscribe({
+            this.conversationService.createConversation(recipientAccountId).subscribe({
               next: (newConversation) => {
                 // Replace temp state with real conversation
                 this.chatWindow.initializeChat(newConversation.id);
