@@ -29,6 +29,8 @@ export class ChatbotComponent implements AfterViewChecked, OnDestroy {
   private lastMessageCount = 0;
   private userScrolledUp = false;
   private scrollObserver: MutationObserver | null = null;
+  userType: 'buyer' | 'agent' | 'seller' | 'unknown' = 'unknown';
+  userName: string = 'Guest';
 
   constructor(private http: HttpClient) {}
 
@@ -41,6 +43,48 @@ export class ChatbotComponent implements AfterViewChecked, OnDestroy {
       this.scrollObserver.disconnect();
     }
   }
+
+  private getSystemPrompt(): string {
+    switch(this.userType) {
+      case 'buyer':
+        return `You are a helpful real estate assistant specialized in helping property buyers. 
+                Focus on property listings, viewing appointments, purchase process, auctions, 
+                and home furnishings. Be friendly and professional.`;
+      case 'seller':
+        return `You are a real estate expert assisting property sellers. Help with pricing advice, 
+                listing preparation, staging tips, and the selling process. Be knowledgeable 
+                about market trends.`;
+      case 'agent':
+        return `You are a professional real estate assistant for agents. Provide support with 
+                client management, property showings, contract details, and market analysis. 
+                Use professional terminology.`;
+      default:
+        return `You are a helpful real estate assistant. Ask clarifying questions to determine 
+                if the user is a buyer, seller, or agent before providing detailed advice.`;
+    }
+  }
+
+  private detectUserType(message: string) {
+    const lowerMsg = message.toLowerCase();
+    if (lowerMsg.includes('buy') || lowerMsg.includes('bid') || lowerMsg.includes('viewing')) {
+      this.userType = 'buyer';
+    } else if (lowerMsg.includes('sell') || lowerMsg.includes('list') || lowerMsg.includes('price')) {
+      this.userType = 'seller';
+    } else if (lowerMsg.includes('agent') || lowerMsg.includes('client') || lowerMsg.includes('showing')) {
+      this.userType = 'agent';
+    }
+  }
+
+  private stripHtml(html: string): string {
+    return html.replace(/<[^>]*>/g, '');
+  }
+
+
+
+
+
+
+
 
   private checkForNewMessages() {
     if (this.messages.length !== this.lastMessageCount) {
@@ -77,7 +121,7 @@ export class ChatbotComponent implements AfterViewChecked, OnDestroy {
   }
 
   // Rest of your existing methods (sendMessage, addMessage) remain the same
-  async sendMessage(event?: Event) {
+  async sendMessage(event?: Event | KeyboardEvent) {
     event?.preventDefault();
     if (!this.newMessage.trim() || this.isLoading) return;
 
@@ -98,8 +142,18 @@ export class ChatbotComponent implements AfterViewChecked, OnDestroy {
 
       const response = await this.http
         .post<any>(environment.openaiUrl, {
-          model: 'gpt-4o-mini',
-          messages: [{ role: 'user', content: userMessage }],
+          model: 'gpt-4',
+          // model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: this.getSystemPrompt() },
+            ...this.messages
+              .filter(msg => !msg.loading)
+              .map(msg => ({
+                role: msg.role,
+                content: msg.role === 'bot' ? this.stripHtml(msg.content) : msg.content
+              }))
+          ],
+          temperature: 0.7,
         })
         .toPromise();
 
@@ -132,6 +186,21 @@ export class ChatbotComponent implements AfterViewChecked, OnDestroy {
       loading: role === 'bot',
     });
   }
+
+  onEnter(event: Event) {
+    
+    if ((event as KeyboardEvent).shiftKey) {
+      // Let Shift+Enter create a newline
+      return;
+    }
+  
+    event.preventDefault(); // Prevent newline
+    this.sendMessage(event); // Call your send logic
+  }
+
+  
+
+
 }
 
 interface ChatMessage {

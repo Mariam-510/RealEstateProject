@@ -2,6 +2,7 @@
 <button
   class="chat-toggle-btn btn btn-brown"
   (click)="isChatOpen = !isChatOpen"
+  title="Ask AI Assistant"
 >
   <i class="bi" [ngClass]="isChatOpen ? 'bi-x-lg' : 'bi-chat-dots-fill'"></i>
 </button>
@@ -16,13 +17,19 @@
       <div class="d-flex flex-column w-100 position-relative">
         <div class="d-flex justify-content-between align-items-center">
           <h4 class="mb-0 fw-bold text-brown text-center w-100">
-            AI Assistant
+            Real Estate Assistant
           </h4>
           <button
             class="btn-close position-absolute end-0 text-caffe-dark"
             aria-label="Close chat"
             (click)="isChatOpen = false"
           ></button>
+        </div>
+        <div
+          *ngIf="userType !== 'unknown'"
+          class="text-center small text-muted"
+        >
+          Helping {{ userType }} | {{ userName }}
         </div>
       </div>
     </div>
@@ -62,13 +69,14 @@
     <div class="card-footer">
       <form (submit)="sendMessage($event)" class="input-group">
         <textarea
-          class="form-control"
-          [(ngModel)]="newMessage"
-          name="newMessage"
-          placeholder="Ask me anything..."
-          rows="1"
-          [disabled]="isLoading"
-        ></textarea>
+  class="form-control"
+  [(ngModel)]="newMessage"
+  name="newMessage"
+  placeholder="Ask me anything..."
+  rows="1"
+  [disabled]="isLoading"
+  (keydown.enter)="onEnter($event)"
+></textarea>
         <button
           class="btn btn-brown"
           type="submit"
