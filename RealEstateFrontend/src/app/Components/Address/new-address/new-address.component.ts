@@ -6,6 +6,7 @@ import * as L from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import { AddressService } from '../../../Services/ApiServices/address.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-new-address',
@@ -33,7 +34,7 @@ export class NewAddressComponent implements OnInit, AfterViewInit {
   });
 
   constructor(private fb: FormBuilder, private router: Router,
-    private addressService: AddressService, private auth: AuthService) {
+    private addressService: AddressService, private auth: AuthService,private toaster:ToastrService) {
     // Set default icon
     L.Marker.prototype.options.icon = this.defaultIcon;
   }
@@ -160,7 +161,7 @@ export class NewAddressComponent implements OnInit, AfterViewInit {
 
   async detectLocation(): Promise<void> {
     if (!navigator.geolocation) {
-      alert("Your browser doesn't support geolocation.");
+      this.toaster.error("Your browser doesn't support geolocation.");
       return;
     }
 
@@ -181,7 +182,7 @@ export class NewAddressComponent implements OnInit, AfterViewInit {
       await this.reverseGeocode(pos);
     } catch (error) {
       console.error('Geolocation error:', error);
-      alert(
+      this.toaster.error(
         'Error getting your location. Please make sure location services are enabled.'
       );
     }

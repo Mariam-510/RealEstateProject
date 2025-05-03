@@ -78,7 +78,7 @@ export class AddSubscriptionplanComponent implements OnInit {
     this.validateReview();
 
     if (this.isMaxLengthExceeded || this.subscriptionForm.invalid) {
-      alert(
+      this.toastr.error(
         'Please ensure all form fields are valid and review is within character limit.'
       );
       return;

@@ -9,6 +9,7 @@ import { MessageResponseDto, MessageService } from '../../../Services/ApiService
 import { API_CONFIG } from '../../../app.config';
 import { ChatService, IncomingChatMessage } from '../../../Services/ApiServices/chat.service';
 import { lastValueFrom } from 'rxjs';
+import { UserDto } from '../../../Services/ApiServices/account.service';
 
 interface Message {
   text: string;
@@ -30,7 +31,11 @@ export class ChatmodalComponent implements OnInit, AfterViewChecked, AfterViewIn
   today = new Date();
   private shouldScroll = true;
   private justOpened = false;
-  recipientId: string | undefined;
+  // recipientId: string | undefined;
+  recipientData: { id: string; image?: string } = {
+    id: '', // Provide default empty string
+    image: undefined
+  };
   conversationId: number | null = null;
   messages: Message[] = [];
   apiConfig = API_CONFIG;
@@ -258,6 +263,10 @@ export class ChatmodalComponent implements OnInit, AfterViewChecked, AfterViewIn
     } finally {
       this.cd.detectChanges();
     }
+  }
+
+  setRecipient(recipient: { id: string, image?: string }) {
+    this.recipientData = recipient;
   }
 
   shouldDisableInput(): void {

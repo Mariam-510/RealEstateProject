@@ -6,6 +6,7 @@ import { CreateReviewRequest, ReviewService } from '../../../Services/ApiService
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-add-review',
@@ -18,6 +19,7 @@ export class AddReviewComponent {
   constructor(
     public dialogRef: MatDialogRef<AddReviewComponent>, private router: Router,
     private auth: AuthService, private reviewService: ReviewService,
+    private toastr: ToastrService,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     if (!this.hasRole('Buyer')) {
@@ -47,26 +49,10 @@ export class AddReviewComponent {
     this.isMaxLengthExceeded = this.reviewText.length >= this.maxCharacters;
   }
 
-  // submitReview() {
-  //   console.log(this.data.productId);
-  //   if (!this.selectedRating) {
-  //     alert('Please select a star rating before submitting.');
-  //     return;
-  //   }
-  //   if (this.isMaxLengthExceeded) {
-  //     return;
-  //   }
-  //   alert('Review submitted successfully!');
-  //   this.dialogRef.close({
-  //     rating: this.selectedRating,
-  //     review: this.reviewText
-  //   });
-  // }
-
   async submitReview() {
     // Validate required fields
     if (!this.selectedRating) {
-      alert('Please select a star rating before submitting.');
+      this.toastr.error('Please select a star rating before submitting');
       return;
     }
     if (this.isMaxLengthExceeded) {
@@ -88,7 +74,7 @@ export class AddReviewComponent {
 
       // Handle success
       console.log('API response:', response);
-      alert('Review submitted successfully!');
+      this.toastr.success('Review submitted successfully!');
 
       // Close dialog with result
       this.dialogRef.close({
@@ -99,7 +85,7 @@ export class AddReviewComponent {
 
     } catch (error) {
       console.error('Error submitting review:', error);
-      alert('Failed to submit review. Please try again.');
+      this.toastr.error('Failed to submit review. Please try again.');
       // Optional: Keep dialog open on error
       // this.dialogRef.close();
     }

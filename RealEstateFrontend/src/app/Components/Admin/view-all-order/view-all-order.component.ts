@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { OrderResponseDto, OrderService, UpdateOrderDto } from '../../../Services/ApiServices/order.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-view-all-order',
@@ -12,7 +13,7 @@ import { AuthService } from '../../../Services/ApiServices/auth.service';
   styleUrl: './view-all-order.component.css'
 })
 export class ViewAllOrderComponent implements OnInit {
-  orderLinks = ['All Order', 'Pending', 'Out For Delivery', 'Delivered', 'Confirmed', 'Cancelled'];
+   orderLinks = ['All Order', 'Pending', 'Out For Delivery', 'Delivered', 'Confirmed', 'Cancelled'];
   activeLink = 'All Order';
   startDate: string = '';
   endDate: string = '';
@@ -31,7 +32,8 @@ export class ViewAllOrderComponent implements OnInit {
   ]; 
   constructor(private orderService: OrderService,
     private auth: AuthService,
-    private router: Router,) {}
+    private router: Router,
+    private toastr: ToastrService) {}
   
   ngOnInit(): void {
     if (!this.hasRole('Admin')) {
@@ -145,8 +147,7 @@ export class ViewAllOrderComponent implements OnInit {
       status: order.statusNum   
     };
   
-    console.log('Sending update:', updateData); // Debug log
-  
+   
     this.orderService.updateOrder(updateData).subscribe({
       next: (updatedOrder) => {
         const index = this.orders.findIndex(o => o.id === updatedOrder.id);
@@ -154,12 +155,10 @@ export class ViewAllOrderComponent implements OnInit {
           this.orders[index] = updatedOrder;
           this.filterOrders();
         }
-        alert('Order updated successfully');
+        this.toastr.success('Order updated successfully');
       },
       error: (err) => {
-        console.error('Error updating order:', err);
-        this.error = 'Failed to update order status. Please try again.';
-        alert(this.error);
+        this.toastr.error('Failed to update order status. Please try again.');
         const originalOrder = this.orders.find(o => o.id === order.id);
         if (originalOrder) {
           order.statusNum = originalOrder.statusNum;

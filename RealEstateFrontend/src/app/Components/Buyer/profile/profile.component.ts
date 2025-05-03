@@ -6,6 +6,7 @@ import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { API_CONFIG } from '../../../app.config';
 import { BuyerDto, BuyerService } from '../../../Services/ApiServices/buyer.service';
 import { lastValueFrom } from 'rxjs';  // Important import
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-profile',
@@ -24,7 +25,8 @@ export class ProfileComponent implements OnInit {
   removeImageFlag = false;
 
   constructor(private router: Router, private auth: AuthService,
-    private buyerService: BuyerService) { }
+    private buyerService: BuyerService,
+    private toaster:ToastrService  ) { }
 
   async ngOnInit() {
     if (!this.hasRole('Buyer')) {
@@ -98,7 +100,7 @@ export class ProfileComponent implements OnInit {
 
   async update() {
     if (this.MyForm.invalid) {
-      alert('Please fill in all required fields correctly.');
+      this.toaster.error('Please fill in all required fields correctly.');
       return;
     }
 
@@ -121,7 +123,7 @@ export class ProfileComponent implements OnInit {
       const response = await lastValueFrom(this.buyerService.updateBuyer(formData));
 
       // Handle success
-      console.log('Update successful:', response.message);
+      this.toaster.success('Update Profile info successfully');
 
       // Update local data
       this.buyer = response.buyerDto;

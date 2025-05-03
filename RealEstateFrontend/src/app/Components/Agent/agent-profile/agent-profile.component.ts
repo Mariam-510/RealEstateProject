@@ -7,6 +7,7 @@ import { AgentDto, AgentService } from '../../../Services/ApiServices/agent.serv
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { catchError, lastValueFrom, Observable, of, startWith, switchMap } from 'rxjs';  // Important import
 import { SubscriptionDto, SubscriptionService } from '../../../Services/ApiServices/subscription.service';
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-agent-profile',
@@ -29,7 +30,8 @@ export class AgentProfileComponent {
 
 
   constructor(private router: Router, private auth: AuthService,
-    private agentService: AgentService, private subscriptionService: SubscriptionService) { }
+    private agentService: AgentService, private subscriptionService: SubscriptionService,
+    private toaster:ToastrService) { }
 
   async ngOnInit() {
     if (!this.hasRole('Agent')) {
@@ -146,7 +148,7 @@ export class AgentProfileComponent {
 
   async update() {
     if (this.MyForm.invalid) {
-      alert('Please fill in all required fields correctly.');
+      this.toaster.error('Please fill in all required fields correctly');
       return;
     }
 
@@ -168,7 +170,7 @@ export class AgentProfileComponent {
       const response = await lastValueFrom(this.agentService.updateAgent(formData));
 
       // Handle success
-      console.log('Update successful:', response.message);
+      this.toaster.success('Update Profile info successfully');
 
       // Update local data
       this.agent = response.agentDto;
