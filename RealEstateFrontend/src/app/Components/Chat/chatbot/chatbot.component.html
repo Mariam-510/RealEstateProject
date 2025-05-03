@@ -69,6 +69,7 @@
     <div class="card-footer">
       <form (submit)="sendMessage($event)" class="input-group">
         <textarea
+  #chatInput
   class="form-control"
   [(ngModel)]="newMessage"
   name="newMessage"
@@ -76,7 +77,9 @@
   rows="1"
   [disabled]="isLoading"
   (keydown.enter)="onEnter($event)"
+  (input)="autoResize(chatInput)"
 ></textarea>
+
         <button
           class="btn btn-brown"
           type="submit"

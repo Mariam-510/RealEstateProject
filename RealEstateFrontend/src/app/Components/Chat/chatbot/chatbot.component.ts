@@ -198,6 +198,10 @@ export class ChatbotComponent implements AfterViewChecked, OnDestroy {
     this.sendMessage(event); // Call your send logic
   }
 
+  autoResize(textarea: HTMLTextAreaElement) {
+    textarea.style.height = 'auto'; // Reset height
+    textarea.style.height = textarea.scrollHeight + 'px'; // Set to scroll height
+  }
   
 
 

@@ -6,7 +6,7 @@
   border-radius: 50%;
   width: 50px;
   height: 50px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -87,11 +87,9 @@
   font-size: 0.9rem;
 }
 
-
 .messages-container {
   scroll-behavior: smooth;
 }
-
 
 /* Add these to your existing CSS */
 .buyer-message .message-bubble-with-meta {
@@ -121,4 +119,10 @@
   border-radius: 10px;
   font-size: 0.75rem;
   margin-left: 5px;
+}
+
+textarea.form-control {
+  transition: height 0.2s ease;
+  overflow-y: hidden; /* hides scrollbars */
+  resize: none; /* disables manual resizing */
 }
