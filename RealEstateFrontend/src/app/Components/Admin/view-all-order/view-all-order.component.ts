@@ -13,11 +13,11 @@ import { ToastrService } from '../../../Services/toastr.service';
   styleUrl: './view-all-order.component.css'
 })
 export class ViewAllOrderComponent implements OnInit {
-   orderLinks = ['All Order', 'Pending', 'Out For Delivery', 'Delivered', 'Confirmed', 'Cancelled'];
+  orderLinks = ['All Order', 'Pending', 'Out For Delivery', 'Delivered', 'Confirmed', 'Cancelled'];
   activeLink = 'All Order';
   startDate: string = '';
   endDate: string = '';
-  
+
   orders: OrderResponseDto[] = [];
   filteredOrders: OrderResponseDto[] = [];
   isLoading = true;
@@ -29,12 +29,12 @@ export class ViewAllOrderComponent implements OnInit {
     { value: 2, text: 'Out For Delivery' },
     { value: 3, text: 'Delivered' },
     { value: 4, text: 'Cancelled' }
-  ]; 
+  ];
   constructor(private orderService: OrderService,
     private auth: AuthService,
     private router: Router,
-    private toastr: ToastrService) {}
-  
+    private toastr: ToastrService) { }
+
   ngOnInit(): void {
     if (!this.hasRole('Admin')) {
       this.router.navigate(['/login']);
@@ -47,7 +47,7 @@ export class ViewAllOrderComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
     this.orderService.getAll().subscribe({
-      
+
       next: (orders) => {
         this.orders = orders;
         this.filteredOrders = [...orders];
@@ -62,7 +62,7 @@ export class ViewAllOrderComponent implements OnInit {
   }
 
   setActive(link: string, event: MouseEvent) {
-    event.preventDefault();   
+    event.preventDefault();
     this.activeLink = link;
     this.filterOrders();
   }
@@ -73,14 +73,14 @@ export class ViewAllOrderComponent implements OnInit {
     if (currentStatus === 3) {
       return optionStatus === 1 || optionStatus === 2 || optionStatus === 0;
     }
-    
+
     if (currentStatus === 2) {
       return optionStatus === 1 || optionStatus === 0;
     }
     if (currentStatus === 1) {
       return optionStatus === 0;
     }
-    
+
     return false;
   }
   filterOrders() {
@@ -103,7 +103,7 @@ export class ViewAllOrderComponent implements OnInit {
   onDateChange() {
     this.filterOrders();
   }
- 
+
   getStatusColor(statusNum: number): string {
     switch (statusNum) {
       case 0: return '#9c27b0';  // Gray
@@ -124,7 +124,7 @@ export class ViewAllOrderComponent implements OnInit {
       default: return '#000000';
     }
   }
-  
+
   hasRole(requiredRole: string): boolean {
     return this.auth.hasRole(requiredRole);
   }
@@ -141,13 +141,13 @@ export class ViewAllOrderComponent implements OnInit {
       console.error('Invalid status number');
       return;
     }
-  
+
     const updateData: UpdateOrderDto = {
       id: order.id,
-      status: order.statusNum   
+      status: order.statusNum
     };
-  
-   
+
+
     this.orderService.updateOrder(updateData).subscribe({
       next: (updatedOrder) => {
         const index = this.orders.findIndex(o => o.id === updatedOrder.id);
@@ -167,39 +167,39 @@ export class ViewAllOrderComponent implements OnInit {
     });
   }
   itemsPerPage: number = 5;
-currentPage: number = 1;
-totalPages: number = 1;
+  currentPage: number = 1;
+  totalPages: number = 1;
 
-// Add these methods to your component
-get paginatedOrders(): any[] {
-  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-  return this.filteredOrders.slice(startIndex, startIndex + this.itemsPerPage);
-}
-
-getPages(): number[] {
-  this.totalPages = Math.ceil(this.filteredOrders.length / this.itemsPerPage);
-  const pages = [];
-  for (let i = 1; i <= this.totalPages; i++) {
-    pages.push(i);
+  // Add these methods to your component
+  get paginatedOrders(): any[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredOrders.slice(startIndex, startIndex + this.itemsPerPage);
   }
-  return pages;
-}
 
-goToPage(page: number): void {
-  if (page >= 1 && page <= this.totalPages) {
-    this.currentPage = page;
+  getPages(): number[] {
+    this.totalPages = Math.ceil(this.filteredOrders.length / this.itemsPerPage);
+    const pages = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
-}
 
-previousPage(): void {
-  if (this.currentPage > 1) {
-    this.currentPage--;
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
   }
-}
 
-nextPage(): void {
-  if (this.currentPage < this.totalPages) {
-    this.currentPage++;
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
   }
-}
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
 }

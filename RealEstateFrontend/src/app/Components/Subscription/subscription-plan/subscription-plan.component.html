@@ -2,7 +2,15 @@
   <div class="text-center">
     <h1 class="w-50 mx-auto">Explore for Free and unlock our additional Features Later on</h1>
   </div>
-  <div class="row g-4">
+
+  <div *ngIf="isLoading" class="d-flex align-items-center justify-content-center" style="height: 100px">
+    <div class="spinner-border text-caffe" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+
+  <div *ngIf="!isLoading" class="row g-4">
     <div *ngFor="let plan of plans" class="col-md-6 col-lg-3">
       <div class="card pricing-card mt-5 mb-4"
         [class.highlight-card]="(subscription$ | async)?.subscriptionPlanId === plan.id" style="height:58vh">
