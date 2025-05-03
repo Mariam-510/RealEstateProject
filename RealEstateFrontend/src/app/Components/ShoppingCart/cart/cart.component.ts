@@ -6,6 +6,7 @@ import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { API_CONFIG } from '../../../app.config';
 import { EditOrderItemDto, OrderItemDto, OrderItemService } from '../../../Services/ApiServices/order-item.service';
 import { ToastrService } from '../../../Services/toastr.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -36,12 +37,25 @@ export class CartComponent implements OnInit {
     }
   }
 
-  private loadInitialCart() {
+  // private loadInitialCart() {
+  //   if (this.hasRole("Buyer")) {
+  //     this.cartService.getCart().subscribe(cart => {
+  //       this.localCart = cart; // Store initial copy locally
+  //     });
+  //     this.isLoading = false;
+  //   }
+  // }
+
+  private async loadInitialCart() {
     if (this.hasRole("Buyer")) {
-      this.cartService.getCart().subscribe(cart => {
+      try {
+        const cart = await lastValueFrom(this.cartService.getCart());
         this.localCart = cart; // Store initial copy locally
-      });
-      this.isLoading = false;
+      } catch (error) {
+        console.error('Error loading cart:', error);
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 
