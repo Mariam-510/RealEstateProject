@@ -95,6 +95,8 @@ export class PaymentComponent implements OnInit {
   clientId: string = '';
   selectedAddressId: number = 0;
 
+  loading = true;
+
   async ngOnInit() {
     if (!this.hasRole('Buyer')) {
       this.router.navigate(['/login']);
@@ -126,6 +128,7 @@ export class PaymentComponent implements OnInit {
 
       this.selectedAddressId = +addressId;
 
+
       // Load address and cart data
       await this.loadAddressDetails(addressId);
       await this.loadInitialCart();
@@ -133,6 +136,7 @@ export class PaymentComponent implements OnInit {
       if (this.address?.city) {
         await this.loadShipping(this.address.city);
       }
+      this.loading = false;
     } catch (error) {
       console.error('Initialization error:', error);
       this.toastr.error('Failed to initialize payment page. Please try again.');

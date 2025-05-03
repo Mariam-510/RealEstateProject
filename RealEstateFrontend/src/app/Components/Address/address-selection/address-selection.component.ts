@@ -19,7 +19,9 @@ export class AddressSelectionComponent implements OnInit {
 
   addresses: AddressDto[] = [];
 
-  constructor(private addressService: AddressService, private router: Router, private auth: AuthService,private toaster:ToastrService) { }
+  constructor(private addressService: AddressService, private router: Router, private auth: AuthService, private toaster: ToastrService) { }
+
+  isLoading = true;
 
   ngOnInit() {
 
@@ -28,9 +30,19 @@ export class AddressSelectionComponent implements OnInit {
       this.router.navigate(['/login']);
     }
     else {
+      // this.addressService.getAllByBuyer().subscribe({
+      //   next: (addresses) => this.addresses = addresses,
+      //   error: (err) => console.error('Error fetching addresses:', err)
+      // });
       this.addressService.getAllByBuyer().subscribe({
-        next: (addresses) => this.addresses = addresses,
-        error: (err) => console.error('Error fetching addresses:', err)
+        next: (addresses) => {
+          this.addresses = addresses;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error fetching addresses:', err);
+          this.isLoading = false;
+        }
       });
     }
 
