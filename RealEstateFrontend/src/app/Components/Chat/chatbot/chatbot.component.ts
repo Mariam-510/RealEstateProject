@@ -109,16 +109,9 @@ export class ChatbotComponent implements AfterViewChecked, OnDestroy {
           model: 'gpt-4o-mini',
           messages: [
             { role: 'system', content: this.getSystemPrompt() },
-            ...this.messages
-              .filter((msg) => !msg.loading)
-              .map((msg) => ({
-                role: msg.role,
-                content:
-                  msg.role === 'bot'
-                    ? this.stripHtml(msg.content)
-                    : msg.content,
-              })),
+            { role: 'user', content: userMessage },
           ],
+
           temperature: 0.7,
         })
         .toPromise();
