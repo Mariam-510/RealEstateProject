@@ -380,27 +380,29 @@
 
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 <div id="stop-scroll" class="container pb-5 pt-3">
-  <h2 class="mb-4 fw-bold text-caffe-dark text-center pt-5">Featured Auctioneers</h2>
-  <div class="section-underline mx-auto mb-4"></div>
-  <div class="d-flex justify-content-between align-items-center pt-3">
 
-
-  </div>
 
   <!-- <div #sliderContainer class="d-flex overflow-auto pb-3 scroll-container"
     class="d-flex gap-4 overflow-hidden hide-scrollbar" id="categoryScroll" (mouseleave)="startAutoScroll()"
     (mouseenter)="stopAutoScroll()"> -->
 
-  <div #sliderContainer class="d-flex overflow-auto pb-3 scroll-container"
-    class="d-flex gap-4 overflow-hidden hide-scrollbar" id="categoryScroll">
-
-    <div *ngFor="let auctioneer of auctioneers" class="mx-3 flex-shrink-0" style="width: 150px;">
-      <img [src]="auctioneer.logo" [alt]="auctioneer.name" class="img-fluid d-block mx-auto"
-        style="max-height: 100px; object-fit: contain;" />
+    <div class="container pb-5 pt-3" style="overflow-x: hidden;">
+      <h2 class="mb-4 fw-bold text-caffe-dark text-center pt-5">Featured Auctioneers</h2>
+      <div class="section-underline mx-auto mb-4"></div>
+      
+      <div class="auto-scroll-container">
+        <div class="scroller">
+          <!-- Original Set -->
+          <div *ngFor="let auctioneer of auctioneers" class="auctioneer-item">
+            <img [src]="auctioneer.logo" [alt]="auctioneer.name" class="auctioneer-logo">
+          </div>
+          <!-- Duplicated Set -->
+          <div *ngFor="let auctioneer of auctioneers" class="auctioneer-item">
+            <img [src]="auctioneer.logo" [alt]="auctioneer.name" class="auctioneer-logo">
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
 
 
 

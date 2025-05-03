@@ -316,9 +316,122 @@
 /* -------------------------------------------------------------------------------------------- */
 .scroll-container {
   scroll-behavior: smooth;
-  scrollbar-width: none;
+  /* scrollbar-width: 25vw; */
 }
 
 .scroll-container::-webkit-scrollbar {
   display: none;
+}
+
+.auto-scroll {
+  animation: scroll 20s linear infinite;
+  overflow-x: auto;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.scroll-container {
+  display: flex;
+  width: max-content;
+}
+
+.hide-scrollbar {
+  overflow-x: auto !important;  /* instead of overflow: hidden */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.scroll-container {
+  overflow-x: hidden !important;
+  width: 100%;
+}
+
+.auto-scroll {
+  animation: scroll 30s linear infinite;
+  width: max-content;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}/* Auctioneers Section */
+.auto-scroll-container {
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.scroller {
+  display: flex;
+  width: max-content;
+  animation: scroll 30s linear infinite;
+}
+
+.auctioneer-item {
+  flex: 0 0 auto;
+  width: 184px; /* Match your image width */
+  padding: 0 12px; /* Spacing between items */
+}
+
+.auctioneer-logo {
+  width: 100%;
+  height: 100px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.auctioneer-logo:hover {
+  transform: scale(1.05);
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Prevent layout shift */
+.container {
+  max-width: 100vw;
+}.auto-scroll-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.scroller {
+  display: flex;
+  width: max-content;
+  animation: scroll 20s linear infinite;
+}
+
+.auctioneer-item {
+  flex: 0 0 auto;
+  width: 184px;
+  padding: 0 12px;
+  transition: transform 0.3s ease;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Pause animation on hover */
+.scroller:hover {
+  animation-play-state: paused;
+}
+
+/* Hide duplicate images from screen readers */
+.auctioneer-item:nth-child(n + 7) img { /* Adjust 7 to your original item count +1 */
+  aria-hidden: "true";
 }
