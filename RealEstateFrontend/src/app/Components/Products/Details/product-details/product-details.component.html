@@ -32,10 +32,10 @@
 
 <!-- <div class="my-5"></div> -->
 
-<div #heroSection class="position-relative d-flex justify-content-center px-5 mb-3">
+<div #heroSection class="position-relative d-flex justify-content-center px-5 mb-3 hero ">
 
   <!-- Image Gallery Section -->
-  <div class="ImagesPrint" style="width: 75%;">
+  <div class="ImagesPrint" class="custom-width ">
     <div class="d-flex flex-column flex-md-row gap-3">
 
       <!-- Thumbnail Column (Scrollable) -->
@@ -46,13 +46,13 @@
           <img [src]="apiConfig.apiUrl+img" class="img-thumbnail thumbnail" alt="Thumbnail {{ i + 1 }}" #thumbnail />
 
           <div
-            class="thumbnail-overlay position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center no-print">
+            class="thumbnail-overlay position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center no-print ">
           </div>
         </div>
       </div>
 
       <!-- Main Slider Container -->
-      <div class="slider-container position-relative flex-grow-1">
+      <div class="slider-container position-relative flex-grow-1 ">
 
         <div
           class="photo-counter position-absolute top-0 start-0 mt-3 ms-2 bg-dark bg-opacity-75 text-white px-4 py-2 rounded-pill">
@@ -60,12 +60,12 @@
           {{ selectedIndex + 1 }}/{{ product?.productimage?.length }}
         </div>
 
-        <div class="slider-track d-flex h-100" [style.transform]="'translateX(' + (-selectedIndex * 100) + '%)'">
+        <div class="slider-track d-flex h-100 " [style.transform]="'translateX(' + (-selectedIndex * 100) + '%)'">
           <div *ngFor="let img of product?.productimage"
-            class="slide position-relative d-flex justify-content-center align-items-center">
+            class="slide position-relative d-flex justify-content-center align-items-center ">
 
             <div class="image-wrapper position-relative" (click)="openModal()">
-              <img [src]="apiConfig.apiUrl + img" [appZoom]="apiConfig.apiUrl+img" class="slider-image" />
+              <img [src]="apiConfig.apiUrl + img" [appZoom]="apiConfig.apiUrl+img" class="slider-image " />
               <div
                 class="overlay position-absolute top-0 start-0 w-100 h-100 d-flex text-white justify-content-center align-items-center">
               </div>
@@ -90,7 +90,7 @@
 
   <!-- --------------------------------------------------------------------------------------------------------------- -->
 
-  <div class="no-print" style="width: 25%;"></div>
+  <div class="no-print d-none d-lg-block " style="width: 25%;"></div>
 
   <!-- Product Details Section -->
   <div #productCard *ngIf="!isModalOpen"
@@ -263,7 +263,185 @@
   </div>
 
 </div>
+<!-- Section -->
+<div class="d-block d-lg-none ps-3 pe-3 ">
+  <div class="cartTitle text-white rounded-top text-center d-flex align-items-center justify-content-center position-relative" >
+  <div class="m-0 fw-semibold">
+    {{ product?.name }}
+  </div>
+</div>
+<div class="card-body px-4">
+  <div class="d-flex align-items-center flex-wrap gap-2 pt-3 mb-2">
+    <!-- Badges -->
+    <div class="d-flex flex-wrap gap-2">
+      <span *ngIf="!product?.isUsed" class="badge py-2 text-white" style="background-color: #2a5f8b; min-width: 4.5rem;">
+        New
+      </span>
+  
+      <span *ngIf="product?.isUsed" class="badge py-2 text-white" style="background-color: #de8332; min-width: 4.5rem;">
+        Used
+      </span>
+  
+      <span *ngIf="(product?.quantity ?? 0) < 4 && (product?.quantity ?? 0) > 0" class="badge py-2 bg-danger text-white">
+        Only {{ product?.quantity }} left!
+      </span>
+  
+      <span *ngIf="(product?.quantity ?? 0) === 0" class="badge py-2 bg-secondary text-white">
+        Out of Stock
+      </span>
+  
+      <span *ngIf="(product?.quantity ?? 0) > 3" class="badge py-2 text-white"
+        style="background-color: #4a7d5e; min-width: 4.6rem;">
+        In Stock
+      </span>
+  
+      <!-- <span *ngIf="product?.averageRating??0" class="badge py-2 text-white bg-caffe" style="min-width: 4.6rem;">
+        <i class="bi bi-star-fill me-1"></i>{{ product?.averageRating }}
+      </span> -->
+      <span class="badge py-2 text-white bg-caffe" style="min-width: 4.6rem;">
+        <i class="bi bi-star-fill me-1"></i>{{ product?.averageRating??0 }}
+      </span>
+    </div>
+  
+    <!-- Buttons to the right -->
+    <div class="d-flex gap-2 ms-auto">
+      <button class="btn btn-link text-dark p-1" (click)="$event.stopPropagation(); shareItem(product)">
+        <i class="bi bi-share fs-5"></i>
+      </button>
+  
+      <button class="btn btn-link text-dark p-1" (click)="$event.stopPropagation(); printPage()">
+        <i class="bi bi-printer fs-4"></i>
+      </button>
+  
+      <button *ngIf="hasRoleOrNoUser('Buyer')" class="btn btn-link p-1"
+        (click)="$event.stopPropagation(); toggleFavorite(product)">
+        <i class="bi fs-4" [ngClass]="{
+          'bi-heart-fill text-danger': product?.isFavorite && hasUser(),
+          'bi-heart text-dark': !product?.isFavorite || !hasUser()
+        }"></i>
+      </button>
+    </div>
+  </div>
+  
 
+  <!-- Reviews & Buttons Row -->
+
+
+  <div class="custumBottomBorder mb-2"></div>
+
+  <!-- Price -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <div class="form-label small fw-bold text-uppercase terracotta-text mb-1" style="color: #4a2c2a">Price</div>
+      <h3 class="fw-bold text-caffe m-0">EGP {{ product?.price | number:'1.2-2' }}</h3>
+    </div>
+    <!-- <div class="d-flex align-items-center gap-2">
+      <div class="rating-stars text-caffe">
+        <ng-container *ngFor="let star of [].constructor(5); let i = index">
+          <i class="bi fs-5" [ngClass]="{
+            'bi-star-fill': i < Math.floor(product?.averageRating ?? 0 ),
+            'bi-star-half': i === Math.floor(product?.averageRating ?? 0) && (product?.averageRating ?? 0) % 1 !== 0,
+            'bi-star': i >= Math.ceil(product?.averageRating ?? 0)
+          }"></i>
+        </ng-container>
+      </div>
+      <span class="text-muted">({{ product?.numberOfReviews }} reviews)</span>
+    </div> -->
+  </div>
+  
+ <!-- Color + CTA Section Combined Horizontally -->
+<!-- Color + CTA Section Combined Horizontally -->
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4" *ngIf="hasRoleOrNoUser('Buyer')">
+
+  <!-- Color Swatches Section -->
+  <div class="flex-grow-1">
+    <div class="form-label small fw-bold text-uppercase terracotta-text mb-2" style="color: #4a2c2a">
+      Available Color
+    </div>
+    <div class="d-flex flex-wrap gap-2 pb-2">
+      <div *ngFor="let productStockDto of product?.productStockDtos"
+           class="color-swatch shadow hover-scale rounded-5 position-relative"
+           [class.selected]="productStockDto === selectedColorStock"
+           [class.out-of-stock]="productStockDto.quantity === 0"
+           [style.background]="productStockDto.color"
+           (click)="productStockDto.quantity > 0 ? selectColor(productStockDto) : null"
+           style="width: 40px; height: 40px; flex: 0 0 auto;">
+        <div *ngIf="productStockDto === selectedColorStock" class="selected-indicator">
+          <i class="bi bi-check"></i>
+        </div>
+        <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+      </div>
+    </div>
+    <!-- <div class="d-flex flex-wrap gap-2">
+      <div *ngFor="let productStockDto of product?.productStockDtos"
+           class="color-swatch shadow hover-scale rounded-5 position-relative"
+           [class.selected]="productStockDto === selectedColorStock"
+           [class.out-of-stock]="productStockDto.quantity === 0"
+           [style.background]="productStockDto.color"
+           (click)="productStockDto.quantity > 0 ? selectColor(productStockDto) : null"
+           style="width: 40px; height: 40px; flex: 0 0 auto;">
+        <div *ngIf="productStockDto === selectedColorStock" class="selected-indicator">
+          <i class="bi bi-check"></i>
+        </div>
+        <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+      </div>
+    </div> -->
+  </div>
+
+  <!-- Quantity Selector and Add to Cart (aligned right) -->
+  <div class="d-flex align-items-center gap-3 mt-4 mt-md-0">
+    <!-- Quantity Controls -->
+    <div class="quantity-controls d-flex align-items-center border rounded-2">
+      <button class="btn px-1 py-1 text-caffe" (click)="decreaseQuantity()"
+              [disabled]="quantity === 1 || !selectedColorStock">
+        <i class="bi bi-dash" style="font-size: 1.5rem;"></i>
+      </button>
+      <span class="px-2 fw-bold">{{ quantity }}</span>
+      <button class="btn px-1 py-1 text-caffe" (click)="increaseQuantity()"
+              [disabled]="!selectedColorStock || quantity >= (selectedColorStock?.quantity ?? 0)">
+        <i class="bi bi-plus" style="font-size: 1.5rem;"></i>
+      </button>
+    </div>
+  
+    <!-- Add to Cart Button -->
+    <button class="btn bg-caffe text-white fw-bold hover-lift py-2"
+            (click)="addToCart()"
+            [disabled]="!selectedColorStock || selectedColorStock.quantity === 0 || quantity > selectedColorStock.quantity">
+      <i class="bi bi-cart3"></i>
+    </button>
+  </div>
+  
+
+
+</div>
+
+
+  <!-- <div class="custumBottomBorder mb-2 "></div>
+
+  <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex flex-column align-items-center justify-content-center">
+      <i class="bi bi-credit-card-2-front text-caffe d-block mb-1" style="font-size: 1.7rem;"></i>
+      <span class="text-dark" style="font-size: 1.02rem;">Payment Options</span>
+    </div>
+
+    <div class="d-flex flex-column align-items-center justify-content-center">
+      <i class="bi bi-clock-history text-caffe d-block mb-1" style="font-size: 1.7rem;"></i>
+      <span class="text-dark" style="font-size: 1.02rem;">Fast Delivery</span>
+    </div>
+
+    <div class="d-flex flex-column align-items-center justify-content-center">
+      <i class="bi bi-patch-check text-caffe d-block mb-1" style="font-size: 1.7rem;"></i>
+      <span class="text-dark" style="font-size: 1.02rem;">Verified Partner</span>
+    </div>
+  </div> -->
+
+  <div class="custumBottomBorder"></div>
+
+</div>
+  <!-- <div class="container-fluid mt-4 "> -->
+ 
+  <!-- </div> -->
+</div>
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 
 <div #tabLinks class="tab-links px-5 py-4 d-flex flex-wrap justify-content-center justify-content-xl-start gap-3">
@@ -332,7 +510,7 @@
 
 
       <!-- Description -->
-      <div class="ms-3 text-justify text-muted mb-2 no-print" style="font-size: 1.2rem;">
+      <div class="ms-3 text-justify text-muted mb-2 no-print " style="font-size: 1.2rem;">
         {{ (product?.description?.length ??0) > 200 ? (showMore ? product?.description : product?.description?.slice(0,
         200) +
         '...') :
