@@ -1,208 +1,218 @@
-<div class="container">
-  <div class="d-flex flex-wrap">
-    <div class="col-lg-8 col-12 pe-lg-4">
+<div *ngIf="isLoading" class="d-flex align-items-center justify-content-center" style="height: 100px">
+  <div class="spinner-border text-caffe" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
 
-      <div class="shadow-sm" *ngIf="(order?.statusNum ??0) !== 4">
-        <div class="card-body mt-5">
-          <div class="d-flex justify-content-between mt-4 align-items-center mb-4 pt-4 px-4 rounded">
-            <h4 class="mb-0">
-              <i class="bi bi-receipt me-2"></i>
-              Order #<span class="text-caffe font-weight-bold">{{ order?.id }}</span>
-            </h4>
-            <div class="text-muted small"> {{order?.orderDate}}</div>
-          </div>
+<div *ngIf="!isLoading">
 
-          <div class="d-flex justify-content-between text-center ms-1">
-            <div style="flex: 1;">
-              <i class="bi bi-hourglass-split text-caffe" style="font-size: 2rem;"></i>
-              <p class="fw-bold mb-2">Pending</p>
-            </div>
-            <div style="flex: 1;">
-              <i class="bi bi-check-circle text-caffe" style="font-size: 2rem;"></i>
-              <p class="fw-bold mb-2">Confirmed</p>
-            </div>
-            <div style="flex: 1;">
-              <i class="bi bi-truck text-caffe" style="font-size: 2rem;"></i>
-              <p class="fw-bold mb-2">Out For Delivery</p>
-            </div>
-            <div style="flex: 1;">
-              <i class="bi bi-house-door text-caffe" style="font-size: 2rem;"></i>
-              <p class="fw-bold mb-2">Delivered</p>
-            </div>
-          </div>
+  <div class="container">
+    <div class="d-flex flex-wrap">
+      <div class="col-lg-8 col-12 pe-lg-4">
 
-          <div class="progress-container pb-5">
-            <div class="progress-line"></div>
-            <ul id="progressbar-2">
-              <li *ngFor="let step of [0,1,2,3]; let i = index" [ngClass]="{
+        <div class="shadow-sm" *ngIf="(order?.statusNum ??0) !== 4">
+          <div class="card-body mt-5">
+            <div class="d-flex justify-content-between mt-4 align-items-center mb-4 pt-4 px-4 rounded">
+              <h4 class="mb-0">
+                <i class="bi bi-receipt me-2"></i>
+                Order #<span class="text-caffe font-weight-bold">{{ order?.id }}</span>
+              </h4>
+              <div class="text-muted small"> {{order?.orderDate}}</div>
+            </div>
+
+            <div class="d-flex justify-content-between text-center ms-1">
+              <div style="flex: 1;">
+                <i class="bi bi-hourglass-split text-caffe" style="font-size: 2rem;"></i>
+                <p class="fw-bold mb-2">Pending</p>
+              </div>
+              <div style="flex: 1;">
+                <i class="bi bi-check-circle text-caffe" style="font-size: 2rem;"></i>
+                <p class="fw-bold mb-2">Confirmed</p>
+              </div>
+              <div style="flex: 1;">
+                <i class="bi bi-truck text-caffe" style="font-size: 2rem;"></i>
+                <p class="fw-bold mb-2">Out For Delivery</p>
+              </div>
+              <div style="flex: 1;">
+                <i class="bi bi-house-door text-caffe" style="font-size: 2rem;"></i>
+                <p class="fw-bold mb-2">Delivered</p>
+              </div>
+            </div>
+
+            <div class="progress-container pb-5">
+              <div class="progress-line"></div>
+              <ul id="progressbar-2">
+                <li *ngFor="let step of [0,1,2,3]; let i = index" [ngClass]="{
           'step0': true,
           'active': (order?.statusNum ??0) < 4 && (order?.statusNum ??0) >= i,
           'completed-line': (order?.statusNum ??0) < 4 && (order?.statusNum ??0) > i
         }" [id]="'step' + (i + 1)">
-              </li>
-            </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cancelled Order Message -->
+        <div class="card shadow-sm border-0 mt-5" *ngIf="(order?.statusNum ??0) === 4">
+          <div class="card-body text-center" style="padding: 19px;">
+            <div class="cancelled-icon mb-4">
+              <i class="bi bi-x-circle-fill fs-1"></i>
+            </div>
+            <h3 class="fw-bold mb-3">Order Cancelled</h3>
+            <p class="text-muted mb-4">Your order {{ order?.id }} has been cancelled and won't be processed.</p>
+
+          </div>
+        </div>
+
+
+        <!-- Address Section -->
+        <div class="card shadow-sm border-0 mt-4">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h4 class="mb-3"><i class="bi bi-truck-front me-2"></i>Delivery Information</h4>
+                <div class="d-flex align-items-start mb-3 mt-3">
+                  <i class="bi bi-person-circle text-caffe me-3 mt-3 "></i>
+                  <div>
+                    <h6 class="mb-0 mt-3">Customer Name</h6>
+                    <p class="text-muted mb-0">{{buyer?.firstName + ' ' + (buyer?.lastName ?? "")}}</p>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-start mb-3">
+                  <i class="bi bi-geo-alt text-caffe  me-3 mt-1"></i>
+                  <div>
+                    <h6 class="mb-0">{{address?.buildingNum}}, {{address?.street}},{{address?.city}}</h6>
+                    <p class="text-muted mb-0">Apartment {{address?.apartment}}, Floor {{address?.floor}}</p>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-start">
+                  <i class="bi bi-clock text-caffe  me-3 mt-1"></i>
+                  <div>
+                    <h6 class="mb-0">Phone Number</h6>
+                    <p class="text-muted mb-0">{{address?.phoneNum}}</p>
+                  </div>
+                </div>
+              </div>
+              <img src="images/Home/Delivery.jpeg" class="img-fluid rounded" style="max-width:180px; height: auto;">
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Cancelled Order Message -->
-      <div class="card shadow-sm border-0 mt-5" *ngIf="(order?.statusNum ??0) === 4">
-        <div class="card-body text-center" style="padding: 19px;">
-          <div class="cancelled-icon mb-4">
-            <i class="bi bi-x-circle-fill fs-1"></i>
-          </div>
-          <h3 class="fw-bold mb-3">Order Cancelled</h3>
-          <p class="text-muted mb-4">Your order {{ order?.id }} has been cancelled and won't be processed.</p>
+      <!-- RIGHT SIDE: Payment Section -->
+      <div class="col-lg-4 col-12 mt-lg-5 mt-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h4 class="mb-0 ">
+                Order Summary
+              </h4>
+              <span class="badge bg-light bg-opacity-10  text-success p-2">Paid</span>
+            </div>
 
-        </div>
-      </div>
-
-
-      <!-- Address Section -->
-      <div class="card shadow-sm border-0 mt-4">
-        <div class="card-body p-4">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <h4 class="mb-3"><i class="bi bi-truck-front me-2"></i>Delivery Information</h4>
-              <div class="d-flex align-items-start mb-3 mt-3">
-                <i class="bi bi-person-circle text-caffe me-3 mt-3 "></i>
-                <div>
-                  <h6 class="mb-0 mt-3">Customer Name</h6>
-                  <p class="text-muted mb-0">{{buyer?.firstName + ' ' + (buyer?.lastName ?? "")}}</p>
-                </div>
+            <div class="bg-light p-3 rounded mb-4">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Subtotal</span>
+                <span class="fw-medium">{{(order?.subTotal??0) | currency:'EGP '}}</span>
               </div>
-
-              <div class="d-flex align-items-start mb-3">
-                <i class="bi bi-geo-alt text-caffe  me-3 mt-1"></i>
-                <div>
-                  <h6 class="mb-0">{{address?.buildingNum}}, {{address?.street}},{{address?.city}}</h6>
-                  <p class="text-muted mb-0">Apartment {{address?.apartment}}, Floor {{address?.floor}}</p>
-                </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Delivery Fee</span>
+                <span class="fw-medium">{{(order?.deliveryFees??0) | currency:'EGP '}}</span>
               </div>
-
-              <div class="d-flex align-items-start">
-                <i class="bi bi-clock text-caffe  me-3 mt-1"></i>
-                <div>
-                  <h6 class="mb-0">Phone Number</h6>
-                  <p class="text-muted mb-0">{{address?.phoneNum}}</p>
-                </div>
+              <div class="d-flex justify-content-between">
+                <span class="text-muted">Discount</span>
+                <span class="fw-medium text-muted">0 EGP</span>
               </div>
             </div>
-            <img src="images/Home/Delivery.jpeg" class="img-fluid rounded" style="max-width:180px; height: auto;">
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- RIGHT SIDE: Payment Section -->
-    <div class="col-lg-4 col-12 mt-lg-5 mt-4">
-      <div class="card shadow-sm border-0">
-        <div class="card-body p-4">
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="mb-0 ">
-              Order Summary
-            </h4>
-            <span class="badge bg-light bg-opacity-10  text-success p-2">Paid</span>
-          </div>
-
-          <div class="bg-light p-3 rounded mb-4">
-            <div class="d-flex justify-content-between mb-2">
-              <span class="text-muted">Subtotal</span>
-              <span class="fw-medium">{{(order?.subTotal??0) | currency:'EGP '}}</span>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h5 class="mb-0">Total Amount</h5>
+              <h4 class="mb-0 text-caffe">{{(order?.subTotal??0) + (order?.deliveryFees??0) | currency:'EGP '}}</h4>
             </div>
-            <div class="d-flex justify-content-between mb-2">
-              <span class="text-muted">Delivery Fee</span>
-              <span class="fw-medium">{{(order?.deliveryFees??0) | currency:'EGP '}}</span>
-            </div>
-            <div class="d-flex justify-content-between">
-              <span class="text-muted">Discount</span>
-              <span class="fw-medium text-muted">0 EGP</span>
-            </div>
-          </div>
 
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <h5 class="mb-0">Total Amount</h5>
-            <h4 class="mb-0 text-caffe">{{(order?.subTotal??0) + (order?.deliveryFees??0) | currency:'EGP '}}</h4>
-          </div>
+            <hr class="my-4">
 
-          <hr class="my-4">
-
-          <div class="mb-4">
-            <h5 class="mb-3">Payment Method</h5>
-            <div class="d-flex align-items-center bg-light p-3 rounded">
-              <i class="bi fs-3 text-caffe me-3" [ngClass]="{
+            <div class="mb-4">
+              <h5 class="mb-3">Payment Method</h5>
+              <div class="d-flex align-items-center bg-light p-3 rounded">
+                <i class="bi fs-3 text-caffe me-3" [ngClass]="{
                    'bi-paypal': order?.paymentMethod === 'PayPal',
                    'bi-stripe': order?.paymentMethod === 'Stripe',
                    'bi-cash': !order?.paymentMethod || (order?.paymentMethod !== 'PayPal' && order?.paymentMethod !== 'Stripe')
                  }"></i>
-              <div>
-                <h6 class="mb-0">{{ order?.paymentMethod || 'Cash' }}</h6>
-                <small class="text-muted">Payment completed</small>
-              </div>
-            </div>
-          </div>
-
-          <button class="btn custom-outline w-100 mb-4 " (click)="downloadInvoice()">
-            <i class="bi bi-receipt me-2"></i>Download Invoice
-          </button>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Order Items Section -->
-<div class="container mt-4 mb-5">
-  <div class="card shadow-sm border-0">
-    <div class="card-body p-4">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0 ">
-          <i class="bi bi-box-seam me-2"></i>Order Items
-        </h4>
-        <span class="badge bg-light bg-opacity-10 text-caffe p-2">{{orderItems?.length}} Items</span>
-      </div>
-
-      <div *ngFor="let item of orderItems" class="d-flex justify-content-between align-items-center mb-4 p-3 rounded"
-        style="background-color: #f8f9fa;">
-        <div class="d-flex align-items-center">
-          <div class="position-relative">
-            <a [routerLink]="['/products', item.productId]">
-              <img [src]="apiConfig.apiUrl + item.productImage" class="img-fluid rounded"
-                style="width: 130px; height: 140px; object-fit: cover;">
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-caffe">
-                {{ item.quantity }}
-              </span>
-            </a>
-          </div>
-          <div class="ms-3">
-            <h6 class="mb-1 fs-5">{{ item.productName }}</h6>
-
-            <div>
-              <div><i class="bi bi-tag me-1 text-caffe"></i> {{ item.categoryName }}</div>
-            </div>
-
-            <div class="d-flex align-items-center gap-2">
-              <i class="bi bi-eyedropper me-1 text-caffe"></i>
-              <div class="d-flex align-items-center gap-1">
-                <div class="color-swatch rounded-5 shadow border" [style.background]="item.color">
+                <div>
+                  <h6 class="mb-0">{{ order?.paymentMethod || 'Cash' }}</h6>
+                  <small class="text-muted">Payment completed</small>
                 </div>
               </div>
             </div>
 
-         
-            <div class="mt-2" *ngIf="order?.statusNum == 3 && hasRole('Buyer')">
-              <button class="btn btn-sm text-caffe" style="border: none;" (click)="openReviewDialog(item)">
-                <i class="bi bi-chat-left-text me-1"></i>Add Your Review
-              </button>
-            </div>
+            <button class="btn custom-outline w-100 mb-4 " (click)="downloadInvoice()">
+              <i class="bi bi-receipt me-2"></i>Download Invoice
+            </button>
+
           </div>
         </div>
-        <div class="text-end">
-          <p class="mb-1 fw-bold fs-5">{{ item.price | currency:'EGP ' }}</p>
-          <p class="text-muted small">{{ item.price /item.quantity | currency:'EGP ' }} × {{ item.quantity }}</p>
-        </div>
       </div>
-
     </div>
   </div>
+  <!-- Order Items Section -->
+  <div class="container mt-4 mb-5">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="mb-0 ">
+            <i class="bi bi-box-seam me-2"></i>Order Items
+          </h4>
+          <span class="badge bg-light bg-opacity-10 text-caffe p-2">{{orderItems?.length}} Items</span>
+        </div>
+
+        <div *ngFor="let item of orderItems" class="d-flex justify-content-between align-items-center mb-4 p-3 rounded"
+          style="background-color: #f8f9fa;">
+          <div class="d-flex align-items-center">
+            <div class="position-relative">
+              <a [routerLink]="['/products', item.productId]">
+                <img [src]="apiConfig.apiUrl + item.productImage" class="img-fluid rounded"
+                  style="width: 130px; height: 140px; object-fit: cover;">
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-caffe">
+                  {{ item.quantity }}
+                </span>
+              </a>
+            </div>
+            <div class="ms-3">
+              <h6 class="mb-1 fs-5">{{ item.productName }}</h6>
+
+              <div>
+                <div><i class="bi bi-tag me-1 text-caffe"></i> {{ item.categoryName }}</div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-eyedropper me-1 text-caffe"></i>
+                <div class="d-flex align-items-center gap-1">
+                  <div class="color-swatch rounded-5 shadow border" [style.background]="item.color">
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="mt-2" *ngIf="order?.statusNum == 3 && hasRole('Buyer')">
+                <button class="btn btn-sm text-caffe" style="border: none;" (click)="openReviewDialog(item)">
+                  <i class="bi bi-chat-left-text me-1"></i>Add Your Review
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="text-end">
+            <p class="mb-1 fw-bold fs-5">{{ item.price | currency:'EGP ' }}</p>
+            <p class="text-muted small">{{ item.price /item.quantity | currency:'EGP ' }} × {{ item.quantity }}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 </div>

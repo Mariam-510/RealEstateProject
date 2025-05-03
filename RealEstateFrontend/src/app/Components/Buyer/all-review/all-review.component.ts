@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { Router, RouterModule } from '@angular/router';
@@ -15,9 +15,11 @@ import { ToastrService } from '../../../Services/toastr.service';
 })
 export class AllReviewComponent implements OnInit {
   apiConfig = API_CONFIG;
-  constructor(private router: Router, private auth: AuthService, private reviewService: ReviewService,private toaster:ToastrService) { }
+  constructor(private router: Router, private auth: AuthService, private reviewService: ReviewService,
+    private toaster: ToastrService, private cdr: ChangeDetectorRef) { }
 
   reviews: ReviewResponseDto[] = []
+  isLoading = false;
 
   ngOnInit() {
     if (!this.hasRole('Buyer')) {
@@ -29,6 +31,9 @@ export class AllReviewComponent implements OnInit {
   }
 
   private loadReviews(): void {
+    this.isLoading = true;
+    this.cdr.detectChanges();
+
     this.reviewService.getCurrentBuyerReviews().subscribe({
       next: (reviews) => {
         this.reviews = reviews;
@@ -37,6 +42,10 @@ export class AllReviewComponent implements OnInit {
       error: (err) => {
         console.error('Failed to load reviews:', err);
         // Handle error (show message, etc.)
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -112,39 +121,39 @@ export class AllReviewComponent implements OnInit {
     return this.auth.isAuthenticated();
   }
   itemsPerPage: number = 4;
-currentPage: number = 1;
-totalPages: number = 0;
+  currentPage: number = 1;
+  totalPages: number = 0;
 
-// Add these methods to your component
-get paginatedreviews(): any[] {
-  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-  return this.sortedReviews.slice(startIndex, startIndex + this.itemsPerPage);
-}
-
-getPages(): number[] {
-  this.totalPages = Math.ceil(this.sortedReviews.length / this.itemsPerPage);
-  const pages = [];
-  for (let i = 1; i <= this.totalPages; i++) {
-    pages.push(i);
+  // Add these methods to your component
+  get paginatedreviews(): any[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.sortedReviews.slice(startIndex, startIndex + this.itemsPerPage);
   }
-  return pages;
-}
 
-goToPage(page: number): void {
-  if (page >= 1 && page <= this.totalPages) {
-    this.currentPage = page;
+  getPages(): number[] {
+    this.totalPages = Math.ceil(this.sortedReviews.length / this.itemsPerPage);
+    const pages = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
-}
 
-previousPage(): void {
-  if (this.currentPage > 1) {
-    this.currentPage--;
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
   }
-}
 
-nextPage(): void {
-  if (this.currentPage < this.totalPages) {
-    this.currentPage++;
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
   }
-}
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
 }

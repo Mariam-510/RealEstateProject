@@ -10,7 +10,14 @@
   </nav>
 </div>
 
-<div class="px-5">
+<div *ngIf="isLoading" class="d-flex align-items-center justify-content-center" style="height: 100px">
+  <div class="spinner-border text-caffe" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+
+<div *ngIf="!isLoading" class="px-5">
   <form [formGroup]="MyForm">
     <div class="row">
       <!-- Left Side: Image & User Info -->
@@ -21,11 +28,12 @@
           <!-- <img [src]="buyer?.imageUrl" alt="User Avatar" class="rounded-circle img-fluid" style="max-width: 200px;"> -->
 
           <ng-container *ngIf="userImage; else defaultIcon">
-            <img [src]="userImage" alt="User" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover;">
+            <img [src]="userImage" alt="User"
+              style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover;">
           </ng-container>
 
-          <ng-template #defaultIcon>  <!-- 4a2c2a -->
-            <img src="images/user.png" alt="Default Icon"  style="width: 200px; height:200px ;">
+          <ng-template #defaultIcon> <!-- 4a2c2a -->
+            <img src="images/user.png" alt="Default Icon" style="width: 200px; height:200px ;">
           </ng-template>
 
           <!-- <div class="camera-icon position-absolute" (click)="uploadImage()">
@@ -113,7 +121,8 @@
                 placeholder="currentPassword" formControlName="currentPassword">
               <span class="input-group-text bg-light border-0" style="cursor: pointer;"
                 (click)="toggleCurrentPasswordVisibility()">
-                <i class="bi fs-5" [class.bi-eye-fill]="showCurrentPassword" [class.bi-eye-slash-fill]="!showCurrentPassword"></i>
+                <i class="bi fs-5" [class.bi-eye-fill]="showCurrentPassword"
+                  [class.bi-eye-slash-fill]="!showCurrentPassword"></i>
               </span>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { LeafletMapComponent } from '../../../Map/leaflet-map/leaflet-map.component';
 import { ToastrService } from '../../../../Services/toastr.service';
@@ -16,7 +16,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './favorite-products.component.css'
 })
 export class FavoriteProductsComponent implements OnInit {
-  constructor(private toastr: ToastrService, private auth: AuthService, private wishListService: WishListService) { }
+  constructor(private toastr: ToastrService, private auth: AuthService, private wishListService: WishListService,
+    private cdr: ChangeDetectorRef) { }
   apiConfig = API_CONFIG;
 
   Products: ProductDTO[] = [];
@@ -29,7 +30,12 @@ export class FavoriteProductsComponent implements OnInit {
     this.loadWishlistProducts();
   }
 
+  isLoading = false;
+
   async loadWishlistProducts() {
+    this.isLoading = true;
+    this.cdr.detectChanges();
+
     this.wishListService.getAllProductsByBuyerId().subscribe({
       next: (products) => {
         console.log('Received products:', products); // Check contracts here
@@ -44,6 +50,10 @@ export class FavoriteProductsComponent implements OnInit {
       error: (err) => {
         this.toastr.error('Failed to load wishlist');
         console.error(err);
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
 
     }

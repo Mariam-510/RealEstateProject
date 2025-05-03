@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from '../../../Services/toastr.service';
 import { PropertyDTO, PropertyService } from '../../../Services/ApiServices/property.service';
@@ -12,53 +12,53 @@ declare var bootstrap: any; // Required for Bootstrap modal handling
 
 @Component({
   selector: 'app-view-pending-properties',
-  imports: [CommonModule,RouterLink,SafeUrlPipe],
+  imports: [CommonModule, RouterLink, SafeUrlPipe],
   templateUrl: './view-pending-properties.component.html',
   styleUrl: './view-pending-properties.component.css'
 })
 export class ViewPendingPropertiesComponent {
- isPDFModalOpen = false;
+  isPDFModalOpen = false;
   @ViewChild('pdfModal') pdfModal!: ElementRef;
   private modalInstance?: any;
   currentPage = 1;
   pageSize = 3;
   totalPages = 1;
-  properties: PropertyDTO[] =[]
+  properties: PropertyDTO[] = []
   paginatedProperties: PropertyDTO[] = [];
   apiConfig = API_CONFIG;
 
-  constructor(private toastr: ToastrService,private propertyService: PropertyService,private auth: AuthService, 
-    private router: Router ) { }
+  constructor(private toastr: ToastrService, private propertyService: PropertyService, private auth: AuthService,
+    private router: Router, private cdr: ChangeDetectorRef) { }
 
-    preventClick(event: Event) {
-      event.preventDefault();
-      event.stopPropagation();
+  preventClick(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  async ngOnInit() {
+    if (this.hasRole('Seller')) {
+      this.loadAllSellerProperties();
     }
- async ngOnInit() {
-  if (this.hasRole('Seller')) {
-    this.loadAllSellerProperties();
+    else {
+      this.router.navigate(['/login']);
+    }
   }
-  else{
-    this.router.navigate(['/login']);
-  }
-   }
 
 
-   async downloadFile(property: PropertyDTO) {
+  async downloadFile(property: PropertyDTO) {
     if (!property?.contractImgUrl) return;
-  
+
     const fileUrl = this.apiConfig.apiUrl + property.contractImgUrl;
-  
+
     try {
       const response = await fetch(fileUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-  
+
       const a = document.createElement('a');
       a.href = url;
       a.download = 'contract.pdf'; // Set a filename
       a.click();
-  
+
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Download failed:', error);
@@ -71,26 +71,26 @@ export class ViewPendingPropertiesComponent {
       this.modalInstance = new bootstrap.Modal(this.pdfModal.nativeElement);
     }
   }
-  selectedProperty: PropertyDTO= {} as PropertyDTO;
+  selectedProperty: PropertyDTO = {} as PropertyDTO;
   showModal(property: PropertyDTO): void {
     this.selectedProperty = property;
     this.modalInstance?.show();
   }
   // Pagination methods
-updatePagination(): void {
-  // Calculate total pages
-  this.totalPages = Math.ceil(this.properties.length / this.pageSize);
-  
-  // Ensure current page stays within valid bounds
-  this.currentPage = Math.max(1, Math.min(this.currentPage, this.totalPages));
-  
-  // Calculate slice indices
-  const startIndex = (this.currentPage - 1) * this.pageSize;
-  const endIndex = startIndex + this.pageSize;
-  
-  // Update paginated properties
-  this.paginatedProperties = this.properties.slice(startIndex, endIndex);
-}
+  updatePagination(): void {
+    // Calculate total pages
+    this.totalPages = Math.ceil(this.properties.length / this.pageSize);
+
+    // Ensure current page stays within valid bounds
+    this.currentPage = Math.max(1, Math.min(this.currentPage, this.totalPages));
+
+    // Calculate slice indices
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+
+    // Update paginated properties
+    this.paginatedProperties = this.properties.slice(startIndex, endIndex);
+  }
   getPages(): number[] {
     const pagesToShow = 5;
     const startPage = Math.max(1, this.currentPage - Math.floor(pagesToShow / 2));
@@ -132,18 +132,25 @@ updatePagination(): void {
     return this.auth.isAuthenticated();
   }
 
+  isLoading = false;
+
   async loadAllSellerProperties() {
-      try {
-        if (this.hasRole("Seller")) {
-          this.properties = await lastValueFrom(
-            this.propertyService.getPropertiesBySellerId(PropertyApprovalStatus.Pending)
-          );
-          this.updatePagination();
-        }
-      } catch (err) {
-        console.error('API Error:', err);
+    try {
+      this.isLoading = true;
+      this.cdr.detectChanges();
+
+      if (this.hasRole("Seller")) {
+        this.properties = await lastValueFrom(
+          this.propertyService.getPropertiesBySellerId(PropertyApprovalStatus.Pending)
+        );
         this.updatePagination();
       }
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    } catch (err) {
+      console.error('API Error:', err);
+      this.updatePagination();
     }
+  }
 }
 

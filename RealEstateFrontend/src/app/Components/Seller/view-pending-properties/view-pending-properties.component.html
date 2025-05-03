@@ -1,234 +1,242 @@
 <div class="mt-5 ms-5">
-    <h2 class="fw-bold"><span style="font-size: 0.9em;">⏳</span> Pending Properties</h2>
-    <nav aria-label="breadcrumb mb-0">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item mb-0">
-                <p class="text-muted mb-0">Seller</p>
-            </li>
-            <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">Pending Properties</li>
-        </ol>
-    </nav>
-      
-</div>
-<div class="approval-page">
-    <div class="container py-4">
-@if (properties.length > 0) {
+  <h2 class="fw-bold"><span style="font-size: 0.9em;">⏳</span> Pending Properties</h2>
+  <nav aria-label="breadcrumb mb-0">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item mb-0">
+        <p class="text-muted mb-0">Seller</p>
+      </li>
+      <li class="breadcrumb-item active fw-semibold text-caffe" aria-current="page">Pending Properties</li>
+    </ol>
+  </nav>
 
-      <!-- Property List -->
-      <div class="row">
-        <ng-container *ngFor="let property of paginatedProperties">
-          <div class="col-12 mb-4">
-            <div class="property-card d-flex flex-column flex-md-row rounded shadow-sm border w-100 h-100">
-              <!-- Carousel Section -->
-              <div class="carousel-container position-relative">
-                <!-- Carousel -->
-                <div id="carousel-{{ property.id }}" class="carousel slide h-100">
-                  <!-- Badges -->
-                  <div class="position-absolute top-0 start-0 m-2 z-2">
-                    <span class="badge bg-secondary text-uppercase fw-semibold">
-                      {{ property.propertyCategory }}
-                    </span>
-                  </div>
-  
-                  <!-- Contract Download Button -->
-                  <div class="position-absolute top-0 end-0 z-3 me-2 mt-2">
-                    <button (click)="downloadFile(property)" class="btn btn-icon shadow-sm border-0 bg-dark bg-opacity-50 text-white px-2">
-                        <i class="bi bi-download me-2"></i>
-                      </button>        
-                  </div>
-  
-                  <div class="position-absolute bottom-0 end-0 m-2 z-2">
-                    <span *ngIf="property.type === 'Sell'" class="badge bg-success" style="background-color: #4a7d5e">
-                      <i class="bi bi-house-door"></i> For Sale
-                    </span>
-                    <span *ngIf="property.type === 'Rent'" class="badge" style="background-color: #2a5f8b">
-                      <i class="bi bi-building"></i> For Rent
-                    </span>
-                  </div>
-  
-                  <!-- Slides -->
-                  <div class="carousel-inner">
-                    <div *ngFor="let img of property.images; let i = index" class="carousel-item h-100"
-                      [class.active]="i === 0">
-                      <a [routerLink]="['/properties', property.id]">
+</div>
+
+<div *ngIf="isLoading" class="d-flex align-items-center justify-content-center" style="height: 100px">
+  <div class="spinner-border text-caffe" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+<div *ngIf="!isLoading" class="approval-page">
+  <div class="container py-4">
+
+    @if (properties.length > 0) {
+
+    <!-- Property List -->
+    <div class="row">
+      <ng-container *ngFor="let property of paginatedProperties">
+        <div class="col-12 mb-4">
+          <div class="property-card d-flex flex-column flex-md-row rounded shadow-sm border w-100 h-100">
+            <!-- Carousel Section -->
+            <div class="carousel-container position-relative">
+              <!-- Carousel -->
+              <div id="carousel-{{ property.id }}" class="carousel slide h-100">
+                <!-- Badges -->
+                <div class="position-absolute top-0 start-0 m-2 z-2">
+                  <span class="badge bg-secondary text-uppercase fw-semibold">
+                    {{ property.propertyCategory }}
+                  </span>
+                </div>
+
+                <!-- Contract Download Button -->
+                <div class="position-absolute top-0 end-0 z-3 me-2 mt-2">
+                  <button (click)="downloadFile(property)"
+                    class="btn btn-icon shadow-sm border-0 bg-dark bg-opacity-50 text-white px-2">
+                    <i class="bi bi-download me-2"></i>
+                  </button>
+                </div>
+
+                <div class="position-absolute bottom-0 end-0 m-2 z-2">
+                  <span *ngIf="property.type === 'Sell'" class="badge bg-success" style="background-color: #4a7d5e">
+                    <i class="bi bi-house-door"></i> For Sale
+                  </span>
+                  <span *ngIf="property.type === 'Rent'" class="badge" style="background-color: #2a5f8b">
+                    <i class="bi bi-building"></i> For Rent
+                  </span>
+                </div>
+
+                <!-- Slides -->
+                <div class="carousel-inner">
+                  <div *ngFor="let img of property.images; let i = index" class="carousel-item h-100"
+                    [class.active]="i === 0">
+                    <a [routerLink]="['/properties', property.id]">
 
                       <img [src]="apiConfig.apiUrl+ img" class="d-block" style="width: 34vw; height: 40vh"
                         [alt]="'Image ' + (i + 1) + ' of ' + property.title" />
-                      </a>
-                    </div>
-                  </div>
-  
-                  <!-- Controls -->
-                  <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#carousel-' + property.id"
-                    data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon"></span>
-                  </button>
-                  <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#carousel-' + property.id"
-                    data-bs-slide="next">
-                    <span class="carousel-control-next-icon"></span>
-                  </button>
-  
-                  <!-- Image Counter -->
-                  <div
-                    class="position-absolute bottom-0 start-0 m-2 z-2 bg-dark bg-opacity-50 text-white rounded px-2 py-1 small">
-                    <i class="bi bi-images me-1"></i> {{ property.images.length }}
+                    </a>
                   </div>
                 </div>
-              </div>
-  
-              <!-- Property Details -->
-              <div class="property-details p-3 d-flex flex-column justify-content-center">
-                <div class="mt-2 d-flex row">
-                  <!-- Price & Status -->
-                  <div class="d-flex justify-content-between align-items-start mb-2 col-12">
-                    <div class="d-flex align-items-baseline gap-2 flex-wrap">
-                      <h5 class="mb-0 fw-bold" style="color: #c38e79">
-                        {{ property.price | number : "1.0-0" }} EGP
-                      </h5>
-                      <small class="text-muted" *ngIf="property.type === 'Rent'">/month</small>
-                      <small class="text-muted" *ngIf="property.type === 'Sell' && property.space">
-                        ({{ property.price / property.space | number : "1.0-0" }}
-                        EGP/m²)
-                      </small>
-                    </div>
-                  </div>
-  
-                  <div class="col-6">
-                    <!-- Title & Location -->
-                    <h6 class="mb-1 fw-semibold" title="{{ property.title }}">
-                      {{ property.title }}
-                    </h6>
-  
-                    <div class="d-flex align-items-center gap-2 text-muted mb-3 mt-3">
-                      <i class="bi bi-geo-alt-fill fs-6" style="color: #c38e79"></i>
-                      <span class="text-secondary fst-italic" title="{{ property.location }}">{{ property.location
-                        }}</span>
-                    </div>
-  
-                    <!-- Features -->
-                    <div class="d-flex gap-4 text-muted flex-wrap">
-                      <div class="d-flex align-items-center">
-                        <div class="bg-light rounded-circle p-2 mb-1">
-                          <img src="/images/Bed.svg" width="20" height="20" alt="" />
-                        </div>
-                        <span class="fs-6">{{ property.bedRooms }} Beds</span>
-                      </div>
-  
-                      <div class="d-flex align-items-center">
-                        <div class="bg-light rounded-circle p-2 mb-1">
-                          <img src="/images/Bath.svg" width="20" height="20" alt="" />
-                        </div>
-                        <span class="fs-6">{{ property.bathRooms }} Baths</span>
-                      </div>
-  
-                      <div class="d-flex align-items-center">
-                        <div class="bg-light rounded-circle p-2 mb-1">
-                          <img src="/images/Area.svg" width="20" height="20" alt="" />
-                        </div>
-                        <span class="fs-6">{{ property.space }} m²</span>
-                      </div>
-                    </div>
-  
-                    <!-- Additional Info -->
-                    <div class="mt-3">
-                      <p class="small text-muted mb-2">
-                        <strong>Uploaded:</strong>
-                        {{ property.addedDate | date : "mediumDate" }}
-                      </p>
-                      <p class="small text-muted mb-2">
-                        <strong>Contract Type:</strong> {{ "Standard" }}
-                      </p>
-                    </div>
-                  </div>
-                  <div class="pdf-preview col-6">
-                    <div class="d-flex h-100">
-                      <!-- Vertical Divider -->
-                      <div class="vr mx-3 " style="height: 100%;  opacity: 0.2;"></div>
-  
-                      <div class="d-flex flex-column h-100 w-100">
-                        <!-- Title -->
-                        <h6 class="fw-semibold mb-2" style="color: #c38e79;">
-                          <i class="bi bi-file-earmark-pdf-fill me-2"></i>Contract Preview
-                        </h6>
-  
-                        <!-- PDF Preview Content -->
-                        <div class="d-flex flex-column h-100">
-                            <iframe [src]="apiConfig.apiUrl + property.contractImgUrl | safeUrl" 
-                            class="flex-grow-1 rounded border"
-                            style="min-height: 150px;"></iframe>
-  
-                          <!-- Preview Button -->
-                          <button (click)="showModal(property)" class="btn btn-sm mt-2 align-self-end"
-                            style="background-color: #c38e79; color: white;">
-                            <i class="bi bi-arrows-angle-expand me-1"></i> Expand Preview
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+
+                <!-- Controls -->
+                <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#carousel-' + property.id"
+                  data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#carousel-' + property.id"
+                  data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+
+                <!-- Image Counter -->
+                <div
+                  class="position-absolute bottom-0 start-0 m-2 z-2 bg-dark bg-opacity-50 text-white rounded px-2 py-1 small">
+                  <i class="bi bi-images me-1"></i> {{ property.images.length }}
                 </div>
-  
               </div>
             </div>
-          </div>
-        </ng-container>
-      </div>
-      <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center mt-4">
-          <li class="page-item" [class.disabled]="currentPage === 1">
-            <a class="page-link text-caffe" (click)="previousPage()">Previous</a>
-          </li>
-          <li *ngFor="let page of getPages()" class="page-item " [class.active]="currentPage === page">
-            <a class="page-link" [ngClass]="{'bg-caffe text-white': currentPage === page}" (click)="goToPage(page)">
-              {{ page }}
-            </a>
-          </li>
-          <li class="page-item" [class.disabled]="currentPage === totalPages">
-            <a class="page-link text-caffe" (click)="nextPage()">Next</a>
-          </li>
-        </ul>
-      </nav>
-    }
-    @else {
-        <!-- Properties Empty State -->
-        <div class="text-center my-5 py-5">
-          <div class="empty-state">
-            <i class="bi bi-house display-3 text-caffe"></i>
-            <h3 class="mt-3 fw-bold">No Properties Found</h3>
-            <p class="text-muted">Try adjusting your search or filters</p>
+
+            <!-- Property Details -->
+            <div class="property-details p-3 d-flex flex-column justify-content-center">
+              <div class="mt-2 d-flex row">
+                <!-- Price & Status -->
+                <div class="d-flex justify-content-between align-items-start mb-2 col-12">
+                  <div class="d-flex align-items-baseline gap-2 flex-wrap">
+                    <h5 class="mb-0 fw-bold" style="color: #c38e79">
+                      {{ property.price | number : "1.0-0" }} EGP
+                    </h5>
+                    <small class="text-muted" *ngIf="property.type === 'Rent'">/month</small>
+                    <small class="text-muted" *ngIf="property.type === 'Sell' && property.space">
+                      ({{ property.price / property.space | number : "1.0-0" }}
+                      EGP/m²)
+                    </small>
+                  </div>
+                </div>
+
+                <div class="col-6">
+                  <!-- Title & Location -->
+                  <h6 class="mb-1 fw-semibold" title="{{ property.title }}">
+                    {{ property.title }}
+                  </h6>
+
+                  <div class="d-flex align-items-center gap-2 text-muted mb-3 mt-3">
+                    <i class="bi bi-geo-alt-fill fs-6" style="color: #c38e79"></i>
+                    <span class="text-secondary fst-italic" title="{{ property.location }}">{{ property.location
+                      }}</span>
+                  </div>
+
+                  <!-- Features -->
+                  <div class="d-flex gap-4 text-muted flex-wrap">
+                    <div class="d-flex align-items-center">
+                      <div class="bg-light rounded-circle p-2 mb-1">
+                        <img src="/images/Bed.svg" width="20" height="20" alt="" />
+                      </div>
+                      <span class="fs-6">{{ property.bedRooms }} Beds</span>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                      <div class="bg-light rounded-circle p-2 mb-1">
+                        <img src="/images/Bath.svg" width="20" height="20" alt="" />
+                      </div>
+                      <span class="fs-6">{{ property.bathRooms }} Baths</span>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                      <div class="bg-light rounded-circle p-2 mb-1">
+                        <img src="/images/Area.svg" width="20" height="20" alt="" />
+                      </div>
+                      <span class="fs-6">{{ property.space }} m²</span>
+                    </div>
+                  </div>
+
+                  <!-- Additional Info -->
+                  <div class="mt-3">
+                    <p class="small text-muted mb-2">
+                      <strong>Uploaded:</strong>
+                      {{ property.addedDate | date : "mediumDate" }}
+                    </p>
+                    <p class="small text-muted mb-2">
+                      <strong>Contract Type:</strong> {{ "Standard" }}
+                    </p>
+                  </div>
+                </div>
+                <div class="pdf-preview col-6">
+                  <div class="d-flex h-100">
+                    <!-- Vertical Divider -->
+                    <div class="vr mx-3 " style="height: 100%;  opacity: 0.2;"></div>
+
+                    <div class="d-flex flex-column h-100 w-100">
+                      <!-- Title -->
+                      <h6 class="fw-semibold mb-2" style="color: #c38e79;">
+                        <i class="bi bi-file-earmark-pdf-fill me-2"></i>Contract Preview
+                      </h6>
+
+                      <!-- PDF Preview Content -->
+                      <div class="d-flex flex-column h-100">
+                        <iframe [src]="apiConfig.apiUrl + property.contractImgUrl | safeUrl"
+                          class="flex-grow-1 rounded border" style="min-height: 150px;"></iframe>
+
+                        <!-- Preview Button -->
+                        <button (click)="showModal(property)" class="btn btn-sm mt-2 align-self-end"
+                          style="background-color: #c38e79; color: white;">
+                          <i class="bi bi-arrows-angle-expand me-1"></i> Expand Preview
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
-        }
+      </ng-container>
     </div>
-  
-    <!-- PDF Preview Modal -->
-    <div #pdfModal class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-labelledby="pdfPreviewModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="pdfPreviewModalLabel">
-                {{ selectedProperty?.title }} Contract
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <iframe [src]="apiConfig.apiUrl + selectedProperty?.contractImgUrl | safeUrl" width="100%" height="600px"></iframe>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              Close
-            </button>
-            <!-- <a href="/TestFiles/sample.pdf" download class="btn btn-primary">
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center mt-4">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link text-caffe" (click)="previousPage()">Previous</a>
+        </li>
+        <li *ngFor="let page of getPages()" class="page-item " [class.active]="currentPage === page">
+          <a class="page-link" [ngClass]="{'bg-caffe text-white': currentPage === page}" (click)="goToPage(page)">
+            {{ page }}
+          </a>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <a class="page-link text-caffe" (click)="nextPage()">Next</a>
+        </li>
+      </ul>
+    </nav>
+    }
+    @else {
+    <!-- Properties Empty State -->
+    <div class="text-center my-5 py-5">
+      <div class="empty-state">
+        <i class="bi bi-house display-3 text-caffe"></i>
+        <h3 class="mt-3 fw-bold">No Properties Found</h3>
+        <p class="text-muted">Try adjusting your search or filters</p>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- PDF Preview Modal -->
+  <div #pdfModal class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-labelledby="pdfPreviewModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pdfPreviewModalLabel">
+            {{ selectedProperty?.title }} Contract
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <iframe [src]="apiConfig.apiUrl + selectedProperty?.contractImgUrl | safeUrl" width="100%"
+            height="600px"></iframe>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Close
+          </button>
+          <!-- <a href="/TestFiles/sample.pdf" download class="btn btn-primary">
                 <i class="bi bi-download me-2"></i>Download
               </a> -->
-              <button (click)="downloadFile(selectedProperty)" class="btn btn-primary">
-                <i class="bi bi-download me-2"></i>Download
-              </button>
-       
-              
-          </div>
+          <button (click)="downloadFile(selectedProperty)" class="btn btn-primary">
+            <i class="bi bi-download me-2"></i>Download
+          </button>
+
+
         </div>
       </div>
     </div>
   </div>
+</div>

@@ -38,7 +38,14 @@
 <div *ngIf="error" class="alert alert-danger mx-4" role="alert">
   {{ error }}
 </div>
-<ng-container *ngIf="appointments.length > 0 && filteredappoinments.length > 0; else noAppointments">
+
+<div *ngIf="isLoading" class="d-flex align-items-center justify-content-center" style="height: 100px">
+  <div class="spinner-border text-caffe" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<ng-container *ngIf="!isLoading && appointments.length > 0 && filteredappoinments.length > 0; else noAppointments">
 
   <div class="row">
     <div *ngFor="let appointment of paginatedAppointments" class="col-12">
@@ -56,8 +63,7 @@
               <div class="position-absolute top-0 end-1 m-2">
                 <span class="badge bg-white text-dark shadow-sm py-2 px-3" style="font-size: .85rem;">
                   <i class="bi bi-tag-fill text-caffe me-1"></i>
-                  {{ appointment.property.type === 'Sell' ? 'For Sale' : (appointment.property.type === 'Rent' ? 'For
-                  Rent' : appointment.property.type) }}
+                  {{ appointment.property.type === 'Sell' ? 'For Sale' : (appointment.property.type === 'Rent' ? 'For Rent' : appointment.property.type) }}
                 </span>
 
               </div>
@@ -170,7 +176,7 @@
 </ng-container>
 
 <ng-template #noAppointments>
-  <div *ngIf="filteredappoinments.length === 0" class="text-center py-5">
+  <div *ngIf="!isLoading && filteredappoinments.length === 0" class="text-center py-5">
     <i class="bi bi-calendar-x text-caffe" style="font-size: 60px;"></i>
     <h3 class="fw-bold text-caffe mb-3 mt-1">No Matching Appointments</h3>
     <p class="text-muted mb-4">Try another filters to find what you're looking for.</p>
