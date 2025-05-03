@@ -275,13 +275,14 @@
                 <i class="bi bi-chat-dots me-2"></i>Inquire
               </a>
 
-              <button *ngIf="hasRoleOrNoUser('Buyer') && property.status === 'Auctioned'"
+              <a [routerLink]="['/auctions', property?.auctionId]"
+        s        *ngIf="hasRoleOrNoUser('Buyer') && property.status === 'Auctioned'"
                 class="btn btn-sm text-white position-relative fs-6 fw-semibold" style="background: rgb(255, 200, 0);">
                 <span
                   class="position-absolute top-0 start-100 translate-middle p-1 bg-dark bg-opacity-50 border border-light rounded-circle">
                 </span>
                 <i class="bi bi-lightning-charge me-2"></i>View Auction
-              </button>
+              </a>
             </div>
 
           </div>

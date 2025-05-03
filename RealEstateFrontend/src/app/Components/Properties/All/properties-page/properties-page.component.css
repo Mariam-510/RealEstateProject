@@ -323,6 +323,7 @@
   display: none;
 }
 
+
 .auto-scroll {
   animation: scroll 20s linear infinite;
   overflow-x: auto;

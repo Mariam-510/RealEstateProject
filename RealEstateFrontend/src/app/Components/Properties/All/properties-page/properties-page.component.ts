@@ -10,6 +10,8 @@ import { PropertyDTO, PropertyService } from '../../../../Services/ApiServices/p
 import { API_CONFIG } from '../../../../app.config';
 import { Subscription } from 'rxjs';
 import { PropertyFilterService } from '../../../../Services/property-filter.service';
+import { AuctionDTOShow, AuctionService } from '../../../../Services/ApiServices/auction.service';
+import { lastValueFrom } from 'rxjs';
 
 
 export type ViewMode = 'grid3' | 'grid4' | 'list' | 'map';
@@ -142,6 +144,31 @@ export class PropertiesPageComponent implements OnInit, AfterViewInit, OnDestroy
   }
   //------------------------------------------------------------------------------------------------------
   // In your component
+  // async loadProperties(
+  //   category?: string,
+  //   status?: string,
+  //   type?: string,
+  //   searchByLocation?: string
+  // ) {
+  //   try {
+  //     this.properties = await this.propertyService.getAll(
+  //       category,
+  //       status,
+  //       type,
+  //       searchByLocation
+  //     ).toPromise() ?? [];
+
+  //     console.log('Loaded properties:', this.properties);
+  //     this.cdr.detectChanges(); // If using ChangeDetectorRef
+  //   } catch (err) {
+  //     console.error('Error loading properties:', err);
+  //     // Handle error (show message, etc.)
+  //   }
+  // }
+
+  // Add this property in your component class
+  isLoading = false;
+
   async loadProperties(
     category?: string,
     status?: string,
@@ -149,18 +176,25 @@ export class PropertiesPageComponent implements OnInit, AfterViewInit, OnDestroy
     searchByLocation?: string
   ) {
     try {
-      this.properties = await this.propertyService.getAll(
-        category,
-        status,
-        type,
-        searchByLocation
-      ).toPromise() ?? [];
+      // Show loading indicator
+      this.isLoading = true;
+      this.cdr.detectChanges(); // Update view immediately
 
-      console.log('Loaded properties:', this.properties);
-      this.cdr.detectChanges(); // If using ChangeDetectorRef
+      const properties = await lastValueFrom(
+        this.propertyService.getAll(category, status, type, searchByLocation)
+      ) ?? [];
+
+      this.properties = properties;
+      console.log('Loaded propertiesss:', this.properties);
+      this.cdr.detectChanges();
+
     } catch (err) {
       console.error('Error loading properties:', err);
-      // Handle error (show message, etc.)
+      // Handle error
+    } finally {
+      // Hide loading indicator whether success or error
+      this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 

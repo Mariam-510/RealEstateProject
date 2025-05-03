@@ -32,29 +32,6 @@ export class RecommendedComponent implements OnInit {
     this.cdr.detectChanges(); // If using ChangeDetectorRef
   }
 
-  // In your component
-  // async loadProperties(
-  //   category?: string,
-  //   status?: string,
-  //   type?: string,
-  //   searchByLocation?: string
-  // ) {
-  //   try {
-  //     this.properties = await this.propertyService.getAll(
-  //       category,
-  //       status,
-  //       type,
-  //       searchByLocation
-  //     ).toPromise() ?? [];
-
-  //     console.log('Loaded properties:', this.properties);
-  //     this.cdr.detectChanges(); // If using ChangeDetectorRef
-  //   } catch (err) {
-  //     console.error('Error loading properties:', err);
-  //     // Handle error (show message, etc.)
-  //   }
-  // }
-
   async loadProperties(
     category?: string,
     status?: string,

@@ -56,7 +56,7 @@ namespace RealEstate.Repositories
                 .FirstOrDefaultAsync();
         }
         
-        public async Task<Auction?> GetByProprtyIdAsync(int id)
+        public async Task<Auction?> GetByPropertyIdAsync(int id)
         {
             return await dbcontext.Auctions.Where(A => A.PropertyId == id && A.IsDeleted == false).FirstOrDefaultAsync();
         }

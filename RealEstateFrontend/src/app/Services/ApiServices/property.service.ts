@@ -26,6 +26,7 @@ export interface PropertyDTO {
   userName: string | null;
   userImage: string | null;
   approvalStatus: string;
+  auctionId: number | null;
 }
 
 export enum PropertyApprovalStatus {
@@ -77,7 +78,7 @@ export enum PropertyCategory {
 export class PropertyService {
   private apiUrl = `${API_CONFIG.apiUrl}api/Property`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(
     category?: string,

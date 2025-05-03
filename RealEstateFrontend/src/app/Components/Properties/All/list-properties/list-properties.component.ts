@@ -48,7 +48,7 @@ export class ListPropertiesComponent {
       navigator.share({
         title: item.title,
         text: shareText,
-        url: window.location.href
+        url: `${window.location.origin}/properties/${item.id}`
       }).then(() => console.log('Shared successfully'))
         .catch(err => console.error('Sharing failed', err));
     } else {

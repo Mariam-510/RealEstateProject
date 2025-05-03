@@ -26,10 +26,21 @@
               No bids yet
             </span>
 
-            <span *ngIf="auction.status === 'Finished'" class="badge bg-success text-white fs-6  ">
-              <i class="bi bi-tag-fill me-1"></i>
-              Sold for {{ auction?.lastPropertyBidDto?.bidAmount| number }}
+            <span *ngIf="auction.status === 'Finished'" class="badge text-white fs-6" [ngClass]="{
+                        'bg-success': auction?.lastPropertyBidDto,
+                        'custom-dark-gray': !auction?.lastPropertyBidDto
+                      }">
+
+              <span *ngIf="auction?.lastPropertyBidDto">
+                <i class="bi bi-tag-fill me-1"></i>
+                Sold for {{ auction?.lastPropertyBidDto?.bidAmount | number }}
+              </span>
+              <span *ngIf="!auction?.lastPropertyBidDto">
+                <i class="bi bi-x-circle-fill me-1"></i>
+                No Bids Received
+              </span>
             </span>
+
           </div>
           <div class="slider-track rounded-0"
             [style.transform]="'translateX(' + (-100 * (auction?.currentImageIndex ?? 0)) + '%)'">
