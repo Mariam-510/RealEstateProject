@@ -8,3 +8,20 @@ a.active-order {
   color: #c38e79 !important;
   border-bottom: 2px solid #c38e79;
 }
+.pagination .page-item.active .page-link {
+  background-color: #c38e79; 
+  border-color: #c38e79;
+  color: white;
+}
+.pagination .page-item .page-link:hover {
+  background-color: #c38e79b6;  
+  color: white;
+}
+ 
+.pagination .page-item .page-link:focus {
+  outline: none;
+  box-shadow: none;
+} 
+.pagination .page-item .page-link {
+  color: #6c757d; 
+}
