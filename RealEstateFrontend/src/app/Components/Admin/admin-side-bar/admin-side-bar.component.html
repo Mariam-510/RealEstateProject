@@ -41,6 +41,23 @@
             <span class="d-md-inline d-none" *ngIf="!isCollapsed">More Actions</span>
           </a>
           <ul class="dropdown-menu" [class.show]="dropdownOpen">
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" routerLink="approveAgent" routerLinkActive="active"
+                (click)="preventClose($event)">
+                <i class="bi bi-person-check me-2 text-caffe"></i>
+                <span>Approve Agent</span>
+              </a>
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" routerLink="approveProperty" routerLinkActive="active"
+                (click)="preventClose($event)">
+                <i class="bi bi-house-check me-2 text-caffe"></i>
+                <span>Approve Property</span>
+              </a>
+            </li>
+
             <li>
               <a class="dropdown-item d-flex align-items-center" routerLink="createAdmin" routerLinkActive="active"
                 (click)="preventClose($event)">
@@ -73,21 +90,6 @@
               </a>
             </li>
 
-            <li>
-              <a class="dropdown-item d-flex align-items-center" routerLink="approveProperty" routerLinkActive="active"
-                (click)="preventClose($event)">
-                <i class="bi bi-house-check me-2 text-caffe"></i>
-                <span>Approve Property</span>
-              </a>
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center" routerLink="approveAgent" routerLinkActive="active"
-                (click)="preventClose($event)">
-                <i class="bi bi-person-check me-2 text-caffe"></i>
-                <span>Approve Agent</span>
-              </a>
-            </li>
           </ul>
         </div>
       </li>
