@@ -111,29 +111,6 @@ export class PHomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  //--------------------------------------------------------------------------------------------------
-  // private getRecentProducts(): void {
-  //   if (!this.products.length) return;
-
-  //   // Find the latest date
-  //   const latestDate = new Date(Math.max(...this.products.map(p => new Date(p.dateAdded).getTime())));
-
-  //   // Calculate 14 days before latest date
-  //   const cutoffDate = new Date(latestDate);
-  //   cutoffDate.setDate(latestDate.getDate() - 14);
-
-  //   // Filter and sort
-  //   this.recentProducts = this.products
-  //     .filter(product => {
-  //       const productDate = new Date(product.dateAdded);
-  //       return productDate >= cutoffDate && productDate <= latestDate;
-  //     })
-  //     .sort((a, b) => {
-  //       // Sort by most recent first (descending order)
-  //       return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
-  //     });
-  // }
-
   private getRecentProducts(): void {
     if (!this.products.length) return;
 
@@ -306,22 +283,22 @@ export class PHomeComponent implements OnInit, OnDestroy {
 
   slides = [
     {
-      imageUrl: 'https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg',
-      alt: 'Cairo cityscape',
-      title: 'ROI1 for property in Cairo reaches 10%-15%',
-      subtitle: 'Buy property and gain profit'
+      imageUrl: 'https://cairo.realestate/uploads/images/2022-12/757.jpg',
+      alt: 'Modern living room furniture collection',
+      title: 'Elegant Living Room Sets',
+      subtitle: 'Comfort meets style in our latest designs'
     },
     {
-      imageUrl: 'https://www.atlys.com/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FW3Iz4WACAy2J0qT0cCT3xA%2Fdidi%2Farticles%2Fl6ozcxn3e3a6lzrs6n6pg9lq%2Fpublic&w=1920&q=75',
-      alt: 'Cairo street view',
-      title: 'ROI2 for property in Cairo reaches 10%-15%',
-      subtitle: 'Buy property and gain profit'
+      imageUrl: 'https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg',
+      alt: 'Stylish sofas and sectionals on display',
+      title: 'Shop Trending Sofas & Sectionals',
+      subtitle: 'Upgrade your living space with comfort and style'
     },
     {
       imageUrl: 'https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1',
-      alt: 'Cairo hotel',
-      title: 'ROI3 for property in Cairo reaches 10%-15%',
-      subtitle: 'Buy property and gain profit'
+      alt: 'Minimalist home decor and furniture',
+      title: 'Smart Solutions for Small Spaces',
+      subtitle: 'Stylish furniture that fits anywhere'
     }
   ];
 
