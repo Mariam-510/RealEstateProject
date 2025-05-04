@@ -297,8 +297,14 @@ export class ViewAllComponent implements OnInit, OnDestroy {
 
     this.wishListService.toggleProductWishlist(product.id).subscribe({
       next: (response) => {
-        this.toastr.success(response);
-        // Optional: Update with actual API state if needed
+        if(product.isFavorite)
+          {
+            this.toastr.success("Added to Favourite Successfully");
+            // Optional: Update with actual API state if needed
+          }
+          else{
+            this.toastr.success("Removed From Favourite Successfully");
+           }
       },
       error: (err) => {
         // Revert UI state on error

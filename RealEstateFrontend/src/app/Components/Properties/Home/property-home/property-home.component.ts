@@ -488,7 +488,13 @@ export class PropertyHomeComponent implements OnInit {
 
     this.wishListService.togglePropertyWishlist(property.id).subscribe({
       next: (response) => {
-        this.toastr.success(response);
+        if(property.isFavorite){
+          this.toastr.success("Added to Favourites Successfully ");
+        }
+        else{
+          this.toastr.success("Removed from Favourites Successfully");
+        }
+        
         // Optional: Update with actual API state if needed
       },
       error: (err) => {

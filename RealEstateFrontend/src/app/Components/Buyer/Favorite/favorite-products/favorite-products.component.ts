@@ -69,7 +69,7 @@ export class FavoriteProductsComponent implements OnInit {
 
     this.wishListService.toggleProductWishlist(product.id).subscribe({
       next: () => {
-        this.toastr.success('Product removed from favorites successfully');
+        this.toastr.success('Removed from Favorites Successfully');
       },
       error: (err) => {
         // Re-insert at original position if error

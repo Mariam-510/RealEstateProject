@@ -115,7 +115,7 @@ export class FavoritePropertiesComponent implements OnInit {
 
     this.wishListService.togglePropertyWishlist(property.id).subscribe({
       next: () => {
-        this.toastr.success('Property removed from favorites successfully');
+        this.toastr.success('Removed from Favorites Successfully');
       },
       error: (err) => {
         // Re-insert at original position if error
