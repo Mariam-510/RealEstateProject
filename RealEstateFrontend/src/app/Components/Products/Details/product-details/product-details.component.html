@@ -265,77 +265,81 @@
 </div>
 <!-- Section -->
 <div class="d-block d-lg-none ps-3 pe-3 ">
-  <div class="cartTitle text-white rounded-top text-center d-flex align-items-center justify-content-center position-relative" >
-  <div class="m-0 fw-semibold">
-    {{ product?.name }}
+  <div
+    class="cartTitle text-white rounded-top text-center d-flex align-items-center justify-content-center position-relative">
+    <div class="m-0 fw-semibold">
+      {{ product?.name }}
+    </div>
   </div>
-</div>
-<div class="card-body px-4">
-  <div class="d-flex align-items-center flex-wrap gap-2 pt-3 mb-2">
-    <!-- Badges -->
-    <div class="d-flex flex-wrap gap-2">
-      <span *ngIf="!product?.isUsed" class="badge py-2 text-white" style="background-color: #2a5f8b; min-width: 4.5rem;">
-        New
-      </span>
-  
-      <span *ngIf="product?.isUsed" class="badge py-2 text-white" style="background-color: #de8332; min-width: 4.5rem;">
-        Used
-      </span>
-  
-      <span *ngIf="(product?.quantity ?? 0) < 4 && (product?.quantity ?? 0) > 0" class="badge py-2 bg-danger text-white">
-        Only {{ product?.quantity }} left!
-      </span>
-  
-      <span *ngIf="(product?.quantity ?? 0) === 0" class="badge py-2 bg-secondary text-white">
-        Out of Stock
-      </span>
-  
-      <span *ngIf="(product?.quantity ?? 0) > 3" class="badge py-2 text-white"
-        style="background-color: #4a7d5e; min-width: 4.6rem;">
-        In Stock
-      </span>
-  
-      <!-- <span *ngIf="product?.averageRating??0" class="badge py-2 text-white bg-caffe" style="min-width: 4.6rem;">
+  <div class="card-body px-4">
+    <div class="d-flex align-items-center flex-wrap gap-2 pt-3 mb-2">
+      <!-- Badges -->
+      <div class="d-flex flex-wrap gap-2">
+        <span *ngIf="!product?.isUsed" class="badge py-2 text-white"
+          style="background-color: #2a5f8b; min-width: 4.5rem;">
+          New
+        </span>
+
+        <span *ngIf="product?.isUsed" class="badge py-2 text-white"
+          style="background-color: #de8332; min-width: 4.5rem;">
+          Used
+        </span>
+
+        <span *ngIf="(product?.quantity ?? 0) < 4 && (product?.quantity ?? 0) > 0"
+          class="badge py-2 bg-danger text-white">
+          Only {{ product?.quantity }} left!
+        </span>
+
+        <span *ngIf="(product?.quantity ?? 0) === 0" class="badge py-2 bg-secondary text-white">
+          Out of Stock
+        </span>
+
+        <span *ngIf="(product?.quantity ?? 0) > 3" class="badge py-2 text-white"
+          style="background-color: #4a7d5e; min-width: 4.6rem;">
+          In Stock
+        </span>
+
+        <!-- <span *ngIf="product?.averageRating??0" class="badge py-2 text-white bg-caffe" style="min-width: 4.6rem;">
         <i class="bi bi-star-fill me-1"></i>{{ product?.averageRating }}
       </span> -->
-      <span class="badge py-2 text-white bg-caffe" style="min-width: 4.6rem;">
-        <i class="bi bi-star-fill me-1"></i>{{ product?.averageRating??0 }}
-      </span>
-    </div>
-  
-    <!-- Buttons to the right -->
-    <div class="d-flex gap-2 ms-auto">
-      <button class="btn btn-link text-dark p-1" (click)="$event.stopPropagation(); shareItem(product)">
-        <i class="bi bi-share fs-5"></i>
-      </button>
-  
-      <button class="btn btn-link text-dark p-1" (click)="$event.stopPropagation(); printPage()">
-        <i class="bi bi-printer fs-4"></i>
-      </button>
-  
-      <button *ngIf="hasRoleOrNoUser('Buyer')" class="btn btn-link p-1"
-        (click)="$event.stopPropagation(); toggleFavorite(product)">
-        <i class="bi fs-4" [ngClass]="{
+        <span class="badge py-2 text-white bg-caffe" style="min-width: 4.6rem;">
+          <i class="bi bi-star-fill me-1"></i>{{ product?.averageRating??0 }}
+        </span>
+      </div>
+
+      <!-- Buttons to the right -->
+      <div class="d-flex gap-2 ms-auto">
+        <button class="btn btn-link text-dark p-1" (click)="$event.stopPropagation(); shareItem(product)">
+          <i class="bi bi-share fs-5"></i>
+        </button>
+
+        <button class="btn btn-link text-dark p-1" (click)="$event.stopPropagation(); printPage()">
+          <i class="bi bi-printer fs-4"></i>
+        </button>
+
+        <button *ngIf="hasRoleOrNoUser('Buyer')" class="btn btn-link p-1"
+          (click)="$event.stopPropagation(); toggleFavorite(product)">
+          <i class="bi fs-4" [ngClass]="{
           'bi-heart-fill text-danger': product?.isFavorite && hasUser(),
           'bi-heart text-dark': !product?.isFavorite || !hasUser()
         }"></i>
-      </button>
+        </button>
+      </div>
     </div>
-  </div>
-  
-
-  <!-- Reviews & Buttons Row -->
 
 
-  <div class="custumBottomBorder mb-2"></div>
+    <!-- Reviews & Buttons Row -->
 
-  <!-- Price -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-      <div class="form-label small fw-bold text-uppercase terracotta-text mb-1" style="color: #4a2c2a">Price</div>
-      <h3 class="fw-bold text-caffe m-0">EGP {{ product?.price | number:'1.2-2' }}</h3>
-    </div>
-    <!-- <div class="d-flex align-items-center gap-2">
+
+    <div class="custumBottomBorder mb-2"></div>
+
+    <!-- Price -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <div class="form-label small fw-bold text-uppercase terracotta-text mb-1" style="color: #4a2c2a">Price</div>
+        <h3 class="fw-bold text-caffe m-0">EGP {{ product?.price | number:'1.2-2' }}</h3>
+      </div>
+      <!-- <div class="d-flex align-items-center gap-2">
       <div class="rating-stars text-caffe">
         <ng-container *ngFor="let star of [].constructor(5); let i = index">
           <i class="bi fs-5" [ngClass]="{
@@ -347,32 +351,31 @@
       </div>
       <span class="text-muted">({{ product?.numberOfReviews }} reviews)</span>
     </div> -->
-  </div>
-  
- <!-- Color + CTA Section Combined Horizontally -->
-<!-- Color + CTA Section Combined Horizontally -->
-<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4" *ngIf="hasRoleOrNoUser('Buyer')">
+    </div>
 
-  <!-- Color Swatches Section -->
-  <div class="flex-grow-1">
-    <div class="form-label small fw-bold text-uppercase terracotta-text mb-2" style="color: #4a2c2a">
-      Available Color
-    </div>
-    <div class="d-flex flex-wrap gap-2 pb-2">
-      <div *ngFor="let productStockDto of product?.productStockDtos"
-           class="color-swatch shadow hover-scale rounded-5 position-relative"
-           [class.selected]="productStockDto === selectedColorStock"
-           [class.out-of-stock]="productStockDto.quantity === 0"
-           [style.background]="productStockDto.color"
-           (click)="productStockDto.quantity > 0 ? selectColor(productStockDto) : null"
-           style="width: 40px; height: 40px; flex: 0 0 auto;">
-        <div *ngIf="productStockDto === selectedColorStock" class="selected-indicator">
-          <i class="bi bi-check"></i>
+    <!-- Color + CTA Section Combined Horizontally -->
+    <!-- Color + CTA Section Combined Horizontally -->
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4" *ngIf="hasRoleOrNoUser('Buyer')">
+
+      <!-- Color Swatches Section -->
+      <div class="flex-grow-1">
+        <div class="form-label small fw-bold text-uppercase terracotta-text mb-2" style="color: #4a2c2a">
+          Available Color
         </div>
-        <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
-      </div>
-    </div>
-    <!-- <div class="d-flex flex-wrap gap-2">
+        <div class="d-flex flex-wrap gap-2 pb-2">
+          <div *ngFor="let productStockDto of product?.productStockDtos"
+            class="color-swatch shadow hover-scale rounded-5 position-relative"
+            [class.selected]="productStockDto === selectedColorStock"
+            [class.out-of-stock]="productStockDto.quantity === 0" [style.background]="productStockDto.color"
+            (click)="productStockDto.quantity > 0 ? selectColor(productStockDto) : null"
+            style="width: 40px; height: 40px; flex: 0 0 auto;">
+            <div *ngIf="productStockDto === selectedColorStock" class="selected-indicator">
+              <i class="bi bi-check"></i>
+            </div>
+            <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
+          </div>
+        </div>
+        <!-- <div class="d-flex flex-wrap gap-2">
       <div *ngFor="let productStockDto of product?.productStockDtos"
            class="color-swatch shadow hover-scale rounded-5 position-relative"
            [class.selected]="productStockDto === selectedColorStock"
@@ -386,37 +389,36 @@
         <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
       </div>
     </div> -->
-  </div>
+      </div>
 
-  <!-- Quantity Selector and Add to Cart (aligned right) -->
-  <div class="d-flex align-items-center gap-3 mt-4 mt-md-0">
-    <!-- Quantity Controls -->
-    <div class="quantity-controls d-flex align-items-center border rounded-2">
-      <button class="btn px-1 py-1 text-caffe" (click)="decreaseQuantity()"
-              [disabled]="quantity === 1 || !selectedColorStock">
-        <i class="bi bi-dash" style="font-size: 1.5rem;"></i>
-      </button>
-      <span class="px-2 fw-bold">{{ quantity }}</span>
-      <button class="btn px-1 py-1 text-caffe" (click)="increaseQuantity()"
-              [disabled]="!selectedColorStock || quantity >= (selectedColorStock?.quantity ?? 0)">
-        <i class="bi bi-plus" style="font-size: 1.5rem;"></i>
-      </button>
+      <!-- Quantity Selector and Add to Cart (aligned right) -->
+      <div class="d-flex align-items-center gap-3 mt-4 mt-md-0">
+        <!-- Quantity Controls -->
+        <div class="quantity-controls d-flex align-items-center border rounded-2">
+          <button class="btn px-1 py-1 text-caffe" (click)="decreaseQuantity()"
+            [disabled]="quantity === 1 || !selectedColorStock">
+            <i class="bi bi-dash" style="font-size: 1.5rem;"></i>
+          </button>
+          <span class="px-2 fw-bold">{{ quantity }}</span>
+          <button class="btn px-1 py-1 text-caffe" (click)="increaseQuantity()"
+            [disabled]="!selectedColorStock || quantity >= (selectedColorStock?.quantity ?? 0)">
+            <i class="bi bi-plus" style="font-size: 1.5rem;"></i>
+          </button>
+        </div>
+
+        <!-- Add to Cart Button -->
+        <button class="btn bg-caffe text-white fw-bold hover-lift py-2" (click)="addToCart()"
+          [disabled]="!selectedColorStock || selectedColorStock.quantity === 0 || quantity > selectedColorStock.quantity">
+          <i class="bi bi-cart3"></i>
+        </button>
+      </div>
+
+
+
     </div>
-  
-    <!-- Add to Cart Button -->
-    <button class="btn bg-caffe text-white fw-bold hover-lift py-2"
-            (click)="addToCart()"
-            [disabled]="!selectedColorStock || selectedColorStock.quantity === 0 || quantity > selectedColorStock.quantity">
-      <i class="bi bi-cart3"></i>
-    </button>
-  </div>
-  
 
 
-</div>
-
-
-  <!-- <div class="custumBottomBorder mb-2 "></div>
+    <!-- <div class="custumBottomBorder mb-2 "></div>
 
   <div class="d-flex justify-content-between mb-3">
     <div class="d-flex flex-column align-items-center justify-content-center">
@@ -435,11 +437,11 @@
     </div>
   </div> -->
 
-  <div class="custumBottomBorder"></div>
+    <div class="custumBottomBorder"></div>
 
-</div>
+  </div>
   <!-- <div class="container-fluid mt-4 "> -->
- 
+
   <!-- </div> -->
 </div>
 <!-- --------------------------------------------------------------------------------------------------------------- -->
@@ -617,8 +619,10 @@
       <div class="ms-3 mt-3">
         <div class="d-flex gap-3 flex-wrap mt-2 align-items-center">
           <div *ngFor="let productStockDto of product?.productStockDtos"
-            class="color-swatch shadow position-relative rounded-circle" [style.backgroundColor]="productStockDto.color"
+            class="color-swatch shadow position-relative rounded-circle"
+            [class.out-of-stock]="productStockDto.quantity === 0" [style.backgroundColor]="productStockDto.color"
             style="width: 4.5rem; height: 4.5rem;">
+            <div *ngIf="productStockDto.quantity === 0" class="out-of-stock-overlay"></div>
           </div>
         </div>
 
@@ -1019,12 +1023,12 @@
 
       <!-- Help Options -->
       <div class="list-group shadow-sm">
-        <a href="/contact" class="list-group-item list-group-item-action border-0 py-2">
+        <a href="/about" class="list-group-item list-group-item-action border-0 py-2">
           <i class="bi bi-headset me-2 text-caffe"></i>
           <span class="small fw-bold"> Contact Support</span>
         </a>
 
-        <a href="/faq" class="list-group-item list-group-item-action border-0 py-2">
+        <a href="/about" class="list-group-item list-group-item-action border-0 py-2">
           <i class="bi bi-patch-question me-2 text-caffe"></i>
           <span class="small fw-bold"> FAQ & Guides</span>
         </a>
