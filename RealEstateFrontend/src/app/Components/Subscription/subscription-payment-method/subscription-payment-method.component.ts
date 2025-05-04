@@ -130,7 +130,7 @@ export class SubscriptionPaymentMethodComponent implements OnInit {
               },
               onApprove: async (data: any, actions: any) => {
                 const order = await actions.order.capture();
-                // this.toastr.success('Payment successful!');
+                this.toastr.success('Paypal successful!');
                 this.paymentWithPayPal();
                 // setTimeout(() => {
                 //   window.location.href = `/gopl`;
@@ -154,12 +154,14 @@ export class SubscriptionPaymentMethodComponent implements OnInit {
     }
   }
 
+
   paymentWithPayPal() {
-    const amount = this.data?.selectedPlan?.price ?? 0;
+    const amount = (this.data?.selectedPlan?.price ?? 0);
 
     this.paymentService.createPayPalOrder(amount).subscribe({
       next: (paymentResponse: PaymentDto) => {
         console.log('Payment successful:', paymentResponse);
+        // Handle successful payment (e.g., show confirmation, redirect)
         this.updateSubscriptionPlan(this.data.selectedPlan.id, paymentResponse.id);
       },
       error: (err) => {
@@ -171,6 +173,7 @@ export class SubscriptionPaymentMethodComponent implements OnInit {
       },
     });
   }
+
 
   // In your component
   async updateSubscriptionPlan(planId: number, paymentId?: number) {

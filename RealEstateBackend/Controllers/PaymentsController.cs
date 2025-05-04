@@ -62,7 +62,7 @@ namespace RealEstate.Controllers
                 Amount = amount,
                 PaymentMethod = Models.Domains.PaymentMethod.PayPal,
                 PaidAt = DateTime.Now.AddHours(1),
-                BuyerId = buyerId
+                BuyerId = null
             };
 
             payment = await _paymentRepository.AddAsync(payment);
