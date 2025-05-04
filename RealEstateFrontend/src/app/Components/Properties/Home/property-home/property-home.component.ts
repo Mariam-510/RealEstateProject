@@ -375,22 +375,22 @@ export class PropertyHomeComponent implements OnInit {
 
   slides = [
     {
-      imageUrl: 'https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg',
-      alt: 'Cairo cityscape',
-      title: 'ROI1 for property in Cairo reaches 10%-15%',
-      subtitle: 'Buy property and gain profit'
+      imageUrl: 'https://cairo.realestate/uploads/images/2022-12/757.jpg',
+      alt: 'Luxury apartments in Cairo',
+      title: 'Luxury Apartments in Prime Cairo Locations',
+      subtitle: 'Discover Exclusive Living Spaces in the Heart of the City'
     },
     {
-      imageUrl: 'https://www.atlys.com/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FW3Iz4WACAy2J0qT0cCT3xA%2Fdidi%2Farticles%2Fl6ozcxn3e3a6lzrs6n6pg9lq%2Fpublic&w=1920&q=75',
-      alt: 'Cairo street view',
-      title: 'ROI2 for property in Cairo reaches 10%-15%',
-      subtitle: 'Buy property and gain profit'
+      imageUrl: 'https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg',
+      alt: 'Vibrant Cairo neighborhood',
+      title: 'Affordable Housing Solutions in Growing Districts',
+      subtitle: 'Invest in Family-Friendly Communities with Great Amenities'
     },
     {
       imageUrl: 'https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1',
-      alt: 'Cairo hotel',
-      title: 'ROI3 for property in Cairo reaches 10%-15%',
-      subtitle: 'Buy property and gain profit'
+      alt: 'Downtown Cairo real estate opportunities',
+      title: 'Live in the Heart of the Capital',
+      subtitle: 'Browse listings in vibrant central neighborhoods'
     }
   ];
 
