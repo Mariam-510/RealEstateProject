@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { LeafletMapComponent } from '../../Map/leaflet-map/leaflet-map.component';
 import { ToastrService } from '../../../Services/toastr.service';
@@ -23,9 +23,9 @@ export class ViewAllPropertiesComponent implements OnInit {
   properties: PropertyDTO[] = [];
 
   constructor(private propertyService: PropertyService,
-     private auth: AuthService, 
-     private router: Router,  private toastr: ToastrService // Add this line
-    ) { }// Pagination
+    private auth: AuthService, private cdr: ChangeDetectorRef,
+    private router: Router, private toastr: ToastrService // Add this line
+  ) { }// Pagination
 
   currentPage = 1;
   pageSize = 6;
@@ -58,13 +58,21 @@ export class ViewAllPropertiesComponent implements OnInit {
     return this.auth.isAuthenticated();
   }
 
+  isLoading = false;
+
   async loadAllSellerProperties() {
     try {
+      this.isLoading = true;
+      this.cdr.detectChanges();
+
       if (this.hasRole("Seller")) {
         this.properties = await lastValueFrom(
-        this.propertyService.getPropertiesBySellerId()
+          this.propertyService.getPropertiesBySellerId()
         );
         this.updatePagination();
+
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
     } catch (err) {
       console.error('API Error:', err);
@@ -74,13 +82,20 @@ export class ViewAllPropertiesComponent implements OnInit {
       this.updatePagination();
     }
   }
+
   async loadAllAgentProperties() {
     try {
+      this.isLoading = true;
+      this.cdr.detectChanges();
+
       if (this.hasRole("Agent")) {
         this.properties = await lastValueFrom(
-        this.propertyService.getPropertiesByAgentId()
+          this.propertyService.getPropertiesByAgentId()
         );
         this.updatePagination();
+
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
     } catch (err) {
       console.error('API Error:', err);
@@ -120,11 +135,11 @@ export class ViewAllPropertiesComponent implements OnInit {
   async deleteProperty(propertyId: number) {
     // const confirmDelete = confirm('Are you sure you want to delete this property?');
     // if (!confirmDelete) return;
-  
+
     try {
       await lastValueFrom(this.propertyService.delete(propertyId));
       this.toastr.success('Property deleted successfully.');
-      
+
       // Refresh the properties list
       if (this.hasRole('Seller')) {
         await this.loadAllSellerProperties();
@@ -136,21 +151,21 @@ export class ViewAllPropertiesComponent implements OnInit {
       console.error('Delete error:', error);
     }
   }
-// Pagination methods
-updatePagination(): void {
-  // Calculate total pages
-  this.totalPages = Math.ceil(this.properties.length / this.pageSize);
-  
-  // Ensure current page stays within valid bounds
-  this.currentPage = Math.max(1, Math.min(this.currentPage, this.totalPages));
-  
-  // Calculate slice indices
-  const startIndex = (this.currentPage - 1) * this.pageSize;
-  const endIndex = startIndex + this.pageSize;
-  
-  // Update paginated properties
-  this.paginatedProperties = this.properties.slice(startIndex, endIndex);
-}
+  // Pagination methods
+  updatePagination(): void {
+    // Calculate total pages
+    this.totalPages = Math.ceil(this.properties.length / this.pageSize);
+
+    // Ensure current page stays within valid bounds
+    this.currentPage = Math.max(1, Math.min(this.currentPage, this.totalPages));
+
+    // Calculate slice indices
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+
+    // Update paginated properties
+    this.paginatedProperties = this.properties.slice(startIndex, endIndex);
+  }
   getPages(): number[] {
     const pagesToShow = 5;
     const startPage = Math.max(1, this.currentPage - Math.floor(pagesToShow / 2));

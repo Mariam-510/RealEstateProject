@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ToastrService } from '../../../../Services/toastr.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -16,27 +16,31 @@ import { AuthService } from '../../../../Services/ApiServices/auth.service';
 })
 export class FavoritePropertiesComponent implements OnInit {
   constructor(private toastr: ToastrService, private wishListService: WishListService,
-    private auth: AuthService) { }
+    private auth: AuthService, private cdr: ChangeDetectorRef) { }
 
   apiConfig = API_CONFIG;
- 
-   Properties: PropertyDTO[] = [];
-   paginatedProperties: PropertyDTO[] = [];
-   currentImageIndices: { [key: number]: number } = {};
-   openedProductId: number | null = null;
-   Math = Math;
+
+  Properties: PropertyDTO[] = [];
+  paginatedProperties: PropertyDTO[] = [];
+  currentImageIndices: { [key: number]: number } = {};
+  openedProductId: number | null = null;
+  Math = Math;
   ngOnInit(): void {
     this.loadWishlistProperies();
   }
 
 
+  isLoading = false;
 
   async loadWishlistProperies() {
+    this.isLoading = true;
+    this.cdr.detectChanges();
+
     this.wishListService.getAllPropertiesByBuyerId().subscribe({
       next: (Properties) => {
         console.log('Received Properties:', Properties); // Check contracts here
         this.Properties = Properties;
-  
+
         // Initialize image indices
         this.Properties.forEach(Property => {
           this.currentImageIndices[Property.id] = 0;
@@ -46,11 +50,16 @@ export class FavoritePropertiesComponent implements OnInit {
       error: (err) => {
         this.toastr.error('Failed to load wishlist');
         console.error(err);
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
-  
-    } 
-  );
+
+    }
+    );
   }
+
   currentPage = 1;
   pageSize = 4;
   totalPages = 1;
@@ -85,39 +94,39 @@ export class FavoritePropertiesComponent implements OnInit {
   updatePagination(): void {
     // Calculate total pages
     this.totalPages = Math.ceil(this.Properties.length / this.pageSize);
-    
+
     // Ensure current page stays within valid bounds
     this.currentPage = Math.max(1, Math.min(this.currentPage, this.totalPages));
-    
+
     // Calculate slice indices
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
-    
+
     // Update paginated properties
     this.paginatedProperties = this.Properties.slice(startIndex, endIndex);
   }
-toggleWishList(property: PropertyDTO) {
-  const index = this.Properties.findIndex(p => p.id === property.id);
-  if (index === -1) return;
+  toggleWishList(property: PropertyDTO) {
+    const index = this.Properties.findIndex(p => p.id === property.id);
+    if (index === -1) return;
 
-  // Store removed product for potential rollback
-  const removedProperty = this.Properties.splice(index, 1)[0];
-  this.updatePagination(); // Add this after modifying Products
+    // Store removed product for potential rollback
+    const removedProperty = this.Properties.splice(index, 1)[0];
+    this.updatePagination(); // Add this after modifying Products
 
-  this.wishListService.togglePropertyWishlist(property.id).subscribe({
-    next: () => {
-      this.toastr.success('Property removed from favorites successfully');
-    },
-    error: (err) => {
-      // Re-insert at original position if error
-      this.Properties.splice(index, 0, removedProperty);
-      this.updatePagination(); // Revert pagination on error
+    this.wishListService.togglePropertyWishlist(property.id).subscribe({
+      next: () => {
+        this.toastr.success('Removed from Favorites Successfully');
+      },
+      error: (err) => {
+        // Re-insert at original position if error
+        this.Properties.splice(index, 0, removedProperty);
+        this.updatePagination(); // Revert pagination on error
 
-      this.toastr.error('Failed to remove Property from favorites');
-      console.error(err);
-    }
-  });
-}
+        this.toastr.error('Failed to remove Property from favorites');
+        console.error(err);
+      }
+    });
+  }
 
 
   shareItem(item: any): void {
@@ -126,7 +135,9 @@ toggleWishList(property: PropertyDTO) {
       navigator.share({
         title: item.title,
         text: shareText,
-        url: window.location.href
+        // url: window.location.href
+        url: `${window.location.origin}/properties/${item.id}`
+
       }).then(() => console.log('Shared successfully'))
         .catch(err => console.error('Sharing failed', err));
     } else {

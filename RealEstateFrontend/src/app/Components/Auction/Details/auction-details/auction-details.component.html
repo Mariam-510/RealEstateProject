@@ -1,13 +1,13 @@
-<div #heroSection class="position-relative d-flex  pt-2">
-  <div style="padding-right:.5rem !important" style="width: 70%;">
+<div #heroSection class="position-relative d-flex  pt-2  ">
+  <div style="padding-right:.5rem !important " class="custom-width ">
     <section id="overview" class="p-1  ">
       <div class="lightbox" data-mdb-lightbox-init>
-        <div class="row ms-0 border-0 hover-effect ">
+        <div class="row ms-0 border-0 hover-effect col-md-12">
           <div class="p-0  pe-2 ">
             <div *ngIf="auction && auction.propertyDto && auction.propertyDto.images" class="img-wrapper"
               style="height: 430px;">
               <img [src]="apiConfig.apiUrl + (auction.propertyDto!.images!)[0]" [alt]="auction.propertyDto!.title"
-                class="w-100 mb-2 mb-md-4 shadow-1-strong rounded-0" />
+                class="w-100 mb-2 mb-md-4 shadow-1-strong rounded-0   " />
               <div class="overlay rounded">
               </div>
               <button class="custom-btn position-absolute bottom-0 start-0 m-3 rounded-2 text-caffe">
@@ -152,10 +152,12 @@
 
         <div *ngIf="hasRoleOrNoUser('Buyer')">
           <h6 class=" text-uppercase fw-bold text-brown mb-2 small">Place a Bid</h6>
-          <form #bidForm="ngForm" (ngSubmit)="createBid()" class="d-flex flex-column gap-2">
-            <div *ngIf="hasRole('Buyer')" class="input-group">
-              <input type="number" class="form-control border-brown" placeholder="Enter bid amount"
-                [(ngModel)]="bidAmount" name="bidAmount" [min]="highestBid + 1" required>
+
+          <form *ngIf="hasRole('Buyer') && auctionBuyerDto" #bidForm="ngForm" (ngSubmit)=" createBid()"
+            class="d-flex flex-column gap-2">
+            <div class="input-group">
+              <input *ngIf="hasRole('Buyer')" type="number" class="form-control border-brown"
+                placeholder="Enter bid amount" [(ngModel)]="bidAmount" name="bidAmount" [min]="highestBid + 1" required>
               <span class="input-group-text bg-light-caffe  border-brown text-caffe">EGP</span>
             </div>
 
@@ -170,13 +172,18 @@
               <i class="bi bi-hammer"></i> <!-- Bootstrap Icons hammer icon -->
               Submit Bid
             </button>
-
-            <a *ngIf="!hasUser()" routerLink="/login"
-              class="btn btn-caffe w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2">
-              <i class="bi bi-box-arrow-in-right me-1"></i>Sign In to place bids
-            </a>
-
           </form>
+
+          <button *ngIf="hasUser() && hasRole('Buyer') && !auctionBuyerDto" (click)="openMethodDialog()"
+            class="btn btn-caffe w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-hammer"></i> <!-- Bootstrap Icons hammer icon -->
+            Pay {{auctionFees | currency:'EGP '}} to place bids
+          </button>
+
+          <a *ngIf="!hasUser()" routerLink="/login"
+            class="btn btn-caffe w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Sign In to place bids
+          </a>
         </div>
 
         <div *ngIf="!hasRoleOrNoUser('Buyer')" class="alert bg-caffe-light d-flex align-items-center gap-3">
@@ -250,6 +257,202 @@
   </div>
 
 </div>
+<!-- Section -->
+<div class="d-block d-lg-none ">
+  <div class="container-fluid mt-4 ">
+    <div class="px-4 py-2 custumBottomBorder border-2 border-brown">
+      <div class="d-flex flex-column ">
+        <!-- Countdown Timer -->
+        <div *ngIf="auction?.status !== 'Finished'; else endedMessage">
+
+          <div>
+            <h6 class="fw-bold text-brown mb-2 small text-uppercase">
+              Auction {{ auction?.status === 'Scheduled' ? 'Starts' : 'Ends' }} In
+            </h6>
+            <div class="d-flex gap-2 justify-content-between">
+              <div class="countdown-item">
+                <div class="countdown-value">{{ days }}</div>
+                <small class="countdown-label">Days</small>
+              </div>
+              <div class="countdown-separator">:</div>
+              <div class="countdown-item">
+                <div class="countdown-value">{{ hours }}</div>
+                <small class="countdown-label">Hours</small>
+              </div>
+              <div class="countdown-separator">:</div>
+              <div class="countdown-item">
+                <div class="countdown-value">{{ minutes }}</div>
+                <small class="countdown-label">Mins</small>
+              </div>
+              <div class="countdown-separator">:</div>
+              <div class="countdown-item">
+                <div class="countdown-value">{{ seconds }}</div>
+                <small class="countdown-label">Secs</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #endedMessage>
+          <div class="text-center">
+            <h6 class="fw-bold text-brown mb-2 text-uppercase">
+              Auction Ended
+              <!-- <i class="bi bi-flag-fill text-brown" style="font-size: 1.2rem;"></i> -->
+            </h6>
+            <div class="d-flex flex-column align-items-center gap-2">
+
+              <p class="mb-0 text-caffe fw-medium">
+                This auction ended on {{ auction?.endTime | date:'medium' }}
+              </p>
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- Listed By -->
+        <div class=" custumBottomBorder d-flex justify-content-between flex-wrap   py-2 px-4 gap-3">
+          <!-- Listed By -->
+          <div class="d-flex align-items-center gap-3 flex-grow-1">
+            <div class="position-relative">
+              <div class=""></div>
+              <!-- <img [src]="apiConfig.apiUrl + auction?.propertyDto?.userImage"
+                class="seller-avatar rounded-circle shadow-sm" alt="Seller avatar"
+                style="width: 45px; height: 45px; object-fit: cover;"> -->
+
+              <ng-container *ngIf="auction?.propertyDto?.userImage; else defaultIcon">
+                <img [src]="apiConfig.apiUrl + auction?.propertyDto?.userImage"
+                  class="seller-avatar rounded-circle shadow-sm" alt="Seller avatar"
+                  style="width: 45px; height: 45px; object-fit: cover;">
+              </ng-container>
+
+              <ng-template #defaultIcon>
+                <i class="bi bi-person-circle text-brown" style="font-size: 3rem;"></i>
+              </ng-template>
+            </div>
+
+            <!-- Listed By section -->
+            <div>
+              <div class="text-brown small text-uppercase fw-bold">Listed By</div>
+              <div class="fw-semibold text-caffe">{{ auction?.propertyDto?.userName }}</div>
+            </div>
+            <!-- Seller type on the right -->
+            <div class="ms-auto text-end">
+              <small class="text-brown fw-bold">{{ auction?.sellerId ? 'Seller' : 'Agent' }}</small>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Current Bid -->
+        <div class="px-4 py-1">
+          <div class="text-uppercase small fw-bold text-brown mb-1 pt-1">
+            <span *ngIf="auction?.status==='Active'">Current Bid</span>
+            <span *ngIf="auction?.status==='Scheduled'">Start Bid</span>
+            <span *ngIf="auction?.status==='Finished'">Ended Bid</span>
+          </div>
+          <h3 class="fw-bold text-caffe mb-0">{{ highestBid | number:'1.0-0' }} EGP</h3>
+        </div>
+
+        <!-- Create Bid -->
+        <div class="px-4 py-3" *ngIf="auction?.status === 'Active'; else nonActiveState">
+
+          <div *ngIf="hasRoleOrNoUser('Buyer')">
+            <h6 class=" text-uppercase fw-bold text-brown mb-2 small">Place a Bid</h6>
+            <form #bidForm="ngForm" (ngSubmit)="createBid()" class="d-flex flex-column gap-2">
+              <div *ngIf="hasRole('Buyer')" class="input-group">
+                <input type="number" class="form-control border-brown" placeholder="Enter bid amount"
+                  [(ngModel)]="bidAmount" name="bidAmount" [min]="highestBid + 1" required>
+                <span class="input-group-text bg-light-caffe  border-brown text-caffe">EGP</span>
+              </div>
+
+              <!-- Fix the template expressions to handle null -->
+              <div *ngIf="bidAmount !== null && bidAmount <= highestBid" class="text-danger small">
+                Bid must be higher than {{ highestBid | number:'1.0-0' }} EGP
+              </div>
+
+              <button *ngIf="hasRole('Buyer')" type="submit"
+                class="btn btn-caffe w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2"
+                [disabled]="(bidAmount ?? 0) <= highestBid || !bidAmount">
+                <i class="bi bi-hammer"></i> <!-- Bootstrap Icons hammer icon -->
+                Submit Bid
+              </button>
+
+              <a *ngIf="!hasUser()" routerLink="/login"
+                class="btn btn-caffe w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2">
+                <i class="bi bi-box-arrow-in-right me-1"></i>Sign In to place bids
+              </a>
+
+            </form>
+          </div>
+
+          <div *ngIf="!hasRoleOrNoUser('Buyer')" class="alert bg-caffe-light d-flex align-items-center gap-3">
+            <i class="bi bi-person-slash fs-5 text-brown"></i>
+            <div>
+              <h6 class="text-uppercase fw-bold text-brown mb-1 small">Buyer Access Required</h6>
+              <p class="mb-0 text-caffe">
+                Your current account doesn't have bidding privileges.
+              </p>
+            </div>
+          </div>
+
+          <!-- Bid Alerts -->
+          <div *ngIf="hasRoleOrNoUser('Buyer')" class="px-4 pt-3">
+            <div *ngIf="showBidError" class="alert alert-danger alert-dismissible fade show">
+              {{ bidErrorMessage }}
+              <button type="button" class="btn-close" (click)="showBidError = false"></button>
+            </div>
+          </div>
+
+          <div class="px-3  text-center">
+            <strong class="text-brown">{{this.auction?.bids?.length}} other people are Bidding this
+              property</strong>
+          </div>
+        </div>
+
+      </div>
+
+
+      <ng-template #nonActiveState>
+        <div class="px-4 py-3">
+          <!-- Scheduled Auction -->
+          <div *ngIf="auction?.status === 'Scheduled'"
+            class="d-flex align-items-center gap-3 p-3 custumBottomBorder border-2 border-brown">
+            <i class="bi bi-calendar2-check text-brown" style="font-size: 1.5rem;"></i>
+            <div>
+              <h6 class="text-uppercase fw-bold text-brown mb-1 small">Bidding Has Not Open Yet</h6>
+              <p class="mb-0 text-caffe">
+                Starts on {{ auction?.startTime | date:'MMM d, y, h:mm a' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Finished Auction -->
+          <div *ngIf="auction?.status === 'Finished'"
+            class="d-flex align-items-center gap-3 p-3 custumBottomBorder border-2 border-brown">
+            <i class="bi bi-flag-fill text-brown" style="font-size: 1.5rem;"></i>
+            <div>
+              <h6 class="text-uppercase fw-bold text-brown mb-1 small">Bidding Closed</h6>
+              <p class="mb-0 text-caffe">
+                <span *ngIf="this.auction?.lastPropertyBidDto">Bidding successfully completed</span>
+                <span *ngIf="!this.auction?.lastPropertyBidDto">No bids were placed</span>
+              </p>
+              <p class="mb-0 text-caffe">
+                <span *ngIf="this.auction?.lastPropertyBidDto">
+                  Winning bid: EGP {{ this.auction?.lastPropertyBidDto?.bidAmount | number }} by
+                  <span class="fw-semibold"> {{ this.auction?.lastPropertyBidDto?.buyerFirstName || 'Anonymous' }}
+                    {{ this.auction?.lastPropertyBidDto?.buyerLastName || '' }}
+                  </span>
+                </span>
+              </p>
+
+            </div>
+          </div>
+
+
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 
 <div #tabLinks class=" tab-links px-5 py-4 d-flex flex-wrap justify-content-center justify-content-xl-start gap-3">
@@ -282,7 +485,7 @@
       <h2 class="mb-0 h4 fw-bold text-brown">Auction </h2>
     </div>
 
-    
+
     <!-- Bidding Activity -->
     <div class="card shadow-sm mb-4 border-brown">
       <div class="card-body p-3">

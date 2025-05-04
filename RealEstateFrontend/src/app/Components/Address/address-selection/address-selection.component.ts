@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AddressDto, AddressService } from '../../../Services/ApiServices/address.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-address-selection',
@@ -18,7 +19,9 @@ export class AddressSelectionComponent implements OnInit {
 
   addresses: AddressDto[] = [];
 
-  constructor(private addressService: AddressService, private router: Router, private auth: AuthService) { }
+  constructor(private addressService: AddressService, private router: Router, private auth: AuthService, private toaster: ToastrService) { }
+
+  isLoading = true;
 
   ngOnInit() {
 
@@ -27,9 +30,19 @@ export class AddressSelectionComponent implements OnInit {
       this.router.navigate(['/login']);
     }
     else {
+      // this.addressService.getAllByBuyer().subscribe({
+      //   next: (addresses) => this.addresses = addresses,
+      //   error: (err) => console.error('Error fetching addresses:', err)
+      // });
       this.addressService.getAllByBuyer().subscribe({
-        next: (addresses) => this.addresses = addresses,
-        error: (err) => console.error('Error fetching addresses:', err)
+        next: (addresses) => {
+          this.addresses = addresses;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error fetching addresses:', err);
+          this.isLoading = false;
+        }
       });
     }
 
@@ -54,7 +67,7 @@ export class AddressSelectionComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error deleting address:', err);
-          alert(err.error?.message || 'Could not delete address');
+          this.toaster.error(err.error?.message || 'Could not delete address');
         }
       });
     }

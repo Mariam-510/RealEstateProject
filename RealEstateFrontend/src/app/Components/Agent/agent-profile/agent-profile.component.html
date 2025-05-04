@@ -1,5 +1,5 @@
 <div class="mt-5 ms-5">
-  <h2 class="fw-bold"><span style="font-size: 0.9em;">💼👨‍💼</span> Agent Info</h2>
+  <h2 class="fw-bold"><span style="font-size: 0.9em;">👨‍💼</span> Agent Info</h2>
   <nav aria-label="breadcrumb mb-0">
     <ol class="breadcrumb mb-0">
       <li class="breadcrumb-item mb-0">
@@ -10,7 +10,14 @@
   </nav>
 </div>
 
-<div class="px-5 mt-2">
+<div *ngIf="isLoading" class="d-flex align-items-center justify-content-center" style="height: 100px">
+  <div class="spinner-border text-caffe" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+
+<div *ngIf="!isLoading" class="px-5 mt-2">
   <form [formGroup]="MyForm">
     <div class="row">
       <!-- Left Side: Image & User Info -->

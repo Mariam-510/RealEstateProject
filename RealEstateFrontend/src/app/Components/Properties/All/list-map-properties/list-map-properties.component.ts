@@ -50,8 +50,14 @@ export class ListMapPropertiesComponent implements OnInit {
 
     this.wishListService.togglePropertyWishlist(property.id).subscribe({
       next: (response) => {
-        this.toastr.success(response);
-        // Optional: Update with actual API state if needed
+        if(property.isFavorite)
+          {
+            this.toastr.success('Added to Favourite Successfully');
+          }
+          else
+          {
+            this.toastr.success('Removed From Favourite Successfully');
+          }
       },
       error: (err) => {
         // Revert UI state on error
@@ -68,7 +74,7 @@ export class ListMapPropertiesComponent implements OnInit {
       navigator.share({
         title: item.title,
         text: shareText,
-        url: window.location.href
+        url: `${window.location.origin}/properties/${item.id}`
       }).then(() => console.log('Shared successfully'))
         .catch(err => console.error('Sharing failed', err));
     } else {

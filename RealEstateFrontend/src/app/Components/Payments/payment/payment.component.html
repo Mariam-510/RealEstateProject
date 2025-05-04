@@ -9,7 +9,8 @@
             <div class="d-flex justify-content-between align-items-center">
               <h3><i class="bi bi-geo-alt"></i> Delivery Address</h3>
 
-              <a routerLink="/checkout/address" class="btn btn-outline-secondary">Change address</a>
+              <a routerLink="/checkout/address" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i> Change address</a>
             </div>
             <hr style="
                 border: 2px solid #c38e79;
@@ -17,14 +18,22 @@
                 margin-top: -5;
               " />
 
-            <p class="text-muted mb-1">
-              {{ address?.buildingNum }} {{ address?.street }},
-              {{ address?.city }}
-            </p>
-            <p class="text-muted mb-1">
-              Floor: {{ address?.floor }} - Apartment: {{ address?.apartment }}
-            </p>
-            <p class="text-muted mb-0">{{ address?.phoneNum }}</p>
+            <div *ngIf="loading" class="d-flex align-items-center justify-content-center" style="height: 100px">
+              <div class="spinner-border text-caffe" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+
+            <div *ngIf="!loading">
+              <p class="text-muted mb-1">
+                {{ address?.buildingNum }} {{ address?.street }},
+                {{ address?.city }}
+              </p>
+              <p class="text-muted mb-1">
+                Floor: {{ address?.floor }} - Apartment: {{ address?.apartment }}
+              </p>
+              <p class="text-muted mb-0">{{ address?.phoneNum }}</p>
+            </div>
           </div>
 
           <hr style="border-color: #e0e0e0" />
@@ -141,10 +150,10 @@
               </div>
             </div>
 
-            <div class="d-flex justify-content-between">
-              <a routerLink="/checkout/address" class="btn btn-outline-secondary">
+            <div class="d-flex justify-content-end">
+              <!-- <a routerLink="/checkout/address" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-2"></i>Back
-              </a>
+              </a> -->
               <button class="btn bg-caffe text-white border-0" (click)=" handlePayment()" [disabled]="
                   selectedMethod === 'paypal' ||
                   selectedMethod === 'stripe' ||
@@ -175,8 +184,14 @@
           </h4>
           <hr style="border: 2px solid #c38e79" />
 
+          <div *ngIf="loading" class="d-flex align-items-center justify-content-center" style="height: 100px">
+            <div class="spinner-border text-caffe" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
           <!-- Order Items with scroll -->
-          <div class="order-items">
+          <div *ngIf="!loading" class="order-items">
             <div *ngFor="let item of cart?.orderItemDtos; let last = last" class="order-item">
               <div class="d-flex justify-content-between">
                 <div class="d-flex">

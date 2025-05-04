@@ -872,8 +872,11 @@ button:disabled {
   border-color: #c38e79;
 }
 
-
-
 .pagination {
   cursor: pointer;
+}
+
+.custom-dark-gray {
+  background-color: #616669 !important;
+  /* A rich dark gray */
 }

@@ -236,8 +236,13 @@ export class PHomeComponent implements OnInit, OnDestroy {
 
     this.wishListService.toggleProductWishlist(product.id).subscribe({
       next: (response) => {
-        this.toastr.success(response);
-        // Optional: Update with actual API state if needed
+        if (product.isFavorite) {
+          this.toastr.success("Added to Favourite Successfully");
+          // Optional: Update with actual API state if needed
+        }
+        else {
+          this.toastr.success("Removed From Favourite Successfully");
+        }
       },
       error: (err) => {
         // Revert UI state on error
@@ -258,7 +263,8 @@ export class PHomeComponent implements OnInit, OnDestroy {
       navigator.share({
         title: item.title,
         text: shareText,
-        url: window.location.href
+        // url: window.location.origin + "products" + item.id
+        url: `${window.location.origin}/products/${item.id}`
       }).then(() => console.log('Shared successfully'))
         .catch(err => console.error('Sharing failed', err));
     } else {
@@ -283,13 +289,13 @@ export class PHomeComponent implements OnInit, OnDestroy {
 
   slides = [
     {
-      imageUrl: 'https://cairo.realestate/uploads/images/2022-12/757.jpg',
+      imageUrl: 'https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg',
       alt: 'Modern living room furniture collection',
       title: 'Elegant Living Room Sets',
       subtitle: 'Comfort meets style in our latest designs'
     },
     {
-      imageUrl: 'https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg',
+      imageUrl: 'https://cairo.realestate/uploads/images/2022-12/757.jpg',
       alt: 'Stylish sofas and sectionals on display',
       title: 'Shop Trending Sofas & Sectionals',
       subtitle: 'Upgrade your living space with comfort and style'

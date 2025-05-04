@@ -200,7 +200,7 @@
 }
 
 .brand-container .brand-logo img {
-  height: 50px;
+  height: 60px;
   width: auto;
 }
 
@@ -211,8 +211,8 @@
 
 .brand-name {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: #6e5447;
+  /* font-weight: 700; */
+  /* color: #6e5447; */
   text-decoration: none;
   position: relative;
   transition: color 0.2s ease;
@@ -272,7 +272,7 @@
 }
 
 .brand-name:hover {
-  color: #c38e79 !important;
+  color: #4a2c2a !important;
 }
 
 .primary-nav ul .nav-link::after {
@@ -417,9 +417,9 @@
 .user-info {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  /* align-items: flex-start; */
   padding: 1rem;
-  gap: 0.5rem;
+  /* gap: 0.5rem; */
   border-bottom: 1px solid #eee;
 }
 
@@ -614,7 +614,7 @@
   }
 
   .brand-container .brand-logo img {
-    height: 40px;
+    height: 35px;
   }
 
   .brand-name {
@@ -656,4 +656,41 @@
 
 .linkPointer {
   cursor: pointer !important;
+}
+
+
+/* ----------------------------------------------------------------------------------- */
+/* Custom CSS */
+.brand-name {
+  font-family: 'Inter', sans-serif;
+}
+
+.pulse-part {
+  animation: pulse 2s infinite;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.95;
+  }
+
+  50% {
+    opacity: 1;
+    /* text-shadow: 0 0 10px rgba(225, 112, 85, 0.3); */
+  }
+
+  100% {
+    opacity: 0.95;
+  }
+}
+
+/* Hover effects */
+.brand-name:hover .prop-part {
+  transform: translateX(3px);
+}
+
+.transition-all {
+  transition: all 0.3s ease;
 }

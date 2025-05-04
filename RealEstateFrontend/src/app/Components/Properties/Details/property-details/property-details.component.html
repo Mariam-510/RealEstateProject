@@ -10,6 +10,13 @@
             </div>
             <button class="custom-btn position-absolute bottom-0 start-0 m-3 rounded-2 text-caffe">
               <i class="bi bi-box text-caffe me-1 pe-2"></i>3D View</button>
+              <button type="button" class="custom-btn position-absolute bottom-0 end-0 m-3 rounded-2 text-caffe d-block d-lg-none"
+              data-bs-toggle="modal" data-bs-target="#photosModal">
+              <i class="bi bi-images me-1 pe-2 text-caffe"></i>Photos
+            </button>
+            <ng-container *ngIf="!isLoading && property">
+              <app-property-photo-modal [images]="property.images" #photoModal></app-property-photo-modal>
+            </ng-container>
           </div>
           <div class="position-relative">
             <div class="bg-caffe text-white p-3 ps-3 rounded-0">
@@ -19,7 +26,7 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-4  p-0  pe-1  ">
+        <div class="col-lg-4  p-0  pe-1  d-none d-lg-block">
           <div class="img-wrapper" style="height: 450px; ">
             <img *ngIf="property!=null" [src]="apiConfig.apiUrl + property.images[1]"
               data-mdb-img="details/property5.jpg" alt="Dark Roast Iced Coffee"
@@ -56,7 +63,184 @@
 
       </div>
     </div>
-    <div #tabLinks class="tab-links px-5 py-3 d-flex flex-wrap justify-content-between align-items-center ">
+    <div class="d-block d-lg-none ">
+      <div class="container-fluid mt-4 ">
+        <div class="mx-2 px-3 mt-1">
+          <div class="row">
+            <!-- Event Details Column -->
+            <div class="col-12">
+              <!-- <h6 class="border-bottom py-2 d-flex align-items-center">
+                <i class="bi bi-calendar3 fs-5 me-2"></i>
+                <strong>{{ item.date }}</strong>
+              </h6> -->
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <!-- Price -->
+                <div *ngIf="property?.status != 'Auctioned'">
+                  <div class="form-label small fw-bold text-uppercase terracotta-text mb-1" style="color: #4a2c2a">
+                    Price</div>
+                  <h3 class="fw-bold text-caffe m-0">{{ property?.price | number:'1.2-2' }} EGP</h3>
+                </div>
+
+                <!-- Auction Status -->
+                <div *ngIf="property?.status === 'Auctioned'">
+                  <div class="form-label small fw-bold text-uppercase terracotta-text mb-1" style="color: #4a2c2a">
+                    Status
+                  </div>
+                  <h3 class="fw-bold text-caffe m-0">Auctioned</h3>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex gap-2 pt-4 justify-content-between">
+                  <button class="btn btn-link text-dark p-1" (click)="shareItem(property)">
+                    <i class="bi bi-share fs-5"></i>
+                  </button>
+                  <button class="btn btn-link text-dark p-1">
+                    <i class="bi bi-printer fs-4"></i>
+                  </button>
+                  <button *ngIf="hasRoleOrNoUser('Buyer')" class="btn btn-link p-1"
+                    (click)="toggleFavorite(property)">
+                    <i class="bi fs-4" [ngClass]="{
+                      'bi-heart-fill text-danger': property?.isFavorite && hasUser(),
+                      'bi-heart text-dark': !property?.isFavorite || !hasUser()
+                    }"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="custumBottomBorder mb-2"></div>
+
+              <h5 class="ps-2 mb-4 ">
+                <i class="bi bi-house text-caffe me-2 fs-6 "></i>
+                <span class="fw-bold text-caffe-dark">
+                  Category:
+                </span>
+                <span class="fs-5 text-caffe-dark">{{ property?.propertyCategory }}</span>
+              </h5>
+              <div class="custumBottomBorder mb-2"></div>
+              <div *ngIf="hasRoleOrNoUser('Buyer') && property?.status === 'Available'" class="d-grid gap-2 pb-4">
+                <div class="alert bg-caffe-light2 d-flex align-items-center mb-2">
+                  <i class="fas fa-calendar-check me-2"></i>
+                  <div>
+                    Select how you'd like to tour the property.
+                  </div>
+                </div>
+
+                <!-- Radio button group -->
+                <!-- Radio button group -->
+                <div class="btn-group pb-2" role="group" aria-label="Tour options">
+                  <input type="radio" class="btn-check" name="tourOption" id="inPerson" value="InPerson"
+                    autocomplete="off" checked>
+                  <label class="btn btn-caffe-tertiary fw-bold" for="inPerson" style="font-size: 1.0229rem;">
+                    <i class="bi bi-house-door me-2"></i> Tour in person
+                  </label>
+
+                  <input type="radio" class="btn-check" name="tourOption" id="videoChat" value="Virtual"
+                    autocomplete="off">
+                  <label class="btn btn-caffe-tertiary fw-bold" for="videoChat" style="font-size: 1.0229rem;">
+                    <i class="bi bi-phone me-2"></i> Tour via video chat
+                  </label>
+                </div>
+
+                <!-- Main action button -->
+                <a class="btn btn-caffe-primary text-white fw-bold fs-5 py-2" (click)="requestShowing(property)">
+                  <i class="bi bi-calendar3 me-2"></i> Request showing
+                </a>
+
+              </div>
+
+              <div *ngIf="!hasRoleOrNoUser('Buyer') && property?.status === 'Available'" class=" d-grid gap-2 pb-4">
+                <div class="alert bg-caffe-light2 d-flex align-items-center mb-2">
+                  <i class="fas fa-info-circle me-2"></i>
+                  <div>
+                    This property is listed as available. Buyers can request showings through this interface.
+                  </div>
+                </div>
+                <!-- Add this button -->
+                <button
+                  class="btn bg-caffe text-white fw-bold fs-5 py-2 d-flex align-items-center justify-content-center btn-caffe-primary">
+                  <i class="fas fa-check-circle me-2"></i>
+                  Available
+                </button>
+              </div>
+
+              <div *ngIf="property?.status === 'Sold'" class="d-grid gap-2 pb-4">
+                <!-- Enhanced status indicator -->
+                <div class="alert bg-caffe-light2 d-flex align-items-center mb-2" role="alert">
+                  <i class="fas fa-exclamation-circle me-2"></i>
+                  <div>
+                    This property has been sold. Explore similar available properties below.
+                  </div>
+                </div>
+                <!-- Enhanced button with disabled state and icon -->
+                <button
+                  class="btn bg-caffe text-white fw-bold fs-5 py-2 d-flex align-items-center justify-content-center btn-caffe-primary"
+                  disabled aria-disabled="true">
+                  <i class="fas fa-handshake me-2"></i>
+                  Sold - No Longer Available
+                </button>
+              </div>
+
+              <!-- Auction Status Section -->
+              <div *ngIf="property?.status === 'Auctioned'" class="d-grid gap-2 pb-4">
+                <!-- Auction Alert -->
+                <div class="alert bg-caffe-light2 d-flex align-items-center mb-2">
+                  <i class="fas fa-gavel me-2"></i>
+                  <div>
+                    This property is currently being auctioned. Click below to view the auction details and
+                    participate.
+                  </div>
+                </div>
+
+                <!-- View Auction Button -->
+                <a [routerLink]='["/auctions", auction?.id]'
+                  class="btn btn-caffe-primary text-white fw-bold fs-5 py-2">
+                  <i class="fas fa-gavel me-2"></i>
+                  View Auction Details
+                </a>
+
+              </div>
+
+</div>
+            <!--   <h6 class="border-bottom py-2 d-flex align-items-center">
+                <i class="bi bi-geo-alt-fill fs-5 me-2"></i>
+                <span>{{ item.location }}</span>
+              </h6>
+
+              <h6 class="border-bottom py-2 d-flex align-items-center">
+                <i class="bi bi-cash-stack fs-5 me-2"></i>
+                <span>Prices from <strong>{{ item.price }} EGP</strong></span>
+              </h6> -->
+<!-- ___________-angular---------------------------- -->
+
+
+
+            <!-- </div> -->
+
+            <!-- Buttons Column -->
+            <!-- <div class="col-5 d-flex flex-column gap-2 justify-content-center pb-3">
+              <button
+                class="btn btn-light badge fav-btn d-flex align-items-center justify-content-center w-100 py-3 fs-6"
+                (click)="toggleFavorite(item)">
+                <span class="text-danger">Wishlist</span>
+                <i class="bi ms-2"
+                  [ngClass]="item.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart text-danger'"></i>
+              </button>
+
+              <button
+                class="more-info btn btn-light badge text-danger d-flex align-items-center w-100 justify-content-center py-3 fs-6"
+                (click)="shareItem(item)">
+                Share it <i class="bi bi-share-fill ms-2"></i>
+              </button>
+
+
+              <a [routerLink]="['/bookingEvent', item.id]" class="ticket-btn btn btn-danger w-100 mt-2 py-2 fs-5">
+
+                <i class="bi bi-ticket-perforated"></i> GET TICKET
+              </a>
+            </div> -->
+          </div>
+        </div>        </div>
+    </div>
+    <div #tabLinks class=" tab-links px-5 py-4 d-flex flex-wrap justify-content-center justify-content-xl-start gap-3">
       <!-- Left side: Nav Links -->
       <div class="d-flex flex-wrap gap-5">
         <a href="#overview" (click)="scrollToSection($event, 'overview')" class="active ms-5 me-3">
@@ -82,12 +266,13 @@
 
       </div>
     </div>
+   
     <div class="ps-5 my-4">
       <div class="row ">
         <div class="position-relative end-0">
           <!-- About this home section -->
           <!-- About this home section -->
-          <div class="col-md-8 ">
+          <div class="col-lg-8 ">
             <div id="about-this-home" #homesection class="mb-1  rounded-3 ">
               <div class="mb-3">
                 <!-- <i class="bi bi-house-fill me-3 fs-3 text-caffe"></i> -->
@@ -177,9 +362,9 @@
                       <button class="btn btn-link text-dark p-1" (click)="shareItem(property)">
                         <i class="bi bi-share fs-5"></i>
                       </button>
-                      <button class="btn btn-link text-dark p-1">
+                      <!-- <button class="btn btn-link text-dark p-1">
                         <i class="bi bi-printer fs-4"></i>
-                      </button>
+                      </button> -->
                       <button *ngIf="hasRoleOrNoUser('Buyer')" class="btn btn-link p-1"
                         (click)="toggleFavorite(property)">
                         <i class="bi fs-4" [ngClass]="{
@@ -356,7 +541,7 @@
     </div>
 
   </section>
-  <section id="location" class="rounded-3 ps-5 col-8">
+  <section id="location" class="rounded-3 ps-5 col-lg-8">
 
     <h2 class="mb-3">
       <i class="bi bi-geo-alt-fill me-3 fs-3 text-caffe"></i>
@@ -430,7 +615,7 @@
 
   </section>
 
-  <section id="PropertyDetails" class=" ps-5 rounded-3  col-8 pb-2">
+  <section id="PropertyDetails" class=" ps-5 rounded-3  col-lg-8 pb-2">
 
     <h2 class="mb-3">
       <i class="bi bi-house-door-fill me-3 fs-3 text-caffe"></i>
@@ -624,6 +809,3 @@
 
 </div>
 
-
-
-<!-- <app-recommended ></app-recommended> -->

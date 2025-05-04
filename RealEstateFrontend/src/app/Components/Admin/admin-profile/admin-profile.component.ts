@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { AdminDto, AdminService } from '../../../Services/ApiServices/admin.service';
 import { API_CONFIG } from '../../../app.config';
 import { lastValueFrom } from 'rxjs';  // Important import
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-admin-profile',
@@ -24,7 +25,8 @@ export class AdminProfileComponent {
   selectedImage: File | null = null;
   removeImageFlag = false;
 
-  constructor(private router: Router, private auth: AuthService, private adminService: AdminService) { }
+  constructor(private router: Router, private auth: AuthService, private adminService: AdminService,
+    private toaster: ToastrService, private cdr: ChangeDetectorRef) { }
 
   async ngOnInit() {
     if (!this.hasRole('Admin')) {
@@ -61,10 +63,19 @@ export class AdminProfileComponent {
     );
   }
 
+  isLoading = false;
+
   async loadAdmin(): Promise<void> {
     try {
+      this.isLoading = true;
+      this.cdr.detectChanges();
+
       this.admin = await lastValueFrom(this.adminService.getAdmin());
       // Date conversion logic here
+
+      this.isLoading = false;
+      this.cdr.detectChanges();
+
     } catch (err) {
       console.error('Failed to fetch admin:', err);
     }
@@ -123,7 +134,7 @@ export class AdminProfileComponent {
 
   async update() {
     if (this.MyForm.invalid) {
-      alert('Please fill in all required fields correctly.');
+      this.toaster.error('Please fill in all required fields correctly.');
       return;
     }
 
@@ -145,7 +156,7 @@ export class AdminProfileComponent {
       const response = await lastValueFrom(this.adminService.updateAdmin(formData));
 
       // Handle success
-      console.log('Update successful:', response.message);
+      this.toaster.success('Update Profile info successfully');
 
       // Update local data
       this.admin = response.adminDto;

@@ -47,13 +47,16 @@ export class AgentService {
     return this.http.put(`${this.apiUrl}/Approve/${id}`, formData);
   }
 
-
   getAgent(): Observable<AgentDto> {
     return this.http.get<AgentDto>(`${this.apiUrl}/Id`);
   }
 
   updateAgent(formData: FormData): Observable<{ message: string, tokenDto: any, agentDto: AgentDto }> {
     return this.http.put<{ message: string, tokenDto: any, agentDto: AgentDto }>(this.apiUrl, formData);
+  }
+
+  deleteAgent(): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(this.apiUrl);
   }
 
 }

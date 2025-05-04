@@ -32,29 +32,6 @@ export class RecommendedComponent implements OnInit {
     this.cdr.detectChanges(); // If using ChangeDetectorRef
   }
 
-  // In your component
-  // async loadProperties(
-  //   category?: string,
-  //   status?: string,
-  //   type?: string,
-  //   searchByLocation?: string
-  // ) {
-  //   try {
-  //     this.properties = await this.propertyService.getAll(
-  //       category,
-  //       status,
-  //       type,
-  //       searchByLocation
-  //     ).toPromise() ?? [];
-
-  //     console.log('Loaded properties:', this.properties);
-  //     this.cdr.detectChanges(); // If using ChangeDetectorRef
-  //   } catch (err) {
-  //     console.error('Error loading properties:', err);
-  //     // Handle error (show message, etc.)
-  //   }
-  // }
-
   async loadProperties(
     category?: string,
     status?: string,
@@ -111,8 +88,14 @@ export class RecommendedComponent implements OnInit {
 
     this.wishListService.togglePropertyWishlist(property.id).subscribe({
       next: (response) => {
-        this.toastr.success(response);
-        // Optional: Update with actual API state if needed
+        if(property.isFavorite)
+          {
+            this.toastr.success("Added to Favourite Successfully");
+            // Optional: Update with actual API state if needed
+          }
+          else{
+            this.toastr.success("Removed From Favourite Successfully");
+           }
       },
       error: (err) => {
         // Revert UI state on error

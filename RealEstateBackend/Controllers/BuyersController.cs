@@ -67,6 +67,7 @@ namespace RealEstate.Controllers
 
             return Ok(buyerDto);
         }
+       
         [HttpGet("{buyerId}")]
         [Authorize(Roles = "Buyer,Admin")]
         public async Task<IActionResult> GetBuyerById(int buyerId)
@@ -222,6 +223,7 @@ namespace RealEstate.Controllers
 
 
         [HttpDelete]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> Delete()
         {
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))

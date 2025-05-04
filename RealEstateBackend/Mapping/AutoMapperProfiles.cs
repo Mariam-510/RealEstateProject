@@ -20,6 +20,7 @@ using RealEstate.Models.Dtos.ProductStockDto;
 using RealEstate.Models.DTOs.Category;
 using RealEstate.Models.Dtos.PaymentDto;
 using System.Globalization;
+using RealEstate.Models.Dtos.AuctionBuyerDto;
 
 
 namespace RealEstate.Mapping
@@ -219,7 +220,9 @@ namespace RealEstate.Mapping
 
             //------------------------------------------------------------------------------------------------
 
-            //CreateMap<Product, ProductDTOShow>().ReverseMap();
+            CreateMap<AuctionBuyer, AuctionBuyerDto>().ReverseMap();
+
+            CreateMap<AuctionBuyer, CreateAuctionBuyerDto>().ReverseMap();
 
         }
     }

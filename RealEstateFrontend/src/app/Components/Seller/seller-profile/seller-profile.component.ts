@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router'
 import { AuthService } from '../../../Services/ApiServices/auth.service';
@@ -7,6 +7,7 @@ import { SellerDto, SellerService } from '../../../Services/ApiServices/seller.s
 import { API_CONFIG } from '../../../app.config';
 import { catchError, lastValueFrom, Observable, of, startWith, switchMap } from 'rxjs';  // Important import
 import { SubscriptionDto, SubscriptionService } from '../../../Services/ApiServices/subscription.service';
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-seller-profile',
@@ -28,7 +29,8 @@ export class SellerProfileComponent {
 
 
   constructor(private router: Router, private auth: AuthService,
-    private sellerService: SellerService, private subscriptionService: SubscriptionService) { }
+    private sellerService: SellerService, private subscriptionService: SubscriptionService,
+    private toaster: ToastrService, private cdr: ChangeDetectorRef) { }
 
   async ngOnInit() {
 
@@ -79,11 +81,17 @@ export class SellerProfileComponent {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
+  isLoading = false;
 
   async loadSeller(): Promise<void> {
     try {
+      this.isLoading = true;
+      this.cdr.detectChanges();
+
       this.seller = await lastValueFrom(this.sellerService.getSeller());
       // console.log(this.seller);
+      this.isLoading = false;
+      this.cdr.detectChanges();
 
     } catch (err) {
       console.error('Failed to fetch seller:', err);
@@ -132,7 +140,7 @@ export class SellerProfileComponent {
 
   async update() {
     if (this.MyForm.invalid) {
-      alert('Please fill in all required fields correctly.');
+      this.toaster.error('Please fill in all required fields correctly');
       return;
     }
 
@@ -155,7 +163,7 @@ export class SellerProfileComponent {
       const response = await lastValueFrom(this.sellerService.updateSeller(formData));
 
       // Handle success
-      console.log('Update successful:', response.message);
+      this.toaster.success('Update Profile info successfully');
 
       // Update local data
       this.seller = response.sellerDto;

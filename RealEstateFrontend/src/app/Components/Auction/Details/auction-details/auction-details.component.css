@@ -515,3 +515,12 @@ input[type="number"]:focus {
   opacity: 0;
   transition-duration: 0.3s;
 }
+.custom-width {
+  width: 70% !important;  
+}
+
+@media (max-width: 1000px) {
+  .custom-width {
+    width: 100% !important;
+  }
+}

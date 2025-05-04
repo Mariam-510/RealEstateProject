@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { OrderResponseDto, OrderService, UpdateOrderDto } from '../../../Services/ApiServices/order.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-view-all-order',
@@ -16,7 +17,7 @@ export class ViewAllOrderComponent implements OnInit {
   activeLink = 'All Order';
   startDate: string = '';
   endDate: string = '';
-  
+
   orders: OrderResponseDto[] = [];
   filteredOrders: OrderResponseDto[] = [];
   isLoading = true;
@@ -28,11 +29,12 @@ export class ViewAllOrderComponent implements OnInit {
     { value: 2, text: 'Out For Delivery' },
     { value: 3, text: 'Delivered' },
     { value: 4, text: 'Cancelled' }
-  ]; 
+  ];
   constructor(private orderService: OrderService,
     private auth: AuthService,
-    private router: Router,) {}
-  
+    private router: Router,
+    private toastr: ToastrService) { }
+
   ngOnInit(): void {
     if (!this.hasRole('Admin')) {
       this.router.navigate(['/login']);
@@ -45,7 +47,7 @@ export class ViewAllOrderComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
     this.orderService.getAll().subscribe({
-      
+
       next: (orders) => {
         this.orders = orders;
         this.filteredOrders = [...orders];
@@ -60,7 +62,7 @@ export class ViewAllOrderComponent implements OnInit {
   }
 
   setActive(link: string, event: MouseEvent) {
-    event.preventDefault();   
+    event.preventDefault();
     this.activeLink = link;
     this.filterOrders();
   }
@@ -71,14 +73,14 @@ export class ViewAllOrderComponent implements OnInit {
     if (currentStatus === 3) {
       return optionStatus === 1 || optionStatus === 2 || optionStatus === 0;
     }
-    
+
     if (currentStatus === 2) {
       return optionStatus === 1 || optionStatus === 0;
     }
     if (currentStatus === 1) {
       return optionStatus === 0;
     }
-    
+
     return false;
   }
   filterOrders() {
@@ -101,7 +103,7 @@ export class ViewAllOrderComponent implements OnInit {
   onDateChange() {
     this.filterOrders();
   }
- 
+
   getStatusColor(statusNum: number): string {
     switch (statusNum) {
       case 0: return '#9c27b0';  // Gray
@@ -122,7 +124,7 @@ export class ViewAllOrderComponent implements OnInit {
       default: return '#000000';
     }
   }
-  
+
   hasRole(requiredRole: string): boolean {
     return this.auth.hasRole(requiredRole);
   }
@@ -139,14 +141,13 @@ export class ViewAllOrderComponent implements OnInit {
       console.error('Invalid status number');
       return;
     }
-  
+
     const updateData: UpdateOrderDto = {
       id: order.id,
-      status: order.statusNum   
+      status: order.statusNum
     };
-  
-    console.log('Sending update:', updateData); // Debug log
-  
+
+
     this.orderService.updateOrder(updateData).subscribe({
       next: (updatedOrder) => {
         const index = this.orders.findIndex(o => o.id === updatedOrder.id);
@@ -154,17 +155,51 @@ export class ViewAllOrderComponent implements OnInit {
           this.orders[index] = updatedOrder;
           this.filterOrders();
         }
-        alert('Order updated successfully');
+        this.toastr.success('Order updated successfully');
       },
       error: (err) => {
-        console.error('Error updating order:', err);
-        this.error = 'Failed to update order status. Please try again.';
-        alert(this.error);
+        this.toastr.error('Failed to update order status. Please try again.');
         const originalOrder = this.orders.find(o => o.id === order.id);
         if (originalOrder) {
           order.statusNum = originalOrder.statusNum;
         }
       }
     });
+  }
+  itemsPerPage: number = 5;
+  currentPage: number = 1;
+  totalPages: number = 1;
+
+  // Add these methods to your component
+  get paginatedOrders(): any[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredOrders.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  getPages(): number[] {
+    this.totalPages = Math.ceil(this.filteredOrders.length / this.itemsPerPage);
+    const pages = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
   }
 }

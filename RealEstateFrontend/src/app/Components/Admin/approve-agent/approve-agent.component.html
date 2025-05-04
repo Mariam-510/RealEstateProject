@@ -2,7 +2,7 @@
   <div>
     <h2 class="fw-bold">
       <span style="font-size: 0.9em;">
-        <i class="bi bi-person-check me-2 text-caffe"></i> Approve Agent
+        🤝 Approve Agent
       </span>
     </h2>
     <nav aria-label="breadcrumb" class="mt-2">
@@ -16,7 +16,7 @@
   </div>
 </div>
 
-<div class="row ms-4 me-4" *ngIf="agents.length > 0">
+<div class="row ms-4 me-4">
   <div class="col-md-12">
     <div class="card border-0 mt-5">
       <div class="card-body py-2">
@@ -33,8 +33,15 @@
   </div>
 </div>
 
-<div class="row g-4 mt-3 ms-4 me-4">
-  <div class="col-md-6 col-lg-4" *ngFor="let agent of filteredAgents; let i = index">
+<div *ngIf="isLoading" class="d-flex align-items-center justify-content-center" style="height: 100px">
+  <div class="spinner-border text-caffe" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+
+<div *ngIf="!isLoading" class="row g-4 mt-3 ms-4 me-4">
+  <div class="col-md-6 col-lg-4" *ngFor="let agent of paginatedAgents; let i = index">
     <div class="card h-100 border-light shadow-sm">
       <div class="card-body position-relative">
         <span class="badge position-absolute top-0 end-0 mt-4 me-3 bg-caffe">
@@ -64,8 +71,8 @@
           <div class="d-flex align-items-start ms-3">
             <i class="bi bi-envelope text-caffe me-2 mt-2 "></i>
             <div>
-              <h6 class="mb-0 mt-2">Agent Name</h6>
-              <p class="text-muted mb-0">{{agent.name}}</p>
+              <h6 class="mb-0 mt-2">Agent Email</h6>
+              <p class="text-muted mb-1">{{agent.email}}</p>
             </div>
           </div>
           <div class="d-flex align-items-start ms-3">
@@ -107,8 +114,27 @@
     </div>
   </div>
 </div>
+<div class="d-flex justify-content-center mt-4" *ngIf="!isLoading && filteredAgents.length > 0">
+  <nav aria-label="Page navigation">
+    <ul class="pagination">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <a class="page-link" href="#" aria-label="Previous" (click)="previousPage(); $event.preventDefault()">
+          <span class="text-caffe " aria-hidden="true">Previous</span>
+        </a>
+      </li>
+      <li class="page-item" *ngFor="let page of getPages()" [class.active]="page === currentPage">
+        <a class="page-link" href="#" (click)="goToPage(page); $event.preventDefault()">{{ page }}</a>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <a class="page-link" href="#" aria-label="Next" (click)="nextPage(); $event.preventDefault()">
+          <span class="text-caffe " aria-hidden="true">Next</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
 
-<div class="mt-5" *ngIf="filteredAgents.length === 0">
+<div class="mt-5" *ngIf="!isLoading && filteredAgents.length === 0">
   <div class="col-12 text-center">
     <div class="card-body py-5">
       <i class="bi bi-people text-caffe mb-3" style="font-size: 5vw;"></i>

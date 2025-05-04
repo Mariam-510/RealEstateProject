@@ -171,13 +171,15 @@
   transform: translateY(-5px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
-a{
-  color:#c38e79 !important;
+
+a {
+  color: #c38e79 !important;
 }
+
 .pagination .page-item.active .page-link {
   /* border: 2px solid #4a2c2a;  */
-  border-color:#c38e79 ;
-  color:white !important;
+  border-color: #c38e79;
+  color: white !important;
 }
 
 .action-btn {
@@ -186,7 +188,8 @@ a{
 }
 
 .action-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05); /* light hover background */
+  background-color: rgba(0, 0, 0, 0.05);
+  /* light hover background */
 }
 
 .action-btn i {
@@ -194,12 +197,19 @@ a{
 }
 
 .action-btn:hover i {
-  color: #a0522d; /* darker caffe tone on hover */
+  color: #a0522d;
+  /* darker caffe tone on hover */
 }
+
 .action-btn i {
   transition: transform 0.2s ease;
 }
 
 .action-btn:hover i {
   transform: scale(1.2);
+}
+
+
+.pagination {
+  cursor: pointer;
 }

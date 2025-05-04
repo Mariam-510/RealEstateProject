@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { ReviewResponseDto, ReviewService } from '../../../Services/ApiServices/review.service';
 import { API_CONFIG } from '../../../app.config';
+import { ToastrService } from '../../../Services/toastr.service';
 @Component({
   selector: 'app-all-review',
   standalone: true,
@@ -14,9 +15,11 @@ import { API_CONFIG } from '../../../app.config';
 })
 export class AllReviewComponent implements OnInit {
   apiConfig = API_CONFIG;
-  constructor(private router: Router, private auth: AuthService, private reviewService: ReviewService) { }
+  constructor(private router: Router, private auth: AuthService, private reviewService: ReviewService,
+    private toaster: ToastrService, private cdr: ChangeDetectorRef) { }
 
   reviews: ReviewResponseDto[] = []
+  isLoading = false;
 
   ngOnInit() {
     if (!this.hasRole('Buyer')) {
@@ -28,13 +31,21 @@ export class AllReviewComponent implements OnInit {
   }
 
   private loadReviews(): void {
+    this.isLoading = true;
+    this.cdr.detectChanges();
+
     this.reviewService.getCurrentBuyerReviews().subscribe({
       next: (reviews) => {
         this.reviews = reviews;
+        this.currentPage = 1;
       },
       error: (err) => {
         console.error('Failed to load reviews:', err);
         // Handle error (show message, etc.)
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -67,11 +78,11 @@ export class AllReviewComponent implements OnInit {
           // this.loadReviews();
 
           // Show success message
-          alert('Review deleted successfully');
+          this.toaster.success('Review deleted successfully');
         },
         error: (err) => {
           console.error('Failed to delete review:', err);
-          alert('Failed to delete review. Please try again.');
+          this.toaster.error('Failed to delete review. Please try again.');
         }
       });
     }
@@ -108,5 +119,41 @@ export class AllReviewComponent implements OnInit {
 
   hasUser() {
     return this.auth.isAuthenticated();
+  }
+  itemsPerPage: number = 4;
+  currentPage: number = 1;
+  totalPages: number = 0;
+
+  // Add these methods to your component
+  get paginatedreviews(): any[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.sortedReviews.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  getPages(): number[] {
+    this.totalPages = Math.ceil(this.sortedReviews.length / this.itemsPerPage);
+    const pages = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
   }
 }

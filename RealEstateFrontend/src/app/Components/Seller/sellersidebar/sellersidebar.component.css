@@ -4,19 +4,31 @@
   gap: 20px;
   background: #f8f9fa;
 }
+
 .nav-item:has(.dropdown-menu .active) .nav-link {
   background-color: #c38e7926;
   border-left: 5px solid #c38e79;
   color: #c38e79;
 }
+
 .sidebar {
-  height: 35vw;
-  width: 16vw;
+  height: 32vw;
+  /* width: 16vw; */
   position: fixed;
   left: 0;
   top: 0;
   overflow-y: auto;
   transition: width 0.3s ease-in-out;
+
+  /* Hide scrollbar for Firefox */
+  scrollbar-width: none;
+  /* Hide scrollbar for IE/Edge */
+  -ms-overflow-style: none;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .sidebar.collapsed {
@@ -24,7 +36,7 @@
 }
 
 .menu-btn {
-  
+
   transition: transform 0.3s ease-in-out;
 }
 
@@ -54,21 +66,22 @@
   background-color: #c38e7926;
   border-left: 5px solid #c38e79;
 }
-.active
-{
-  color:#c38e79 ;
+
+.active {
+  color: #c38e79;
 }
-.dropdown-item:hover
-{
- background-color: #c38e7926;
- color: #c38e79;
- width: 100%;
+
+.dropdown-item:hover {
+  background-color: #c38e7926;
+  color: #c38e79;
+  width: 100%;
 }
-.active.active
- {
+
+.active.active {
   background-color: #c38e7926;
   border-left: 5px solid #c38e79;
- }
+}
+
 @media (max-width: 768px) {
   .dashboard-container {
     flex-direction: column;
@@ -109,8 +122,3 @@
     flex-grow: 1;
   }
 }
-
-
-
-
-

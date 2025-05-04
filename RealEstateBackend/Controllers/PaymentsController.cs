@@ -13,6 +13,7 @@ using RealEstate.Repositories;
 using RealEstate.Services;
 using Stripe;
 using Stripe.Checkout;
+using Stripe.Climate;
 
 namespace RealEstate.Controllers
 {
@@ -23,16 +24,18 @@ namespace RealEstate.Controllers
         private readonly PayPalService _paypalService;
         private readonly IPaymentRepository _paymentRepository;
         private readonly IOrderRepository _orderRepository;
+        private readonly IAuctionBuyerRepository _auctionBuyerRepository;
         private readonly StripeService _stripeService;
         private readonly CartService _cartService;
         private readonly ShippingFeesService _shippingFeesService;
         public IMapper Mapper { get; }
         private readonly IConfiguration _configuration;
 
-        public PaymentsController(IPaymentRepository paymentRepository, PayPalService paypalService, IMapper Mapper, StripeService stripeService,CartService cartService, IConfiguration configuration, IOrderRepository orderRepository, ShippingFeesService shippingFeesService)
+        public PaymentsController(IPaymentRepository paymentRepository, IAuctionBuyerRepository auctionBuyerRepository, PayPalService paypalService, IMapper Mapper, StripeService stripeService,CartService cartService, IConfiguration configuration, IOrderRepository orderRepository, ShippingFeesService shippingFeesService)
         {
             _paymentRepository = paymentRepository;
             _orderRepository = orderRepository;
+            _auctionBuyerRepository = auctionBuyerRepository;
             _paypalService = paypalService;
             this.Mapper = Mapper;
             _stripeService = stripeService;
@@ -44,7 +47,7 @@ namespace RealEstate.Controllers
 
 
         [HttpPost("PayPal")]
-        [Authorize(Roles = "Buyer")]
+        [Authorize]
         public async Task<IActionResult> CreatePayPalOrder([FromBody] decimal amount)
         {
             string buyerIdStr = User.FindFirst("userId")?.Value;
@@ -59,7 +62,7 @@ namespace RealEstate.Controllers
                 Amount = amount,
                 PaymentMethod = Models.Domains.PaymentMethod.PayPal,
                 PaidAt = DateTime.Now.AddHours(1),
-                BuyerId = buyerId
+                BuyerId = null
             };
 
             payment = await _paymentRepository.AddAsync(payment);
@@ -72,7 +75,7 @@ namespace RealEstate.Controllers
 
         // PaymentsController.cs
         [HttpPost("Stripe")]
-        [Authorize(Roles = "Buyer")]
+        [Authorize]
         public async Task<IActionResult> CreateStripePayment([FromBody] decimal amount)
         {
             string buyerIdStr = User.FindFirst("userId")?.Value;
@@ -98,7 +101,7 @@ namespace RealEstate.Controllers
         }
 
         [HttpPost("Stripe/CreateSession")]
-        [Authorize(Roles = "Buyer")]
+        [Authorize]
         public async Task<IActionResult> CreateStripeSession([FromBody] StripeSessionRequest request)
         {
             string buyerIdStr = User.FindFirst("userId")?.Value;
@@ -121,7 +124,7 @@ namespace RealEstate.Controllers
             // Step 2: Create an Order record (you need an IOrderRepository probably)
 
             var deliveryFees = await _shippingFeesService.GetShippingFeesByAddressIdAsync(request.SelectedAddressId);
-            var order = new Order
+            var order = new RealEstate.Models.Domains.Order
             {
                 BuyerId = buyerId,
                 PaymentId = payment.Id,
@@ -168,7 +171,7 @@ namespace RealEstate.Controllers
 
 
         [HttpPost("Stripe/VerifySession")]
-        [Authorize(Roles = "Buyer")]
+        [Authorize]
         public async Task<IActionResult> VerifyStripeSession([FromBody] string sessionId)
         {
             var isValid = await _stripeService.VerifySessionAsync(sessionId);
@@ -180,6 +183,51 @@ namespace RealEstate.Controllers
             return Ok();
         }
 
+
+        [HttpPost("Stripe/CreateAuctionSession")]
+        public async Task<IActionResult> CreateStripeAuctionSession([FromBody] StripeAuctionSessionRequestDto request)
+        {
+            string buyerIdStr = User.FindFirst("userId")?.Value;
+
+            if (!int.TryParse(buyerIdStr, out int buyerId))
+            {
+                return Unauthorized("Buyer not found.");
+            }
+
+            // Check if buyer already paid for this auction
+            var existingAuctionBuyer = await _auctionBuyerRepository.GetByAuctionAndBuyerIdAsync(buyerId, request.AuctionId);
+            if (existingAuctionBuyer != null)
+            {
+                return BadRequest("You've already paid the deposit for this auction");
+            }
+
+            // Create payment record (marked as paid immediately since we're handling it here)
+            var payment = new Payment
+            {
+                Amount = request.Amount,
+                PaymentMethod = Models.Domains.PaymentMethod.Stripe,
+                PaidAt = DateTime.Now,
+                BuyerId = buyerId
+            };
+            payment = await _paymentRepository.AddAsync(payment);
+
+            // Create auction buyer record immediately
+            var auctionBuyer = new AuctionBuyer
+            {
+                AuctionId = request.AuctionId,
+                PaymentId = payment.Id,
+                BuyerId = buyerId
+            };
+            auctionBuyer = await _auctionBuyerRepository.CreateAsync(auctionBuyer);
+
+            var successUrl = $"{_configuration["ClientUrl"]}/auctions/{request.AuctionId}";
+            var cancelUrl = $"{_configuration["ClientUrl"]}/auctions/{request.AuctionId}";
+
+            var session = await _stripeService.CreateCheckoutSessionAsync(request.Amount, successUrl, cancelUrl);
+
+
+            return Ok(new { sessionId = session.Id });
+        }
 
 
 

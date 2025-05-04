@@ -36,8 +36,14 @@
           <!-- Divider -->
           <hr class="my-2" style="border-top: 3px solid #c38e79" />
 
+          <div *ngIf="isLoading" class="d-flex align-items-center justify-content-center" style="height: 100px">
+            <div class="spinner-border text-caffe" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
           <!-- Cart Items -->
-          <div *ngIf="localCart; else emptyCart">
+          <div *ngIf="!isLoading && localCart; else emptyCart">
 
             <div class="cart-item pt-3" *ngFor="let item of localCart.orderItemDtos; let last = last">
               <div class="row align-items-center">
@@ -120,7 +126,7 @@
 
           <!-- Empty Cart Message -->
           <ng-template #emptyCart>
-            <div class="alert alert-info mt-4 text-center">
+            <div *ngIf="!isLoading" class="alert alert-info mt-4 text-center">
               <i class="bi bi-cart-x fs-4 me-2"></i>
               Your cart is empty.
               <a routerLink="/products" class="alert-link ms-2" style="color: #c38e79">

@@ -12,11 +12,13 @@ import { CartService } from '../../../../Services/ApiServices/cart.service';
 import { ReviewResponseDto, ReviewService } from '../../../../Services/ApiServices/review.service';
 import { WishListService } from '../../../../Services/ApiServices/wish-list.service';
 import { SimilarProductsComponent } from "../similar-products/similar-products.component";
+import { ChatbotComponent } from "../../../Chat/chatbot/chatbot.component";
+import { productDetailsChatbotComponent } from "../../../Chat/product-details-chatbot/product-details-chatbot.component";
 
 
 @Component({
   selector: 'app-product-details',
-  imports: [CommonModule, RouterModule, NgxImageZoomModule, ZoomDirective, SimilarProductsComponent],
+  imports: [CommonModule, RouterModule, NgxImageZoomModule, ZoomDirective, SimilarProductsComponent, ChatbotComponent, productDetailsChatbotComponent],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css'
 })
@@ -384,8 +386,14 @@ export class ProductDetailsComponent implements OnInit {
 
     this.wishListService.toggleProductWishlist(product.id).subscribe({
       next: (response) => {
-        this.toastr.success(response);
-        // Optional: Update with actual API state if needed
+        if(product.isFavorite)
+          {
+            this.toastr.success("Added to Favourite Successfully");
+            // Optional: Update with actual API state if needed
+          }
+          else{
+            this.toastr.success("Removed From Favourite Successfully");
+           }
       },
       error: (err) => {
         // Revert UI state on error
@@ -441,7 +449,7 @@ export class ProductDetailsComponent implements OnInit {
 
   addToCart() {
     if (!this.selectedColorStock) {
-      alert('Please select a color');
+      this.toastr.error('Please select a color');
       return;
     }
 
@@ -451,13 +459,13 @@ export class ProductDetailsComponent implements OnInit {
       Color: this.selectedColorStock.color
     }).subscribe({
       next: (response) => {
-        alert('Added to cart successfully!');
+        this.toastr.success('Added to cart successfully!');
         this.cartService.notifyCartUpdated(); // <-- Add this line
         // Reset or update state as needed
       },
       error: (err) => {
         console.error('Error adding to cart:', err);
-        alert(err.error?.message || 'Failed to add to cart');
+        this.toastr.error(err.error?.message || 'Failed to add to cart');
       }
     });
   }

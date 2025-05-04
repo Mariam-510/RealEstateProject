@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AppointmentDto, AppointmentService, AppointmentStatus } from '../../../Services/ApiServices/appointment.service';
 import { FormsModule } from '@angular/forms';
 import { API_CONFIG } from '../../../app.config';
@@ -9,16 +9,16 @@ import { Router, RouterLink, RouterModule } from '@angular/router';
 @Component({
   selector: 'app-view-all-pointment',
   standalone: true,
-  imports: [CommonModule,FormsModule,RouterLink,RouterModule],
+  imports: [CommonModule, FormsModule, RouterLink, RouterModule],
   templateUrl: './view-all-pointment.component.html',
   styleUrl: './view-all-pointment.component.css'
 })
-export class ViewAllPointmentComponent implements OnInit{
+export class ViewAllPointmentComponent implements OnInit {
   propertyLinks = ['All Appointment', 'Pending', 'Confirmed', 'Cancelled', 'Completed'];
   activeLink = 'All Appointment';
-  
-    apiConfig = API_CONFIG;
-  
+
+  apiConfig = API_CONFIG;
+
   appointments: AppointmentDto[] = [];
   filteredappoinments: AppointmentDto[] = [];
   error: string | null = null;
@@ -26,22 +26,23 @@ export class ViewAllPointmentComponent implements OnInit{
   pageSize = 4;
   totalPages = 1;
   paginatedAppointments: AppointmentDto[] = [];
-  constructor(private appointmentService: AppointmentService,private auth: AuthService,private router: Router) {}
+  constructor(private appointmentService: AppointmentService, private auth: AuthService, private router: Router,
+    private cdr: ChangeDetectorRef) { }
   AppointmentStatus = AppointmentStatus;
 
-  async  ngOnInit() {
- 
+  async ngOnInit() {
+
     if (!this.hasRole('Seller') && !this.hasRole('Agent')) {
       this.router.navigate(['/login']);
-    } 
-    else{
+    }
+    else {
       this.loadAppointments();
     }
     // else{
     //   this.router.navigate(['/login']);
     // }
   }
- sortAppointment: 'asc' | 'desc' = 'desc';
+  sortAppointment: 'asc' | 'desc' = 'desc';
 
   get sortedAppointments(): AppointmentDto[] {
     return [...this.filteredappoinments].sort((a, b) => {
@@ -68,28 +69,33 @@ export class ViewAllPointmentComponent implements OnInit{
     this.filteredappoinments.sort((a, b) => {
       const dateA = new Date(a.scheduledTime).getTime();
       const dateB = new Date(b.scheduledTime).getTime();
-  
+
       if (isNaN(dateA) || isNaN(dateB)) {
         return 0;
       }
-  
+
       return this.sortAppointment === 'desc' ? dateB - dateA : dateA - dateB;
     });
-  
+
     // After sorting, update the pagination
     this.updatePagination();
   }
-  
+
   setActive(link: string, event: MouseEvent) {
     event.preventDefault();
     this.activeLink = link;
     this.loadAppointments();
   }
 
+  isLoading = false;
+
   async loadAppointments() {
     this.error = null;
     const status = this.activeLink !== 'All Appointment' ? this.activeLink : undefined;
-  
+
+    this.isLoading = true;
+    this.cdr.detectChanges();
+
     this.appointmentService.GetAppointments(this.sortAppointment, status).subscribe({
       next: (appointments) => {
         this.appointments = appointments;
@@ -97,6 +103,9 @@ export class ViewAllPointmentComponent implements OnInit{
         this.currentPage = 1; // Reset to page 1 whenever we load new data
         this.updatePagination();  // <- ADD THIS
         console.log('Appointments loaded:', this.appointments);
+
+        this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Failed to load appointments.', error);
@@ -104,13 +113,13 @@ export class ViewAllPointmentComponent implements OnInit{
       }
     });
   }
-  
+
   updateStatus(appointment: AppointmentDto, newStatus: AppointmentStatus) {
     this.appointmentService.updateStatus(appointment.id, newStatus).subscribe({
       next: (updatedAppointment: AppointmentDto) => {
         // Update the appointment status locally
         appointment.status = updatedAppointment.status;
-  
+
         // After updating, re-filter appointments based on the active link
         this.applyFilter();
       },
@@ -119,63 +128,63 @@ export class ViewAllPointmentComponent implements OnInit{
       }
     });
   }
-  
+
 
   applyFilter(): void {
     const status = this.activeLink !== 'All Appointment' ? this.activeLink : undefined;
-    
+
     if (status) {
       this.filteredappoinments = this.appointments.filter(app => app.status === status);
     } else {
       this.filteredappoinments = [...this.appointments];
     }
-  
+
     this.currentPage = 1; // Reset page to 1 after filter change
     this.updatePagination();
   }
-  
+
   updatePagination(): void {
     // Calculate total pages
     this.totalPages = Math.ceil(this.filteredappoinments.length / this.pageSize);
-    
+
     // Ensure current page stays within valid bounds
     this.currentPage = Math.max(1, Math.min(this.currentPage, this.totalPages));
-    
+
     // Calculate slice indices
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
-    
+
     // Update paginated properties
     this.paginatedAppointments = this.filteredappoinments.slice(startIndex, endIndex);
   }
-    getPages(): number[] {
-      const pagesToShow = 5;
-      const startPage = Math.max(1, this.currentPage - Math.floor(pagesToShow / 2));
-      const endPage = Math.min(this.totalPages, startPage + pagesToShow - 1);
-  
-      return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+  getPages(): number[] {
+    const pagesToShow = 5;
+    const startPage = Math.max(1, this.currentPage - Math.floor(pagesToShow / 2));
+    const endPage = Math.min(this.totalPages, startPage + pagesToShow - 1);
+
+    return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePagination();
     }
-  
-    previousPage(): void {
-      if (this.currentPage > 1) {
-        this.currentPage--;
-        this.updatePagination();
-      }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePagination();
     }
-  
-    nextPage(): void {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++;
-        this.updatePagination();
-      }
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagination();
     }
-  
-    goToPage(page: number): void {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-        this.updatePagination();
-      }
-    }
+  }
   hasRole(requiredRole: string) {
     return this.auth.hasRole(requiredRole);
   }
@@ -188,5 +197,5 @@ export class ViewAllPointmentComponent implements OnInit{
     return this.auth.isAuthenticated();
   }
 
-  
+
 }

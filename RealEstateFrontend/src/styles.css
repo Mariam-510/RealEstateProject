@@ -15,22 +15,26 @@
   background: #c38e79 !important;
 }
 
-.bg-caffe-transparent{
-    background-color:#c38e7992 !important;
+.bg-caffe-transparent {
+  background-color: #c38e7992 !important;
 }
-.bg-brown{
-    background-color: #4a2c2a !important;
+
+.bg-brown {
+  background-color: #4a2c2a !important;
 }
-.text-brown{
-    color:#4a2c2a !important;
+
+.text-brown {
+  color: #4a2c2a !important;
 }
+
 .bg-caffe-light {
-  background-color: rgba(195, 142, 121, 0.05) !important; 
+  background-color: rgba(195, 142, 121, 0.05) !important;
 }
 
 .bg-caffe-light2 {
-  background-color: rgba(195, 142, 121, 0.164) !important; 
+  background-color: rgba(195, 142, 121, 0.164) !important;
 }
+
 input[type="password"]::-ms-reveal {
   display: none !important;
 }

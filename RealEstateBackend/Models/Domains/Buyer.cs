@@ -38,5 +38,7 @@ namespace RealEstate.Models.Domains
         public virtual ICollection<Payment>? Payments { get; set; }
 
         public virtual ICollection<Review>? Reviews { get; set; }
+        public virtual ICollection<AuctionBuyer>? AuctionBuyers { get; set; }
+
     }
 }

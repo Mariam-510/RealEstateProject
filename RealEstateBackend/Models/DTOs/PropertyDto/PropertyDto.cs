@@ -26,7 +26,7 @@ namespace RealEstate.Models.DTOs.PropertyDto
         public bool IsFavorite { get; set; } = false;
         public string? UserName { get; set; }
         public string? UserImage { get; set; }
-
+        public int? AuctionId { get; set; }
 
     }
 }

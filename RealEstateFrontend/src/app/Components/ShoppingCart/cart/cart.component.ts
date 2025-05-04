@@ -5,6 +5,8 @@ import { CartDto, CartService } from '../../../Services/ApiServices/cart.service
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { API_CONFIG } from '../../../app.config';
 import { EditOrderItemDto, OrderItemDto, OrderItemService } from '../../../Services/ApiServices/order-item.service';
+import { ToastrService } from '../../../Services/toastr.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -21,23 +23,39 @@ export class CartComponent implements OnInit {
     private cartService: CartService,
     private auth: AuthService,
     private orderItemService: OrderItemService,
-    private router: Router // Inject Router
+    private router: Router,
+    private toaster: ToastrService // Inject Router
   ) { }
+
+  isLoading = true;
 
   ngOnInit() {
     if (!this.hasRole('Buyer')) {
-      // Redirect to login if not Buyer
       this.router.navigate(['/login']);
     } else {
       this.loadInitialCart();
     }
   }
 
-  private loadInitialCart() {
+  // private loadInitialCart() {
+  //   if (this.hasRole("Buyer")) {
+  //     this.cartService.getCart().subscribe(cart => {
+  //       this.localCart = cart; // Store initial copy locally
+  //     });
+  //     this.isLoading = false;
+  //   }
+  // }
+
+  private async loadInitialCart() {
     if (this.hasRole("Buyer")) {
-      this.cartService.getCart().subscribe(cart => {
+      try {
+        const cart = await lastValueFrom(this.cartService.getCart());
         this.localCart = cart; // Store initial copy locally
-      });
+      } catch (error) {
+        console.error('Error loading cart:', error);
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 
@@ -97,7 +115,7 @@ export class CartComponent implements OnInit {
       error: (err) => {
         this.localCart = originalCart;
         console.error('Error adding to cart:', err);
-        alert(err.error?.message || 'Failed to add to cart');
+        this.toaster.error(err.error?.message || 'Failed to add to cart');
       }
     });
   }
@@ -130,7 +148,7 @@ export class CartComponent implements OnInit {
       error: (err) => {
         this.localCart = originalCart;
         console.error('Error adding to cart:', err);
-        alert(err.error?.message || 'Failed to add to cart');
+        this.toaster.error(err.error?.message || 'Failed to add to cart');
       }
     });
   }

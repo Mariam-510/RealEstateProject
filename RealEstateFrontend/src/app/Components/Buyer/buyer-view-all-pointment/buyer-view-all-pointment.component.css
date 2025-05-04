@@ -1,9 +1,13 @@
-.page-link{
-    color:#c38e79 !important;
-  }
+.page-link {
+  color: #c38e79 !important;
+}
+
 .pagination .page-item.active .page-link {
-    /* border: 2px solid #4a2c2a;  */
-    border-color:#c38e79 ;
-    color:white !important;
-  }
-  
+  /* border: 2px solid #4a2c2a;  */
+  border-color: #c38e79;
+  color: white !important;
+}
+
+.pagination {
+  cursor: pointer;
+}

@@ -10,6 +10,7 @@ import { WishListService } from '../../../../Services/ApiServices/wish-list.serv
 import { ToastrService } from '../../../../Services/toastr.service';
 import { Subscription } from 'rxjs';
 import { ProductFilterService } from '../../../../Services/product-filter.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-view-all',
@@ -196,13 +197,36 @@ export class ViewAllComponent implements OnInit, OnDestroy {
 
   //---------------------------------------------------------------------------------------------
 
+  // async loadProducts(filters?: ProductFilters) {
+  //   try {
+  //     this.products = await this.productService.getAllProducts(filters).toPromise() ?? [];
+  //     console.log(this.products);
+  //     this.cdr.detectChanges();
+  //   } catch (err) {
+  //     console.error('Error loading products:', err);
+  //   }
+  // }
+
+  // Add in your component class
+  isLoading = false;
+
   async loadProducts(filters?: ProductFilters) {
     try {
-      this.products = await this.productService.getAllProducts(filters).toPromise() ?? [];
+      this.isLoading = true;
+      this.cdr.detectChanges(); // Update view immediately
+
+      this.products = await lastValueFrom(
+        this.productService.getAllProducts(filters)
+      ) ?? [];
+
       console.log(this.products);
       this.cdr.detectChanges();
+
     } catch (err) {
       console.error('Error loading products:', err);
+    } finally {
+      this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -273,8 +297,14 @@ export class ViewAllComponent implements OnInit, OnDestroy {
 
     this.wishListService.toggleProductWishlist(product.id).subscribe({
       next: (response) => {
-        this.toastr.success(response);
-        // Optional: Update with actual API state if needed
+        if(product.isFavorite)
+          {
+            this.toastr.success("Added to Favourite Successfully");
+            // Optional: Update with actual API state if needed
+          }
+          else{
+            this.toastr.success("Removed From Favourite Successfully");
+           }
       },
       error: (err) => {
         // Revert UI state on error
@@ -314,7 +344,8 @@ export class ViewAllComponent implements OnInit, OnDestroy {
       navigator.share({
         title: item.title,
         text: shareText,
-        url: window.location.href
+        // url: window.location.href
+        url: `${window.location.origin}/products/${item.id}`
       }).then(() => console.log('Shared successfully'))
         .catch(err => console.error('Sharing failed', err));
     } else {

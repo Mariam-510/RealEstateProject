@@ -24,11 +24,18 @@
     <div class="brand-content">
       <a routerLink="/" class="brand-logo">
         <!-- w-25 -->
-        <img src="https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1" alt="UrbanNest">
+        <img src="images/p1.PNG" alt="proppulse">
       </a>
       <div class="brand-tagline">
-        <a routerLink="/" class="brand-name w-25">UrbanNest</a>
-        <span class="brand-services">
+        <!-- <a routerLink="/" class="brand-name text-caffe">PropPulse</a> -->
+
+        <a routerLink="/"
+          class="brand-name text-decoration-none d-inline-flex align-items-center fs-3 fw-bolder text-dark">
+          <span class="prop-part pe-1 rounded-2 transition-all">Prop</span>
+          <span class="pulse-part text-caffe ms-n2 position-relative">Pulse</span>
+        </a>
+
+        <span class=" brand-services">
           <span class="service-item" [class.active]="isRouteActive('/properties')">Properties</span>
           <span class="separator"> | </span>
           <span class="service-item" [class.active]="isRouteActive('/products')">Furniture</span>
@@ -141,7 +148,7 @@
 
       <ng-template #emptyCardFooter>
         <div class="cart-footer">
-          <button class="checkout-btn mb-4" routerLink="/">Continue Shopping</button>
+          <button class="checkout-btn mb-4" routerLink="/products">Continue Shopping</button>
         </div>
       </ng-template>
     </div>
@@ -172,19 +179,53 @@
         </ng-container>
 
         <ng-template #authenticatedUser>
-          <div class="user-info">
-            <!-- <p class="user-name">{{ currentUser.firstName }}</p> -->
+          <!-- <div class="user-info">
             <p class="user-name">{{loggedInUser?.firstName ? loggedInUser?.firstName : 'User'}}</p>
-            <!-- <p class="user-email">{{ currentUser.email }}</p> -->
             <p class="user-email">{{loggedInUser?.email ? loggedInUser?.email : 'user@gmail.com'}}</p>
+            <p *ngIf="subscription$ | async as sub" class="user-email">{{sub?.subscriptionPlan?.name}} Plan</p>
+          </div> -->
+
+          <div class="user-info">
+            <div class="d-flex align-items-center gap-3">
+              <div>
+                <p class="user-name mb-1">
+                  {{ loggedInUser?.firstName + ' ' + (loggedInUser?.lastName || '') || 'Guest User' }}
+                </p>
+                <div class="user-email text-muted small">
+                  {{ loggedInUser?.email || 'user@example.com' }}
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="subscription$ | async as sub" class="mt-3 subscription-details bg-caffe-light rounded p-1">
+              <div *ngIf="subscription$ | async as sub" class="d-flex flex-column gap-2">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-check text-muted" style="font-size: 0.7rem;"></i>
+                    <span class="text-uppercase fw-medium small" style="font-size: 0.7rem;">{{
+                      sub?.subscriptionPlan?.name }}</span>
+                  </div>
+                  <span class="badge bg-opacity-25 text-success" style="font-size: 0.7rem;">
+                    Latest
+                  </span>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 text-muted" style="font-size: 0.7rem;">
+                  <i class="bi bi-building" style="font-size: 0.7rem;"></i>
+                  <span>{{ sub?.availableProperties }} properties remaining</span>
+                </div>
+              </div>
+            </div>
           </div>
+
+
 
           <div *ngIf="hasRole('Buyer')">
             <a class="dropdown-item" routerLink="/user/profile">
               <i class="bi bi-person-fill" style="color: #6e5447;"></i> Profile
             </a>
             <a class="dropdown-item" routerLink="user/wishlist">
-              <i class="bi bi-heart-fill" style="color: #6e5447;"></i> Favorites
+              <i class="bi bi-heart-fill" style="color: #6e5447;"></i> Favourites
             </a>
             <a class="dropdown-item" routerLink="user/ViewAllAppointment">
               <i class="bi bi-calendar-check" style="color: #6e5447;"></i> Appointments
@@ -221,9 +262,9 @@
             <a class="dropdown-item" routerLink="/seller/dashboard">
               <i class="bi bi-receipt" style="color: #6e5447;"></i> Dashboard
             </a>
-            <a class="dropdown-item" routerLink="/seller/addAuction">
+            <a class="dropdown-item" routerLink="/seller/Properties">
               <i class="bi bi-three-dots-vertical" style="color: #6e5447;"></i> More
-            </a> 
+            </a>
             <a class="dropdown-item" routerLink="/subscriptionPlan">
               <i class="bi bi-upload" style="color: #6e5447;"></i> Upgrade
             </a>
@@ -236,9 +277,9 @@
             <a class="dropdown-item" routerLink="/agent/dashboard">
               <i class="bi bi-receipt" style="color: #6e5447;"></i> Dashboard
             </a>
-            <a class="dropdown-item" routerLink="/agent/addAuction">
+            <a class="dropdown-item" routerLink="/agent/Properties">
               <i class="bi bi-three-dots-vertical" style="color: #6e5447;"></i> More
-            </a> 
+            </a>
             <a class="dropdown-item" routerLink="/subscriptionPlan">
               <i class="bi bi-upload" style="color: #6e5447;"></i> upgrade
             </a>

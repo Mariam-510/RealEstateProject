@@ -15,6 +15,8 @@ import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import { CreatePropertyDTO, PropertyService } from '../../../Services/ApiServices/property.service';
 import { AuthService } from '../../../Services/ApiServices/auth.service';
 import { ToastrService } from '../../../Services/toastr.service';
+import { SubscriptionDto, SubscriptionService } from '../../../Services/ApiServices/subscription.service';
+import { catchError, Observable, of, startWith, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-add-property',
@@ -45,9 +47,12 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
   private map!: L.Map;
   private marker: L.Marker | null = null;
   private provider = new OpenStreetMapProvider();
+  subscription$!: Observable<SubscriptionDto | null>;
+
 
   constructor(private fb: FormBuilder, private router: Router, private propertyService: PropertyService,
-    private auth: AuthService, private toastr: ToastrService) {
+    private auth: AuthService, private toastr: ToastrService, private subscriptionService: SubscriptionService) {
+
     this.propertyForm = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(50)]],
       description: ['', [Validators.required, Validators.maxLength(200)]],
@@ -94,6 +99,25 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
     } else if (this.hasRole('Seller')) {
       this.userType = 'Seller';
     }
+
+    this.subscriptionCall();
+  }
+
+  subscriptionCall() {
+    this.subscription$ = this.subscriptionService.subscriptionUpdated$.pipe(
+      startWith(null),
+      switchMap(() => {
+        if (this.hasRole("Seller") || this.hasRole("Agent")) {
+          return this.subscriptionService.getCurrentUserSubscription().pipe(
+            catchError((error) => {
+              console.error('Error loading subscription:', error);
+              return of(null);
+            })
+          );
+        }
+        return of(null);
+      })
+    );
   }
 
   ngAfterViewInit(): void {
@@ -208,22 +232,6 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // onFileChange(event: any): void {
-  //   const files = event.target.files;
-  //   if (files) {
-  //     for (let i = 0; i < files.length; i++) {
-  //       const file = files[i];
-  //       const reader = new FileReader();
-  //       reader.onload = (e: any) => {
-  //         this.images.push({ file, preview: e.target.result });
-  //         this.propertyForm.get('images')?.setValue(this.images);
-  //         this.propertyForm.get('images')?.markAsTouched();
-  //       };
-  //       reader.readAsDataURL(file);
-  //     }
-  //   }
-  // }
-
   onFileChange(event: any): void {
     const input = event.target as HTMLInputElement;
     const newFiles = input.files;
@@ -271,13 +279,6 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
     this.propertyForm.get('images')?.updateValueAndValidity();
   }
 
-  // removeImage(index: number): void {
-  //   this.images.splice(index, 1);
-  //   this.propertyForm
-  //     .get('images')
-  //     ?.setValue(this.images.length > 0 ? this.images : null);
-  //     this.propertyForm.get('images')?.updateValueAndValidity();
-  // }
 
   onContractChange(event: any): void {
     const file = event.target.files[0];
@@ -289,7 +290,7 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       ];
       if (!validTypes.includes(file.type)) {
-        alert('Please upload a PDF or Word document');
+        this.toastr.error('Please upload a PDF or Word document');
         return;
       }
 
@@ -303,71 +304,7 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // onSubmit(): void {
-  //   if (this.propertyForm.valid && this.images.length > 0) {
-  //     // const formData = new FormData();
 
-  //     // // Append all form values
-  //     // Object.keys(this.propertyForm.value).forEach((key) => {
-  //     //   if (key !== 'images' && key !== 'contract') {
-  //     //     formData.append(key, this.propertyForm.value[key]);
-  //     //   }
-  //     // });
-
-  //     // // Append images
-  //     // this.images.forEach((image) => {
-  //     //   formData.append('images', image.file);
-  //     // });
-
-  //     // // Append contract if agent
-  //     // if (this.userType === 'agent' && this.contractFile) {
-  //     //   formData.append('contract', this.contractFile);
-  //     // }
-
-  //     // // Here you would typically send formData to your backend
-  //     // console.log('Property data:', formData);
-
-  //     // // For demonstration, just navigate after "submitting"
-  //     // this.router.navigate(['/properties']);
-
-  //     const location = [
-  //       this.propertyForm.value.city,
-  //       this.propertyForm.value.street,
-  //       this.propertyForm.value.buildingNum,
-  //       this.propertyForm.value.apartment,
-  //       this.propertyForm.value.floor
-  //     ].filter(Boolean).join(', ');
-
-  //     // Prepare the DTO
-  //     const createDto: CreatePropertyDTO = {
-  //       title: this.propertyForm.value.title,
-  //       description: this.propertyForm.value.description,
-  //       location: location,
-  //       price: this.propertyForm.value.price,
-  //       type: this.propertyForm.value.type,
-  //       propertyCategory: this.propertyForm.value.propertyCategory,
-  //       bedRooms: this.propertyForm.value.bedrooms,
-  //       bathRooms: this.propertyForm.value.bathrooms,
-  //       space: this.propertyForm.value.space,
-  //       status: this.propertyForm.value.status,
-  //       images: this.images.map(img => img.file),
-  //       contractFile: this.contractFile ?? undefined
-  //     };
-
-  //     // Call the service
-  //     this.propertyService.addProperty(createDto).subscribe({
-  //       next: (createdProperty) => {
-  //         console.log('Property created:', createdProperty);
-  //         this.router.navigate(['/properties']);
-  //       },
-  //       error: (err) => {
-  //         console.error('Error creating property:', err);
-  //         // Handle error (show message to user)
-  //         alert(`Error creating property: ${err.error?.message || err.message}`);
-  //       }
-  //     });
-  //   }
-  //   }
 
   onSubmit(): void {
     if (this.propertyForm.valid && this.images.length >= 2) {
@@ -412,12 +349,36 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
         next: (createdProperty) => {
           // this.isSubmitting = false;
           this.toastr.success('Property created successfully!');
-          this.router.navigate(['/properties']);
+          this.subscriptionService.notifySubscriptionUpdated();
+          // this.router.navigate(['/properties']);
+
+          // Reset form controls to initial values
+          this.propertyForm.reset();
+
+          // Then patch specific values to ensure they match exact requirements
+          this.propertyForm.patchValue({
+            bedRooms: 0,
+            bathRooms: 0,
+            space: 100
+          });
+
+          // Clear other non-form elements
+          this.images = [];
+          this.contractFile = undefined;
+          this.contractPreview = null;
+
+          // Remove marker and reset map view
+          if (this.marker) {
+            this.map.removeLayer(this.marker);
+            this.marker = null;
+          }
+          this.map.setView([30.0444, 31.2357], 13);
+
         },
         error: (err) => {
           // this.isSubmitting = false;
           this.toastr.error('Error creating property!', err);
-          alert(`Error creating property: ${err.error?.message || err.message}`);
+          this.toastr.error(`Error creating property: ${err.error?.message || err.message}`);
         }
       });
     } else {

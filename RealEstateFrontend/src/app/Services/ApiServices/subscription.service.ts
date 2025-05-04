@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { API_CONFIG } from '../../app.config';
 import { SubscriptionPlanDto } from './subscription-plan.service';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, tap } from 'rxjs';
 export interface SubscriptionDto {
   id: number;
   availableProperties: number;
@@ -12,6 +12,12 @@ export interface SubscriptionDto {
   paymentId?: number;
   subscriptionDate: Date;
   subscriptionPlan?: SubscriptionPlanDto;
+}
+
+// Add CreateSubscriptionDto interface
+export interface CreateSubscriptionDto {
+  SubscriptionPlanId: number;
+  PaymentId?: number;
 }
 @Injectable({
   providedIn: 'root'
@@ -31,5 +37,15 @@ export class SubscriptionService {
 
   getCurrentUserSubscription(): Observable<SubscriptionDto> {
     return this.http.get<SubscriptionDto>(`${this.apiUrl}/user`);
+  }
+
+  // New method to update subscription
+  updateSubscription(dto: CreateSubscriptionDto): Observable<any> {
+    return this.http.put(`${this.apiUrl}`, dto).pipe(
+      tap(() => {
+        // Notify subscribers after successful update
+        this.notifySubscriptionUpdated();
+      })
+    );
   }
 }

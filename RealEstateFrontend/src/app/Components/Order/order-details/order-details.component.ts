@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { jsPDF } from 'jspdf';
@@ -29,14 +29,14 @@ export class OrderDetailsComponent implements OnInit {
   constructor(private dialog: MatDialog, private route: ActivatedRoute,
     private router: Router, private auth: AuthService, private addressService: AddressService,
     private orderService: OrderService, private orderItemService: OrderItemService,
-    private buyerService: BuyerService
-) { }
+    private buyerService: BuyerService, private cdr: ChangeDetectorRef
+  ) { }
 
   isLoading = true;
   loggedInUser!: User | undefined;
 
   async ngOnInit() {
-    if (!this.hasRole('Buyer')&&!this.hasRole('Admin')) {
+    if (!this.hasRole('Buyer') && !this.hasRole('Admin')) {
       this.router.navigate(['/login']);
       return;
     }
@@ -57,6 +57,7 @@ export class OrderDetailsComponent implements OnInit {
       // Handle error
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -80,16 +81,16 @@ export class OrderDetailsComponent implements OnInit {
   private async loadBuyer(buyerId: number) {
     try {
       if (!buyerId) return;
-      
+
       const buyer$ = this.buyerService.getBuyerById(buyerId);
       const result = await lastValueFrom(buyer$);
-  
+
       if (!result) {
         throw new Error('Buyer not found');
       }
-  
+
       this.buyer = result;
-     } catch (err) {
+    } catch (err) {
       this.buyer = null;
       console.error('Failed to load buyer:', err);
     }
@@ -169,7 +170,7 @@ export class OrderDetailsComponent implements OnInit {
     y += 10;
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(0, 0, 0);
-    doc.text((this.loggedInUser?.firstName ?? "") + ' ' + (this.loggedInUser?.lastName ?? ""), margin, y);
+    doc.text((this.buyer?.firstName ?? "") + ' ' + (this.buyer?.lastName ?? ""), margin, y);
     doc.text(`${this.address?.buildingNum}, ${this.address?.street}, ${this.address?.city}`, margin, y + 5);
     doc.text(`Apartment ${this.address?.apartment}, Floor ${this.address?.floor}`, margin, y + 10);
     // doc.text('+20 1150211405', margin, y + 15);

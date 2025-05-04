@@ -32,7 +32,7 @@ export class AddSubscriptionplanComponent implements OnInit {
     private subscriptionPlanService: SubscriptionPlanService,
     private router: Router,
     private toastr: ToastrService
-  ) {}
+  ) { }
   ngOnInit(): void {
     if (!this.hasRole('Admin')) {
       this.router.navigate(['/login']);
@@ -44,8 +44,7 @@ export class AddSubscriptionplanComponent implements OnInit {
     name: new FormControl('', [
       Validators.required,
       Validators.minLength(1),
-      Validators.maxLength(10),
-      Validators.pattern(/^[A-Za-z]+$/),
+      Validators.maxLength(10)
     ]),
     price: new FormControl('', [
       Validators.required,
@@ -79,7 +78,7 @@ export class AddSubscriptionplanComponent implements OnInit {
     this.validateReview();
 
     if (this.isMaxLengthExceeded || this.subscriptionForm.invalid) {
-      alert(
+      this.toastr.error(
         'Please ensure all form fields are valid and review is within character limit.'
       );
       return;
