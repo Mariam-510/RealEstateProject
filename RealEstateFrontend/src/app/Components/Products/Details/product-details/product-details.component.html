@@ -264,7 +264,7 @@
 
 </div>
 <!-- Section -->
-<div class="d-block d-lg-none ps-3 pe-3 ">
+<div class="d-block d-lg-none ps-3 pe-3 no-print">
   <div
     class="cartTitle text-white rounded-top text-center d-flex align-items-center justify-content-center position-relative">
     <div class="m-0 fw-semibold">
@@ -947,7 +947,7 @@
 
 <!-- Show content when loaded -->
 <div id="stop-scroll">
-  <div *ngIf="!isLoading">
+  <div class="reco" *ngIf="!isLoading">
     <app-similar-products [product]="product"></app-similar-products>
   </div>
 </div>

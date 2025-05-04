@@ -1055,7 +1055,9 @@ section {
     page-break-inside: avoid;
   }
 
-  section {
+  section,
+  #stop-scroll,
+  .reco {
     page-break-inside: avoid;
   }
 
@@ -1256,21 +1258,24 @@ section {
 
 
 }
+
 .custom-width {
-  width: 75% !important;  
+  width: 75% !important;
 }
 
 @media (max-width: 1000px) {
   .custom-width {
     width: 100% !important;
   }
-  
+
 }
+
 @media (max-width: 1000px) {
   .hero {
     width: 100% !important;
- 
+
   }
+
   .cartTitle {
     background: linear-gradient(135deg, #2d1a0e 0%, #4a2c1a 100%);
     min-height: 70px;

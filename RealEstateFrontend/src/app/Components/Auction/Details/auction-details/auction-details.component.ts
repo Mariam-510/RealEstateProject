@@ -60,8 +60,7 @@ declare var bootstrap: any; // Required for Bootstrap modal handling
   styleUrl: './auction-details.component.css',
 })
 export class AuctionDetailsComponent
-  implements OnInit, AfterViewInit, OnDestroy
-{
+  implements OnInit, AfterViewInit, OnDestroy {
   showAllBids = false;
   showMore: boolean = false;
   auction: AuctionDTOShow | null = null;
@@ -83,7 +82,7 @@ export class AuctionDetailsComponent
     private router: Router,
     private auctionBuyerService: AuctionBuyerService,
     private dialog: MatDialog
-  ) {}
+  ) { }
 
   // Component properties
   // targetDate: Date = new Date(); // Set your auction end date
@@ -477,9 +476,9 @@ export class AuctionDetailsComponent
       this.showBidError = false;
 
       // Basic validation
-      if (!this.bidAmount || this.bidAmount <= this.highestBid) {
+      if (!this.bidAmount || this.bidAmount < this.highestBid + 1000) {
         this.showBidError = true;
-        this.bidErrorMessage = 'Bid must be higher than current bid';
+        this.bidErrorMessage = 'Bid must be higher than current bid by at least 1000';
         return;
       }
 
