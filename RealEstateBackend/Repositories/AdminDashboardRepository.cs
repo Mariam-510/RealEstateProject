@@ -50,16 +50,26 @@ namespace RealEstate.Repositories
         }
         public async Task<decimal> GetHighestSellBidAsync()
         {
-            return await _context.PropertyBids
+            if(_context.PropertyBids.Any())
+            {
+                return await _context.PropertyBids
                 .Where(b => b.Auction != null && b.Auction.Property.Type == PropertyType.Sell && !b.Auction.IsDeleted)
-                .MaxAsync(b => (decimal)b.BidAmount);
+                .MaxAsync(b => b.BidAmount);
+            }
+            return 0;
+            
         }
 
         public async Task<decimal> GetHighestRentBidAsync()
         {
-            return await _context.PropertyBids
+            if (_context.PropertyBids.Any())
+            {
+                return await _context.PropertyBids
                 .Where(b => b.Auction != null && b.Auction.Property.Type == PropertyType.Rent && !b.Auction.IsDeleted)
-                .MaxAsync(b => (decimal)b.BidAmount);
+                .MaxAsync(b => b.BidAmount);
+            }
+            return 0;
+
         }
 
         public async Task<int> GetUpcomingAuctionsCountAsync()

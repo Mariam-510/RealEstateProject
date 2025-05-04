@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Models.Domains;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace RealEstate.Data
 {
@@ -810,6 +812,25 @@ namespace RealEstate.Data
                 new Shipping { Id = 25, City = "Matrouh", DeliveryFees = 200m, IsDeleted = false },
                 new Shipping { Id = 26, City = "North Sinai", DeliveryFees = 200m, IsDeleted = false },
                 new Shipping { Id = 27, City = "South Sinai", DeliveryFees = 200m, IsDeleted = false }
+            );
+        }
+
+        //----------------------------------------------------------------------------------------------------
+        public static void SeedSubscriptions(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Subscription>().HasData(
+                new Subscription { Id = 1, IsDeleted = false, SellerId=1, AgentId=null, AvailableProperties=3, PaymentId=null, SubscriptionPlanId=1, SubscriptionDate= new DateTime(2025, 5, 4) },
+                new Subscription { Id = 2, IsDeleted = false, SellerId = 2, AgentId = null, AvailableProperties = 3, PaymentId = null, SubscriptionPlanId = 1, SubscriptionDate = new DateTime(2025, 5, 4) },
+                new Subscription { Id = 3, IsDeleted = false, SellerId = null, AgentId = 1, AvailableProperties = 3, PaymentId = null, SubscriptionPlanId = 1, SubscriptionDate = new DateTime(2025, 5, 4) },
+                new Subscription { Id = 4, IsDeleted = false, SellerId = null, AgentId = 2, AvailableProperties = 3, PaymentId = null, SubscriptionPlanId = 1, SubscriptionDate = new DateTime(2025, 5, 4) }
+            );
+        }
+
+        //----------------------------------------------------------------------------------------------------
+        public static void SeedContracts(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Contract>().HasData(
+                new Contract { Id = 1, IsDeleted = false, ImageUrl = "PropertyContracts/contract.pdf", SellerId = 1, PropertyId = 15 }
             );
         }
 

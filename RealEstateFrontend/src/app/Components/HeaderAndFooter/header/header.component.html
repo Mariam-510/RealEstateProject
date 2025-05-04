@@ -24,11 +24,18 @@
     <div class="brand-content">
       <a routerLink="/" class="brand-logo">
         <!-- w-25 -->
-        <img src="https://digital.ihg.com/is/image/ihg/intercontinental-cairo-10367348719-2x1" alt="UrbanNest">
+        <img src="images/p1.PNG" alt="proppulse">
       </a>
       <div class="brand-tagline">
-        <a routerLink="/" class="brand-name w-25">UrbanNest</a>
-        <span class="brand-services">
+        <!-- <a routerLink="/" class="brand-name text-caffe">PropPulse</a> -->
+
+        <a routerLink="/"
+          class="brand-name text-decoration-none d-inline-flex align-items-center fs-3 fw-bolder text-dark">
+          <span class="prop-part pe-1 rounded-2 transition-all">Prop</span>
+          <span class="pulse-part text-caffe ms-n2 position-relative">Pulse</span>
+        </a>
+
+        <span class=" brand-services">
           <span class="service-item" [class.active]="isRouteActive('/properties')">Properties</span>
           <span class="separator"> | </span>
           <span class="service-item" [class.active]="isRouteActive('/products')">Furniture</span>
@@ -141,7 +148,7 @@
 
       <ng-template #emptyCardFooter>
         <div class="cart-footer">
-          <button class="checkout-btn mb-4" routerLink="/">Continue Shopping</button>
+          <button class="checkout-btn mb-4" routerLink="/products">Continue Shopping</button>
         </div>
       </ng-template>
     </div>

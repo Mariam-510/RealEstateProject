@@ -375,13 +375,13 @@ export class PropertyHomeComponent implements OnInit {
 
   slides = [
     {
-      imageUrl: 'https://cairo.realestate/uploads/images/2022-12/757.jpg',
+      imageUrl: 'https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg',
       alt: 'Luxury apartments in Cairo',
       title: 'Luxury Apartments in Prime Cairo Locations',
       subtitle: 'Discover Exclusive Living Spaces in the Heart of the City'
     },
     {
-      imageUrl: 'https://www.crossegyptchallenge.com/wp-content/uploads/2022/07/cairo01.jpg',
+      imageUrl: 'https://cairo.realestate/uploads/images/2022-12/757.jpg',
       alt: 'Vibrant Cairo neighborhood',
       title: 'Affordable Housing Solutions in Growing Districts',
       subtitle: 'Invest in Family-Friendly Communities with Great Amenities'
@@ -488,13 +488,13 @@ export class PropertyHomeComponent implements OnInit {
 
     this.wishListService.togglePropertyWishlist(property.id).subscribe({
       next: (response) => {
-        if(property.isFavorite){
+        if (property.isFavorite) {
           this.toastr.success("Added to Favourites Successfully ");
         }
-        else{
+        else {
           this.toastr.success("Removed from Favourites Successfully");
         }
-        
+
         // Optional: Update with actual API state if needed
       },
       error: (err) => {

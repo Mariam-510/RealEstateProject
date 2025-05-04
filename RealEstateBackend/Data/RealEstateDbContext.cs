@@ -98,7 +98,10 @@ namespace RealEstate.Data
             DbInitializer.SeedShippings(builder);
 
             //----------------------------------------------------------------------------------
+            DbInitializer.SeedSubscriptions(builder);
 
+            //----------------------------------------------------------------------------------
+            DbInitializer.SeedContracts(builder);
 
         }
 
