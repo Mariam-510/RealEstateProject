@@ -31,4 +31,8 @@ export class SellerService {
     return this.http.put<{ message: string, tokenDto: any, sellerDto: SellerDto }>(this.apiUrl, formData);
   }
 
+  deleteSeller(): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(this.apiUrl);
+  }
+
 }

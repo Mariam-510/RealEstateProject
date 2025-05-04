@@ -30,8 +30,13 @@ export class BuyerService {
   updateBuyer(formData: FormData): Observable<{ message: string, tokenDto: any, buyerDto: BuyerDto }> {
     return this.http.put<{ message: string, tokenDto: any, buyerDto: BuyerDto }>(this.apiUrl, formData);
   }
+
   getBuyerById(buyerId: number): Observable<BuyerDto> {
     return this.http.get<BuyerDto>(`${this.apiUrl}/${buyerId}`);
+  }
+
+  deleteBuyer(): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(this.apiUrl);
   }
 
 

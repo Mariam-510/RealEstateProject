@@ -14,8 +14,10 @@
 
 .chat-window {
   position: fixed;
-  bottom: 20px; /* Align with button bottom */
-  right: 80px; /* Position to the left of the button (button width + margin) */
+  bottom: 10px;
+  /* Align with button bottom */
+  right: 80px;
+  /* Position to the left of the button (button width + margin) */
   width: 420px;
   max-height: 80vh;
   z-index: 1050;
@@ -73,6 +75,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -107,8 +110,22 @@
   margin-left: 5px;
 }
 
+/* textarea.form-control {
+  transition: height 0.2s ease;
+  overflow-y: hidden;
+  resize: none;
+} */
+
 textarea.form-control {
   transition: height 0.2s ease;
-  overflow-y: hidden; /* hides scrollbars */
-  resize: none; /* disables manual resizing */
+  overflow-y: hidden;
+  /* hides scrollbars */
+  resize: none;
+  /* disables manual resizing */
+  min-height: 38px;
+  /* Minimum height equivalent to 1 row */
+  max-height: 120px;
+  /* Maximum height before scrolling */
+  box-sizing: border-box;
+  /* Include padding in height calculation */
 }

@@ -2,6 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../../Services/ApiServices/auth.service';
+import { SellerService } from '../../../Services/ApiServices/seller.service';
+import { ToastrService } from '../../../Services/toastr.service';
 
 @Component({
   selector: 'app-sellersidebar',
@@ -10,7 +13,8 @@ import { Router, RouterModule } from '@angular/router';
   styleUrl: './sellersidebar.component.css'
 })
 export class SellersidebarComponent implements OnInit {
-  constructor(private router: Router) { }
+  constructor(private router: Router, private sellerService: SellerService,
+    private authService: AuthService, private toastrService: ToastrService) { }
 
   isCollapsed = false;
   dropdownOpen = false;
@@ -47,7 +51,6 @@ export class SellersidebarComponent implements OnInit {
     // You might want to add additional logic here if needed
   }
 
-
   isDropdownItemActive(): boolean {
     const currentUrl = this.router.url;
     const flag = [
@@ -65,4 +68,31 @@ export class SellersidebarComponent implements OnInit {
     }
     return flag;
   }
+
+
+  confirmDeleteAccount(event: MouseEvent) {
+    event.stopPropagation();
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete your seller account? This will remove all your listings and associated data!"
+    );
+
+    if (isConfirmed) {
+      this.sellerService.deleteSeller().subscribe({
+        next: (response) => {
+          this.toastrService.success(response.message);
+          // Clear authentication and redirect
+          this.authService.logout();
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {
+          console.error('Delete error:', err);
+          const errorMessage = err.error?.message ||
+            'Failed to delete seller account. Please try again later.';
+          // alert(errorMessage);
+          this.toastrService.error(errorMessage);
+        }
+      });
+    }
+  }
+
 }
