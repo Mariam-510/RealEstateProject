@@ -149,7 +149,7 @@
               </h6>
             </div>
             <div class="card-body pt-5 px-1">
-              @if (totals?.subscriptionPlans?.length) {
+              @if (totals) {
               <div style="height:34vh; width:100%">
                 <canvas baseChart [data]="subscriptionPlanChart" [options]="subscriptionPlanOptions"
                   [type]="'bar'"></canvas>
@@ -177,7 +177,7 @@
               </h6>
             </div>
             <div class="card-body">
-              @if (totals?.topProducts?.length) {
+              @if (totals) {
               <div style="height:33vh; width:100%">
                 <canvas baseChart [data]="topProductsChart" [options]="topProductsOptions" [type]="'bar'"></canvas>
               </div>
@@ -212,7 +212,7 @@
               </div>
               <div class="p-0">
                 <ul class="list-group list-group-flush">
-                  @if (BuyerNumber && SellerNumber && AgentNumber) {
+                  @if (totals) {
 
                   <li class="list-group-item d-flex justify-content-between align-items-center border-0 py-1 px-2">
                     <span class="d-flex align-items-center small">
@@ -306,7 +306,7 @@
                 <i class="bi bi-hammer me-2 text-caffe fs-4"></i>
                 <h6 class="mb-1">Auction Summary</h6>
               </div>
-              @if (totals.highestSellBid && totals.highestRentBid && totals.upcomingAuctions && totals.endingAuctions) {
+              @if (totals) {
 
               <div class="auction-progress">
                 <div class="d-flex justify-content-between ms-3 mb-1">
@@ -322,13 +322,13 @@
                   <div class="col-6">
                     <div class="card bg-light p-2 text-center h-100">
                       <div class="text-muted small">Highest Sell Bid</div>
-                      <div class="fw-bold">{{totals.highestSellBid}}</div>
+                      <div class="fw-bold">{{totals?.highestSellBid ?? 0}}</div>
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="card bg-light p-2 text-center h-100">
                       <div class="text-muted small">Highest Rent Bid</div>
-                      <div class="fw-bold">{{totals.highestRentBid}}</div>
+                      <div class="fw-bold">{{totals?.highestRentBid ?? 0}}</div>
                     </div>
                   </div>
                 </div>
@@ -336,13 +336,13 @@
                   <div class="col-6">
                     <div class="card bg-light p-2 text-center h-100">
                       <div class="text-muted small">upcoming</div>
-                      <div class="fw-bold">{{totals.upcomingAuctions}}</div>
+                      <div class="fw-bold">{{totals?.upcomingAuctions ?? 0}}</div>
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="card bg-light p-2 text-center h-100">
                       <div class="text-muted small">Ending Auction</div>
-                      <div class="fw-bold">{{totals.endingAuctions}}</div>
+                      <div class="fw-bold">{{totals?.endingAuctions ?? 0}}</div>
                     </div>
                   </div>
                 </div>
@@ -365,7 +365,7 @@
                 <i class="bi bi-box-seam me-2 text-caffe fs-4"></i>
                 <h6>Product Summary</h6>
               </div>
-              @if (totalProducts&& totalSold && totals.totalOrders) {
+              @if (totals) {
 
               <div class="card-body p-0">
                 <ul class="list-group list-group-flush">
@@ -388,7 +388,7 @@
                       <i class="bi bi-cart-check-fill me-2 text-caffe" style="font-size:18px;"></i>
                       <span class="fw-medium">Total Orders</span>
                     </span>
-                    <span class="ms-auto badge  bg-caffe  text-white rounded-pill px-2">{{ totals.totalOrders }}</span>
+                    <span class="ms-auto badge  bg-caffe  text-white rounded-pill px-2">{{ totals?.totalOrders }}</span>
                   </li>
 
                 </ul>

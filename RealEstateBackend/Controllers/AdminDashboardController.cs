@@ -50,7 +50,7 @@ namespace RealEstate.Controllers
             var userCounts = await _dashboardRepo.GetTotalUsers();
 
             var activeAuctions = await _auctionRepo.GetAllAsync(ISLivestatus: Status.Active);
-            int totalActiveAuctions = activeAuctions.Count();
+            var totalActiveAuctions = activeAuctions?.Count() ?? 0;
 
             var auctionedProperties = await _propertyRepo.GetFilteredAsync(null,status: PropertyStatus.Auctioned,null,null);
             var availableProperties = await _propertyRepo.GetFilteredAsync(null, status: PropertyStatus.Available, null, null);
@@ -58,26 +58,26 @@ namespace RealEstate.Controllers
             var SaleProperties = await _propertyRepo.GetFilteredAsync(null, null, type: PropertyType.Sell, null);
             var RentProperties = await _propertyRepo.GetFilteredAsync(null, null, type: PropertyType.Rent, null);
 
-            int SoldPropertiesCount= SoldProperties.Count();
-            int SalePropertiesCount = SaleProperties.Count();
-            int RentPropertiesCount = RentProperties.Count();
+            var SoldPropertiesCount = SoldProperties?.Count() ?? 0;
+            var SalePropertiesCount = SaleProperties?.Count() ?? 0;
+            var RentPropertiesCount = RentProperties?.Count() ?? 0;
 
-            int TotalAvailableProperties = auctionedProperties.Count() + availableProperties.Count();
+            var TotalAvailableProperties = auctionedProperties?.Count() + availableProperties?.Count();
 
-            int UsedProducts = await _dashboardRepo.FilterProductsByStatus(true);
-            int NewProducts=await _dashboardRepo.FilterProductsByStatus(false);
-            int TotalProducts = UsedProducts + NewProducts;
-            int SoldProducts = await _dashboardRepo.GetTotalSoldProducts();
+            var UsedProducts = await _dashboardRepo.FilterProductsByStatus(true);
+            var NewProducts=await _dashboardRepo.FilterProductsByStatus(false);
+            var TotalProducts = UsedProducts + NewProducts;
+            var SoldProducts = await _dashboardRepo.GetTotalSoldProducts();
 
             var Orders = await _orderRepo.GetAllAsync();
-            int TotalOrders=Orders.Count();
+            var TotalOrders =Orders?.Count() ?? 0;
 
-            decimal HighestSellBid = await _dashboardRepo.GetHighestSellBidAsync();
-            decimal HighestRentBid = await _dashboardRepo.GetHighestRentBidAsync();
+            var HighestSellBid = await _dashboardRepo.GetHighestSellBidAsync();
+            var HighestRentBid = await _dashboardRepo.GetHighestRentBidAsync();
 
             int UpcomingAuctions = await _dashboardRepo.GetUpcomingAuctionsCountAsync();
             int EndingAuctions = await _dashboardRepo.GetEndingAuctionsCountAsync();
-            double ActiveAuctionsPrecentage = await _dashboardRepo.GetActiveAuctionsPercentageAsync();
+            var ActiveAuctionsPrecentage = await _dashboardRepo.GetActiveAuctionsPercentageAsync();
 
             var CategoryPercentages = await _dashboardRepo.GetCategoryPercentagesAsync();
             var Counts = await _dashboardRepo.GetSubscriptionCountsAsync();

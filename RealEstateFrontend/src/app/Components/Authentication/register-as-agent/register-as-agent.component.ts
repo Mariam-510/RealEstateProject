@@ -19,7 +19,6 @@ export class RegisterAsAgentComponent {
         Validators.required,
         Validators.minLength(1),
         Validators.maxLength(50),
-        Validators.pattern(/^[A-Za-z]+$/)
       ]),
       CommercialRegister: new FormControl('', [
         Validators.required,
@@ -42,13 +41,13 @@ export class RegisterAsAgentComponent {
   );
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
-   
+
   togglePasswordVisibility(): void {
-      this.showPassword = !this.showPassword;
+    this.showPassword = !this.showPassword;
   }
   toggleConfirmcPasswordVisibility(): void {
     this.showConfirmPassword = !this.showConfirmPassword;
-}
+  }
 
   errorMes: string = '';
 

@@ -7,7 +7,6 @@ namespace RealEstate.Models.Dtos.AgentDto
         [Required]
         [MaxLength(50)]
         [MinLength(1)]
-        [RegularExpression("^[a-zA-Z]+$", ErrorMessage = "Name must contain only letters.")]
         public string Name { get; set; }
 
         public string? CurrentPassword { get; set; }

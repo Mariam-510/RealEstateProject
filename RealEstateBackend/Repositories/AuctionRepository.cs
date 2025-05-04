@@ -76,7 +76,7 @@ namespace RealEstate.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<List<Auction>> GetAllAsync(string? sortByPrice = null, string? sortByTime = null, Status? ISLivestatus = null)
+        public async Task<List<Auction>?> GetAllAsync(string? sortByPrice = null, string? sortByTime = null, Status? ISLivestatus = null)
         {
             var Auction = dbcontext.Auctions.Where(A => A.IsDeleted == false).AsQueryable();
             if (Auction == null)
