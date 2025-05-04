@@ -133,7 +133,7 @@ images: any[] = [];    // for images
       next: (response) => {
         this.toastr.success('Appointment created successfully!', 'Success');
         setTimeout(() => {
-          this.router.navigate(['/user/BuyerViewAllAppointment']);
+          this.router.navigate(['/user/ViewAllAppointment']);
         }, 1000);
       },
       error: (error) => {
@@ -161,7 +161,7 @@ images: any[] = [];    // for images
     const today = new Date();
     for (let i = 0; i < count; i++) {
       const date = new Date(today);
-      date.setDate(date.getDate() + i);
+      date.setDate(date.getDate() + i+1);
       this.days.push({
         date,
         dayOfWeek: date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
