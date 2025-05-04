@@ -497,8 +497,12 @@ export class HomePageComponent implements OnInit, OnDestroy {
 
     this.wishListService.toggleProductWishlist(product.id).subscribe({
       next: (response) => {
-        this.toastr.success(response);
-        // Optional: Update with actual API state if needed
+        if(product.isFavorite){
+          this.toastr.success("Added to Favourites Successfully ");
+        }
+        else{
+          this.toastr.success("Removed from Favourites Successfully");
+        }
       },
       error: (err) => {
         // Revert UI state on error
@@ -516,8 +520,12 @@ export class HomePageComponent implements OnInit, OnDestroy {
 
     this.wishListService.togglePropertyWishlist(property.id).subscribe({
       next: (response) => {
-        this.toastr.success(response);
-        // Optional: Update with actual API state if needed
+        if(property.isFavorite){
+          this.toastr.success("Added to Favourites Successfully ");
+        }
+        else{
+          this.toastr.success("Removed from Favourites Successfully");
+        }
       },
       error: (err) => {
         // Revert UI state on error
