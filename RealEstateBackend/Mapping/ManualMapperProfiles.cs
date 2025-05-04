@@ -116,7 +116,8 @@ namespace RealEstate.Mapping
                         Color = ps.Color,
                         Quantity = ps.Quantity
                     })
-                    .ToList()
+                    .ToList(),
+                NumberOfReviews = product.Reviews?.Count(r => !r.IsDeleted) ?? 0,
             };
         }
 
