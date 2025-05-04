@@ -362,9 +362,9 @@
                       <button class="btn btn-link text-dark p-1" (click)="shareItem(property)">
                         <i class="bi bi-share fs-5"></i>
                       </button>
-                      <button class="btn btn-link text-dark p-1">
+                      <!-- <button class="btn btn-link text-dark p-1">
                         <i class="bi bi-printer fs-4"></i>
-                      </button>
+                      </button> -->
                       <button *ngIf="hasRoleOrNoUser('Buyer')" class="btn btn-link p-1"
                         (click)="toggleFavorite(property)">
                         <i class="bi fs-4" [ngClass]="{
