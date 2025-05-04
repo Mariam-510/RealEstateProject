@@ -19,6 +19,8 @@ declare var bootstrap: any; // Required for Bootstrap modal handling
 export class ViewPendingPropertiesComponent {
   isPDFModalOpen = false;
   @ViewChild('pdfModal') pdfModal!: ElementRef;
+  selectedProperty: PropertyDTO | null = null;
+
   private modalInstance?: any;
   currentPage = 1;
   pageSize = 3;
@@ -71,10 +73,12 @@ export class ViewPendingPropertiesComponent {
       this.modalInstance = new bootstrap.Modal(this.pdfModal.nativeElement);
     }
   }
-  selectedProperty: PropertyDTO = {} as PropertyDTO;
   showModal(property: PropertyDTO): void {
     this.selectedProperty = property;
-    this.modalInstance?.show();
+  
+    // Bootstrap Modal requires initializing via JS
+    const modal = new bootstrap.Modal(this.pdfModal.nativeElement);
+    modal.show();
   }
   // Pagination methods
   updatePagination(): void {

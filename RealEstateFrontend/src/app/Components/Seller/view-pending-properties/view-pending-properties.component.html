@@ -230,7 +230,8 @@
           <!-- <a href="/TestFiles/sample.pdf" download class="btn btn-primary">
                 <i class="bi bi-download me-2"></i>Download
               </a> -->
-          <button (click)="downloadFile(selectedProperty)" class="btn btn-primary">
+            <button (click)="selectedProperty && downloadFile(selectedProperty)" class="btn btn-primary">
+
             <i class="bi bi-download me-2"></i>Download
           </button>
 
