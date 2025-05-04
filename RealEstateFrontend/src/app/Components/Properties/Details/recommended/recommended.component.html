@@ -19,11 +19,11 @@
 
             <!-- Top Actions -->
             <div *ngIf="!property.activeMap" class="property-actions position-absolute top-0 end-0 m-2 d-flex gap-2">
-              <button
+              <!-- <button
                 class="btn btn-icon shadow-sm border-0 d-flex align-items-center justify-content-center btn-sm p-2"
                 (click)="$event.stopPropagation(); shareItem(property)">
                 <i class="bi bi-share fs-5"></i>
-              </button>
+              </button> -->
 
               <button *ngIf="hasRoleOrNoUser('Buyer')"
                 class="btn  btn-icon shadow-sm border-0 d-flex align-items-center justify-content-center p-2"
