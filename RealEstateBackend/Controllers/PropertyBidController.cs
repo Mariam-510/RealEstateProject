@@ -75,11 +75,11 @@ namespace RealEstate.Controllers
                 amount = lastBid.BidAmount;
             }
 
-            if (createDto.BidAmount <= amount)
+            if (createDto.BidAmount < amount+1000)
             {
                 var errorMessage = lastBid != null
-                    ? $"Bid amount must exceed the current highest bid of {amount}"
-                    : $"Bid amount must be higher than the starting price of {amount}";
+                    ? $"Bid amount must exceed the current highest bid of {amount} by 1000"
+                    : $"Bid amount must be higher than the starting price of {amount} by 1000";
 
                 return BadRequest(errorMessage);
             }
