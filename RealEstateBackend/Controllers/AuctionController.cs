@@ -443,8 +443,8 @@ namespace RealEstate.Controllers
 
                     var (property, maxBid) = await _AuctionRepository.GetHighestBidForEndedAuctionsByAgentAsync(userId);
 
-                    if (property == null || maxBid == 0)
-                        return NotFound("No bids found for this agent's ended auctions");
+                    //if (property == null || maxBid == 0)
+                    //    return NotFound("No bids found for this agent's ended auctions");
 
                     return Ok(new
                     {
