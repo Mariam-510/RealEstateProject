@@ -11,7 +11,7 @@ import { WishListService } from '../../../../Services/ApiServices/wish-list.serv
 import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-favorite-products',
-  imports: [CommonModule, RouterModule, LeafletMapComponent, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './favorite-products.component.html',
   styleUrl: './favorite-products.component.css'
 })
