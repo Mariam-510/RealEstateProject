@@ -13,7 +13,7 @@ import { ToastrService } from '../../../Services/toastr.service';
   styleUrl: './view-all-order.component.css'
 })
 export class ViewAllOrderComponent implements OnInit {
-  orderLinks = ['All Order', 'Pending', 'Out For Delivery', 'Delivered', 'Confirmed', 'Cancelled'];
+  orderLinks = ['All Order', 'Pending', 'OutForDelivery', 'Delivered', 'Confirmed', 'Cancelled'];
   activeLink = 'All Order';
   startDate: string = '';
   endDate: string = '';
