@@ -194,7 +194,7 @@ namespace RealEstate
             {
                 options.AddPolicy("AllowAngularApp", policy =>
                     policy
-                        .WithOrigins("http://localhost:4200")
+                        .WithOrigins("http://localhost:4200", "https://mariam-510.github.io")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials()
