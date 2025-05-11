@@ -15,7 +15,7 @@ import { ToastrService } from '../../../Services/toastr.service';
 })
 export class OrderSummaryComponent implements OnInit {
 
-  orderLinks = ['All Order', 'Pending', `Out For Delivery`, 'Delivered', 'Confirmed', 'Cancelled'];
+  orderLinks = ['All Order', 'Pending', `OutForDelivery`, 'Delivered', 'Confirmed', 'Cancelled'];
   activeLink = 'All Order';
   startDate: string = '';
   endDate: string = '';
