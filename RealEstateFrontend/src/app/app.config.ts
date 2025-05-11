@@ -9,9 +9,15 @@ import { OpenaiInterceptor } from './Interceptors/openai.interceptor';
 
 // src/app/config/api.config.ts
 export const API_CONFIG = {
+<<<<<<< Updated upstream
   apiUrl: 'https://localhost:7184/',
   // apiUrl: 'http://realestategp.runasp.net/',
   apiUrlNoSlash: 'http://realestategp.runasp.net',
+=======
+  // apiUrl: 'https://localhost:7184/',
+  apiUrl: 'https://realestategp.runasp.net/',
+  apiUrlNoSlash: 'https://realestategp.runasp.net',
+>>>>>>> Stashed changes
 };
 
 export const environment = {
