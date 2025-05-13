@@ -6,7 +6,7 @@
  } 
 
 .right-section {
-   background: url('/images/Home/login.jpg') no-repeat center center/cover;
+   /* background: url('/RealEstateProject/images/Home/login.jpg') no-repeat center center/cover; */
    animation: slideInFromRight 1s ease-out forwards; /* Adjust the duration and easing as needed */
 
    
