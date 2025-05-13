@@ -22,7 +22,9 @@ export class GoogleService {
 
   googleLogin(): void {
     const clientId = '787977218185-shafp92svop2slqecfj7espka3b35pth.apps.googleusercontent.com';
-    const redirectUri = 'http://localhost:4200/home';
+    // const redirectUri = 'http://localhost:4200/home';
+    const redirectUri = `${window.location.origin}/home`; 
+    console.log(redirectUri);
     const scope = 'email profile openid';
     const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token id_token&scope=${scope}`;
 
