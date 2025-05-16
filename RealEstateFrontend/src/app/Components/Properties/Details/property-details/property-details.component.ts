@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, ViewChild, ElementRef, AfterViewInit, Renderer2, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RecommendedComponent } from '../recommended/recommended.component';
 import { CardmapComponent } from '../cardmap/cardmap.component';
 import { PropertyDetialsLeafletMapComponent } from '../property-detials-leaflet-map/property-detials-leaflet-map.component';
@@ -27,7 +27,7 @@ declare var bootstrap: any; // Required for Bootstrap modal handling
   templateUrl: './property-details.component.html',
   styleUrl: './property-details.component.css'
 })
-export class PropertyDetailsComponent implements OnInit ,AfterViewInit {
+export class PropertyDetailsComponent implements OnInit, AfterViewInit {
   Math = Math;
   icons: any;
 
@@ -53,6 +53,7 @@ export class PropertyDetailsComponent implements OnInit ,AfterViewInit {
     private propertyService: PropertyService, private wishListService: WishListService,
     private auth: AuthService, private route: ActivatedRoute, private toastr: ToastrService, private account: AccountService,
     private conversationService: ConversationService, private auctionService: AuctionService,
+    private router: Router
   ) { }
 
   openPhotosModal() {
@@ -160,14 +161,13 @@ export class PropertyDetailsComponent implements OnInit ,AfterViewInit {
 
       this.wishListService.togglePropertyWishlist(property.id).subscribe({
         next: (response) => {
-          if(property.isFavorite)
-            {
-              this.toastr.success("Added to Favourite Successfully");
-              // Optional: Update with actual API state if needed
-            }
-            else{
-              this.toastr.success("Removed From Favourite Successfully");
-             }
+          if (property.isFavorite) {
+            this.toastr.success("Added to Favourite Successfully");
+            // Optional: Update with actual API state if needed
+          }
+          else {
+            this.toastr.success("Removed From Favourite Successfully");
+          }
         },
         error: (err) => {
           // Revert UI state on error
@@ -379,10 +379,10 @@ export class PropertyDetailsComponent implements OnInit ,AfterViewInit {
 
   get displayedDescription(): string {
     if (!this.property?.description) return '';
-  
+
     const desc = this.property.description;
     const shortDesc = desc.slice(0, 200) + (desc.length > 200 ? '...' : '');
-  
+
     return (this.showMore ? desc : shortDesc).replace(/\n/g, '<br>');
   }
 
@@ -397,104 +397,113 @@ export class PropertyDetailsComponent implements OnInit ,AfterViewInit {
   hasUser() {
     return this.auth.isAuthenticated();
   }
-  requestShowing(property: PropertyDTO| null) {
+  requestShowing(property: PropertyDTO | null) {
     const selectedOption = (document.querySelector('input[name="tourOption"]:checked') as HTMLInputElement)?.value;
     if (selectedOption) {
-      window.location.href = `/book/${property?.id}?type=${selectedOption}`;
+      // window.location.href = `/book/${property?.id}?type=${selectedOption}`;
+      // Your navigation code
+      this.router.navigate(
+        ['/book', property?.id],
+        {
+          queryParams: {
+            type: selectedOption
+          }
+        }
+      );
     }
   }
 
   @ViewChild('chatWindow') chatWindow!: ChatmodalComponent;
-//   openChat() {
-//   if (!this.property) return;
+  //   openChat() {
+  //   if (!this.property) return;
 
-//   this.account.getRecipientAccountId(this.property.id).subscribe({
-//     next: (accountId) => {
-//       this.recipientId = accountId;
-      
-//       // console.log(this.recipientId);
+  //   this.account.getRecipientAccountId(this.property.id).subscribe({
+  //     next: (accountId) => {
+  //       this.recipientId = accountId;
 
-//       // Create conversation after getting recipient ID
-//       this.conversationService.createConversation(this.recipientId).subscribe({
-//         next: () => {
-//           // Only open chat window if conversation creation succeeds
-//           // console.log('Before');
-//           // console.log('After');
-//         },
-//         error: (convError) => {
-//           console.error('Conversation creation failed:', convError);
-//           // Handle conversation error (e.g., show error message)
-//         }
-//       });
-//       this.chatWindow.toggle();
-//     },
-//     error: (err) => {
-//       console.error('Error fetching user:', err);
-//       // Handle account ID error
-//     }
-//   });
-// }
+  //       // console.log(this.recipientId);
 
-openChat() {
-  if (!this.property) return;
+  //       // Create conversation after getting recipient ID
+  //       this.conversationService.createConversation(this.recipientId).subscribe({
+  //         next: () => {
+  //           // Only open chat window if conversation creation succeeds
+  //           // console.log('Before');
+  //           // console.log('After');
+  //         },
+  //         error: (convError) => {
+  //           console.error('Conversation creation failed:', convError);
+  //           // Handle conversation error (e.g., show error message)
+  //         }
+  //       });
+  //       this.chatWindow.toggle();
+  //     },
+  //     error: (err) => {
+  //       console.error('Error fetching user:', err);
+  //       // Handle account ID error
+  //     }
+  //   });
+  // }
 
-  const currentUserId = this.auth.getCurrentUser()?.accountId;
-  if (!currentUserId) return;
+  openChat() {
+    if (!this.property) return;
 
-  this.chatWindow.toggle();
+    const currentUserId = this.auth.getCurrentUser()?.accountId;
+    if (!currentUserId) return;
 
-  this.account.getRecipient(this.property.id).subscribe({
-    next: (recipientData: UserDto) => {
-      this.recipient = recipientData;
+    this.chatWindow.toggle();
 
-      const recipientAccountId = recipientData.accountId;
+    this.account.getRecipient(this.property.id).subscribe({
+      next: (recipientData: UserDto) => {
+        this.recipient = recipientData;
 
-      this.chatWindow.setRecipient({
-        id: recipientData.accountId,
-        image: recipientData.imageUrl ?? undefined
-      });
+        const recipientAccountId = recipientData.accountId;
 
-      // First check if conversation exists
-      this.conversationService.existingConversation(recipientAccountId).subscribe({
-        next: (conversationExists) => {
-          if (conversationExists) {
-            // If exists, find the conversation ID
-            this.conversationService.getConversationBetweenUsers(recipientAccountId).subscribe({
-              next: (conversation) => {
-                this.chatWindow.initializeChat(conversation.id);
-              },
-              error: (err) => {
-                console.error('Error fetching conversation:', err);
-                // Keep chat open but show error state
-                this.chatWindow.initializeChat(null); 
-              }
-            });
-          } else {
-            this.conversationService.createConversation(recipientAccountId).subscribe({
-              next: (newConversation) => {
-                // Replace temp state with real conversation
-                this.chatWindow.initializeChat(newConversation.id);
-              },
-              error: (convError) => {
-                console.error('Conversation creation failed:', convError);
-                this.toastr.error('Failed to start conversation');
-                // Keep chat open but in error state
-                this.chatWindow.initializeChat(null); 
-              }
-            });
+        this.chatWindow.setRecipient({
+          id: recipientData.accountId,
+          image: recipientData.imageUrl ?? undefined
+        });
+
+        // First check if conversation exists
+        this.conversationService.existingConversation(recipientAccountId).subscribe({
+          next: (conversationExists) => {
+            if (conversationExists) {
+              // If exists, find the conversation ID
+              this.conversationService.getConversationBetweenUsers(recipientAccountId).subscribe({
+                next: (conversation) => {
+                  this.chatWindow.initializeChat(conversation.id);
+                },
+                error: (err) => {
+                  console.error('Error fetching conversation:', err);
+                  // Keep chat open but show error state
+                  this.chatWindow.initializeChat(null);
+                }
+              });
+            } else {
+              this.conversationService.createConversation(recipientAccountId).subscribe({
+                next: (newConversation) => {
+                  // Replace temp state with real conversation
+                  this.chatWindow.initializeChat(newConversation.id);
+                },
+                error: (convError) => {
+                  console.error('Conversation creation failed:', convError);
+                  this.toastr.error('Failed to start conversation');
+                  // Keep chat open but in error state
+                  this.chatWindow.initializeChat(null);
+                }
+              });
+            }
+          },
+          error: (err) => {
+            console.error('Error checking conversation:', err);
+            this.chatWindow.initializeChat(null);
           }
-        },
-        error: (err) => {
-          console.error('Error checking conversation:', err);
-          this.chatWindow.initializeChat(null);
-        }
-      });
-    },
-    error: (err) => {
-      console.error('Error fetching recipient:', err);
-      this.chatWindow.initializeChat(null);
-    }
-  });
-}
-  
+        });
+      },
+      error: (err) => {
+        console.error('Error fetching recipient:', err);
+        this.chatWindow.initializeChat(null);
+      }
+    });
+  }
+
 }
