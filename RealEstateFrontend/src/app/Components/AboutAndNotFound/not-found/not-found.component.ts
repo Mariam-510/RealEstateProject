@@ -8,6 +8,4 @@ import { RouterModule } from '@angular/router';
   styleUrl: './not-found.component.css'
 })
 export class NotFoundComponent {
-  //test
-  //testttt
 }
