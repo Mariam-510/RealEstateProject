@@ -18,7 +18,7 @@ export const environment = {
   production: false,
   openaiUrl: 'https://api.openai.com/v1/chat/completions',
   openaiKey:
-    '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',
+    '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',
 };
 
 export const appConfig: ApplicationConfig = {
