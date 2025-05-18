@@ -15,7 +15,7 @@ export const API_CONFIG = {
 };
 
 export const environment = {
-  production: false,
+  production: true,
   openaiUrl: 'https://api.openai.com/v1/chat/completions',
 };
 

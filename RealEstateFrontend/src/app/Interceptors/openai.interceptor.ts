@@ -14,7 +14,7 @@ export class OpenaiInterceptor implements HttpInterceptor {
     if (request.url === environment.openaiUrl) {
       const cloned = request.clone({
         setHeaders: {
-          Authorization: `Bearer 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`,
+          Authorization: `Bearer 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`,
           'Content-Type': 'application/json'
         }
       });
