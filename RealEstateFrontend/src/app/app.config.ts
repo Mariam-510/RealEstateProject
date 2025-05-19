@@ -17,7 +17,7 @@ export const API_CONFIG = {
 export const environment = {
   production: true,
   openaiUrl: 'https://api.openai.com/v1/chat/completions',
-  openaiKey: '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'
+  openaiKey: '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'
 };
 
 export const appConfig: ApplicationConfig = {
