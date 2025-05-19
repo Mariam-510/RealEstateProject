@@ -1,0 +1,47 @@
+name: Deploy Angular App
+
+on:
+  push:
+    branches:
+      - main  # or your default branch
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      deployments: write  # needed to delete deployments
+
+    steps:
+      - name: 🗑 Delete previous deployments from github-pages
+        uses: strumwolf/delete-deployment-environment@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: github-pages
+          onlyRemoveDeployments: true
+
+  deploy:
+    needs: cleanup
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # needed to push to gh-pages
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Angular app
+        run: ng build --base-href "https://mariam-510.github.io/RealEstateProject/"
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: dist/real-estate-front/browser
