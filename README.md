@@ -4,9 +4,10 @@ Built with Angular 19, ASP.NET Core 8, and SQL Server, PropPulse combines:
 • 🔨 Property Auctions with real-time bidding & payments
 • 🛋 Furniture E-Commerce with smart filtering, reviews & smooth checkout
 Designed for buyers, sellers/agents, and admins, it streamlines property discovery, transactions, and furniture shopping — all in one seamless experience.
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 🏡 1. Property Listings
------------------------
+************************
 🔎 Discovery & Browsing
 • Grid/List toggle views with advanced filters (price, category, beds, baths, etc.).
 • Switch between image view and map view.
@@ -22,9 +23,10 @@ Designed for buyers, sellers/agents, and admins, it streamlines property discove
 • SignalR chat with buyers and sellers/agents on property pages
 • Unseen message count per conversation
 • Approval required for first message; stays open after approval
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 🔨 2. Auction System
----------------------
+**********************
 🔔 Real-Time Auction Discovery
 • SignalR-driven real-time updates for countdowns, bid alerts, and auction status.
 • Visual timeline and progress bar for auction stages
@@ -37,26 +39,28 @@ Designed for buyers, sellers/agents, and admins, it streamlines property discove
 📝 Auction Participation
 • 1% pre-bid fee via Stripe/PayPal (based on start price)
 • Real-time bid validation & submission.
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 🛋️ 3. Furniture E-Commerce
----------------------------
+***************************
 🔎 Furniture Discovery
 • Grid/List toggle with advanced filters & sorting.
 
 📦 Furniture Details
 • Real-time stock by color/variant
-• Dynamic images zoom, Wishlist, shareable links, print page option, buyer reviews.
+• Dynamic images zoom, Wishlist, shareable links, print page option, and buyer reviews.
 • Smart product recommendations
 
 💳 Checkout Workflow
 • Address auto-detection via GPS/Map + manual entry with validation
 • Multiple payment (Stripe, PayPal, COD), Dynamic shipping fees by delivery city.
 • Order tracking + downloadable PDF receipts.
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 👤 4. User Roles & Permissions
--------------------------------
+******************************
 👥 Buyer
-• Manage profile, wishlist, and track orders, Cancel upcoming appointments
+• Manage profile, wishlist, and track orders, cancel upcoming appointments
 
 🏘️ Seller / Agent
 • Tiered plans (Free–Enterprise), list properties, upload contracts, create auctions
@@ -64,21 +68,23 @@ Designed for buyers, sellers/agents, and admins, it streamlines property discove
 🛠️ Admin
 • Approve agents after CR check and seller listings after contract review.
 • Manage orders/accounts, control subscriptions.
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 📊 5. Dashboards
------------------
+*****************
 📈 Seller/Agent
-• Revenue overview by category
-• Top properties and active listings
-• Bids, appointments, recent activity
+• Revenue overview by category.
+• Top properties and active listings.
+• Bids, appointments, recent activity.
 
 🛡️ Admin
-• Global user, property, product, and order stats
-• Auction performance and bid tracking
-• Visual charts: sales, subscriptions, top products
+• Global user, property, product, and order stats.
+• Auction performance and bid tracking.
+• Visual charts: sales, subscriptions, top products.
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 💻 6. Technologies Used
--------------------------
+************************
 | Component       | Technology     |
 | --------------- | -------------- |
 | Frontend        | Angular 19     |
