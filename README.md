@@ -1,5 +1,6 @@
 🏠 PropPulse – Unified Real Estate Platform
-Built with Angular 19, ASP.NET Core 8, and SQL Server, PropPulse combines:
+
+Built with Angular 19, ASP.NET Core 8, and SQL Server, it combines:
 - 🏘 Property Listings with chat & appointments
 - 🔨 Property Auctions with real-time bidding & payments
 - 🛋 Furniture E-Commerce with smart filtering, reviews & smooth checkout
